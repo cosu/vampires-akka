@@ -1,4 +1,4 @@
-package nl.sne.vampires.akka.server;
+package ro.cosu.vampires.akka.server;
 
 import akka.actor.UntypedActor;
 import akka.event.Logging;
@@ -13,9 +13,9 @@ public class SimplisticHandler extends UntypedActor {
     @Override
     public void onReceive(Object msg) throws Exception {
         if (msg instanceof Tcp.Received) {
-            final ByteString data = ((Tcp.Received) msg).data();
-            log.info("SimplisticHandler - Received: " + data);
-            getSender().tell(TcpMessage.write(data), getSelf());
+            final String data = ((Tcp.Received) msg).data().utf8String();
+            log.info("In SimplisticHandlerActor - Received message: " + data);
+            getSender().tell(TcpMessage.write(ByteString.fromArray(("echo "+data).getBytes())), getSelf());
         } else if (msg instanceof Tcp.ConnectionClosed) {
             getContext().stop(getSelf());
         }
