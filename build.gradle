@@ -1,27 +1,17 @@
-group 'nl.sne.uva'
-version '1.0-SNAPSHOT'
-
 apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'idea'
 
-compileJava {
-    targetCompatibility= 1.8
-    sourceCompatibility= 1.8
-    options.fork = true
-
-    //enable incremental compilation
-    options.incremental = true
+allprojects {
+    task hello << { task -> println "I'm $task.project.name" }
 }
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    compile 'com.typesafe.akka:akka-actor_2.10:2.3.12'
-    compile 'com.google.guava:guava:18.0'
-
-
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+idea{
+    project {
+        languageLevel = '1.8'
+    }
+    module {
+        downloadJavadoc = true // defaults to false
+        downloadSources = true
+    }
 }

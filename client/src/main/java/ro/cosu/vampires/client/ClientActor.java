@@ -1,4 +1,4 @@
-package ro.cosu.vampires.akka.client;
+package ro.cosu.vampires.client;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;
@@ -16,37 +16,36 @@ public class ClientActor extends UntypedActor {
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
-    private ActorRef tcpActor;
     final InetSocketAddress remote;
 
-    public static Props props(InetSocketAddress remote, ActorRef tcpActor) {
-        return Props.create(ClientActor.class, remote, tcpActor);
+    public static Props props(InetSocketAddress remote) {
+        return Props.create(ClientActor.class, remote);
     }
 
-    public ClientActor(InetSocketAddress remote, ActorRef tcpActor) {
+    private ByteString getMessage(){
+        return ByteString.fromArray(("hello " + self().path().name()).getBytes());
+    }
+
+    public ClientActor(InetSocketAddress remote) {
         this.remote = remote;
-        this.tcpActor = tcpActor;
 
-        if (tcpActor == null) {
-            tcpActor = Tcp.get(getContext().system()).manager();
-        }
+        final ActorRef tcp = Tcp.get(getContext().system()).manager();
 
-        tcpActor.tell(TcpMessage.connect(remote), getSelf());
+        tcp.tell(TcpMessage.connect(remote), getSelf());
     }
 
     @Override
     public void onReceive(Object msg) throws Exception {
         if (msg instanceof Tcp.CommandFailed) {
-            log.info("In ClientActor - received message: failed");
+            log.info("In ro.cosu.vampires.client.ClientActor - received message: failed");
             getContext().stop(getSelf());
 
         } else if (msg instanceof Tcp.Connected) {
-            log.info("In ClientActor - received message: connected");
 
             getSender().tell(TcpMessage.register(getSelf()), getSelf());
             getContext().become(connected(getSender()));
 
-            getSender().tell(TcpMessage.write(ByteString.fromArray("hello".getBytes())), getSelf());
+            getSender().tell(TcpMessage.write(getMessage()), getSelf());
         }
     }
 
@@ -62,12 +61,11 @@ public class ClientActor extends UntypedActor {
                     // OS kernel socket buffer was full
 
                 } else if (msg instanceof Tcp.Received) {
-                    log.info("In ClientActor - Received message: " + ((Tcp.Received) msg).data().utf8String());
-
-                } else if (msg.equals("close")) {
-                    connection.tell(TcpMessage.close(), getSelf());
+                    log.info("In ro.cosu.vampires.client.ClientActor - Received message: " + ((Tcp.Received) msg).data().utf8String());
+                    connection.tell(TcpMessage.write(getMessage()), getSelf());
 
                 } else if (msg instanceof Tcp.ConnectionClosed) {
+                    log.info("close client");
                     getContext().stop(getSelf());
                 }
             }

@@ -1,21 +1,31 @@
-package ro.cosu.vampires.akka.server;
+package server;
 
+import akka.actor.ActorRef;
+import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.io.Tcp;
-import akka.io.TcpMessage;
-import akka.util.ByteString;
 
-public class SimplisticHandler extends UntypedActor {
+public class ServerHandler extends UntypedActor {
+
+    private final ActorRef workManager;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+
+
+    public static Props props (ActorRef workManager){
+        return Props.create(ServerHandler.class, workManager);
+    }
+    public ServerHandler(ActorRef workManager) {
+        this.workManager  = workManager;
+    }
 
     @Override
     public void onReceive(Object msg) throws Exception {
         if (msg instanceof Tcp.Received) {
             final String data = ((Tcp.Received) msg).data().utf8String();
-            log.info("In SimplisticHandlerActor - Received message: " + data);
-            getSender().tell(TcpMessage.write(ByteString.fromArray(("echo "+data).getBytes())), getSelf());
+            workManager.forward(msg, context());
+
         } else if (msg instanceof Tcp.ConnectionClosed) {
             getContext().stop(getSelf());
         }
