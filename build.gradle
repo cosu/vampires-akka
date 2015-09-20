@@ -1,10 +1,5 @@
-apply plugin: 'java'
-apply plugin: 'application'
 apply plugin: 'idea'
-
-allprojects {
-    task hello << { task -> println "I'm $task.project.name" }
-}
+apply plugin: 'base'
 
 idea{
     project {
@@ -15,3 +10,50 @@ idea{
         downloadSources = true
     }
 }
+
+
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'application'
+    apply plugin: 'idea'
+
+
+    compileJava {
+        targetCompatibility= 1.8
+        sourceCompatibility= 1.8
+        options.fork = true
+
+        //enable incremental compilation
+        options.incremental = true
+    }
+
+    group 'ro.cosu.vampires'
+    version '1.0-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        compile 'com.typesafe.akka:akka-actor_2.11:2.3.14'
+        compile 'com.typesafe.akka:akka-remote_2.11:2.3.14'
+        compile 'com.google.guava:guava:18.0'
+
+
+        testCompile "junit:junit:4.12"
+    }
+}
+
+project(':client') {
+    mainClassName = "ro.cosu.vampires.client.App"
+    dependencies {
+        compile 'org.apache.commons:commons-exec:1.3'
+        compile project(':server')
+    }
+}
+
+project(':server'){
+    mainClassName = "ro.cosu.vampires.server.App"
+}
+

@@ -1,75 +1,85 @@
 package ro.cosu.vampires.client;
 
-import akka.actor.ActorRef;
-import akka.actor.Props;
-import akka.actor.UntypedActor;
+import akka.actor.*;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import akka.io.Tcp;
-import akka.io.TcpMessage;
 import akka.japi.Procedure;
-import akka.util.ByteString;
+import ro.cosu.vampires.server.Message;
+import scala.concurrent.duration.Duration;
 
-import java.net.InetSocketAddress;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 
 public class ClientActor extends UntypedActor {
 
+    private final String path;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+    private ActorRef server;
 
-    final InetSocketAddress remote;
 
-    public static Props props(InetSocketAddress remote) {
-        return Props.create(ClientActor.class, remote);
+    public static Props props(String path) {
+        return Props.create(ClientActor.class, path);
     }
 
-    private ByteString getMessage(){
-        return ByteString.fromArray(("hello " + self().path().name()).getBytes());
+
+    public ClientActor(String path) {
+        this.path = path;
+        sendIdentifyRequest();
+
+
     }
 
-    public ClientActor(InetSocketAddress remote) {
-        this.remote = remote;
-
-        final ActorRef tcp = Tcp.get(getContext().system()).manager();
-
-        tcp.tell(TcpMessage.connect(remote), getSelf());
+    private void sendIdentifyRequest() {
+        getContext().actorSelection(path).tell(new Identify(path), getSelf());
+        getContext()
+                .system()
+                .scheduler()
+                .scheduleOnce(Duration.create(3, SECONDS), getSelf(),
+                        ReceiveTimeout.getInstance(), getContext().dispatcher(), getSelf());
     }
 
     @Override
-    public void onReceive(Object msg) throws Exception {
-        if (msg instanceof Tcp.CommandFailed) {
-            log.info("In ro.cosu.vampires.client.ClientActor - received message: failed");
-            getContext().stop(getSelf());
+    public void onReceive(Object message) throws Exception {
 
-        } else if (msg instanceof Tcp.Connected) {
+        if (message instanceof ActorIdentity) {
+            server = ((ActorIdentity) message).getRef();
+            if (server == null) {
+                log.warning("Remote actor not available: {}", path);
+            } else {
+                getContext().watch(server);
+                server.tell(new Message.Request(), getSelf());
+                getContext().become(active, true);
+            }
+        }else if (message instanceof ReceiveTimeout) {
+            sendIdentifyRequest();
+        } else {
+             log.info("Not ready yet");
 
-            getSender().tell(TcpMessage.register(getSelf()), getSelf());
-            getContext().become(connected(getSender()));
-
-            getSender().tell(TcpMessage.write(getMessage()), getSelf());
         }
     }
 
-    private Procedure<Object> connected(final ActorRef connection) {
-        return new Procedure<Object>() {
-            @Override
-            public void apply(Object msg) throws Exception {
+    Procedure<Object> active = message -> {
+        log.info("{} -> {} {}" , getSelf().path() , message.toString(), getSender().toString());
+        if (message instanceof Message.Computation){
+            ActorRef executor = getContext().actorOf(Executor.props());
+            executor.tell(message , getSelf());
+        }
+        else if (message instanceof Message.Result) {
+            // send result
+            server.tell(message, getSelf());
+            //send request
+            server.tell(new Message.Request(), getSelf());
+        }
+        else {
+            unhandled(message);
+        }
+    };
 
-                if (msg instanceof ByteString) {
-                    connection.tell(TcpMessage.write((ByteString) msg), getSelf());
 
-                } else if (msg instanceof Tcp.CommandFailed) {
-                    // OS kernel socket buffer was full
 
-                } else if (msg instanceof Tcp.Received) {
-                    log.info("In ro.cosu.vampires.client.ClientActor - Received message: " + ((Tcp.Received) msg).data().utf8String());
-                    connection.tell(TcpMessage.write(getMessage()), getSelf());
 
-                } else if (msg instanceof Tcp.ConnectionClosed) {
-                    log.info("close client");
-                    getContext().stop(getSelf());
-                }
-            }
-        };
-    }
+
+
 
 }
