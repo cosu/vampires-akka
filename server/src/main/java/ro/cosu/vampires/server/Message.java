@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
  */
 public class Message {
 
+    public static class Up implements  Serializable{}
+
     public static class Request implements Serializable {}
 
     public static class Computation implements Serializable{
@@ -30,7 +32,7 @@ public class Message {
 
         @Override
         public String toString() {
-            return "Computation [" +this.getCommand() + ":" + getCreated().toLocalDate() +"]";
+            return "Computation [" +this.getCommand() + ":" + getCreated() +"]";
         }
     }
     public static class Result implements Serializable{
@@ -49,7 +51,7 @@ public class Message {
 
         @Override
         public String toString() {
-            return computation.toString() + "->" + result.toString();
+            return "Result[" + computation.toString() + "->" + result.toString() + "]";
         }
     }
 }

@@ -15,7 +15,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -82,6 +81,8 @@ public class Executor extends UntypedActor {
                 OperatingSystemMXBean.class);
 
         loads.add(osBean.getSystemLoadAverage());
+
+
 
         getContext().system().scheduler().schedule(scala.concurrent.duration.Duration.create(1, SECONDS),
                 scala.concurrent.duration.Duration.create(1, SECONDS), () -> {

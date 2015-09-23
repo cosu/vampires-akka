@@ -48,7 +48,11 @@ public class ClientActor extends UntypedActor {
                 log.warning("Remote actor not available: {}", path);
             } else {
                 getContext().watch(server);
+
+                server.tell(new Message.Up(), getSelf());
+
                 server.tell(new Message.Request(), getSelf());
+
                 getContext().become(active, true);
             }
         }else if (message instanceof ReceiveTimeout) {
