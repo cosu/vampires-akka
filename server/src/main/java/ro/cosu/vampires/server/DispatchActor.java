@@ -10,32 +10,32 @@ public class DispatchActor extends UntypedActor {
 
     private final ActorRef workActor;
     private final ActorRef resultActor;
+    private final ActorRef registerActor;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
-    public static Props props(ActorRef workActor, ActorRef resultActor){
-        return Props.create(DispatchActor.class, workActor, resultActor);
+    public static Props props(ActorRef workActor, ActorRef resultActor, ActorRef registerActor){
+        return Props.create(DispatchActor.class, workActor, resultActor , registerActor);
     }
 
-    public DispatchActor(ActorRef workActor, ActorRef resultActor) {
+    public DispatchActor(ActorRef workActor, ActorRef resultActor, ActorRef registerActor) {
         this.workActor= workActor;
         this.resultActor = resultActor;
+        this.registerActor = registerActor;
 
     }
 
     @Override
     public void onReceive(Object message) throws Exception {
-        log.info("Work request from {} , {}",  getSender().toString(),message.getClass().toString() );
 
         if (message instanceof Message.Request) {
-            Message.Request msg = (Message.Request) message;
-            log.info("got request {}" , msg);
             workActor.forward(message, getContext());
         } else if (message instanceof Message.Result) {
-            Message.Result msg= (Message.Result) message;
             resultActor.forward(message, getContext());
-            log.info("got result {}",  message.toString());
-        } else {
-            log.error("Unhandled work request from {} , {}",  getSender().toString(),message.getClass().toString() );
+        } else if (message instanceof Message.Up){
+            registerActor.forward(message, getContext());
+            }
+        else {
+            log.error("Unhandled work request from {} , {}",  getSender().toString(),message);
             unhandled(message);
         }
 

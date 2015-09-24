@@ -3,11 +3,6 @@ package ro.cosu.vampires.server;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-/**
- * User: Cosmin 'cosu' Dumitru - cosu@cosu.ro
- * Date: 9/20/15
- * Time: 6:38 PM
- */
 public class Message {
 
     public static class Up implements  Serializable{}
