@@ -66,7 +66,7 @@ public class ClientActor extends UntypedActor {
     Procedure<Object> active = message -> {
         log.info("{} -> {} {}" , getSelf().path() , message.toString(), getSender().toString());
         if (message instanceof Message.Computation){
-            ActorRef executor = getContext().actorOf(Executor.props());
+            ActorRef executor = getContext().actorOf(ExecutorActor.props());
             executor.tell(message , getSelf());
         }
         else if (message instanceof Message.Result) {

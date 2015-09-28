@@ -14,7 +14,7 @@ public class ExecResult implements Serializable{
     private final String command;
     private final LocalDateTime start;
     private final long duration;
-    private final List<Double> loads;
+    private  List<Double> loads;
 
     public ExecResult(Builder builder) {
         this.output = builder.output;
@@ -22,7 +22,6 @@ public class ExecResult implements Serializable{
         this.command = builder.command;
         this.start = builder.start;
         this.duration = builder.duration;
-        this.loads = builder.loads;
     }
 
     @Override
@@ -32,6 +31,18 @@ public class ExecResult implements Serializable{
                 +"]";
     }
 
+    public void setLoads(List<Double> loads) {
+        this.loads = loads;
+    }
+
+    public int getExitCode() {
+        return exitCode;
+    }
+
+    public List<String> getOutput() {
+        return output;
+    }
+
     public static class Builder {
 
         private LocalDateTime start;
@@ -39,12 +50,7 @@ public class ExecResult implements Serializable{
         private String command;
         private int exitCode;
         private List<String> output;
-        private List<Double> loads;
 
-        public Builder loads(List<Double> loads){
-            this.loads = loads;
-            return  this;
-        }
 
         public Builder duration(long duration){
             this.duration= duration;

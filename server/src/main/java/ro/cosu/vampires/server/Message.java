@@ -31,7 +31,11 @@ public class Message {
         }
     }
     public static class Result implements Serializable{
-        final ExecResult result ;
+        public ExecResult getResult() {
+            return result;
+        }
+
+        final ExecResult result;
         final Computation computation;
 
 
