@@ -5,14 +5,14 @@ import com.google.inject.Inject;
 import java.util.Map;
 
 public class ResourceManager {
-    private final Map<String, IResource> resources;
+    private final Map<Resource.Type, ResourceProvider> providers;
 
     @Inject
-    public ResourceManager(Map<String, IResource> resources) {
-        this.resources = resources;
+    public ResourceManager(Map<Resource.Type, ResourceProvider> resources) {
+        this.providers= resources;
     }
 
-    public Map<String, IResource> getResources() {
-        return resources;
+    public Map<Resource.Type, ResourceProvider> getProviders() {
+        return providers;
     }
 }

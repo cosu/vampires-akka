@@ -1,13 +1,11 @@
-package ro.cosu.vampires.server.resources.local;
+package ro.cosu.vampires.server.resources.ssh;
 
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceProvider;
 
-public class LocalResourceProvider implements ResourceProvider {
-
-
+public class SshResourceProvider implements ResourceProvider{
     @Override
     public Resource create() {
-        return new LocalResource();
+        return new SshResource();
     }
 }
