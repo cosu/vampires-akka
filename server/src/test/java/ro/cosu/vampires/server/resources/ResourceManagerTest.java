@@ -10,7 +10,8 @@ public class ResourceManagerTest {
         Injector injector = Guice.createInjector(new ResourceModule());
 
         ResourceManager rm = injector.getInstance(ResourceManager.class);
-        rm.getResources().values().forEach(IResource::start);
+        System.out.println(rm.getResources().keySet());
+        rm.getResources().get("local").create("test");
     }
 
 }
