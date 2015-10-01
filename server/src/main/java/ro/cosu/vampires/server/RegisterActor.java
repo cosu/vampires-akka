@@ -31,7 +31,6 @@ public class RegisterActor extends UntypedActor {
             log.info("up {}", getSender());
         } else if (message instanceof Terminated) {
             log.info("sender "+ getSender());
-            log.info("{}", registered);
             boolean remove = registered.remove(getSender());
             log.info("disconnected {} {}",remove , getSender());
         }
