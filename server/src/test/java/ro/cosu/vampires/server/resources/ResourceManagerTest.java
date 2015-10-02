@@ -22,6 +22,7 @@ public class ResourceManagerTest {
         ResourceDescription test = ResourceDescription.create("test", Resource.Type.LOCAL);
         assertThat(test.id(), is(equalTo("test")));
         assertThat(test.type(), is(equalTo(Resource.Type.LOCAL)));
+
     }
 
 }
