@@ -5,17 +5,19 @@ import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
-public class AbstractResource implements Resource {
+public abstract class AbstractResource implements Resource {
 
     static final Logger LOG = LoggerFactory.getLogger(AbstractResource.class);
 
     private final ResourceDescription description;
-    private Resource.Status status = Status.CREATING;
+    private Resource.Status status = Status.UNKNOWN;
 
     public AbstractResource(Resource.Type type ) {
         String id = UUID.randomUUID().toString();
         this.description = ResourceDescription.create(id, type);
+
         LOG.debug("{}", description);
+        setStatus(Status.CREATING);
     }
 
 
@@ -31,15 +33,7 @@ public class AbstractResource implements Resource {
         // TODO this should be a future
     }
 
-    @Override
-    public void onStart() {
-        // nothing
-    }
 
-    @Override
-    public void onStop() {
-        // nothing
-    }
 
     @Override
     public ResourceDescription getDescription() {
@@ -49,5 +43,18 @@ public class AbstractResource implements Resource {
     @Override
     public Status getStatus() {
         return status;
+    }
+
+    public void setStatus(Status status) {
+        LOG.debug("{} => {}", this, status);
+        this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "AbstractResource{"
+                + "description=" + description+ ", "
+                + "status=" + status
+                + "}";
     }
 }

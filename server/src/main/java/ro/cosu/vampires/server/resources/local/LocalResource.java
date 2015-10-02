@@ -1,10 +1,15 @@
 package ro.cosu.vampires.server.resources.local;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.resources.AbstractResource;
 import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.resources.ssh.SshResource;
 
 
 public class LocalResource extends AbstractResource{
+    static final Logger LOG = LoggerFactory.getLogger(SshResource.class);
+
 
     public LocalResource() {
         super(Resource.Type.LOCAL);
@@ -12,12 +17,12 @@ public class LocalResource extends AbstractResource{
 
     @Override
     public void onStart() {
-        System.out.println("local starting");
+        LOG.debug("local starting");
     }
 
     @Override
     public void onStop() {
-        System.out.println("local stopping");
+        LOG.debug("local stopping");
     }
 
 }

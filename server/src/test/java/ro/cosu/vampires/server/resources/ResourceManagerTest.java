@@ -14,7 +14,7 @@ public class ResourceManagerTest {
         Injector injector = Guice.createInjector(new ResourceModule());
 
         ResourceManager rm = injector.getInstance(ResourceManager.class);
-        rm.getProviders().values().forEach(e -> System.out.println(e.create().getStatus()));
+        rm.getProviders().values().forEach(e -> e.create().getStatus().equals(Resource.Status.CREATING));
     }
 
     @Test
