@@ -1,13 +1,14 @@
 package ro.cosu.vampires.server.resources.local;
 
+import ro.cosu.vampires.server.resources.AbstractResourceProvider;
 import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.resources.ResourceProvider;
 
-public class LocalResourceProvider implements ResourceProvider {
+public class LocalResourceProvider extends AbstractResourceProvider{
+
 
 
     @Override
     public Resource create() {
-        return new LocalResource();
+        return new LocalResource(getConfig().getString("command"));
     }
 }

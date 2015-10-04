@@ -1,23 +1,33 @@
 package ro.cosu.vampires.server.resources;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface Resource {
+
+
     enum Status {
         CREATING,
         STARTING,
         IDLE,
         RUNNING,
         FAILED,
+        STOPPING,
         STOPPED,
         UNKNOWN
     }
 
     public enum Type {
         SSH,
-        LOCAL
+        LOCAL,
+        DAS5
     }
 
-    void onStart();
-    void onStop();
+    CompletableFuture<Resource> start();
+    CompletableFuture<Resource> stop();
+
+    void onStart() throws  Exception;
+    void onStop() throws Exception;
+    void onFail() throws Exception;
 
     ResourceDescription getDescription();
     Status getStatus();

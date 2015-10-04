@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 public abstract class AbstractResource implements Resource {
 
@@ -18,19 +20,53 @@ public abstract class AbstractResource implements Resource {
 
         LOG.debug("{}", description);
         setStatus(Status.CREATING);
+
+
     }
 
+    public CompletableFuture<Resource> start(){
 
-    public void start() {
-        this.status = Status.STARTING;
-        this.onStart();
-        // TODO this should be a future
+        return CompletableFuture.supplyAsync(this::startCall)
+                .exceptionally(this::fail);
     }
 
-    public void stop() {
-        this.onStop();
-        this.status = Status.STOPPED;
-        // TODO this should be a future
+    public CompletableFuture<Resource> stop(){
+        return CompletableFuture.supplyAsync(this::stopCall)
+                .exceptionally(this::fail);
+
+    }
+
+    public Resource startCall() {
+        setStatus(Status.STARTING);
+        try {
+            this.onStart();
+        } catch (Exception e) {
+            throw new CompletionException(e);
+        }
+        setStatus(Status.RUNNING);
+        return this;
+    }
+
+    public Resource fail(Throwable ex) {
+        LOG.debug("failed resource", ex);
+        setStatus(Status.FAILED);
+        try {
+            this.onFail();
+        } catch (Exception e) {
+            throw new CompletionException(e);
+        }
+        return this;
+    }
+
+    public Resource stopCall() {
+        setStatus(Status.STOPPING);
+        try {
+            this.onStop();
+        } catch (Exception e) {
+            throw new CompletionException(e);
+        }
+        setStatus(Status.STOPPED);
+        return this;
     }
 
 
