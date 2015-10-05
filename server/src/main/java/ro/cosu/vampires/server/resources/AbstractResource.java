@@ -49,11 +49,13 @@ public abstract class AbstractResource implements Resource {
 
     public Resource fail(Throwable ex) {
         LOG.debug("failed resource", ex);
-        setStatus(Status.FAILED);
         try {
             this.onFail();
         } catch (Exception e) {
             throw new CompletionException(e);
+        }
+        finally {
+            setStatus(Status.FAILED);
         }
         return this;
     }

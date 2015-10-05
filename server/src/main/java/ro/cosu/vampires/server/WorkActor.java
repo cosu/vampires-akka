@@ -1,15 +1,10 @@
 package ro.cosu.vampires.server;
 
-import akka.actor.Kill;
 import akka.actor.PoisonPill;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
-import akka.dispatch.sysmsg.Terminate;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import akka.io.Tcp;
-import akka.io.TcpMessage;
-import akka.util.ByteString;
 import scala.concurrent.duration.Duration;
 
 import java.util.Optional;
@@ -37,7 +32,7 @@ public class WorkActor extends UntypedActor{
 
     private void initq (){
         log.info("adding work init");
-        IntStream.range(1, 11).forEach(workQueue::add);
+        IntStream.range(1, 100).forEach(workQueue::add);
 
         getContext().system().scheduler().schedule(Duration.create(5, SECONDS),
                 Duration.create(5, SECONDS), () -> {

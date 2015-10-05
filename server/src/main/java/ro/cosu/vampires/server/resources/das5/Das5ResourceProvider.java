@@ -10,6 +10,8 @@ public class Das5ResourceProvider extends AbstractResourceProvider{
         String user = getConfig().getString("user");
         String privateKey = getConfig().getString("privateKey");
         String address  = getConfig().getString("address");
-        return new Das5Resource(user, privateKey, address, command);
+        int port = getConfig().hasPath("port") ? getConfig().getInt("port") : 22;
+
+        return new Das5Resource(user, privateKey, address, command, port);
     }
 }

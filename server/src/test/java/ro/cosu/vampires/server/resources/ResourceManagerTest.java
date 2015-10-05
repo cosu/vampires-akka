@@ -44,10 +44,11 @@ public class ResourceManagerTest {
     private Config getDasConfig() {
         Map<String, String> map = new HashMap<>();
 
-        map.put("command", "/Users/cdumitru/Documents/workspace/java/vampires-akka/client/build/install/client/bin/client");
+        map.put("command", "vampires.sh");
         map.put("user", "cosmin");
-        map.put("address", "fs2.das5.science.uva.nl");
-        map.put("privateKey", "/Users/cosmin/.ssh/id_rsa-cosu");
+        map.put("address", "localhost");
+        map.put("privateKey", "~/.ssh/id_rsa");
+        map.put("port", "2222");
         return ConfigFactory.parseMap(map);
     }
 

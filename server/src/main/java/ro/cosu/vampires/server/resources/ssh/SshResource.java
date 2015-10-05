@@ -1,18 +1,13 @@
 package ro.cosu.vampires.server.resources.ssh;
 
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.resources.AbstractResource;
 import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.util.Ssh;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Properties;
 
 
 public class SshResource extends AbstractResource {
@@ -36,7 +31,7 @@ public class SshResource extends AbstractResource {
         LOG.debug("ssh starting");
         String command = "nohup " + this.command + " > /dev/null 2>&1 &  echo $! ";
 
-        runSSHComand(user, privateKey, address, command);
+        this.commandOutput = Ssh.runCommand(user, privateKey, address, command);
 
 
     }
@@ -45,45 +40,18 @@ public class SshResource extends AbstractResource {
     public void onStop() throws IOException, JSchException {
         LOG.debug("ssh stopping");
         String command = "kill " + Integer.parseInt(commandOutput);
-        runSSHComand(user, privateKey, address, command);
+        this.commandOutput = Ssh.runCommand(user, privateKey, address, command);
     }
 
     @Override
     public void onFail() throws IOException, JSchException {
         LOG.debug("ssh failed");
         String command = "kill " + Integer.parseInt(commandOutput);
-        runSSHComand(user, privateKey, address, command);
+        this.commandOutput = Ssh.runCommand(user, privateKey, address, command);
     }
 
 
-    private void runSSHComand(String user, String privateKey, String address, String command) throws JSchException,
-            IOException {
-        JSch jsch = new JSch();
 
-        Session session = jsch.getSession(user, address, 22);
-        jsch.addIdentity(privateKey);
-
-        Properties config = new java.util.Properties();
-        config.put("StrictHostKeyChecking", "no");
-        session.setConfig(config);
-        session.connect();
-        ChannelExec channel = (ChannelExec) session.openChannel("exec");
-        BufferedReader in = new BufferedReader(new InputStreamReader(channel.getInputStream()));
-        LOG.debug("SSH Node:" + address + ", command:" + command);
-        channel.setCommand(command);
-        channel.connect();
-        String msg;
-
-        StringBuilder sb = new StringBuilder();
-        while ((msg = in.readLine()) != null) {
-            sb.append(msg);
-        }
-
-        this.commandOutput = sb.toString();
-        channel.disconnect();
-        session.disconnect();
-
-    }
 
 
 }

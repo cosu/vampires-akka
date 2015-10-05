@@ -12,7 +12,14 @@ idea{
     }
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.7'
+}
 
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+}
 
 subprojects {
     apply plugin: 'java'
