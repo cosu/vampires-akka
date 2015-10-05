@@ -22,7 +22,7 @@ public class App {
 
         ActorRef registerActor = system.actorOf(RegisterActor.props(), "registerActor");
 
-        system.actorOf(DispatchActor.props(workActor, resultActor, registerActor), "dispatchActor");
+        system.actorOf(DispatchActor.props(workActor, resultActor, registerActor), "server");
 
 
 
