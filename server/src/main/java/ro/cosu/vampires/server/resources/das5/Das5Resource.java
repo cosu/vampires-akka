@@ -60,7 +60,7 @@ public class Das5Resource extends AbstractResource {
             IOException {
         JSch jsch = new JSch();
 
-        Session session = jsch.getSession(user, address, 2222);
+        Session session = jsch.getSession(user, address, 22);
         jsch.addIdentity(privateKey);
 
         Properties config = new java.util.Properties();

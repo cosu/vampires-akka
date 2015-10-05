@@ -41,6 +41,16 @@ public class ResourceManagerTest {
         return ConfigFactory.parseMap(map);
     }
 
+    private Config getDasConfig() {
+        Map<String, String> map = new HashMap<>();
+
+        map.put("command", "/Users/cdumitru/Documents/workspace/java/vampires-akka/client/build/install/client/bin/client");
+        map.put("user", "cosmin");
+        map.put("address", "fs2.das5.science.uva.nl");
+        map.put("privateKey", "/Users/cosmin/.ssh/id_rsa-cosu");
+        return ConfigFactory.parseMap(map);
+    }
+
     @Test
     public void testCreateResourceDescription() throws  Exception {
         ResourceDescription test = ResourceDescription.create("test", Resource.Type.LOCAL);
@@ -82,12 +92,13 @@ public class ResourceManagerTest {
     @Test
     public void testCreateDAS5Resource() throws  Exception  {
 
-        Injector injector = Guice.createInjector(new ResourceModule(getConfig()));
+        Injector injector = Guice.createInjector(new ResourceModule(getDasConfig()));
         ResourceManager rm = injector.getInstance(ResourceManager.class);
         ResourceProvider localProvider = rm.getProviders().get(Resource.Type.DAS5);
         Resource resource = localProvider.create();
         try {
             assertThat(resource.start().get().getStatus(), is(Resource.Status.RUNNING));
+            Thread.sleep(2000);
             assertThat(resource.stop().get().getStatus(), is(Resource.Status.STOPPED));
         } catch (InterruptedException | ExecutionException e1) {
             //
