@@ -13,6 +13,7 @@ public class App {
 
         final ActorSystem system = ActorSystem.create("ServerSystem");
 
+
         log = Logging.getLogger(system, App.class);
 
         ActorRef workActor = system.actorOf(WorkActor.props(), "workActor");
