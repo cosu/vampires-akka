@@ -5,7 +5,7 @@ import com.google.inject.Provides;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Named;
 import com.typesafe.config.Config;
-import ro.cosu.vampires.das5.Das5ResourceProvider;
+import ro.cosu.vampires.server.resources.das5.Das5ResourceProvider;
 import ro.cosu.vampires.server.resources.local.LocalResourceProvider;
 import ro.cosu.vampires.server.resources.ssh.SshResourceProvider;
 
