@@ -4,11 +4,13 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import scala.concurrent.Await;
+import scala.concurrent.duration.Duration;
 
 public class App {
     private static LoggingAdapter log;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
 
         final ActorSystem system = ActorSystem.create("ServerSystem");
@@ -24,6 +26,7 @@ public class App {
 
         system.actorOf(DispatchActor.props(workActor, resultActor, registerActor), "server");
 
+        Await.result(system.whenTerminated(), Duration.Inf());
 
 
     }

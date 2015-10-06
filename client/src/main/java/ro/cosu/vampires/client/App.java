@@ -4,6 +4,8 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import scala.concurrent.Await;
+import scala.concurrent.duration.Duration;
 
 /**
  * User: Cosmin 'cosu' Dumitru - cosu@cosu.ro
@@ -14,7 +16,7 @@ public class App {
 
     private static LoggingAdapter log;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
         ActorSystem system = ActorSystem.create("ClientSystem");
 
@@ -32,7 +34,7 @@ public class App {
 
         final ActorRef terminator = system.actorOf(Terminator.props(client), "terminator");
 
-        system.awaitTermination();
+        Await.result(system.whenTerminated(), Duration.Inf());
 
     }
 }

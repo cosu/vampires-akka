@@ -27,7 +27,7 @@ public class Terminator extends UntypedActor {
     public void onReceive(Object msg) {
         if (msg instanceof Terminated) {
             log.info("{} has terminated, shutting down system", ref.path());
-            getContext().system().shutdown();
+            getContext().system().terminate();
         } else {
             unhandled(msg);
         }
