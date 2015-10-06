@@ -17,8 +17,12 @@ task wrapper(type: Wrapper) {
 }
 
 
-tasks.withType(JavaCompile) {
-    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
 }
 
 subprojects {
@@ -44,9 +48,11 @@ subprojects {
     }
 
     dependencies {
-        compile 'com.typesafe.akka:akka-actor_2.11:2.3.14'
-        compile 'com.typesafe.akka:akka-remote_2.11:2.3.14'
-        compile 'com.typesafe.akka:akka-slf4j_2.11:2.3.14'
+        def akkaVersion = "2.11:2.4.0"
+
+        compile "com.typesafe.akka:akka-actor_${akkaVersion}"
+        compile "com.typesafe.akka:akka-remote_${akkaVersion}"
+        compile "com.typesafe.akka:akka-slf4j_${akkaVersion}"
 
         compile 'com.google.guava:guava:18.0'
         compile 'com.google.inject:guice:4.0'
@@ -59,7 +65,7 @@ subprojects {
 
 
         testCompile 'junit:junit:4.12'
-        testCompile 'com.typesafe.akka:akka-testkit_2.11:2.3.14'
+        testCompile "com.typesafe.akka:akka-testkit_${akkaVersion}"
     }
 }
 
