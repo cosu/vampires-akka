@@ -14,9 +14,11 @@ public class Message {
 
     public static class CreateResource implements Serializable {
         final Resource.Type type;
+        final Resource.Parameters  parameters;
 
-        public CreateResource(Resource.Type type) {
+        public CreateResource(Resource.Type type, Resource.Parameters parameters) {
             this.type = type;
+            this.parameters = parameters;
         }
     }
 
@@ -28,10 +30,10 @@ public class Message {
         }
     }
 
-    public static class GetResourceDescription implements Serializable  {
+    public static class GetResourceInfo implements Serializable  {
         final ResourceDescription resourceDescription;
 
-        public GetResourceDescription(ResourceDescription resourceDescription) {
+        public GetResourceInfo(ResourceDescription resourceDescription) {
             this.resourceDescription = resourceDescription;
         }
     }

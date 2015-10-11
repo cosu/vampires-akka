@@ -14,14 +14,18 @@ public abstract class AbstractResource implements Resource {
     private final ResourceDescription description;
     private Resource.Status status = Status.UNKNOWN;
 
-    public AbstractResource(Resource.Type type ) {
-        String id = UUID.randomUUID().toString();
-        this.description = ResourceDescription.create(id, type);
+    public AbstractResource(Resource.Parameters parameters) {
+
+        this.description = ResourceDescription.create(generateId(), parameters.type());
 
         LOG.debug("{}", description);
         setStatus(Status.CREATING);
 
 
+    }
+
+    private String generateId() {
+        return UUID.randomUUID().toString();
     }
 
     public CompletableFuture<Resource> start(){

@@ -4,12 +4,23 @@ import ro.cosu.vampires.server.resources.AbstractResourceProvider;
 import ro.cosu.vampires.server.resources.Resource;
 
 public class SshResourceProvider  extends AbstractResourceProvider {
+
     @Override
-    public Resource create() {
-        String command = getConfig().getString("command");
-        String user = getConfig().getString("user");
-        String privateKey = getConfig().getString("privateKey");
-        String address  = getConfig().getString("address");
-        return new SshResource(user, privateKey, address, command);
+    public Resource create(Resource.Parameters parameters) {
+        if (parameters instanceof SshResourceParameters)
+            return new SshResource((SshResourceParameters) parameters);
+        else {
+            throw  new RuntimeException("invalid parameter type. expected "  + SshResourceParameters.class);
+        }
+    }
+
+    @Override
+    public Resource.Type getType() {
+        return Resource.Type.SSH;
+    }
+
+    @Override
+    public Resource.Parameters.Builder getBuilder() {
+        return SshResourceParameters.builder();
     }
 }

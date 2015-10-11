@@ -2,53 +2,38 @@ package ro.cosu.vampires.server.resources;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.Map;
+import ro.cosu.vampires.server.resources.das5.Das5ResourceParameters;
+import ro.cosu.vampires.server.resources.local.LocalResourceParameters;
+import ro.cosu.vampires.server.resources.ssh.SshResourceParameters;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 public class ResourceManagerTest {
-    @Test
-    public void testDefaultLoad() throws  Exception {
 
-        Config config = getConfig();
+    private SshResourceParameters getSshConfig() {
 
+        return SshResourceParameters.builder()
+                .command("/Users/cdumitru/Documents/workspace/java/vampires-akka/client/build/install/client/bin" +
+                        "/client")
+                .user("cdumitru")
+                .address("localhost")
+                .privateKey("/Users/cdumitru/.ssh/id_rsa")
+                .build();
 
-        Injector injector = Guice.createInjector(new ResourceModule(config));
-
-        ResourceManager rm = injector.getInstance(ResourceManager.class);
-        rm.getProviders().values().forEach(provider -> {
-            Resource resource = provider.create();
-            assertThat(resource.getStatus(), is(Resource.Status.CREATING));
-
-        });
     }
 
-    private Config getConfig() {
-        Map<String, String> map = new HashMap<>();
-
-        map.put("command", "/Users/cdumitru/Documents/workspace/java/vampires-akka/client/build/install/client/bin/client");
-        map.put("user", "cdumitru");
-        map.put("address", "localhost");
-        map.put("privateKey", "/Users/cdumitru/.ssh/id_rsa");
-        return ConfigFactory.parseMap(map);
-    }
-
-    private Config getDasConfig() {
-        Map<String, String> map = new HashMap<>();
-
-        map.put("command", "vampires.sh");
-        map.put("user", "cosmin");
-        map.put("address", "localhost");
-        map.put("privateKey", "~/.ssh/id_rsa");
-        map.put("port", "2222");
-        return ConfigFactory.parseMap(map);
+    private Das5ResourceParameters getDasConfig() {
+        return Das5ResourceParameters.builder()
+                .command("vampires.sh")
+                .user("cosmin")
+                .address("localhost")
+                .privateKey("~/.ssh/id_rsa")
+                .port(2222)
+                .build();
     }
 
     @Test
@@ -62,10 +47,12 @@ public class ResourceManagerTest {
     public void testCreateLocalResource() throws  Exception  {
 
 
-        Injector injector = Guice.createInjector(new ResourceModule(getConfig()));
+        LocalResourceParameters parameters = LocalResourceParameters.builder().command("sleep 5").build();
+
+        Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.empty()));
         ResourceManager rm = injector.getInstance(ResourceManager.class);
         ResourceProvider localProvider = rm.getProviders().get(Resource.Type.LOCAL);
-        Resource resource = localProvider.create();
+        Resource resource = localProvider.create(parameters);
 
         assertThat(resource.start().get().getStatus(), is(Resource.Status.RUNNING));
         assertThat(resource.stop().get().getStatus(), is(Resource.Status.STOPPED));
@@ -75,10 +62,10 @@ public class ResourceManagerTest {
     @Test
     public void testCreateSSHResource() throws  Exception  {
 
-        Injector injector = Guice.createInjector(new ResourceModule(getConfig()));
+        Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.empty()));
         ResourceManager rm = injector.getInstance(ResourceManager.class);
-        ResourceProvider localProvider = rm.getProviders().get(Resource.Type.SSH);
-        Resource resource = localProvider.create();
+        ResourceProvider sshProvider = rm.getProviders().get(Resource.Type.SSH);
+        Resource resource = sshProvider.create(getSshConfig());
 
         assertThat(resource.start().get().getStatus(), is(Resource.Status.RUNNING));
         assertThat(resource.stop().get().getStatus(), is(Resource.Status.STOPPED));
@@ -88,10 +75,10 @@ public class ResourceManagerTest {
     @Test
     public void testCreateDAS5Resource() throws  Exception  {
 
-        Injector injector = Guice.createInjector(new ResourceModule(getDasConfig()));
+        Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.empty()));
         ResourceManager rm = injector.getInstance(ResourceManager.class);
         ResourceProvider localProvider = rm.getProviders().get(Resource.Type.DAS5);
-        Resource resource = localProvider.create();
+        Resource resource = localProvider.create(getDasConfig());
 
         assertThat(resource.start().get().getStatus(), is(Resource.Status.RUNNING));
         Thread.sleep(2000);

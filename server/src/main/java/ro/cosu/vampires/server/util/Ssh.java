@@ -15,11 +15,6 @@ import java.util.Properties;
 public class Ssh {
     static final Logger LOG = LoggerFactory.getLogger(Ssh.class);
 
-    public static String runCommand(String user, String privateKey, String address, String command) throws JSchException,
-            IOException {
-        return runCommand(user, privateKey, address, command, 22);
-    }
-
 
     public static String runCommand(String user, String privateKey, String address, String command, int port) throws JSchException,
             IOException {

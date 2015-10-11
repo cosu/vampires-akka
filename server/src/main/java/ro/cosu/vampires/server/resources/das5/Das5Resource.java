@@ -1,28 +1,25 @@
 package ro.cosu.vampires.server.resources.das5;
 
+import com.jcraft.jsch.JSchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.resources.AbstractResource;
 import ro.cosu.vampires.server.resources.ssh.SshResource;
 import ro.cosu.vampires.server.util.Ssh;
 
+import java.io.IOException;
+
 public class Das5Resource extends AbstractResource {
     static final Logger LOG = LoggerFactory.getLogger(SshResource.class);
 
-    private final String user;
-    private final String privateKey;
-    private final String address;
-    private final String command;
-    private final int port;
+    private final Das5ResourceParameters parameters;
     private String commandOutput;
 
-    public Das5Resource(String user, String privateKey, String address, String command, int port) {
-        super(Type.DAS5);
-        this.user = user;
-        this.privateKey = privateKey;
-        this.address = address;
-        this.command = command;
-        this.port = port;
+
+
+    public Das5Resource(Das5ResourceParameters parameters) {
+        super(parameters);
+        this.parameters = parameters;
     }
 
 
@@ -30,10 +27,8 @@ public class Das5Resource extends AbstractResource {
     public void onStart() throws Exception {
         LOG.debug("das5 starting");
 
-        String command = "sbatch -N 1 " + this.command;
-
-        this.commandOutput = Ssh.runCommand(user, privateKey, address, command, port);
-
+        String command = "sbatch -N 1 " + parameters.command();
+        this.commandOutput = exec(command);
 
     }
 
@@ -41,7 +36,7 @@ public class Das5Resource extends AbstractResource {
     public void onStop() throws Exception {
         LOG.debug("das5 stopping");
         String command = "scancel " + commandOutput.split(" ")[3];
-        this.commandOutput = Ssh.runCommand(user, privateKey, address, command, port);
+        this.commandOutput = exec(command);
 
     }
 
@@ -49,8 +44,12 @@ public class Das5Resource extends AbstractResource {
     public void onFail() throws Exception {
         LOG.debug("das5 fail");
         String command = "scancel " + commandOutput.split(" ")[3];
-        this.commandOutput = Ssh.runCommand(user, privateKey, address, command, port);
+        this.commandOutput = exec(command);
 
+    }
+
+    private String exec(String command) throws IOException, JSchException {
+        return Ssh.runCommand(parameters.user(), parameters.privateKey(), parameters.address(), command, parameters.port());
     }
 
 }

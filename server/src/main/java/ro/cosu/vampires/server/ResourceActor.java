@@ -29,7 +29,7 @@ public class ResourceActor extends UntypedActorWithStash {
     @Override
     public void onReceive(Object message) throws Exception {
         if (message instanceof Message.CreateResource) {
-            resource = resourceProvider.create();
+            resource = resourceProvider.create(((Message.CreateResource) message).parameters);
 
             ActorRef sender = getSender();
             resource.start().thenRun(() -> this.activate(sender))
@@ -49,6 +49,7 @@ public class ResourceActor extends UntypedActorWithStash {
     private void activate(ActorRef sender) {
         unstashAll();
         sender.tell(resource.getInfo(), getSelf());
+        getContext().parent().tell(resource.getInfo(), getSelf());
         getContext().become(active);
     }
 
@@ -56,11 +57,14 @@ public class ResourceActor extends UntypedActorWithStash {
     Procedure<Object> active = message -> {
 
         log.info("ResourceActor {} -> {} {}", getSelf().path(), message.toString(), getSender().toString());
-        if (message instanceof Message.GetResourceDescription) {
-            getSender().tell(resource.getInfo(), getSelf());
+        if (message instanceof Message.GetResourceInfo) {
+            if (((Message.GetResourceInfo) message).resourceDescription.equals(resource.getDescription()))
+                getSender().tell(resource.getInfo(), getSelf());
         } else if (message instanceof Message.DestroyResource) {
-            ActorRef sender = getSender();
-            resource.stop().thenAccept(result -> sender.tell(result.getInfo(), getSelf()));
+            if (((Message.DestroyResource) message).resourceDescription.equals(resource.getDescription())){
+                ActorRef sender = getSender();
+                resource.stop().thenAccept(result -> sender.tell(result.getInfo(), getSelf()));
+            }
         } else {
             unhandled(message);
         }

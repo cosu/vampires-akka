@@ -13,6 +13,8 @@ public abstract class AbstractResourceProvider implements ResourceProvider {
         this.config= config;
     }
 
+
+    @Override
     public Config getConfig() {
         return config;
     }

@@ -5,7 +5,6 @@ import org.apache.commons.exec.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.resources.AbstractResource;
-import ro.cosu.vampires.server.resources.Resource;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -15,13 +14,13 @@ import java.util.List;
 
 public class LocalResource extends AbstractResource{
     static final Logger LOG = LoggerFactory.getLogger(LocalResource.class);
-    private final String command;
+    private final LocalResourceParameters parameters;
     private CollectingLogOutputStream collectingLogOutputStream = new CollectingLogOutputStream();
 
 
-    public LocalResource(String command) {
-        super(Resource.Type.LOCAL);
-        this.command = command;
+    public LocalResource(LocalResourceParameters parameters) {
+        super(parameters);
+        this.parameters= parameters;
     }
 
     @Override
@@ -29,7 +28,7 @@ public class LocalResource extends AbstractResource{
 
         CommandLine cmd = new CommandLine("/bin/sh");
         cmd.addArgument("-c");
-        cmd.addArgument("nohup " + command + " > /dev/null 2>&1 &  echo $! ", false);
+        cmd.addArgument("nohup " + parameters.command() + " > /dev/null 2>&1 &  echo $! ", false);
 
         LOG.debug("execute {}", cmd.toString());
         execute(cmd);

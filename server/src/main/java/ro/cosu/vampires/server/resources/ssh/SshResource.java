@@ -4,7 +4,6 @@ import com.jcraft.jsch.JSchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.resources.AbstractResource;
-import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.util.Ssh;
 
 import java.io.IOException;
@@ -12,27 +11,22 @@ import java.io.IOException;
 
 public class SshResource extends AbstractResource {
     static final Logger LOG = LoggerFactory.getLogger(SshResource.class);
-    private final String user;
-    private final String privateKey;
-    private final String address;
-    private final String command;
+
+    private final SshResourceParameters parameters;
     private String commandOutput;
 
-    public SshResource(String user, String privateKey, String address, String command) {
-        super(Resource.Type.SSH);
-        this.user = user;
-        this.privateKey = privateKey;
-        this.address = address;
-        this.command = command;
+
+    public SshResource(SshResourceParameters parameters) {
+        super(parameters);
+        this.parameters = parameters;
     }
 
     @Override
     public void onStart() throws IOException, JSchException {
         LOG.debug("ssh starting");
-        String command = "nohup " + this.command + " > /dev/null 2>&1 &  echo $! ";
+        String command = "nohup " + parameters.command() + " > /dev/null 2>&1 &  echo $! ";
 
-        this.commandOutput = Ssh.runCommand(user, privateKey, address, command);
-
+        this.commandOutput = exec(command);
 
     }
 
@@ -40,14 +34,19 @@ public class SshResource extends AbstractResource {
     public void onStop() throws IOException, JSchException {
         LOG.debug("ssh stopping");
         String command = "kill " + Integer.parseInt(commandOutput);
-        this.commandOutput = Ssh.runCommand(user, privateKey, address, command);
+        this.commandOutput = exec(command);
     }
 
     @Override
     public void onFail() throws IOException, JSchException {
         LOG.debug("ssh failed");
-        String command = "kill " + Integer.parseInt(commandOutput);
-        this.commandOutput = Ssh.runCommand(user, privateKey, address, command);
+        String command = "kill -9" + Integer.parseInt(commandOutput);
+        this.commandOutput = exec(command);
+    }
+
+
+    private String exec(String command) throws IOException, JSchException {
+        return Ssh.runCommand(parameters.user(), parameters.privateKey(), parameters.address(), command, parameters.port());
     }
 
 

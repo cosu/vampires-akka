@@ -40,6 +40,10 @@ public class ResourceManagerActor extends UntypedActor {
         getContext().watch(resource);
     }
 
+    @Override
+    public void preStart() {
+
+    }
 
 
     @Override
@@ -50,7 +54,7 @@ public class ResourceManagerActor extends UntypedActor {
             rm.getProvider(((Message.CreateResource) message)
                     .type)
                     .ifPresent(rp -> createResource(rp, message));
-        } else if (message instanceof Message.GetResourceDescription || message instanceof Message.DestroyResource) {
+        } else if (message instanceof Message.GetResourceInfo || message instanceof Message.DestroyResource) {
             //broadcast for now
             resources.forEach(r -> r.forward(message, getContext()));
         } else  {
