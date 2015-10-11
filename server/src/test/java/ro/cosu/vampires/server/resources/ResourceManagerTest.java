@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
@@ -67,12 +66,10 @@ public class ResourceManagerTest {
         ResourceManager rm = injector.getInstance(ResourceManager.class);
         ResourceProvider localProvider = rm.getProviders().get(Resource.Type.LOCAL);
         Resource resource = localProvider.create();
-        try {
-            assertThat(resource.start().get().getStatus(), is(Resource.Status.RUNNING));
-            assertThat(resource.stop().get().getStatus(), is(Resource.Status.STOPPED));
-        } catch (InterruptedException | ExecutionException e1) {
-            //
-        }
+
+        assertThat(resource.start().get().getStatus(), is(Resource.Status.RUNNING));
+        assertThat(resource.stop().get().getStatus(), is(Resource.Status.STOPPED));
+
     }
 
     @Test
@@ -82,12 +79,10 @@ public class ResourceManagerTest {
         ResourceManager rm = injector.getInstance(ResourceManager.class);
         ResourceProvider localProvider = rm.getProviders().get(Resource.Type.SSH);
         Resource resource = localProvider.create();
-        try {
-            assertThat(resource.start().get().getStatus(), is(Resource.Status.RUNNING));
-            assertThat(resource.stop().get().getStatus(), is(Resource.Status.STOPPED));
-        } catch (InterruptedException | ExecutionException e1) {
-            //
-        }
+
+        assertThat(resource.start().get().getStatus(), is(Resource.Status.RUNNING));
+        assertThat(resource.stop().get().getStatus(), is(Resource.Status.STOPPED));
+
     }
 
     @Test
@@ -97,13 +92,10 @@ public class ResourceManagerTest {
         ResourceManager rm = injector.getInstance(ResourceManager.class);
         ResourceProvider localProvider = rm.getProviders().get(Resource.Type.DAS5);
         Resource resource = localProvider.create();
-        try {
-            assertThat(resource.start().get().getStatus(), is(Resource.Status.RUNNING));
-            Thread.sleep(2000);
-            assertThat(resource.stop().get().getStatus(), is(Resource.Status.STOPPED));
-        } catch (InterruptedException | ExecutionException e1) {
-            //
-        }
+
+        assertThat(resource.start().get().getStatus(), is(Resource.Status.RUNNING));
+        Thread.sleep(2000);
+        assertThat(resource.stop().get().getStatus(), is(Resource.Status.STOPPED));
     }
 
 }

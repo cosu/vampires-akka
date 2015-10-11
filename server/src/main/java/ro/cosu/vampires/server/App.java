@@ -12,7 +12,6 @@ public class App {
 
     public static void main(String[] args) throws Exception {
 
-
         final ActorSystem system = ActorSystem.create("ServerSystem");
 
 

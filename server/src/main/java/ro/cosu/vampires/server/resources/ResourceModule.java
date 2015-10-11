@@ -12,7 +12,7 @@ import ro.cosu.vampires.server.resources.ssh.SshResourceProvider;
 public class ResourceModule extends AbstractModule{
     private Config config;
 
-    ResourceModule(Config config) {
+    public ResourceModule(Config config) {
         this.config = config;
     }
 

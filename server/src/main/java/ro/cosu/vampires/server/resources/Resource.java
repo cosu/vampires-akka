@@ -16,7 +16,7 @@ public interface Resource {
         UNKNOWN
     }
 
-    public enum Type {
+    enum Type {
         SSH,
         LOCAL,
         DAS5
@@ -31,5 +31,7 @@ public interface Resource {
 
     ResourceDescription getDescription();
     Status getStatus();
+
+    default ResourceInfo getInfo() { return ResourceInfo.create(getDescription(), getStatus());}
 
 }

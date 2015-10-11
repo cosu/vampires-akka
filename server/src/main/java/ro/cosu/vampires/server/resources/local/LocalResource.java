@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.resources.AbstractResource;
 import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.resources.ssh.SshResource;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -15,7 +14,7 @@ import java.util.List;
 
 
 public class LocalResource extends AbstractResource{
-    static final Logger LOG = LoggerFactory.getLogger(SshResource.class);
+    static final Logger LOG = LoggerFactory.getLogger(LocalResource.class);
     private final String command;
     private CollectingLogOutputStream collectingLogOutputStream = new CollectingLogOutputStream();
 
@@ -68,7 +67,6 @@ public class LocalResource extends AbstractResource{
     @Override
     public void onFail() throws IOException {
         LOG.debug("local fail");
-        onStop();
     }
 
     private static class CollectingLogOutputStream extends LogOutputStream {

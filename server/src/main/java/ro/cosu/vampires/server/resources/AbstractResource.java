@@ -78,6 +78,8 @@ public abstract class AbstractResource implements Resource {
         return description;
     }
 
+
+
     @Override
     public Status getStatus() {
         return status;
@@ -85,6 +87,7 @@ public abstract class AbstractResource implements Resource {
 
     public void setStatus(Status status) {
         LOG.debug("{} => {}", this, status);
+        //TODO check for illegal state transition
         this.status = status;
     }
 
