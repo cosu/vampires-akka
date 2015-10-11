@@ -17,13 +17,14 @@ public class LocalResourceProviderTest {
     @Test
     public void testCreateInstanceConfig() throws Exception {
 
-        Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.load()));
+        Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.load().getConfig("vampires")));
         ResourceManager rm = injector.getInstance(ResourceManager.class);
 
 
         ResourceProvider localProvider = rm.getProviders().get(Resource.Type.LOCAL);
-        Resource resource = localProvider.create("local");
+        Resource.Parameters parameters = localProvider.getParameters("local");
 
+        Resource resource = localProvider.create(parameters);
 
 
         assertThat(resource.getStatus(), equalTo(Resource.Status.CREATING));

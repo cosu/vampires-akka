@@ -12,5 +12,7 @@ public class SettingsImpl implements Extension {
         vampires = config.getConfig("vampires");
     }
 
+
+
 }
 

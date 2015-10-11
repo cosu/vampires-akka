@@ -8,6 +8,8 @@ import ro.cosu.vampires.server.resources.das5.Das5ResourceParameters;
 import ro.cosu.vampires.server.resources.local.LocalResourceParameters;
 import ro.cosu.vampires.server.resources.ssh.SshResourceParameters;
 
+import java.util.concurrent.TimeUnit;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -54,8 +56,8 @@ public class ResourceManagerTest {
         ResourceProvider localProvider = rm.getProviders().get(Resource.Type.LOCAL);
         Resource resource = localProvider.create(parameters);
 
-        assertThat(resource.start().get().getStatus(), is(Resource.Status.RUNNING));
-        assertThat(resource.stop().get().getStatus(), is(Resource.Status.STOPPED));
+        assertThat(resource.start().get(1, TimeUnit.SECONDS).getStatus(), is(Resource.Status.RUNNING));
+        assertThat(resource.stop().get(1, TimeUnit.SECONDS).getStatus(), is(Resource.Status.STOPPED));
 
     }
 
@@ -67,8 +69,8 @@ public class ResourceManagerTest {
         ResourceProvider sshProvider = rm.getProviders().get(Resource.Type.SSH);
         Resource resource = sshProvider.create(getSshConfig());
 
-        assertThat(resource.start().get().getStatus(), is(Resource.Status.RUNNING));
-        assertThat(resource.stop().get().getStatus(), is(Resource.Status.STOPPED));
+        assertThat(resource.start().get(1, TimeUnit.SECONDS).getStatus(), is(Resource.Status.RUNNING));
+        assertThat(resource.stop().get(1, TimeUnit.SECONDS).getStatus(), is(Resource.Status.STOPPED));
 
     }
 
@@ -80,9 +82,9 @@ public class ResourceManagerTest {
         ResourceProvider localProvider = rm.getProviders().get(Resource.Type.DAS5);
         Resource resource = localProvider.create(getDasConfig());
 
-        assertThat(resource.start().get().getStatus(), is(Resource.Status.RUNNING));
+        assertThat(resource.start().get(2, TimeUnit.SECONDS).getStatus(), is(Resource.Status.RUNNING));
         Thread.sleep(2000);
-        assertThat(resource.stop().get().getStatus(), is(Resource.Status.STOPPED));
+        assertThat(resource.stop().get(2, TimeUnit.SECONDS).getStatus(), is(Resource.Status.STOPPED));
     }
 
 }

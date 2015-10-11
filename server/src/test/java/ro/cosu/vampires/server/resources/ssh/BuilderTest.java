@@ -14,8 +14,8 @@ public class BuilderTest {
 
         Config config = ConfigFactory.load();
 
-        Config sshConfig = config.getConfig("vampires.resources.ssh.instances");
-        Config localSshConfig = config.getConfig("vampires.resources.ssh.instances.local").withFallback(sshConfig);
+        Config sshConfig = config.getConfig("vampires.resources.ssh");
+        Config localSshConfig = config.getConfig("vampires.resources.ssh.local").withFallback(sshConfig);
 
         SshResourceParameters params = SshResourceParameters.builder().fromConfig(localSshConfig).build();
 

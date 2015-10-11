@@ -21,7 +21,7 @@ public class DispatchActorTest extends AbstractActorTest{
 
 
                 // create a forwarder, injecting the probe’s testActor
-                final Props props = DispatchActor.props(workProbe.getRef(),resultProbe.getRef(), registerProbe.getRef());
+                final Props props = DispatchActor.props(workProbe.getRef(), resultProbe.getRef(), registerProbe.getRef());
                 final ActorRef forwarder = system.actorOf(props, "dispatch");
 
                 Message.Up up = new Message.Up();

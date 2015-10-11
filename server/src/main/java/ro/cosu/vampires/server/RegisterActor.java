@@ -6,26 +6,52 @@ import akka.actor.Terminated;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import com.google.common.annotations.VisibleForTesting;
+import ro.cosu.vampires.resources.Settings;
+import ro.cosu.vampires.resources.SettingsImpl;
+import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.resources.ResourceInfo;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 
 public class RegisterActor extends UntypedActor {
+    final SettingsImpl settings =
+            Settings.SettingsProvider.get(getContext().system());
+
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
-    @VisibleForTesting
     protected List<ActorRef> registered = new LinkedList<>();
+
+    final ActorRef resourceManagerActor;
 
     public static Props props(){
         return Props.create(RegisterActor.class);
     }
 
+    public RegisterActor() {
+        resourceManagerActor = getContext().actorOf(ResourceManagerActor.props());
+        getContext().watch(resourceManagerActor);
+    }
+
+    @Override
+    public void preStart(){
+        settings.vampires.getConfigList("start").stream().forEach(config ->
+                {
+                    String type = config.getString("type");
+                    int count = config.getInt("count");
+                    String provider = config.getString("provider");
+                    IntStream.of(count).forEach(i ->
+                            resourceManagerActor.tell(new Message.NewResource(Resource.Type.valueOf(provider.toUpperCase()), type),
+                                    getSelf()));
+                });
+    }
+
 
     @Override
     public void onReceive(Object message) throws Exception {
-        if (message instanceof Message.Up) {
+        if (message instanceof Message.Up || (message instanceof ResourceInfo)) {
             registered.add(getSender());
             getContext().watch(getSender());
             log.info("up {}", getSender());

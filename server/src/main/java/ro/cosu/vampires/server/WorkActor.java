@@ -25,7 +25,7 @@ public class WorkActor extends UntypedActor{
 
     public WorkActor() {
 
-        log.info("created workactor");
+        log.info("created work actor");
         initq();
     }
 

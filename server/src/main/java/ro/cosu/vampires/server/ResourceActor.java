@@ -28,29 +28,39 @@ public class ResourceActor extends UntypedActorWithStash {
 
     @Override
     public void onReceive(Object message) throws Exception {
+        ActorRef sender = getSender();
         if (message instanceof Message.CreateResource) {
             resource = resourceProvider.create(((Message.CreateResource) message).parameters);
 
-            ActorRef sender = getSender();
-            resource.start().thenRun(() -> this.activate(sender))
-                    .exceptionally(this::fail);
-        } else {
+            resource.start().thenAccept(resource -> getSelf().tell(resource, sender));
+        } else if (message instanceof Resource) {
+            if (((Resource) message).getStatus().equals(Resource.Status.RUNNING)) {
+                activate();
+            } else {
+                fail(sender);
+            }
+        }
+        else {
             stash();
         }
     }
 
-    private Void fail(Throwable ex) {
-        log.debug("actor failed to interact with resource {}", ex);
+    private Void fail(ActorRef sender) {
+        log.debug("actor failed to interact with resource {}", resource.getInfo());
+        sender.tell(resource.getInfo(), getSelf());
         getContext().stop(getSelf());
         return null;
     }
 
 
-    private void activate(ActorRef sender) {
-        unstashAll();
-        sender.tell(resource.getInfo(), getSelf());
+    private void activate() {
+        getSender().tell(resource.getInfo(), getSelf());
         getContext().parent().tell(resource.getInfo(), getSelf());
+        log.info("activate");
+        unstashAll();
         getContext().become(active);
+
+
     }
 
 
@@ -63,7 +73,7 @@ public class ResourceActor extends UntypedActorWithStash {
         } else if (message instanceof Message.DestroyResource) {
             if (((Message.DestroyResource) message).resourceDescription.equals(resource.getDescription())){
                 ActorRef sender = getSender();
-                resource.stop().thenAccept(result -> sender.tell(result.getInfo(), getSelf()));
+                resource.stop().thenAccept(result ->  sender.tell(result.getInfo(), getSelf()));
             }
         } else {
             unhandled(message);

@@ -40,14 +40,17 @@ public class ResourceManagerActor extends UntypedActor {
         getContext().watch(resource);
     }
 
-    @Override
-    public void preStart() {
-
-    }
-
 
     @Override
     public void onReceive(Object message) throws Exception {
+
+        if (message instanceof Message.NewResource) {
+            //this is a bit ugly...
+            Message.NewResource newResource = ((Message.NewResource) message);
+            rm.getProvider(newResource.type).ifPresent(rp -> createResource(rp, new Message.CreateResource
+                    (newResource.type, rp.getParameters(newResource.name))));
+
+        }
 
         if (message instanceof Message.CreateResource) {
 

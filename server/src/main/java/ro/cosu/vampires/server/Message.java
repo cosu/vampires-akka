@@ -22,6 +22,17 @@ public class Message {
         }
     }
 
+    public static class NewResource {
+        final Resource.Type type;
+        final String name;
+
+        public NewResource(Resource.Type type, String name) {
+            this.type = type;
+            this.name = name;
+        }
+    }
+
+
     public static class DestroyResource implements Serializable  {
         final ResourceDescription resourceDescription;
 
@@ -85,4 +96,6 @@ public class Message {
             return "Result[" + computation.toString() + "->" + result.toString() + "]";
         }
     }
+
+
 }

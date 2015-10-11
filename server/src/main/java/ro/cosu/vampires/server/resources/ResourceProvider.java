@@ -3,26 +3,26 @@ package ro.cosu.vampires.server.resources;
 import com.typesafe.config.Config;
 
 public interface ResourceProvider {
-    Resource create( Resource.Parameters parameters);
+    Resource create(Resource.Parameters parameters);
 
     Resource.Type getType();
 
     Config getConfig();
 
     default Config getConfigForInstance(String instanceName) {
-        Config providerDefaults = getConfig().getConfig("vampires.resources." + getType().toString().toLowerCase() +
-                ".instances");
-        Config instanceConfig = getConfig().getConfig("vampires.resources.ssh.instances." + instanceName.toLowerCase()).withFallback(providerDefaults);
+        Config appDefaults = getConfig().getConfig("resources");
+        Config providerDefaults = getConfig().getConfig("resources." + getType().toString().toLowerCase());
 
-        return instanceConfig.withFallback(providerDefaults);
+        return getConfig().getConfig("resources."+ getType().toString().toLowerCase() + "." + instanceName.toLowerCase())
+                .withFallback(providerDefaults)
+                .withFallback(appDefaults);
     }
 
 
-    default Resource create(String instanceName) {
+    default Resource.Parameters getParameters(String instanceName) {
 
-        Resource.Parameters parameters = getBuilder().fromConfig(getConfigForInstance(instanceName)).build();
+        return  getBuilder().fromConfig(getConfigForInstance(instanceName)).build();
 
-        return  create(parameters );
     }
 
     Resource.Parameters.Builder getBuilder();
