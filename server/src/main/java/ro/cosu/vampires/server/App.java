@@ -23,6 +23,8 @@ public class App {
 
         ActorRef registerActor = system.actorOf(RegisterActor.props(), "registerActor");
 
+        ActorRef terminator = system.actorOf(Terminator.props(), "terminator");
+
 
         system.actorOf(DispatchActor.props(workActor, resultActor, registerActor), "server");
 

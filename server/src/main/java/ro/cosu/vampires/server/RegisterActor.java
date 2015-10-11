@@ -42,7 +42,7 @@ public class RegisterActor extends UntypedActor {
                     String type = config.getString("type");
                     int count = config.getInt("count");
                     String provider = config.getString("provider");
-                    IntStream.of(count).forEach(i ->
+                    IntStream.rangeClosed(1,count).forEach(i ->
                             resourceManagerActor.tell(new Message.NewResource(Resource.Type.valueOf(provider.toUpperCase()), type),
                                     getSelf()));
                 });

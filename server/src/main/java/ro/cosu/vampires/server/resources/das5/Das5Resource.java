@@ -35,6 +35,7 @@ public class Das5Resource extends AbstractResource {
     @Override
     public void onStop() throws Exception {
         LOG.debug("das5 stopping");
+        LOG.debug("das " + commandOutput);
         String command = "scancel " + commandOutput.split(" ")[3];
         this.commandOutput = exec(command);
 

@@ -8,6 +8,9 @@ import java.time.LocalDateTime;
 
 public class Message {
 
+    public static class Shutdown {
+    }
+
     public static class Up implements  Serializable{}
 
     public static class Request implements Serializable {}

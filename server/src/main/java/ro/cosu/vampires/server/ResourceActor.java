@@ -63,6 +63,13 @@ public class ResourceActor extends UntypedActorWithStash {
 
     }
 
+    @Override
+    public void postStop() {
+        if (!resource.getInfo().status().equals(Resource.Status.STOPPED)) {
+            resource.stop();
+        }
+    }
+
 
     Procedure<Object> active = message -> {
 
