@@ -5,15 +5,19 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import ro.cosu.vampires.resources.Settings;
+import ro.cosu.vampires.resources.SettingsImpl;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.IntStream;
 
 public class WorkActor extends UntypedActor{
 
 
-    private final ConcurrentLinkedQueue<Integer> workQueue  = new ConcurrentLinkedQueue<>();
+    final SettingsImpl settings =
+            Settings.SettingsProvider.get(getContext().system());
+
+    private final ConcurrentLinkedQueue<String> workQueue  = new ConcurrentLinkedQueue<>();
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     public static Props props(){
@@ -34,7 +38,8 @@ public class WorkActor extends UntypedActor{
 
     private void initq (){
         log.info("adding work init");
-        IntStream.range(1, 100).forEach(workQueue::add);
+        settings.getWorkload().stream().forEach(workQueue::add);
+
 
 //        getContext().system().scheduler().schedule(Duration.create(5, SECONDS),
 //                Duration.create(5, SECONDS), () -> {
@@ -52,7 +57,7 @@ public class WorkActor extends UntypedActor{
         log.info("Work request from " + getSender().toString());
 
             Object work = Optional.ofNullable(workQueue.poll())
-                .map(num -> (Object) new Message.Computation(String.valueOf(num)))
+                .map(workItem -> (Object) new Message.Computation(workItem))
                     .orElse(PoisonPill.getInstance());
 
             getSender().tell(work, getSelf());
