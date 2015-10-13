@@ -1,21 +1,22 @@
 package ro.cosu.vampires.server.resources.das5;
 
+import com.google.inject.Inject;
 import com.jcraft.jsch.JSchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.resources.AbstractResource;
-import ro.cosu.vampires.server.resources.ssh.SshResource;
 import ro.cosu.vampires.server.util.Ssh;
 
 import java.io.IOException;
 
 public class Das5Resource extends AbstractResource {
-    static final Logger LOG = LoggerFactory.getLogger(SshResource.class);
+    static final Logger LOG = LoggerFactory.getLogger(Das5Resource.class);
 
     private final Das5ResourceParameters parameters;
     private String commandOutput;
 
-
+    @Inject
+    Ssh ssh;
 
     public Das5Resource(Das5ResourceParameters parameters) {
         super(parameters);
@@ -50,7 +51,7 @@ public class Das5Resource extends AbstractResource {
     }
 
     private String exec(String command) throws IOException, JSchException {
-        return Ssh.runCommand(parameters.user(), parameters.privateKey(), parameters.address(), command, parameters.port());
+        return ssh.runCommand(parameters.user(), parameters.privateKey(), parameters.address(), command, parameters.port());
     }
 
 }

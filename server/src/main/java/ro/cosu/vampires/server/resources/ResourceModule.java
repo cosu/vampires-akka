@@ -8,6 +8,7 @@ import com.typesafe.config.Config;
 import ro.cosu.vampires.server.resources.das5.Das5ResourceProvider;
 import ro.cosu.vampires.server.resources.local.LocalResourceProvider;
 import ro.cosu.vampires.server.resources.ssh.SshResourceProvider;
+import ro.cosu.vampires.server.util.Ssh;
 
 public class ResourceModule extends AbstractModule{
     private Config config;
@@ -31,6 +32,12 @@ public class ResourceModule extends AbstractModule{
     @Named("Config")
     Config provideConfig(){
         return this.config;
+    }
+
+    @Provides
+    Ssh provideSsh (){
+        System.out.println(" new ssh");
+        return new Ssh();
     }
 
 }

@@ -6,8 +6,8 @@ import akka.actor.Terminated;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import ro.cosu.vampires.resources.Settings;
-import ro.cosu.vampires.resources.SettingsImpl;
+import ro.cosu.vampires.server.settings.Settings;
+import ro.cosu.vampires.server.settings.SettingsImpl;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 
@@ -42,8 +42,9 @@ public class RegisterActor extends UntypedActor {
                     String type = config.getString("type");
                     int count = config.getInt("count");
                     String provider = config.getString("provider");
-                    IntStream.rangeClosed(1,count).forEach(i ->
-                            resourceManagerActor.tell(new Message.NewResource(Resource.Type.valueOf(provider.toUpperCase()), type),
+                    IntStream.rangeClosed(1, count).forEach(i ->
+                            resourceManagerActor.tell(new Message.NewResource(Resource.Type.valueOf(provider
+                                            .toUpperCase()), type),
                                     getSelf()));
                 });
     }

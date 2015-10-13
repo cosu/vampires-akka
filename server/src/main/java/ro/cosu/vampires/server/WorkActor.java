@@ -5,8 +5,8 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import ro.cosu.vampires.resources.Settings;
-import ro.cosu.vampires.resources.SettingsImpl;
+import ro.cosu.vampires.server.settings.Settings;
+import ro.cosu.vampires.server.settings.SettingsImpl;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;

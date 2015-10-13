@@ -2,6 +2,7 @@ package ro.cosu.vampires.resources;
 
 import com.typesafe.config.ConfigFactory;
 import org.junit.Test;
+import ro.cosu.vampires.server.settings.SettingsImpl;
 
 public class SettingsImplTest {
     @Test

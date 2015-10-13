@@ -16,7 +16,7 @@ public class Ssh {
     static final Logger LOG = LoggerFactory.getLogger(Ssh.class);
 
 
-    public static String runCommand(String user, String privateKey, String address, String command, int port) throws JSchException,
+    public  String runCommand(String user, String privateKey, String address, String command, int port) throws JSchException,
             IOException {
         JSch jsch = new JSch();
 

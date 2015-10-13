@@ -1,4 +1,4 @@
-package ro.cosu.vampires.resources;
+package ro.cosu.vampires.server.settings;
 
 
 import akka.actor.AbstractExtensionId;

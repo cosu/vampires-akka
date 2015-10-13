@@ -13,12 +13,15 @@ public class SshResource extends AbstractResource {
     static final Logger LOG = LoggerFactory.getLogger(SshResource.class);
 
     private final SshResourceParameters parameters;
+    private final Ssh ssh;
     private String commandOutput;
 
 
-    public SshResource(SshResourceParameters parameters) {
+
+    public SshResource(SshResourceParameters parameters, Ssh ssh) {
         super(parameters);
         this.parameters = parameters;
+        this.ssh = ssh;
     }
 
     @Override
@@ -46,7 +49,7 @@ public class SshResource extends AbstractResource {
 
 
     private String exec(String command) throws IOException, JSchException {
-        return Ssh.runCommand(parameters.user(), parameters.privateKey(), parameters.address(), command, parameters.port());
+        return ssh.runCommand(parameters.user(), parameters.privateKey(), parameters.address(), command, parameters.port());
     }
 
 

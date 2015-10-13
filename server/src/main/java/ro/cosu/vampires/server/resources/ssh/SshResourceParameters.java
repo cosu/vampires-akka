@@ -16,7 +16,7 @@ public abstract  class SshResourceParameters implements Resource.Parameters  {
 
 
     public static Builder builder() {
-        return new AutoValue_SshResourceParameters.Builder().port(22).type(Resource.Type.LOCAL);
+        return new AutoValue_SshResourceParameters.Builder().port(22).type(Resource.Type.SSH);
     }
 
     @AutoValue.Builder
