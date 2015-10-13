@@ -36,7 +36,6 @@ public class ResourceModule extends AbstractModule{
 
     @Provides
     Ssh provideSsh (){
-        System.out.println(" new ssh");
         return new Ssh();
     }
 

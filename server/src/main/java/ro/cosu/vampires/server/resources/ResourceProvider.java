@@ -2,8 +2,10 @@ package ro.cosu.vampires.server.resources;
 
 import com.typesafe.config.Config;
 
+import java.util.Optional;
+
 public interface ResourceProvider {
-    Resource create(Resource.Parameters parameters);
+    Optional<Resource> create(Resource.Parameters parameters);
 
     Resource.Type getType();
 

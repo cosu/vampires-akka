@@ -65,6 +65,8 @@ public abstract class AbstractResource implements Resource {
     }
 
     public Resource stopCall() {
+        if (status.equals(Status.STOPPED) )
+            return this;
         setStatus(Status.STOPPING);
         try {
             this.onStop();
@@ -78,14 +80,14 @@ public abstract class AbstractResource implements Resource {
 
 
     @Override
-    public ResourceDescription getDescription() {
+    public ResourceDescription description() {
         return description;
     }
 
 
 
     @Override
-    public Status getStatus() {
+    public Status status() {
         return status;
     }
 

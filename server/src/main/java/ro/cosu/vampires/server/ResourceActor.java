@@ -9,6 +9,8 @@ import akka.japi.Procedure;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceProvider;
 
+import java.util.Optional;
+
 public class ResourceActor extends UntypedActorWithStash {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
@@ -30,11 +32,14 @@ public class ResourceActor extends UntypedActorWithStash {
     public void onReceive(Object message) throws Exception {
         ActorRef sender = getSender();
         if (message instanceof Message.CreateResource) {
-            resource = resourceProvider.create(((Message.CreateResource) message).parameters);
 
-            resource.start().thenAccept(resource -> getSelf().tell(resource, sender));
-        } else if (message instanceof Resource) {
-            if (((Resource) message).getStatus().equals(Resource.Status.RUNNING)) {
+            Optional<Resource> resource = create((Message.CreateResource) message, sender);
+            if (!resource.isPresent()) {
+                getSelf().tell(Resource.Status.FAILED, sender);
+            }
+
+        } else if (message instanceof Resource.Status) {
+            if (message.equals(Resource.Status.RUNNING)) {
                 activate();
             } else {
                 fail(sender);
@@ -45,17 +50,30 @@ public class ResourceActor extends UntypedActorWithStash {
         }
     }
 
+    private Optional<Resource> create(Message.CreateResource message, ActorRef sender) {
+
+        Optional<Resource> resource = resourceProvider.create(message.parameters);
+
+        resource.ifPresent(created -> this.resource = created);
+        resource.ifPresent(created -> created.start()
+                .thenAccept(started -> getSelf().tell(started.status(), sender)));
+
+        return resource;
+
+    }
+
     private Void fail(ActorRef sender) {
-        log.debug("actor failed to interact with resource {}", resource.getInfo());
-        sender.tell(resource.getInfo(), getSelf());
+        log.debug("actor failed to interact with resource ");
+
         getContext().stop(getSelf());
         return null;
     }
 
 
     private void activate() {
-        getSender().tell(resource.getInfo(), getSelf());
-        getContext().parent().tell(resource.getInfo(), getSelf());
+
+        getSender().tell(resource.info(), getSelf());
+        getContext().parent().tell(resource.info(), getSelf());
         log.info("activate");
         unstashAll();
         getContext().become(active);
@@ -65,22 +83,23 @@ public class ResourceActor extends UntypedActorWithStash {
 
     @Override
     public void postStop() {
-        if (!resource.getInfo().status().equals(Resource.Status.STOPPED)) {
+        if (resource != null)
             resource.stop();
-        }
     }
 
 
     Procedure<Object> active = message -> {
+        ActorRef sender = getSender();
 
-        log.info("ResourceActor {} -> {} {}", getSelf().path(), message.toString(), getSender().toString());
         if (message instanceof Message.GetResourceInfo) {
-            if (((Message.GetResourceInfo) message).resourceDescription.equals(resource.getDescription()))
-                getSender().tell(resource.getInfo(), getSelf());
+            Message.GetResourceInfo getResourceInfo = (Message.GetResourceInfo) message;
+            if (getResourceInfo.resourceDescription.equals(resource.description()))
+                sender.tell(resource.info(), getSelf());
         } else if (message instanceof Message.DestroyResource) {
-            if (((Message.DestroyResource) message).resourceDescription.equals(resource.getDescription())){
-                ActorRef sender = getSender();
-                resource.stop().thenAccept(result ->  sender.tell(result.getInfo(), getSelf()));
+            Message.DestroyResource destroyResource = (Message.DestroyResource) message;
+            log.info("destroy " + message);
+            if (destroyResource.resourceDescription.equals(resource.description())){
+                resource.stop().thenAccept(result ->  sender.tell(result.info(), getSelf()));
             }
         } else {
             unhandled(message);

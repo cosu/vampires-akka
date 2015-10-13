@@ -21,7 +21,6 @@ public class ResourceManagerActorTest extends AbstractActorTest{
         Message.CreateResource createResource = getCreateResource();
 
 
-
         TestActorRef<ResourceManagerActor> resourceManagerActor = TestActorRef.create(system, ResourceManagerActor.props(),
                 "resourceManagerActor");
 
@@ -51,7 +50,7 @@ public class ResourceManagerActorTest extends AbstractActorTest{
     }
 
     private Message.CreateResource getCreateResource() {
-        LocalResourceParameters parameters = LocalResourceParameters.builder().command("sleep 5").build();
+        LocalResourceParameters parameters = LocalResourceParameters.builder().command("sleep 10").build();
 
         return new Message.CreateResource(Resource.Type.LOCAL, parameters);
     }

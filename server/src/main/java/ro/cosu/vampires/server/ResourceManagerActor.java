@@ -2,6 +2,7 @@ package ro.cosu.vampires.server;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;
+import akka.actor.Terminated;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
@@ -60,7 +61,12 @@ public class ResourceManagerActor extends UntypedActor {
         } else if (message instanceof Message.GetResourceInfo || message instanceof Message.DestroyResource) {
             //broadcast for now
             resources.forEach(r -> r.forward(message, getContext()));
-        } else  {
+
+        } else  if (message instanceof Terminated){
+            log.info("terminated {}", getSender());
+            resources.remove(getSender());
+
+        }else {
             unhandled(message);
         }
     }

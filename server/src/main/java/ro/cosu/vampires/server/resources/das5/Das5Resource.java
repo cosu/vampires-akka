@@ -1,6 +1,5 @@
 package ro.cosu.vampires.server.resources.das5;
 
-import com.google.inject.Inject;
 import com.jcraft.jsch.JSchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,12 +14,13 @@ public class Das5Resource extends AbstractResource {
     private final Das5ResourceParameters parameters;
     private String commandOutput;
 
-    @Inject
-    Ssh ssh;
+    private final Ssh ssh;
 
-    public Das5Resource(Das5ResourceParameters parameters) {
+
+    public Das5Resource(Das5ResourceParameters parameters, Ssh ssh) {
         super(parameters);
         this.parameters = parameters;
+        this.ssh = ssh;
     }
 
 

@@ -1,17 +1,23 @@
 package ro.cosu.vampires.server.resources.local;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.resources.AbstractResourceProvider;
 import ro.cosu.vampires.server.resources.Resource;
 
+import java.util.Optional;
+
 public class LocalResourceProvider extends AbstractResourceProvider{
 
+    static final Logger LOG = LoggerFactory.getLogger(LocalResourceProvider.class);
 
     @Override
-    public Resource create(Resource.Parameters parameters) {
+    public Optional<Resource> create(Resource.Parameters parameters) {
         if (parameters instanceof LocalResourceParameters)
-            return new LocalResource((LocalResourceParameters) parameters);
+            return Optional.of(new LocalResource((LocalResourceParameters) parameters));
         else {
-            throw  new RuntimeException("invalid parameter type. expected "  + LocalResourceParameters.class);
+            LOG.error("invalid parameter type. expected " + LocalResourceProvider.class);
+            return Optional.empty();
         }
     }
 

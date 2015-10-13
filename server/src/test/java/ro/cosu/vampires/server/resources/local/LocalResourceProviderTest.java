@@ -21,13 +21,13 @@ public class LocalResourceProviderTest {
         ResourceManager rm = injector.getInstance(ResourceManager.class);
 
 
-        ResourceProvider localProvider = rm.getProviders().get(Resource.Type.SSH);
+        ResourceProvider localProvider = rm.getProviders().get(Resource.Type.LOCAL);
         Resource.Parameters parameters = localProvider.getParameters("local");
 
-        Resource resource = localProvider.create(parameters);
+        Resource resource = localProvider.create(parameters).get();
 
 
-        assertThat(resource.getStatus(), equalTo(Resource.Status.CREATING));
+        assertThat(resource.status(), equalTo(Resource.Status.CREATING));
 
     }
 }

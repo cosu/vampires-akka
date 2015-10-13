@@ -38,9 +38,9 @@ public interface Resource {
     void onStop() throws Exception;
     void onFail() throws Exception;
 
-    ResourceDescription getDescription();
-    Status getStatus();
+    ResourceDescription description();
+    Status status();
 
-    default ResourceInfo getInfo() { return ResourceInfo.create(getDescription(), getStatus());}
+    default ResourceInfo info() { return ResourceInfo.create(description(), status());}
 
 }

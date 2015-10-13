@@ -1,18 +1,24 @@
 package ro.cosu.vampires.server.resources;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Module;
+import com.google.inject.util.Modules;
 import com.typesafe.config.ConfigFactory;
 import org.junit.Test;
+import org.mockito.Mockito;
 import ro.cosu.vampires.server.resources.das5.Das5ResourceParameters;
 import ro.cosu.vampires.server.resources.local.LocalResourceParameters;
 import ro.cosu.vampires.server.resources.ssh.SshResourceParameters;
+import ro.cosu.vampires.server.util.Ssh;
 
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class ResourceManagerTest {
 
@@ -54,10 +60,10 @@ public class ResourceManagerTest {
         Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.empty()));
         ResourceManager rm = injector.getInstance(ResourceManager.class);
         ResourceProvider localProvider = rm.getProviders().get(Resource.Type.LOCAL);
-        Resource resource = localProvider.create(parameters);
+        Resource resource = localProvider.create(parameters).get();
 
-        assertThat(resource.start().get(1, TimeUnit.SECONDS).getStatus(), is(Resource.Status.RUNNING));
-        assertThat(resource.stop().get(1, TimeUnit.SECONDS).getStatus(), is(Resource.Status.STOPPED));
+        assertThat(resource.start().get(1, TimeUnit.SECONDS).status(), is(Resource.Status.RUNNING));
+        assertThat(resource.stop().get(1, TimeUnit.SECONDS).status(), is(Resource.Status.STOPPED));
 
     }
 
@@ -67,24 +73,38 @@ public class ResourceManagerTest {
         Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.empty()));
         ResourceManager rm = injector.getInstance(ResourceManager.class);
         ResourceProvider sshProvider = rm.getProviders().get(Resource.Type.SSH);
-        Resource resource = sshProvider.create(getSshConfig());
+        Resource resource = sshProvider.create(getSshConfig()).get();
 
-        assertThat(resource.start().get(1, TimeUnit.SECONDS).getStatus(), is(Resource.Status.RUNNING));
-        assertThat(resource.stop().get(1, TimeUnit.SECONDS).getStatus(), is(Resource.Status.STOPPED));
+        assertThat(resource.start().get(1, TimeUnit.SECONDS).status(), is(Resource.Status.RUNNING));
+        assertThat(resource.stop().get(1, TimeUnit.SECONDS).status(), is(Resource.Status.STOPPED));
 
     }
 
     @Test
     public void testCreateDAS5Resource() throws  Exception  {
 
-        Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.empty()));
+        Ssh sshMock = mock(Ssh.class);
+
+        Mockito.when(sshMock.runCommand(Mockito.anyString(),Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyInt()))
+                .thenReturn("10 10 10 10");
+
+        class TestModule extends AbstractModule {
+
+            @Override
+            protected void configure() {
+                bind(Ssh.class).toInstance(sshMock);
+            }
+        }
+
+        Module override = Modules.override(new ResourceModule(ConfigFactory.empty())).with(new TestModule());
+        Injector injector = Guice.createInjector(override );
         ResourceManager rm = injector.getInstance(ResourceManager.class);
         ResourceProvider localProvider = rm.getProviders().get(Resource.Type.DAS5);
-        Resource resource = localProvider.create(getDasConfig());
+        Resource resource = localProvider.create(getDasConfig()).get();
 
-        assertThat(resource.start().get(2, TimeUnit.SECONDS).getStatus(), is(Resource.Status.RUNNING));
+        assertThat(resource.start().get(2, TimeUnit.SECONDS).status(), is(Resource.Status.RUNNING));
         Thread.sleep(2000);
-        assertThat(resource.stop().get(2, TimeUnit.SECONDS).getStatus(), is(Resource.Status.STOPPED));
+        assertThat(resource.stop().get(2, TimeUnit.SECONDS).status(), is(Resource.Status.STOPPED));
     }
 
 }
