@@ -45,6 +45,7 @@ public class Executor {
                 .command(command)
                 .exitCode(exitCode)
                 .start(start)
+                .stop(stop)
                 .duration(duration)
                 .output(collectingLogOutputStream.getLines())
                 .build();

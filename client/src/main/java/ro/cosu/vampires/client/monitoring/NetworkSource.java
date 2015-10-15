@@ -6,12 +6,15 @@ import com.google.inject.Inject;
 import org.hyperic.sigar.NetInterfaceStat;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
 import static com.codahale.metrics.MetricRegistry.name;
 
 public class NetworkSource implements Source {
+    static final Logger LOG = LoggerFactory.getLogger(NetworkSource.class);
 
 
     @Inject
@@ -19,39 +22,42 @@ public class NetworkSource implements Source {
     @Inject
     MetricRegistry metricRegistry;
 
-    public void register() throws SigarException {
-        Arrays.stream(sigar.getNetInterfaceList()).forEach(iface -> {
-            metricRegistry.register(name(NetworkSource.class, "tx-bytes", iface), this.txBytesGague(iface));
-            metricRegistry.register(name(NetworkSource.class, "rx-bytes", iface), this.rxBytesGague(iface));
-        });
+    public void register() {
+        try {
+            Arrays.stream(sigar.getNetInterfaceList()).forEach(iface -> {
+                metricRegistry.register(name(NetworkSource.class, "tx-bytes", iface), this.txBytesGague(iface));
+                metricRegistry.register(name(NetworkSource.class, "rx-bytes", iface), this.rxBytesGague(iface));
+            });
+        } catch (SigarException e) {
+            LOG.error("network metric register failed ", e);
+        }
+
+        LOG.debug("registered network source");
+
     }
 
 
-    protected Gauge<Long> txBytesGague(final String iface)
+    private Gauge<Long> txBytesGague(final String iface)
     {
         return () -> {
-            try
-            {
+            try {
                 NetInterfaceStat nis = sigar.getNetInterfaceStat(iface);
                 return nis.getTxBytes();
-            }
-            catch (SigarException e)
-            {
+            } catch (SigarException e) {
+                LOG.error("network metric register failed ", e);
             }
             return null;
         };
     }
 
-    protected Gauge<Long> rxBytesGague(final String iface)
+    private Gauge<Long> rxBytesGague(final String iface)
     {
         return () -> {
-            try
-            {
+            try {
                 NetInterfaceStat nis = sigar.getNetInterfaceStat(iface);
                 return nis.getRxBytes();
-            }
-            catch (SigarException e)
-            {
+            } catch (SigarException e) {
+                LOG.error("network metric register failed ", e);
             }
             return null;
         };

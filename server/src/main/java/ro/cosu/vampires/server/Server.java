@@ -7,13 +7,13 @@ import akka.event.LoggingAdapter;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 
-public class App {
+public class Server {
 
     public static void main(String[] args) throws Exception {
 
         final ActorSystem system = ActorSystem.create("ServerSystem");
 
-        LoggingAdapter log = Logging.getLogger(system, App.class);
+        LoggingAdapter log = Logging.getLogger(system, Server.class);
 
         log.info("starting actor system");
 
