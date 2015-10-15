@@ -1,17 +1,21 @@
 package ro.cosu.vampires.client;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import kamon.sigar.SigarProvisioner;
-import org.hyperic.sigar.Sigar;
 import org.junit.Test;
+import ro.cosu.vampires.client.monitoring.CpuSource;
+import ro.cosu.vampires.client.monitoring.MonitoringModule;
 
 public class AppTest {
 
     @Test
     public void testName() throws Exception {
         SigarProvisioner.provision();
-        final Sigar sigar = new Sigar();
-        System.out.println(sigar.getCpu().toMap());
-        System.out.println(sigar.getNetInfo().toMap());
-        System.out.println(sigar.getNetStat().getAllInboundTotal());
+
+        Injector injector = Guice.createInjector(new MonitoringModule());
+        CpuSource source = injector.getInstance(CpuSource.class);
+
+
     }
 }
