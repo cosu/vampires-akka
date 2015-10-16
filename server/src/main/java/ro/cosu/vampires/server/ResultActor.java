@@ -4,18 +4,9 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import com.google.gson.*;
+import ro.cosu.vampires.server.util.JsonResultsWriter;
+import ro.cosu.vampires.server.util.ResultsWriter;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.lang.reflect.Type;
-import java.nio.file.Paths;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,26 +26,8 @@ public class ResultActor extends UntypedActor{
 
     @Override
     public void postStop(){
-        //write results to disk
-        try {
-
-            LocalDateTime date = LocalDateTime.now();
-
-            Writer writer = new FileWriter(Paths.get(System.getProperty("user.home"), "results-"+ date.format
-                    (DateTimeFormatter.ISO_LOCAL_DATE_TIME)+".json" ).toFile());
-
-            Gson gson = new GsonBuilder().setPrettyPrinting()
-                    .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
-                        .create();
-
-
-            gson.toJson(results, writer);
-
-        } catch (IOException e) {
-            e.printStackTrace();  //Auto-generated TODO
-        }
-
-
+        ResultsWriter writer = new JsonResultsWriter();
+        writer.writeResults(results);
     }
 
     @Override
@@ -65,12 +38,4 @@ public class ResultActor extends UntypedActor{
         }
     }
 
-    public class LocalDateTimeSerializer implements JsonSerializer<LocalDateTime> {
-        @Override
-        public JsonElement serialize(LocalDateTime localDateTime, Type type, JsonSerializationContext jsonSerializationContext) {
-            Instant instant = localDateTime.atZone(ZoneId.systemDefault()).toInstant();
-            Date date = Date.from(instant);
-            return new JsonPrimitive(date.getTime());
-        }
-    }
 }
