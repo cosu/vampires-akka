@@ -19,14 +19,13 @@ public class Server {
 
         ActorRef workActor = system.actorOf(WorkActor.props(), "workActor");
 
-        ActorRef resultActor = system.actorOf(ResultActor.props(), "resultActor");
 
         ActorRef registerActor = system.actorOf(RegisterActor.props(), "registerActor");
 
         ActorRef terminator = system.actorOf(Terminator.props(), "terminator");
 
 
-        system.actorOf(DispatchActor.props(workActor, resultActor, registerActor), "server");
+        system.actorOf(DispatchActor.props(workActor, registerActor), "server");
 
 
         Await.result(system.whenTerminated(), Duration.Inf());

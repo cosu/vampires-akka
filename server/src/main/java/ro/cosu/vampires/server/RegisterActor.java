@@ -35,8 +35,12 @@ public class RegisterActor extends UntypedActor {
         getContext().watch(resourceManagerActor);
     }
 
+
     @Override
     public void preStart(){
+
+        getContext().actorSelection("/user/terminator").tell(new Message.Up(), getSelf());
+
         settings.vampires.getConfigList("start").stream().forEach(config ->
                 {
                     String type = config.getString("type");
@@ -60,6 +64,10 @@ public class RegisterActor extends UntypedActor {
             log.info("sender "+ getSender());
             boolean remove = registered.remove(getSender());
             log.info("disconnected {} {}",remove , getSender());
+            if (registered.isEmpty()){
+                log.info("register actor stop");
+                getContext().stop(getSelf());
+            }
         }
         else {
             log.info("unhandled {}", message);

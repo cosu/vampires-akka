@@ -9,17 +9,16 @@ import akka.event.LoggingAdapter;
 public class DispatchActor extends UntypedActor {
 
     private final ActorRef workActor;
-    private final ActorRef resultActor;
+
     private final ActorRef registerActor;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
-    public static Props props(ActorRef workActor, ActorRef resultActor, ActorRef registerActor){
-        return Props.create(DispatchActor.class, workActor, resultActor , registerActor);
+    public static Props props(ActorRef workActor, ActorRef registerActor){
+        return Props.create(DispatchActor.class, workActor, registerActor);
     }
 
-    public DispatchActor(ActorRef workActor, ActorRef resultActor, ActorRef registerActor) {
+    public DispatchActor(ActorRef workActor, ActorRef registerActor) {
         this.workActor= workActor;
-        this.resultActor = resultActor;
         this.registerActor = registerActor;
 
     }
@@ -30,12 +29,12 @@ public class DispatchActor extends UntypedActor {
         if (message instanceof Message.Request) {
             workActor.forward(message, getContext());
         } else if (message instanceof Message.Result) {
-            resultActor.forward(message, getContext());
+            workActor.forward(message, getContext());
         } else if (message instanceof Message.Up){
             registerActor.forward(message, getContext());
             }
         else {
-            log.error("Unhandled work request from {} , {}",  getSender().toString(),message);
+            log.error("Unhandled  request from {} , {}",  getSender().toString(),message);
             unhandled(message);
         }
 
