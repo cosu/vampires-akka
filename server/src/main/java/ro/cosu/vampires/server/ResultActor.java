@@ -40,8 +40,8 @@ public class ResultActor extends UntypedActor{
 
             LocalDateTime date = LocalDateTime.now();
 
-            Writer writer = new FileWriter(Paths.get(System.getProperty("user.home"), "results.json", date.format
-                    (DateTimeFormatter.ISO_LOCAL_DATE_TIME)).toFile());
+            Writer writer = new FileWriter(Paths.get(System.getProperty("user.home"), "results-"+ date.format
+                    (DateTimeFormatter.ISO_LOCAL_DATE_TIME)+".json" ).toFile());
 
             Gson gson = new GsonBuilder().setPrettyPrinting()
                     .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
