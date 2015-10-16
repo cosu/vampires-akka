@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +40,8 @@ public class ResultActor extends UntypedActor{
 
             LocalDateTime date = LocalDateTime.now();
 
-            Writer writer = new FileWriter(Paths.get(System.getProperty("user.home"), "results.json", date.toString()).toFile());
+            Writer writer = new FileWriter(Paths.get(System.getProperty("user.home"), "results.json", date.format
+                    (DateTimeFormatter.ISO_LOCAL_DATE_TIME)).toFile());
 
             Gson gson = new GsonBuilder().setPrettyPrinting()
                     .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
