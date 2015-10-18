@@ -23,6 +23,7 @@ public class MonitoringModule extends AbstractModule {
 
         sourceMultibinder.addBinding().to(CpuSource.class).asEagerSingleton();
         sourceMultibinder.addBinding().to(NetworkSource.class).asEagerSingleton();
+        sourceMultibinder.addBinding().to(HostSource.class).asEagerSingleton();
 
         bind(Sigar.class).toInstance(sigar);
         bind(MetricRegistry.class).toInstance(metricRegistry);

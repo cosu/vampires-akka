@@ -8,14 +8,17 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ro.cosu.vampires.client.monitoring.MonitoringManager;
-import ro.cosu.vampires.server.ExecResult;
-import ro.cosu.vampires.server.Message;
+import ro.cosu.vampires.server.workload.Computation;
+import ro.cosu.vampires.server.workload.Metrics;
+import ro.cosu.vampires.server.workload.Result;
+import ro.cosu.vampires.server.workload.Workload;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -37,29 +40,37 @@ public class MonitoringActorTest {
 
 
     @Test
-    public void testName() throws Exception {
+    public void testMetrics() throws Exception {
         int seconds = 2;
-
-
 
         TestActorRef<MonitoringActor> ref = TestActorRef.create(system, MonitoringActor
                 .props(MonitoringManager.getMetricRegistry()), "monitoring");
 
         Thread.sleep(seconds*1000);
 
-        ExecResult execResult= new ExecResult.Builder()
+        Computation computation = Computation.builder().command("test").id("test").build();
+        Result result = Result.builder().duration(10).exitCode(0).output(new LinkedList<>())
+                .stop(LocalDateTime.now())
                 .start(LocalDateTime.now().minus(seconds, ChronoUnit.SECONDS))
-                .stop(LocalDateTime.now()).build();
+                .build();
 
-        Message.Result result = new Message.Result(execResult,  new Message.Computation("test"));
+        Workload workloadWithoutMetrics = Workload.builder().computation(computation).result(result)
+                .metrics(Metrics.empty())
+                .build();
 
-        final Future<Object> future = akka.pattern.Patterns.ask(ref, result, 3000);
 
-        Message.Result resultWithMetrics = (Message.Result) Await.result(future, Duration.create("2 seconds"));
+        final Future<Object> future = akka.pattern.Patterns.ask(ref, workloadWithoutMetrics, 3000);
 
-        ImmutableMap<LocalDateTime, ImmutableMap<String, Double>> metrics = resultWithMetrics.getResult().getMetrics();
+        Workload workload = (Workload) Await.result(future, Duration.create("2 seconds"));
 
-        assertThat(metrics.keySet().size(), is(4));
+        ImmutableMap<LocalDateTime, ImmutableMap<String, Double>> timedMetrics = workload.metrics().timedMetrics();
+
+        assertThat(timedMetrics.keySet().size(), is(5));
+
+        System.out.println(workload.metrics().metadata());
+
+        assertThat(workload.metrics().metadata().keySet().size(), is(5));
+
 
 
     }

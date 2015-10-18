@@ -4,6 +4,9 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.testkit.JavaTestKit;
 import org.junit.Test;
+import ro.cosu.vampires.server.workload.Computation;
+import ro.cosu.vampires.server.workload.Metrics;
+import ro.cosu.vampires.server.workload.Workload;
 
 import static org.junit.Assert.assertEquals;
 
@@ -26,7 +29,10 @@ public class DispatchActorTest extends AbstractActorTest{
 
                 Message.Up up = new Message.Up();
                 Message.Request request = new Message.Request();
-                Message.Result result = new Message.Result(null, null);
+                Workload result = Workload.builder()
+                        .computation(Computation.builder().command("1").build())
+                        .metrics(Metrics.empty())
+                        .build();
 
                 // verify correct forwarding
                 forwarder.tell(up, getRef());

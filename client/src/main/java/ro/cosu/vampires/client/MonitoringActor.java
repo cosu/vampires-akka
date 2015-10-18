@@ -8,7 +8,8 @@ import autovalue.shaded.com.google.common.common.collect.ImmutableMap;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import ro.cosu.vampires.client.monitoring.MetricsWindow;
-import ro.cosu.vampires.server.Message;
+import ro.cosu.vampires.server.workload.Metrics;
+import ro.cosu.vampires.server.workload.Workload;
 import scala.concurrent.duration.Duration;
 
 import java.time.LocalDateTime;
@@ -42,7 +43,7 @@ public class MonitoringActor extends UntypedActor{
                 Duration.create(500, MILLISECONDS), () -> {
 
                     LocalDateTime now = LocalDateTime.now();
-                    SortedMap<String, Gauge> gauges = metricRegistry.getGauges();
+                    SortedMap<String, Gauge> gauges = metricRegistry.getGauges((name, metric) -> name.startsWith("cpu") || name.startsWith("network"));
 
                     metricsWindow.add(now, gauges);
 
@@ -53,16 +54,28 @@ public class MonitoringActor extends UntypedActor{
     @Override
     public void onReceive(Object message) throws Exception {
 
-        if (message instanceof Message.Result) {
-            Message.Result result = (Message.Result) message;
+        if (message instanceof Workload) {
+            Workload result = (Workload) message;
 
+            if (result.metrics().equals(Metrics.empty())){
+                ImmutableMap<LocalDateTime, ImmutableMap<String, Double>> metricsWindowInterval = metricsWindow.getInterval
+                        (result.result().start(), result.result().stop());
+                SortedMap<String, Gauge> hostGauges = metricRegistry.getGauges((name, metric) -> name.startsWith("host"));
 
-            ImmutableMap<LocalDateTime, ImmutableMap<String, Double>> metricsWindowInterval = metricsWindow.getInterval
-                    (result.getResult().getStart(), result.getResult().getStop());
-            result.getResult().setMetrics(metricsWindowInterval);
+                ImmutableMap<String, String> hostValues = MetricsWindow.convertGaugesToString(hostGauges);
 
-            getSender().tell(result, getSelf());
-
+                Metrics metrics = Metrics.builder().metadata(hostValues).timedMetrics(metricsWindowInterval).build();
+                result = result.toBuilder().metrics(metrics).build();
+                getSender().tell(result, getSelf());
+            }
+            else
+            {
+                log.error("received workload result not present");
+            }
+        }
+        else {
+            log.error("received unknown type of message");
+            unhandled(message);
         }
 
     }

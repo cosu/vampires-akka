@@ -15,23 +15,30 @@ public class CpuSource implements Source {
 
     static final Logger LOG = LoggerFactory.getLogger(CpuSource.class);
 
+    private static String NAME = "cpu";
+
     @Inject
     Sigar sigar;
     @Inject
     MetricRegistry metricRegistry;
 
     public void register() {
-        metricRegistry.register(name(CpuSource.class, "cpu-total-usage"), this.cpuTotalUsageGague());
-        metricRegistry.register(name(CpuSource.class, "cpu-wait-usage"), this.cpuWaitUsageGague());
-        metricRegistry.register(name(CpuSource.class, "cpu-user-usage"), this.cpuUserUsageGague());
+        metricRegistry.register(name(getName(), "cpu-total-usage"), this.cpuTotalUsageGague());
+        metricRegistry.register(name(getName(), "cpu-wait-usage"), this.cpuWaitUsageGague());
+        metricRegistry.register(name(getName(), "cpu-user-usage"), this.cpuUserUsageGague());
 
-        metricRegistry.register(name(CpuSource.class, "load-one-minute-average"), this.oneMinLoadGague());
-        metricRegistry.register(name(CpuSource.class, "load-five-minute-average"), this.fiveMinLoadGague());
-        metricRegistry.register(name(CpuSource.class, "load-fifteen-minute-average"), this
+        metricRegistry.register(name(getName(), "load-one-minute-average"), this.oneMinLoadGague());
+        metricRegistry.register(name(getName(), "load-five-minute-average"), this.fiveMinLoadGague());
+        metricRegistry.register(name(getName(), "load-fifteen-minute-average"), this
                 .fifteenMinLoadGague());
 
 
         LOG.debug("cpu network source");
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
 

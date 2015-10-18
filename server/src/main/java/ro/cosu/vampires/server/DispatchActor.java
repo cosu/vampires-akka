@@ -5,6 +5,7 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import ro.cosu.vampires.server.workload.Workload;
 
 public class DispatchActor extends UntypedActor {
 
@@ -26,9 +27,9 @@ public class DispatchActor extends UntypedActor {
     @Override
     public void onReceive(Object message) throws Exception {
 
-        if (message instanceof Message.Request) {
+        if (message instanceof Message.Request ) {
             workActor.forward(message, getContext());
-        } else if (message instanceof Message.Result) {
+        } else if (message instanceof Workload) {
             workActor.forward(message, getContext());
         } else if (message instanceof Message.Up){
             registerActor.forward(message, getContext());

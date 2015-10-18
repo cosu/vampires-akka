@@ -1,6 +1,6 @@
 apply plugin: 'idea'
 apply plugin: 'base'
-
+apply plugin: 'distribution'
 
 idea{
     project {
@@ -9,6 +9,10 @@ idea{
     module {
         downloadJavadoc = true // defaults to false
         downloadSources = true
+        generatedSourceDirs += file('client/generated')
+        generatedSourceDirs += file('server/generated')
+
+
     }
 }
 
@@ -59,6 +63,9 @@ subprojects {
         compile 'com.google.inject.extensions:guice-multibindings:4.0'
         compile 'com.google.auto.value:auto-value:1.1'
         compile 'com.google.code.gson:gson:2.4'
+        compile 'com.google.code.findbugs:jsr305:3.0.1'
+
+
 
         compile 'ch.qos.logback:logback-classic:1.0.7'
         compile 'org.apache.commons:commons-exec:1.3'

@@ -1,7 +1,7 @@
 package ro.cosu.vampires.server.util;
 
 import com.google.gson.*;
-import ro.cosu.vampires.server.Message;
+import ro.cosu.vampires.server.workload.Workload;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.util.List;
 
 public class JsonResultsWriter implements ResultsWriter{
     @Override
-    public void writeResults(List<Message.Result> results) {
+    public void writeResults(List<Workload> results) {
         //write results to disk
         try {
 
@@ -29,6 +29,7 @@ public class JsonResultsWriter implements ResultsWriter{
 
 
             gson.toJson(results, writer);
+            writer.close();
 
         } catch (IOException e) {
             e.printStackTrace();  //Auto-generated TODO

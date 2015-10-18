@@ -4,8 +4,8 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import ro.cosu.vampires.server.ExecResult;
-import ro.cosu.vampires.server.Message;
+import ro.cosu.vampires.server.workload.Result;
+import ro.cosu.vampires.server.workload.Workload;
 
 public class ExecutorActor extends UntypedActor {
 
@@ -19,17 +19,15 @@ public class ExecutorActor extends UntypedActor {
 
     @Override
     public void onReceive(Object message) throws Exception {
-        if (message instanceof Message.Computation) {
-            Message.Computation computation = (Message.Computation) message;
-            String command = computation.getCommand();
+        if (message instanceof Workload) {
+            Workload workload = (Workload) message;
 
-            log.info("executor " + message);
 
-            ExecResult execResult = Executor.execute(command);
+            Result result = Executor.execute(workload.computation());
 
-            Message.Result result= new Message.Result(execResult, computation);
 
-            getContext().actorSelection("/user/monitor").tell(result, getSender());
+
+            getContext().actorSelection("/user/monitor").tell(workload.withResult(result), getSender());
 
         }
 

@@ -8,6 +8,8 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.settings.Settings;
 import ro.cosu.vampires.server.settings.SettingsImpl;
+import ro.cosu.vampires.server.workload.Computation;
+import ro.cosu.vampires.server.workload.Workload;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -48,12 +50,10 @@ public class WorkActor extends UntypedActor{
 
         if (message instanceof Message.Request) {
             log.info("Work request from " + getSender().toString());
-            Object work = Optional.ofNullable(workQueue.poll())
-                    .map(workItem -> (Object) new Message.Computation(workItem))
-                    .orElse(PoisonPill.getInstance());
+            Object work = this.getNewWorkload(Optional.ofNullable(workQueue.poll()));
 
             getSender().tell(work, getSelf());
-        } else if (message instanceof Message.Result) {
+        } else if (message instanceof Workload) {
             resultActor.forward(message, getContext());
         } else {
             log.warning("unhandled message from {}", getSender() );
@@ -61,8 +61,20 @@ public class WorkActor extends UntypedActor{
         }
 
 
+    }
 
+    private Object getNewWorkload(Optional<String> work) {
 
+        if (work.isPresent()) {
+            Computation computation = Computation.builder().command(work.get()).build();
+            log.info("computation {}", computation);
+            return Workload.empty().withComputation(computation);
+
+        }
+        else {
+            log.info("killing {}", getSender());
+            return PoisonPill.getInstance();
+        }
 
     }
 

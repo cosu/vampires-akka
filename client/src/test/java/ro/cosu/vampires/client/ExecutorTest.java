@@ -1,6 +1,7 @@
 package ro.cosu.vampires.client;
 
 import org.junit.Test;
+import ro.cosu.vampires.server.workload.Computation;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -11,16 +12,22 @@ public class ExecutorTest {
 
     @Test
     public void testNoCommand() throws Exception {
-        assertThat(Executor.execute("bla").getExitCode(), is(-1));
+        Computation computation = Computation.builder().id("test").command("bla").build();
+
+        assertThat(Executor.execute(computation).exitCode(), is(-1));
     }
 
     @Test
     public void testExecuteFail() throws Exception {
-        assertThat(Executor.execute("cat /dev/null1").getExitCode(), is(not(0)));
+
+        Computation computation = Computation.builder().id("test").command("cat /dev/null1").build();
+
+        assertThat(Executor.execute(computation).exitCode(), is(not(0)));
     }
 
     @Test
     public void testExecuteSuccess() throws Exception {
-        assertThat(Executor.execute("cat /dev/null").getExitCode(), is(0));
+        Computation computation = Computation.builder().id("test").command("cat /dev/null").build();
+        assertThat(Executor.execute(computation).exitCode(), is(0));
     }
 }

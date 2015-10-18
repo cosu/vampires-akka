@@ -25,7 +25,7 @@ public class MetricsWindow {
 
     public void add(LocalDateTime time, SortedMap<String, Gauge> metrics) {
 
-        metricWindow.put(time, convertGauges(metrics));
+        metricWindow.put(time, convertGaugesToDouble(metrics));
         cache.put(time, time);
     }
 
@@ -38,7 +38,7 @@ public class MetricsWindow {
     }
 
 
-    private ImmutableMap<String, Double> convertGauges(SortedMap<String, Gauge> gauges) {
+    public static ImmutableMap<String, Double> convertGaugesToDouble(SortedMap<String, Gauge> gauges) {
         ImmutableMap.Builder<String, Double> builder = ImmutableMap.<String, Double>builder();
 
         gauges.entrySet().stream().forEach(entry -> {
@@ -50,6 +50,20 @@ public class MetricsWindow {
                     builder.put(gaugeName, n);
                 }
             }
+        });
+
+        return builder.build();
+
+    }
+
+    public static ImmutableMap<String, String> convertGaugesToString(SortedMap<String, Gauge> gauges) {
+        ImmutableMap.Builder<String, String> builder = ImmutableMap.<String, String>builder();
+
+        gauges.entrySet().stream().forEach(entry -> {
+            String gaugeName = entry.getKey();
+            String gaugeValue  = entry.getValue().getValue().toString();
+            builder.put(gaugeName, gaugeValue);
+
         });
 
         return builder.build();

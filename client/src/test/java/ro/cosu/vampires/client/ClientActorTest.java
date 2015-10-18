@@ -11,6 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import ro.cosu.vampires.server.Message;
 import ro.cosu.vampires.server.RegisterActor;
+import ro.cosu.vampires.server.workload.Computation;
 
 public class ClientActorTest {
 
@@ -35,7 +36,7 @@ public class ClientActorTest {
 
         scala.Option<ActorRef> actorRefOption = Option.Some.option(remoteProbe.getRef()).asScala();
         ref.tell(new ActorIdentity(null,actorRefOption), ActorRef.noSender());
-        ref.tell(new Message.Computation("echo 1"), ActorRef.noSender());
+        ref.tell(Computation.builder().command("echo 1").id("test"), ActorRef.noSender());
 
         remoteProbe.expectMsgClass(Message.Up.class);
         remoteProbe.expectMsgClass(Message.Request.class);

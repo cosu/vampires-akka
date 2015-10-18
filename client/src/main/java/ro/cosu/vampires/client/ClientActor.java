@@ -5,8 +5,9 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.japi.Procedure;
 import ro.cosu.vampires.server.Message;
+import ro.cosu.vampires.server.workload.Result;
+import ro.cosu.vampires.server.workload.Workload;
 import scala.concurrent.duration.Duration;
-
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -49,9 +50,7 @@ public class ClientActor extends UntypedActor {
             } else {
                 getContext().watch(server);
 
-                server.tell(new Message.Up(), getSelf());
-
-                server.tell(new Message.Request(), getSelf());
+                sendMessageAndRequestNew(new Message.Up());
 
                 getContext().become(active, true);
             }
@@ -65,25 +64,29 @@ public class ClientActor extends UntypedActor {
 
     Procedure<Object> active = message -> {
         log.info("{} -> {} {}" , getSelf().path() , message.toString(), getSender().toString());
-        if (message instanceof Message.Computation){
-            ActorRef executor = getContext().actorOf(ExecutorActor.props());
-            executor.tell(message , getSelf());
-        }
-        else if (message instanceof Message.Result) {
-            // send result
-            server.tell(message, getSelf());
-            //send request
-            server.tell(new Message.Request(), getSelf());
+        if (message instanceof Workload){
+            Workload workload = (Workload) message;
+            if (workload.result().equals(Result.empty())){
+                execute(workload);
+            }  else {
+                sendMessageAndRequestNew(message);
+            }
+
         }
         else {
             unhandled(message);
         }
     };
 
+    private void execute(Workload workload) {
+        ActorRef executor = getContext().actorOf(ExecutorActor.props());
+        executor.tell(workload, getSelf());
+    }
 
-
-
-
+    private void sendMessageAndRequestNew(Object message) {
+        server.tell(message, getSelf());
+        server.tell(new Message.Request(), getSelf());
+    }
 
 
 }

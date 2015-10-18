@@ -1,7 +1,9 @@
 package ro.cosu.vampires.client;
 
 import org.apache.commons.exec.*;
-import ro.cosu.vampires.server.ExecResult;
+import ro.cosu.vampires.server.workload.Computation;
+import ro.cosu.vampires.server.workload.Result;
+
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -11,8 +13,9 @@ import java.util.List;
 
 
 public class Executor {
-    public static ExecResult execute (String command) {
+    public static Result execute(Computation computation) {
 
+        String command = computation.command();
         CommandLine cmd = CommandLine.parse(command);
         DefaultExecutor executor = new DefaultExecutor();
 
@@ -41,14 +44,15 @@ public class Executor {
 
         long duration = Duration.between(start, stop).toMillis();
 
-        return new ExecResult.Builder()
-                .command(command)
+        return Result.builder()
+                .duration(duration)
                 .exitCode(exitCode)
                 .start(start)
                 .stop(stop)
                 .duration(duration)
                 .output(collectingLogOutputStream.getLines())
                 .build();
+
     }
 
 

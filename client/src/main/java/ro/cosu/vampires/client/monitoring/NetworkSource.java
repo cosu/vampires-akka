@@ -16,6 +16,7 @@ import static com.codahale.metrics.MetricRegistry.name;
 public class NetworkSource implements Source {
     static final Logger LOG = LoggerFactory.getLogger(NetworkSource.class);
 
+    private final static String NAME = "network";
 
     @Inject
     Sigar sigar;
@@ -25,8 +26,8 @@ public class NetworkSource implements Source {
     public void register() {
         try {
             Arrays.stream(sigar.getNetInterfaceList()).forEach(iface -> {
-                metricRegistry.register(name(NetworkSource.class, "tx-bytes", iface), this.txBytesGague(iface));
-                metricRegistry.register(name(NetworkSource.class, "rx-bytes", iface), this.rxBytesGague(iface));
+                metricRegistry.register(name(getName(), "tx-bytes", iface), this.txBytesGague(iface));
+                metricRegistry.register(name(getName(), "rx-bytes", iface), this.rxBytesGague(iface));
             });
         } catch (SigarException e) {
             LOG.error("network metric register failed ", e);
@@ -34,6 +35,11 @@ public class NetworkSource implements Source {
 
         LOG.debug("registered network source");
 
+    }
+
+    @Override
+    public String getName() {
+        return NAME;
     }
 
 

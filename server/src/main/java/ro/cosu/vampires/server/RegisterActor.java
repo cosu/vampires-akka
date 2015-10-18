@@ -63,6 +63,7 @@ public class RegisterActor extends UntypedActor {
         } else if (message instanceof Terminated) {
             log.info("sender "+ getSender());
             boolean remove = registered.remove(getSender());
+            getContext().unwatch(getSender());
             log.info("disconnected {} {}",remove , getSender());
             if (registered.isEmpty()){
                 log.info("register actor stop");
