@@ -28,7 +28,8 @@ public interface Resource {
     enum Type {
         SSH,
         LOCAL,
-        DAS5
+        DAS5,
+        EC2
     }
 
     CompletableFuture<Resource> start();

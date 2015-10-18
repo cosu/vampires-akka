@@ -1,0 +1,19 @@
+#cloud-config
+
+apt_sources:
+ - source: "ppa:webupd8team/java"
+
+repo_update: true
+repo_upgrade: all
+
+packages:
+  - git
+  - curl
+
+
+runcmd:
+  - curl -L https://s3-eu-west-1.amazonaws.com/uva-vampires/create_keys | bash
+  - echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections && apt-get install -y oracle-java8-installer ca-certificates
+  - sudo -u ubuntu sh -c 'cd /home/ubuntu && git clone git@bitbucket.org:cdumitru/vampires-akka.git  && cd vampires-akka && ./gradlew installDist'
+  - $command
+

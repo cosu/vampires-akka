@@ -19,10 +19,10 @@ public class Das5ResourceProvider extends AbstractResourceProvider{
     public Optional<Resource> create(Resource.Parameters parameters) {
 
         if (parameters instanceof Das5ResourceParameters)
-            return Optional.of(new Das5Resource((Das5ResourceParameters) parameters, ssh));
-        else {
-            LOG.error("invalid parameter type. expected " + Das5ResourceParameters.class);
-            return Optional.empty();
+                return Optional.of(new Das5Resource((Das5ResourceParameters) parameters, ssh));
+            else {
+                LOG.error("invalid parameter type. expected " + Das5ResourceParameters.class);
+                return Optional.empty();
         }
     }
 
