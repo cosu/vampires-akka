@@ -27,15 +27,23 @@ public class Server {
 
         system.actorOf(DispatchActor.props(workActor, registerActor), "server");
 
-
-        Await.result(system.whenTerminated(), Duration.Inf());
-
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
+                terminator.tell(new Message.Shutdown(), ActorRef.noSender());
+                try {
+                    log.info("waiting 15 seconds for shutdown");
+                    Await.result(system.whenTerminated(), Duration.create("15 seconds"));
 
+                } catch (Exception e) {
+                    log.error("error during shutdown hook {}", e);
+                }
             }
         });
+
+        Await.result(system.whenTerminated(), Duration.Inf());
+
+
 
     }
 }
