@@ -92,15 +92,11 @@ public class ResourceActor extends UntypedActorWithStash {
         ActorRef sender = getSender();
 
         if (message instanceof Message.GetResourceInfo) {
-            Message.GetResourceInfo getResourceInfo = (Message.GetResourceInfo) message;
-            if (getResourceInfo.resourceDescription.equals(resource.description()))
-                sender.tell(resource.info(), getSelf());
+            sender.tell(resource.info(), getSelf());
         } else if (message instanceof Message.DestroyResource) {
-            Message.DestroyResource destroyResource = (Message.DestroyResource) message;
             log.info("destroy " + message);
-            if (destroyResource.resourceDescription.equals(resource.description())){
-                resource.stop().thenAccept(result ->  sender.tell(result.info(), getSelf()));
-            }
+            resource.stop().thenAccept(result ->  sender.tell(result.info(), getSelf()));
+
         } else {
             unhandled(message);
         }

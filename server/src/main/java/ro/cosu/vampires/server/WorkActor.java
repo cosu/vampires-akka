@@ -1,9 +1,6 @@
 package ro.cosu.vampires.server;
 
-import akka.actor.ActorRef;
-import akka.actor.PoisonPill;
-import akka.actor.Props;
-import akka.actor.UntypedActor;
+import akka.actor.*;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.settings.Settings;
@@ -22,9 +19,10 @@ public class WorkActor extends UntypedActor{
 
     private final ConcurrentLinkedQueue<String> workQueue  = new ConcurrentLinkedQueue<>();
 
-    ActorRef resultActor;
+
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+    private ActorRef resultActor;
 
     public static Props props(){
         return Props.create(WorkActor.class);
@@ -34,7 +32,6 @@ public class WorkActor extends UntypedActor{
     @Override
     public  void preStart() {
         initq();
-
         resultActor = getContext().actorOf(ResultActor.props(workQueue.size()), "resultActor");
 
     }

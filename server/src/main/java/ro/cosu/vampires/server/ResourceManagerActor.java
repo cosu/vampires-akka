@@ -58,13 +58,20 @@ public class ResourceManagerActor extends UntypedActor {
             rm.getProvider(((Message.CreateResource) message)
                     .type)
                     .ifPresent(rp -> createResource(rp, message));
-        } else if (message instanceof Message.GetResourceInfo || message instanceof Message.DestroyResource) {
+        } else if (message instanceof Message.GetResourceInfo) {
             //broadcast for now
             resources.forEach(r -> r.forward(message, getContext()));
+
+        }
+        else if (message instanceof Message.Shutdown) {
+            resources.forEach(r -> r.forward( new Message.DestroyResource(), getContext()));
 
         } else  if (message instanceof Terminated){
             log.info("terminated {}", getSender());
             resources.remove(getSender());
+            //terminate condition
+            if (resources.isEmpty())
+                getContext().stop(getSelf());
 
         }else {
             unhandled(message);

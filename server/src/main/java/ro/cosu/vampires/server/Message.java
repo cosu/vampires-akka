@@ -1,7 +1,6 @@
 package ro.cosu.vampires.server;
 
 import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.resources.ResourceDescription;
 
 import java.io.Serializable;
 
@@ -36,19 +35,10 @@ public class Message {
 
 
     public static class DestroyResource implements Serializable  {
-        final ResourceDescription resourceDescription;
-
-        public DestroyResource(ResourceDescription resourceDescription) {
-            this.resourceDescription = resourceDescription;
-        }
     }
 
     public static class GetResourceInfo implements Serializable  {
-        final ResourceDescription resourceDescription;
 
-        public GetResourceInfo(ResourceDescription resourceDescription) {
-            this.resourceDescription = resourceDescription;
-        }
     }
 
 

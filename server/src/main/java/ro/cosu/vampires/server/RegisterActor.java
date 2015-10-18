@@ -61,7 +61,7 @@ public class RegisterActor extends UntypedActor {
             getContext().watch(getSender());
             log.info("up {}", getSender());
         } else if (message instanceof Terminated) {
-            log.info("sender "+ getSender());
+            log.info("down {}",  getSender());
             boolean remove = registered.remove(getSender());
             getContext().unwatch(getSender());
             log.info("disconnected {} {}",remove , getSender());
@@ -69,7 +69,12 @@ public class RegisterActor extends UntypedActor {
                 log.info("register actor stop");
                 getContext().stop(getSelf());
             }
+        } else if (message instanceof Message.Shutdown){
+            log.info("shutdown");
+            resourceManagerActor.forward(message, getContext());
+            getContext().stop(getSelf());
         }
+
         else {
             log.info("unhandled {}", message);
             unhandled(message);

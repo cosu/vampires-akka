@@ -35,9 +35,13 @@ public class ResultActor extends UntypedActor{
         if (message instanceof Workload) {
             results.add((Workload) message);
             log.debug("got result {}", message);
+
+            //this should be a predicate
             if (results.size() == numberOfResults) {
                 ResultsWriter writer = new JsonResultsWriter();
                 writer.writeResults(results);
+                // init shutdown
+                getContext().actorSelection("/user/registerActor").tell(new Message.Shutdown(), getSelf());
                 getContext().stop(getSelf());
             }
         }

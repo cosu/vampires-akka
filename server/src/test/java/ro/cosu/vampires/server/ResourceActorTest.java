@@ -29,9 +29,7 @@ public class ResourceActorTest extends AbstractActorTest{
         return new Message.CreateResource(Resource.Type.LOCAL, parameters);
     }
 
-    private Message.DestroyResource getDestroyResource(ResourceInfo resourceInfo) {
-        return new Message.DestroyResource(resourceInfo.description());
-    }
+
 
 
     @Test
@@ -49,7 +47,7 @@ public class ResourceActorTest extends AbstractActorTest{
 
                             if (resourceInfo.status().equals(Resource.Status.RUNNING)) {
 
-                                resourceActor.tell(getDestroyResource(resourceInfo),resourceProbe.getRef() );
+                                resourceActor.tell(new Message.DestroyResource(),resourceProbe.getRef());
                             } else {
 
                                 return noAutoPilot();

@@ -70,6 +70,7 @@ public class ClientActor extends UntypedActor {
                 execute(workload);
             }  else {
                 sendMessageAndRequestNew(message);
+
             }
 
         }

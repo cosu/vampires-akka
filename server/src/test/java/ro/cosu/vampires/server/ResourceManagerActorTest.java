@@ -32,7 +32,7 @@ public class ResourceManagerActorTest extends AbstractActorTest{
         assertThat(ci.description().type(), is(equalTo(Resource.Type.LOCAL)));
 
 
-        Message.GetResourceInfo resourceInfo = new Message.GetResourceInfo(ci.description());
+        Message.GetResourceInfo resourceInfo = new Message.GetResourceInfo();
 
         final Future<Object> statusFuture = akka.pattern.Patterns.ask(resourceManagerActor, resourceInfo , 3000);
 
@@ -40,7 +40,7 @@ public class ResourceManagerActorTest extends AbstractActorTest{
 
         assertThat(si.status(), is(equalTo(Resource.Status.RUNNING)));
 
-        final Future<Object> destroyFuture = akka.pattern.Patterns.ask(resourceManagerActor,new Message.DestroyResource(ci.description()), 3000);
+        final Future<Object> destroyFuture = akka.pattern.Patterns.ask(resourceManagerActor,new Message.Shutdown(), 3000);
 
         ResourceInfo di = (ResourceInfo) Await.result(destroyFuture, Duration.create("5 seconds"));
 
