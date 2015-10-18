@@ -1,8 +1,11 @@
 package ro.cosu.vampires.server.util;
 
 import com.google.gson.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.workload.Workload;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -13,15 +16,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class JsonResultsWriter implements ResultsWriter{
+    static final Logger LOG = LoggerFactory.getLogger(JsonResultsWriter.class);
+
     @Override
     public void writeResults(List<Workload> results) {
         //write results to disk
         try {
-
             LocalDateTime date = LocalDateTime.now();
+            File resultsFile = Paths.get(System.getProperty("user.home"), "results-" + date.format
+                    (DateTimeFormatter.ISO_LOCAL_DATE_TIME) + ".json").toFile();
 
-            Writer writer = new FileWriter(Paths.get(System.getProperty("user.home"), "results-" + date.format
-                    (DateTimeFormatter.ISO_LOCAL_DATE_TIME) + ".json").toFile());
+
+            Writer writer = new FileWriter(resultsFile);
 
             Gson gson = new GsonBuilder().setPrettyPrinting()
                     .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
@@ -30,9 +36,10 @@ public class JsonResultsWriter implements ResultsWriter{
 
             gson.toJson(results, writer);
             writer.close();
+            LOG.info("wrote results to {}", resultsFile.getAbsolutePath());
 
         } catch (IOException e) {
-            e.printStackTrace();  //Auto-generated TODO
+           LOG.error("Error writing results to file", e);
         }
     }
 
