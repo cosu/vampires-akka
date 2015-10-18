@@ -32,6 +32,9 @@ public class Terminator extends UntypedActor{
             log.info("removed {} {}", remove, getSender());
             if (refs.isEmpty()){
                 getContext().system().terminate();
+            } else {
+                log.info("waiting for {} more", refs.size());
+                log.info("{}", refs);
             }
 
         } else {
