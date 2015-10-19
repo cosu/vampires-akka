@@ -1,16 +1,16 @@
 package ro.cosu.vampires.server.workload;
 
-import autovalue.shaded.com.google.common.common.collect.ImmutableMap;
 import com.google.auto.value.AutoValue;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @AutoValue
 public abstract class Metrics implements Serializable{
 
-    public abstract ImmutableMap<LocalDateTime, ImmutableMap<String, Double>> timedMetrics();
+    public abstract ImmutableList<Metric> metrics();
     public abstract ImmutableMap<String, String> metadata();
     public abstract  String id();
 
@@ -23,7 +23,7 @@ public abstract class Metrics implements Serializable{
 
         return new AutoValue_Metrics.Builder()
                 .id("empty")
-                .timedMetrics(ImmutableMap.<LocalDateTime, ImmutableMap<String, Double>>of())
+                .metrics(ImmutableList.of())
                 .metadata(ImmutableMap.<String, String>of())
                 .build();
     }
@@ -34,7 +34,7 @@ public abstract class Metrics implements Serializable{
 
         public abstract Builder metadata (ImmutableMap<String, String> metadata);
 
-        public abstract Builder timedMetrics (ImmutableMap<LocalDateTime, ImmutableMap<String, Double>> metrics);
+        public abstract Builder metrics (ImmutableList<Metric> metrics);
 
         public abstract Builder id(String id);
 

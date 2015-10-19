@@ -4,10 +4,12 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import autovalue.shaded.com.google.common.common.collect.ImmutableMap;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import ro.cosu.vampires.client.monitoring.MetricsWindow;
+import ro.cosu.vampires.server.workload.Metric;
 import ro.cosu.vampires.server.workload.Metrics;
 import ro.cosu.vampires.server.workload.Workload;
 import scala.concurrent.duration.Duration;
@@ -58,13 +60,13 @@ public class MonitoringActor extends UntypedActor{
             Workload result = (Workload) message;
 
             if (result.metrics().equals(Metrics.empty())){
-                ImmutableMap<LocalDateTime, ImmutableMap<String, Double>> metricsWindowInterval = metricsWindow.getInterval
+                ImmutableList<Metric> metricsWindowInterval = metricsWindow.getInterval
                         (result.result().start(), result.result().stop());
                 SortedMap<String, Gauge> hostGauges = metricRegistry.getGauges((name, metric) -> name.startsWith("host"));
 
                 ImmutableMap<String, String> hostValues = MetricsWindow.convertGaugesToString(hostGauges);
 
-                Metrics metrics = Metrics.builder().metadata(hostValues).timedMetrics(metricsWindowInterval).build();
+                Metrics metrics = Metrics.builder().metadata(hostValues).metrics(metricsWindowInterval).build();
                 result = result.toBuilder().metrics(metrics).build();
                 getSender().tell(result, getSelf());
             }

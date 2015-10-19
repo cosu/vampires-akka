@@ -1,14 +1,19 @@
 package ro.cosu.vampires.client.monitoring;
 
-import autovalue.shaded.com.google.common.common.collect.ImmutableMap;
+
 import com.codahale.metrics.Gauge;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import ro.cosu.vampires.server.workload.Metric;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class MetricsWindow {
     ConcurrentSkipListMap<LocalDateTime, ImmutableMap<String, Double>> metricWindow = new ConcurrentSkipListMap
@@ -29,11 +34,16 @@ public class MetricsWindow {
         cache.put(time, time);
     }
 
-    public ImmutableMap<LocalDateTime, ImmutableMap<String, Double>> getInterval(LocalDateTime start,
-                                                                                 LocalDateTime stop) {
+    public ImmutableList<Metric> getInterval(LocalDateTime start,
+                                             LocalDateTime stop) {
 
 
-        return ImmutableMap.copyOf(metricWindow.subMap(start, stop));
+        List<Metric> metricList = metricWindow.subMap(start, stop).entrySet().stream().map(entry -> Metric.builder()
+                .time(entry.getKey()).values(entry.getValue()).build())
+                .collect(Collectors.toList());
+
+        return ImmutableList.copyOf(metricList);
+
 
     }
 
