@@ -4,16 +4,14 @@ import com.amazonaws.auth.PropertiesCredentials;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.Scopes;
-import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Named;
 import com.typesafe.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.server.resources.das5.Das5ResourceProvider;
-import ro.cosu.vampires.server.resources.ec2.EC2ResourceProvider;
-import ro.cosu.vampires.server.resources.local.LocalResourceProvider;
-import ro.cosu.vampires.server.resources.ssh.SshResourceProvider;
+import ro.cosu.vampires.server.resources.das5.Das5ResourceModule;
+import ro.cosu.vampires.server.resources.ec2.EC2ResourceModule;
+import ro.cosu.vampires.server.resources.local.LocalResourceModule;
+import ro.cosu.vampires.server.resources.ssh.SshResourceModule;
 import ro.cosu.vampires.server.util.Ssh;
 
 import java.io.FileInputStream;
@@ -31,12 +29,11 @@ public class ResourceModule extends AbstractModule{
 
     @Override
     protected void configure() {
-        MapBinder<Resource.Type, ResourceProvider> mapbinder
-                = MapBinder.newMapBinder(binder(), Resource.Type.class, ResourceProvider.class);
-        mapbinder.addBinding(Resource.Type.SSH).to(SshResourceProvider.class).asEagerSingleton();
-        mapbinder.addBinding(Resource.Type.LOCAL).to(LocalResourceProvider.class).asEagerSingleton();
-        mapbinder.addBinding(Resource.Type.DAS5).to(Das5ResourceProvider.class).asEagerSingleton();
-        mapbinder.addBinding(Resource.Type.EC2).to(EC2ResourceProvider.class).in(Scopes.SINGLETON);
+
+        install(new Das5ResourceModule());
+        install(new LocalResourceModule());
+        install(new EC2ResourceModule());
+        install(new SshResourceModule());
 
     }
 

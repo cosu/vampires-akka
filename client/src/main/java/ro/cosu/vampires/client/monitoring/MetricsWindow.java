@@ -47,7 +47,8 @@ public class MetricsWindow {
             if (gaugeValue instanceof Number) {
                 double n = ((Number) gaugeValue).doubleValue();
                 if (!Double.isNaN(n) && !Double.isInfinite(n))  {
-                    builder.put(gaugeName, n);
+                    //replace dots with - ;dots in field names are bad
+                    builder.put(gaugeName.replace(".", "-"), n);
                 }
             }
         });
@@ -62,7 +63,7 @@ public class MetricsWindow {
         gauges.entrySet().stream().forEach(entry -> {
             String gaugeName = entry.getKey();
             String gaugeValue  = entry.getValue().getValue().toString();
-            builder.put(gaugeName, gaugeValue);
+            builder.put(gaugeName.replace(".", "-"), gaugeValue);
 
         });
 

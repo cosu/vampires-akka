@@ -25,8 +25,8 @@ public abstract class  Result  implements Serializable {
         return new AutoValue_Result.Builder()
                 .output(new LinkedList<>())
                 .exitCode(-1)
-                .start(LocalDateTime.MIN)
-                .stop(LocalDateTime.MIN)
+                .start(LocalDateTime.parse("2000-01-01T00:00:00"))
+                .stop(LocalDateTime.parse("2000-01-01T00:00:00"))
                 .duration(0)
                 .build();
     }

@@ -11,7 +11,8 @@ public class WorkloadTest {
                 .metrics(Metrics.empty())
                 .result(Result.empty())
                 .build();
-        System.out.println(build);
+
+
 
     }
 }
