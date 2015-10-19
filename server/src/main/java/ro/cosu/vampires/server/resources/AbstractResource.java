@@ -65,7 +65,7 @@ public abstract class AbstractResource implements Resource {
     }
 
     public Resource stopCall() {
-        if (status.equals(Status.STOPPED) )
+        if (status.equals(Status.STOPPED) || status.equals(Status.STOPPING) )
             return this;
         setStatus(Status.STOPPING);
         try {

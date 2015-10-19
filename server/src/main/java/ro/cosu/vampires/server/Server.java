@@ -30,7 +30,7 @@ public class Server {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                terminator.tell(new Message.Shutdown(), ActorRef.noSender());
+                workActor.tell(new Message.Shutdown(), ActorRef.noSender());
                 try {
                     log.info("waiting 15 seconds for shutdown");
                     Await.result(system.whenTerminated(), Duration.create("15 seconds"));

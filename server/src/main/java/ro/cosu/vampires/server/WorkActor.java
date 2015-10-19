@@ -52,6 +52,10 @@ public class WorkActor extends UntypedActor{
             getSender().tell(work, getSelf());
         } else if (message instanceof Workload) {
             resultActor.forward(message, getContext());
+        } else if (message instanceof Message.Shutdown){
+            log.info("shutting down");
+            resultActor.forward(message, getContext());
+            getContext().stop(getSelf());
         } else {
             log.warning("unhandled message from {}", getSender() );
             unhandled(message);

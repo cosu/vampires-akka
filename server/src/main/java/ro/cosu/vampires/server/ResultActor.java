@@ -27,6 +27,8 @@ public class ResultActor extends UntypedActor{
     ResultActor(int numberOfResults) {
         this.numberOfResults = numberOfResults;
     }
+
+    @Override
     public  void preStart() {
         getContext().actorSelection("/user/terminator").tell(new Message.Up(), getSelf());
     }
@@ -41,16 +43,23 @@ public class ResultActor extends UntypedActor{
 
             //this should be a predicate
             if (results.size() == numberOfResults) {
-
-                writer.close();
-                // init shutdown
-                getContext().actorSelection("/user/registerActor").tell(new Message.Shutdown(), getSelf());
-                getContext().stop(getSelf());
+                shutdown();
             }
+        }
+        if (message instanceof Message.Shutdown) {
+            shutdown();
         }
         else {
             unhandled(message);
         }
+    }
+
+    private void shutdown() {
+        log.info("shutting down");
+        writer.close();
+        // init shutdown
+        getContext().actorSelection("/user/registerActor").tell(new Message.Shutdown(), getSelf());
+        getContext().stop(getSelf());
     }
 
 }

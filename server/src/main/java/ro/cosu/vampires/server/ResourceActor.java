@@ -10,6 +10,7 @@ import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceProvider;
 
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 public class ResourceActor extends UntypedActorWithStash {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
@@ -27,6 +28,10 @@ public class ResourceActor extends UntypedActorWithStash {
 
     }
 
+    @Override
+    public  void preStart() {
+        getContext().actorSelection("/user/terminator").tell(new Message.Up(), getSelf());
+    }
 
     @Override
     public void onReceive(Object message) throws Exception {
@@ -84,7 +89,13 @@ public class ResourceActor extends UntypedActorWithStash {
     @Override
     public void postStop() {
         if (resource != null)
-            resource.stop();
+            try {
+                resource.stop().get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();  //Auto-generated TODO
+            } catch (ExecutionException e) {
+                e.printStackTrace();  //Auto-generated TODO
+            }
     }
 
 
@@ -95,7 +106,8 @@ public class ResourceActor extends UntypedActorWithStash {
             sender.tell(resource.info(), getSelf());
         } else if (message instanceof Message.DestroyResource) {
             log.info("destroy " + message);
-            resource.stop().thenAccept(result ->  sender.tell(result.info(), getSelf()));
+            Resource result = resource.stop().get();
+            sender.tell(result.info(), getSelf());
 
         } else {
             unhandled(message);
