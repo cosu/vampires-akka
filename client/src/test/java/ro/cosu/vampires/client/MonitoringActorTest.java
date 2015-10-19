@@ -3,15 +3,12 @@ package ro.cosu.vampires.client;
 import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
 import akka.testkit.TestActorRef;
-import autovalue.shaded.com.google.common.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableList;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ro.cosu.vampires.client.monitoring.MonitoringManager;
-import ro.cosu.vampires.server.workload.Computation;
-import ro.cosu.vampires.server.workload.Metrics;
-import ro.cosu.vampires.server.workload.Result;
-import ro.cosu.vampires.server.workload.Workload;
+import ro.cosu.vampires.server.workload.*;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
@@ -63,9 +60,9 @@ public class MonitoringActorTest {
 
         Workload workload = (Workload) Await.result(future, Duration.create("2 seconds"));
 
-        ImmutableMap<LocalDateTime, ImmutableMap<String, Double>> timedMetrics = workload.metrics().timedMetrics();
+        ImmutableList<Metric> timedMetrics = workload.metrics().metrics();
 
-        assertThat(timedMetrics.keySet().size(), is(5));
+        assertThat(timedMetrics.size(), is(5));
 
         System.out.println(workload.metrics().metadata());
 
