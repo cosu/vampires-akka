@@ -6,7 +6,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class ExecutorActorTest {
+public class CommandExecutorActorTest {
     static ActorSystem system;
 
     @BeforeClass

@@ -25,12 +25,12 @@ public class SettingsImpl implements Extension {
 
     public List<ResultsWriter> getWriters() {
         List<ResultsWriter> writers = new LinkedList<>();
-        if (vampires.hasPath("writers.json")){
+        List<String> enabledWriters = vampires.getStringList("enabled-writers");
+        if (enabledWriters.contains("json")){
             writers.add(new JsonResultsWriter());
         }
 
-
-        if (vampires.hasPath("writers.mongo")){
+        if (enabledWriters.contains("mongo")){
             writers.add(new MongoWriter());
         }
 

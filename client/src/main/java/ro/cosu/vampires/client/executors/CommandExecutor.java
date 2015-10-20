@@ -1,4 +1,4 @@
-package ro.cosu.vampires.client;
+package ro.cosu.vampires.client.executors;
 
 import org.apache.commons.exec.*;
 import ro.cosu.vampires.server.workload.Computation;
@@ -12,8 +12,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-public class Executor {
-    public static Result execute(Computation computation) {
+public class CommandExecutor implements Executor {
+    @Override
+    public  Result execute(Computation computation) {
 
         String command = computation.command();
         CommandLine cmd = CommandLine.parse(command);

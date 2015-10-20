@@ -4,6 +4,7 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import ro.cosu.vampires.client.executors.CommandExecutor;
 import ro.cosu.vampires.server.workload.Result;
 import ro.cosu.vampires.server.workload.Workload;
 
@@ -22,8 +23,9 @@ public class ExecutorActor extends UntypedActor {
         if (message instanceof Workload) {
             Workload workload = (Workload) message;
 
+            CommandExecutor executor = new CommandExecutor();
 
-            Result result = Executor.execute(workload.computation());
+            Result result = executor.execute(workload.computation());
 
 
 
