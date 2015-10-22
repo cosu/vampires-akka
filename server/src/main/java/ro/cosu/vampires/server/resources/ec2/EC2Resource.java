@@ -70,7 +70,9 @@ public class EC2Resource extends AbstractResource {
         describeRequest.withInstanceIds(instanceId);
 
         DescribeInstancesResult describeInstanceResult = amazonEC2Client.describeInstances(describeRequest);
-        //TODO
+
+        String publicDnsName = describeInstanceResult.getReservations().get(0).getInstances().get(0).getPublicDnsName();
+        LOG.info("instance {} : {}",instanceId, publicDnsName );
 
     }
 
