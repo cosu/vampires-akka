@@ -20,7 +20,7 @@ public abstract class Computation implements Serializable {
     public static Computation empty() {
         return new AutoValue_Computation.Builder()
                 .id("EMPTY")
-                .command("EMPTY")
+                .command("true")
                 .build();
     }
 

@@ -51,22 +51,22 @@ public class MonitoringActorTest {
                 .start(LocalDateTime.now().minus(seconds, ChronoUnit.SECONDS))
                 .build();
 
-        Workload workloadWithoutMetrics = Workload.builder().computation(computation).result(result)
+        Job jobWithoutMetrics = Job.builder().computation(computation).result(result)
                 .metrics(Metrics.empty())
                 .build();
 
 
-        final Future<Object> future = akka.pattern.Patterns.ask(ref, workloadWithoutMetrics, 3000);
+        final Future<Object> future = akka.pattern.Patterns.ask(ref, jobWithoutMetrics, 3000);
 
-        Workload workload = (Workload) Await.result(future, Duration.create("2 seconds"));
+        Job job = (Job) Await.result(future, Duration.create("2 seconds"));
 
-        ImmutableList<Metric> timedMetrics = workload.metrics().metrics();
+        ImmutableList<Metric> timedMetrics = job.metrics().metrics();
 
         assertThat(timedMetrics.size(), is(5));
 
-        System.out.println(workload.metrics().metadata());
+        System.out.println(job.metrics().metadata());
 
-        assertThat(workload.metrics().metadata().keySet().size(), is(5));
+        assertThat(job.metrics().metadata().keySet().size(), is(5));
 
 
 

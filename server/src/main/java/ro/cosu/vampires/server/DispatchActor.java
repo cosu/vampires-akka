@@ -5,35 +5,29 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import ro.cosu.vampires.server.workload.Workload;
+import ro.cosu.vampires.server.workload.Job;
 
 public class DispatchActor extends UntypedActor {
 
     private final ActorRef workActor;
 
-    private final ActorRef registerActor;
+
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
-    public static Props props(ActorRef workActor, ActorRef registerActor){
-        return Props.create(DispatchActor.class, workActor, registerActor);
+    public static Props props(ActorRef workActor){
+        return Props.create(DispatchActor.class, workActor);
     }
 
-    public DispatchActor(ActorRef workActor, ActorRef registerActor) {
+    public DispatchActor(ActorRef workActor) {
         this.workActor= workActor;
-        this.registerActor = registerActor;
-
     }
 
     @Override
     public void onReceive(Object message) throws Exception {
 
-        if (message instanceof Message.Request ) {
+        if (message instanceof Job) {
             workActor.forward(message, getContext());
-        } else if (message instanceof Workload) {
-            workActor.forward(message, getContext());
-        } else if (message instanceof Message.Up){
-            registerActor.forward(message, getContext());
-            }
+        }
         else {
             log.error("Unhandled  request from {} , {}",  getSender().toString(),message);
             unhandled(message);

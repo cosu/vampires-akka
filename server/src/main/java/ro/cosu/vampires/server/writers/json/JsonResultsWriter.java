@@ -3,7 +3,7 @@ package ro.cosu.vampires.server.writers.json;
 import com.google.gson.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.server.workload.Workload;
+import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.writers.ResultsWriter;
 
 import java.io.File;
@@ -20,10 +20,10 @@ import java.util.List;
 public class JsonResultsWriter implements ResultsWriter {
     static final Logger LOG = LoggerFactory.getLogger(JsonResultsWriter.class);
 
-    List<Workload> results = new LinkedList<>();
+    List<Job> results = new LinkedList<>();
 
     @Override
-    public void writeResult(Workload result) {
+    public void writeResult(Job result) {
         results.add(result);
     }
     public void close() {

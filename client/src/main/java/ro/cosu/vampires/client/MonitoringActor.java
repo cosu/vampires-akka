@@ -9,9 +9,10 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import ro.cosu.vampires.client.monitoring.MetricsWindow;
+import ro.cosu.vampires.server.workload.Job;
+import ro.cosu.vampires.server.workload.JobStatus;
 import ro.cosu.vampires.server.workload.Metric;
 import ro.cosu.vampires.server.workload.Metrics;
-import ro.cosu.vampires.server.workload.Workload;
 import scala.concurrent.duration.Duration;
 
 import java.time.LocalDateTime;
@@ -20,7 +21,7 @@ import java.util.SortedMap;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 
-public class MonitoringActor extends UntypedActor{
+public class MonitoringActor extends UntypedActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
 
@@ -34,18 +35,19 @@ public class MonitoringActor extends UntypedActor{
         return Props.create(MonitoringActor.class, registry);
     }
 
-    MonitoringActor(MetricRegistry metricRegistry){
+    MonitoringActor(MetricRegistry metricRegistry) {
         this.metricRegistry = metricRegistry;
     }
 
 
     @Override
-    public void preStart(){
+    public void preStart() {
         getContext().system().scheduler().schedule(Duration.Zero(),
                 Duration.create(500, MILLISECONDS), () -> {
 
                     LocalDateTime now = LocalDateTime.now();
-                    SortedMap<String, Gauge> gauges = metricRegistry.getGauges((name, metric) -> name.startsWith("cpu") || name.startsWith("network"));
+                    SortedMap<String, Gauge> gauges = metricRegistry.getGauges((name, metric) -> name.startsWith
+                            ("cpu") || name.startsWith("network"));
 
                     metricsWindow.add(now, gauges);
 
@@ -56,26 +58,27 @@ public class MonitoringActor extends UntypedActor{
     @Override
     public void onReceive(Object message) throws Exception {
 
-        if (message instanceof Workload) {
-            Workload result = (Workload) message;
+        log.info("{} from {}", message, getSender());
 
-            if (result.metrics().equals(Metrics.empty())){
+
+        if (message instanceof Job) {
+            Job job= (Job) message;
+
+            if (JobStatus.EXECUTED.equals(job.status())) {
                 ImmutableList<Metric> metricsWindowInterval = metricsWindow.getInterval
-                        (result.result().start(), result.result().stop());
-                SortedMap<String, Gauge> hostGauges = metricRegistry.getGauges((name, metric) -> name.startsWith("host"));
+                        (job.result().start(), job.result().stop());
+                SortedMap<String, Gauge> hostGauges = metricRegistry.getGauges((name, metric) -> name.startsWith
+                        ("host"));
 
                 ImmutableMap<String, String> hostValues = MetricsWindow.convertGaugesToString(hostGauges);
 
                 Metrics metrics = Metrics.builder().metadata(hostValues).metrics(metricsWindowInterval).build();
-                result = result.toBuilder().metrics(metrics).build();
-                getSender().tell(result, getSelf());
-            }
-            else
-            {
+                job = job.withMetrics(metrics);
+                getSender().tell(job, getSelf());
+            } else {
                 log.error("received workload result not present");
             }
-        }
-        else {
+        } else {
             log.error("received unknown type of message");
             unhandled(message);
         }

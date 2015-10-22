@@ -5,4 +5,6 @@ import ro.cosu.vampires.server.workload.Result;
 
 public interface Executor {
     Result execute(Computation computation);
+
+
 }

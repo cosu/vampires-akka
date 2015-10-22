@@ -2,7 +2,6 @@ package ro.cosu.vampires.client;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import akka.event.LoggingAdapter;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import ro.cosu.vampires.client.monitoring.MonitoringManager;
 import scala.concurrent.Await;
@@ -22,7 +21,6 @@ public class Client {
         SLF4JBridgeHandler.install();
     }
 
-    private static LoggingAdapter log;
 
     public static void main(String[] args) throws Exception {
 
@@ -32,11 +30,13 @@ public class Client {
 
         final String path = "akka.tcp://ServerSystem@" + host + ":2552/user/server";
 
-        final ActorRef client = system.actorOf(ClientActor.props(path), "client");
 
-        final ActorRef terminator = system.actorOf(Terminator.props(client), "terminator");
 
         final ActorRef monitor = system.actorOf(MonitoringActor.props(MonitoringManager.getMetricRegistry()), "monitor");
+
+        final ActorRef client = system.actorOf(ClientActor.props(path), "client");
+        final ActorRef terminator = system.actorOf(Terminator.props(client), "terminator");
+
 
         Await.result(system.whenTerminated(), Duration.Inf());
 

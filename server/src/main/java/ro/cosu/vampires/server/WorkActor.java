@@ -6,7 +6,7 @@ import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.settings.Settings;
 import ro.cosu.vampires.server.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.Computation;
-import ro.cosu.vampires.server.workload.Workload;
+import ro.cosu.vampires.server.workload.Job;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -44,15 +44,13 @@ public class WorkActor extends UntypedActor{
     @Override
     public void onReceive(Object message) throws Exception {
 
-
-        if (message instanceof Message.Request) {
-            log.info("Work request from " + getSender().toString());
-            Object work = this.getNewWorkload(Optional.ofNullable(workQueue.poll()));
-
-            getSender().tell(work, getSelf());
-        } else if (message instanceof Workload) {
+        if (message instanceof Job) {
             resultActor.forward(message, getContext());
-        } else if (message instanceof Message.Shutdown){
+            log.info("Work result from {}", getSender().toString());
+            Object work = this.getNewWorkload(Optional.ofNullable(workQueue.poll()));
+            getSender().tell(work, getSelf());
+
+        } else if (message instanceof ResourceControl.Shutdown){
             log.info("shutting down");
             resultActor.forward(message, getContext());
             getContext().stop(getSelf());
@@ -69,7 +67,7 @@ public class WorkActor extends UntypedActor{
         if (work.isPresent()) {
             Computation computation = Computation.builder().command(work.get()).build();
             log.info("computation {}", computation);
-            return Workload.empty().withComputation(computation);
+            return Job.empty().withComputation(computation);
 
         }
         else {

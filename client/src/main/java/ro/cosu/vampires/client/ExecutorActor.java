@@ -5,8 +5,9 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.client.executors.CommandExecutor;
+import ro.cosu.vampires.client.executors.Executor;
+import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.workload.Result;
-import ro.cosu.vampires.server.workload.Workload;
 
 public class ExecutorActor extends UntypedActor {
 
@@ -20,16 +21,14 @@ public class ExecutorActor extends UntypedActor {
 
     @Override
     public void onReceive(Object message) throws Exception {
-        if (message instanceof Workload) {
-            Workload workload = (Workload) message;
+        if (message instanceof Job) {
+            Job job = (Job) message;
 
-            CommandExecutor executor = new CommandExecutor();
+            Executor executor = new CommandExecutor();
 
-            Result result = executor.execute(workload.computation());
+            Result result = executor.execute(job.computation());
 
-
-
-            getContext().actorSelection("/user/monitor").tell(workload.withResult(result), getSender());
+            getContext().actorSelection("/user/monitor").tell(job.withResult(result), getSender());
 
         }
 

@@ -20,17 +20,20 @@ public class Server {
         ActorRef workActor = system.actorOf(WorkActor.props(), "workActor");
 
 
-        ActorRef registerActor = system.actorOf(RegisterActor.props(), "registerActor");
+        ActorRef resourceManagerActor = system.actorOf(ResourceManagerActor.props(), "resourceManager");
+
+        ActorRef registerActor = system.actorOf(RegisterActor.props(resourceManagerActor), "registerActor");
 
         ActorRef terminator = system.actorOf(Terminator.props(), "terminator");
 
+        system.actorOf(DispatchActor.props(workActor), "server");
 
-        system.actorOf(DispatchActor.props(workActor, registerActor), "server");
+
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                workActor.tell(new Message.Shutdown(), ActorRef.noSender());
+                workActor.tell(new ResourceControl.Shutdown(), ActorRef.noSender());
                 try {
                     log.info("waiting 15 seconds for shutdown");
                     Await.result(system.whenTerminated(), Duration.create("15 seconds"));

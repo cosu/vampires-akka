@@ -20,10 +20,10 @@ public class Terminator extends UntypedActor{
 
     @Override
     public void onReceive(Object msg) {
-        if (msg instanceof Message.Shutdown) {
+        if (msg instanceof ResourceControl.Shutdown) {
            refs.forEach(r -> r.tell(PoisonPill.getInstance(), getSelf()));
         } else
-        if (msg instanceof Message.Up) {
+        if (msg instanceof ResourceControl.Up) {
             refs.add(getSender());
             getContext().watch(getSender());
         }  else

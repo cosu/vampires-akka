@@ -23,10 +23,10 @@ public class ResourceActorTest extends AbstractActorTest{
     }
 
 
-    private Message.CreateResource getCreateResource() {
+    private ResourceControl.Create getCreateResource() {
         LocalResourceParameters parameters = LocalResourceParameters.builder().command("sleep 5").build();
 
-        return new Message.CreateResource(Resource.Type.LOCAL, parameters);
+        return new ResourceControl.Create(Resource.Type.LOCAL, parameters);
     }
 
 
@@ -47,7 +47,7 @@ public class ResourceActorTest extends AbstractActorTest{
 
                             if (resourceInfo.status().equals(Resource.Status.RUNNING)) {
 
-                                resourceActor.tell(new Message.DestroyResource(),resourceProbe.getRef());
+                                resourceActor.tell(new ResourceControl.Destroy(),resourceProbe.getRef());
                             } else {
 
                                 return noAutoPilot();

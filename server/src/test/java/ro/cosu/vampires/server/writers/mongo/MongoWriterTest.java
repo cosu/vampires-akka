@@ -4,7 +4,7 @@ import org.junit.Test;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Metrics;
 import ro.cosu.vampires.server.workload.Result;
-import ro.cosu.vampires.server.workload.Workload;
+import ro.cosu.vampires.server.workload.Job;
 
 public class MongoWriterTest {
 
@@ -12,12 +12,12 @@ public class MongoWriterTest {
 //    @Ignore
     public void testWriteResult() throws Exception {
         MongoWriter writer = new MongoWriter();
-        Workload workload = Workload.builder()
+        Job job = Job.builder()
                 .computation(Computation.builder().command("test").id("10").build())
                 .metrics(Metrics.empty())
                 .result(Result.empty())
                 .build();
 
-        writer.writeResult(workload);
+        writer.writeResult(job);
     }
 }

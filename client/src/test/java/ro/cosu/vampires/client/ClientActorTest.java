@@ -9,9 +9,9 @@ import akka.testkit.TestActorRef;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ro.cosu.vampires.server.Message;
 import ro.cosu.vampires.server.RegisterActor;
 import ro.cosu.vampires.server.workload.Computation;
+import ro.cosu.vampires.server.workload.Job;
 
 public class ClientActorTest {
 
@@ -38,8 +38,7 @@ public class ClientActorTest {
         ref.tell(new ActorIdentity(null,actorRefOption), ActorRef.noSender());
         ref.tell(Computation.builder().command("echo 1").id("test"), ActorRef.noSender());
 
-        remoteProbe.expectMsgClass(Message.Up.class);
-        remoteProbe.expectMsgClass(Message.Request.class);
+        remoteProbe.expectMsgClass(Job.class);
         //TODO use a probe for this
 
 //        remoteProbe.expectMsgClass(Message.Result.class);

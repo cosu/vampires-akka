@@ -4,10 +4,13 @@ import akka.actor.*;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.japi.Procedure;
-import ro.cosu.vampires.server.Message;
-import ro.cosu.vampires.server.workload.Result;
-import ro.cosu.vampires.server.workload.Workload;
+import ro.cosu.vampires.server.settings.Settings;
+import ro.cosu.vampires.server.settings.SettingsImpl;
+import ro.cosu.vampires.server.workload.Job;
+import ro.cosu.vampires.server.workload.JobStatus;
 import scala.concurrent.duration.Duration;
+
+import java.util.stream.IntStream;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -18,6 +21,8 @@ public class ClientActor extends UntypedActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private ActorRef server;
 
+    final SettingsImpl settings =
+            Settings.SettingsProvider.get(getContext().system());
 
     public static Props props(String path) {
         return Props.create(ClientActor.class, path);
@@ -50,7 +55,11 @@ public class ClientActor extends UntypedActor {
             } else {
                 getContext().watch(server);
 
-                sendMessageAndRequestNew(new Message.Up());
+                log.info("starting {} workers", settings.getParallel());
+                //bootstrapping via an empty job
+                IntStream.range(0, settings.getParallel())
+                        .forEach( i ->execute(Job.empty()));
+
 
                 getContext().become(active, true);
             }
@@ -64,13 +73,21 @@ public class ClientActor extends UntypedActor {
 
     Procedure<Object> active = message -> {
         log.info("{} -> {} {}" , getSelf().path() , message.toString(), getSender().toString());
-        if (message instanceof Workload){
-            Workload workload = (Workload) message;
-            if (workload.result().equals(Result.empty())){
-                execute(workload);
-            }  else {
-                sendMessageAndRequestNew(message);
+        if (message instanceof Job){
 
+            Job job = (Job) message;
+
+            if (JobStatus.COMPLETE.equals(job.status())) {
+                server.tell(job, getSelf());
+            }
+            else {
+                execute(job);
+            }
+        }
+        if (message instanceof Terminated) {
+            if (getSender().equals(server)){
+                log.info("server left. shutting down");
+                getContext().stop(getSelf());
             }
 
         }
@@ -79,15 +96,12 @@ public class ClientActor extends UntypedActor {
         }
     };
 
-    private void execute(Workload workload) {
+    private void execute(Job job) {
         ActorRef executor = getContext().actorOf(ExecutorActor.props());
-        executor.tell(workload, getSelf());
+        executor.tell(job, getSelf());
+
     }
 
-    private void sendMessageAndRequestNew(Object message) {
-        server.tell(message, getSelf());
-        server.tell(new Message.Request(), getSelf());
-    }
 
 
 }

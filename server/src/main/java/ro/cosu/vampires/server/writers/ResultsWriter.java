@@ -1,8 +1,8 @@
 package ro.cosu.vampires.server.writers;
 
-import ro.cosu.vampires.server.workload.Workload;
+import ro.cosu.vampires.server.workload.Job;
 
 public interface ResultsWriter{
-    void writeResult(Workload result);
+    void writeResult(Job result);
     void close();
 }

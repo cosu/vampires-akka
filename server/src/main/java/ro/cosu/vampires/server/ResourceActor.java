@@ -30,15 +30,15 @@ public class ResourceActor extends UntypedActorWithStash {
 
     @Override
     public  void preStart() {
-        getContext().actorSelection("/user/terminator").tell(new Message.Up(), getSelf());
+        getContext().actorSelection("/user/terminator").tell(new ResourceControl.Up(), getSelf());
     }
 
     @Override
     public void onReceive(Object message) throws Exception {
         ActorRef sender = getSender();
-        if (message instanceof Message.CreateResource) {
+        if (message instanceof ResourceControl.Create) {
 
-            Optional<Resource> resource = create((Message.CreateResource) message, sender);
+            Optional<Resource> resource = create((ResourceControl.Create) message, sender);
             if (!resource.isPresent()) {
                 getSelf().tell(Resource.Status.FAILED, sender);
             }
@@ -55,9 +55,9 @@ public class ResourceActor extends UntypedActorWithStash {
         }
     }
 
-    private Optional<Resource> create(Message.CreateResource message, ActorRef sender) {
+    private Optional<Resource> create(ResourceControl.Create create, ActorRef sender) {
 
-        Optional<Resource> resource = resourceProvider.create(message.parameters);
+        Optional<Resource> resource = resourceProvider.create(create.parameters);
 
         resource.ifPresent(created -> this.resource = created);
         resource.ifPresent(created -> created.start()
@@ -91,10 +91,8 @@ public class ResourceActor extends UntypedActorWithStash {
         if (resource != null)
             try {
                 resource.stop().get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();  //Auto-generated TODO
-            } catch (ExecutionException e) {
-                e.printStackTrace();  //Auto-generated TODO
+            } catch (InterruptedException | ExecutionException e) {
+                log.error("failed to stop resource {}" , e);
             }
     }
 
@@ -102,9 +100,9 @@ public class ResourceActor extends UntypedActorWithStash {
     Procedure<Object> active = message -> {
         ActorRef sender = getSender();
 
-        if (message instanceof Message.GetResourceInfo) {
+        if (message instanceof ResourceControl.Info) {
             sender.tell(resource.info(), getSelf());
-        } else if (message instanceof Message.DestroyResource) {
+        } else if (message instanceof ResourceControl.Destroy) {
             log.info("destroy " + message);
             Resource result = resource.stop().get();
             sender.tell(result.info(), getSelf());

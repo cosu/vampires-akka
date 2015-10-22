@@ -37,7 +37,8 @@ public class DockerExecutor implements Executor{
         String containerName = "vampires-" + new SecureRandom().nextInt();
 
         CreateContainerResponse container = dockerClient.createContainerCmd("busybox").withCmd("echo", "1")
-                .withName(containerName).exec();
+                .withName(containerName)
+                .exec();
 
         dockerClient.startContainerCmd(container.getId()).exec();
 
@@ -50,6 +51,12 @@ public class DockerExecutor implements Executor{
         } catch (InterruptedException e) {
             //
         }
+
+        dockerClient.removeContainerCmd(container.getId());
+        dockerClient.waitContainerCmd(container.getId()).exec();
+
+
+
 
 
         return Result.empty();

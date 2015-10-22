@@ -18,7 +18,7 @@ public class ResourceManagerActorTest extends AbstractActorTest{
     @Test
     public void testStartResource() throws Exception {
 
-        Message.CreateResource createResource = getCreateResource();
+        ResourceControl.Create createResource = getCreateResource();
 
 
         TestActorRef<ResourceManagerActor> resourceManagerActor = TestActorRef.create(system, ResourceManagerActor.props(),
@@ -32,7 +32,7 @@ public class ResourceManagerActorTest extends AbstractActorTest{
         assertThat(ci.description().type(), is(equalTo(Resource.Type.LOCAL)));
 
 
-        Message.GetResourceInfo resourceInfo = new Message.GetResourceInfo();
+        ResourceControl.Info resourceInfo = new ResourceControl.Info();
 
         final Future<Object> statusFuture = akka.pattern.Patterns.ask(resourceManagerActor, resourceInfo , 3000);
 
@@ -40,7 +40,7 @@ public class ResourceManagerActorTest extends AbstractActorTest{
 
         assertThat(si.status(), is(equalTo(Resource.Status.RUNNING)));
 
-        final Future<Object> destroyFuture = akka.pattern.Patterns.ask(resourceManagerActor,new Message.Shutdown(), 3000);
+        final Future<Object> destroyFuture = akka.pattern.Patterns.ask(resourceManagerActor,new ResourceControl.Shutdown(), 3000);
 
         ResourceInfo di = (ResourceInfo) Await.result(destroyFuture, Duration.create("5 seconds"));
 
@@ -49,9 +49,9 @@ public class ResourceManagerActorTest extends AbstractActorTest{
 
     }
 
-    private Message.CreateResource getCreateResource() {
+    private ResourceControl.Create getCreateResource() {
         LocalResourceParameters parameters = LocalResourceParameters.builder().command("sleep 10").build();
 
-        return new Message.CreateResource(Resource.Type.LOCAL, parameters);
+        return new ResourceControl.Create(Resource.Type.LOCAL, parameters);
     }
 }

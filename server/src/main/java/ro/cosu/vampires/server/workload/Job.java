@@ -7,39 +7,47 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @AutoValue
-public abstract class Workload implements Serializable {
+public abstract class Job implements Serializable {
+
+
     public abstract Computation computation();
     public abstract LocalDateTime created ();
 
-
     public abstract Result result();
+
+    public abstract JobStatus status();
 
     public abstract Metrics metrics();
     public abstract String id();
 
     public abstract Builder toBuilder();
 
-    public Workload withMetrics(Metrics metrics) {
-        return toBuilder().metrics(metrics).build();
+    public Job withMetrics(Metrics metrics) {
+        return toBuilder().metrics(metrics)
+                .status(JobStatus.COMPLETE)
+                .build();
     }
 
-    public Workload withResult(Result result) {
-        return toBuilder().result(result).build();
+    public Job withResult(Result result) {
+        return toBuilder().result(result)
+                .status(JobStatus.EXECUTED)
+                .build();
     }
 
-    public Workload withComputation(Computation computation) {
+    public Job withComputation(Computation computation) {
         return toBuilder().computation(computation).build();
     }
 
 
-    public static Workload empty() {
-        return builder().computation(Computation.empty()).metrics(Metrics.empty()).result(Result.empty()).build();
-
-//                .build();
+    public static Job empty() {
+        return builder().computation(Computation.empty())
+                .metrics(Metrics.empty())
+                .status(JobStatus.NEW)
+                .result(Result.empty()).build();
     }
 
     public static Builder builder() {
-        return new AutoValue_Workload.Builder().created(LocalDateTime.now()).id(UUID.randomUUID().toString());
+        return new AutoValue_Job.Builder().created(LocalDateTime.now()).id(UUID.randomUUID().toString());
     }
 
     @AutoValue.Builder
@@ -48,8 +56,10 @@ public abstract class Workload implements Serializable {
         public abstract Builder result (Result result);
         public abstract Builder metrics (Metrics metrics);
         public abstract Builder created (LocalDateTime created);
+
+        public abstract Builder status(JobStatus jobstatus);
         public abstract Builder id(String id);
 
-        public abstract Workload build();
+        public abstract Job build();
     }
 }

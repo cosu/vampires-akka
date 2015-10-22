@@ -1,6 +1,8 @@
 package ro.cosu.vampires.client.executors;
 
 import org.apache.commons.exec.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Result;
 
@@ -13,10 +15,16 @@ import java.util.List;
 
 
 public class CommandExecutor implements Executor {
+
+    static final Logger LOG = LoggerFactory.getLogger(Executor.class);
+
+
     @Override
     public  Result execute(Computation computation) {
 
         String command = computation.command();
+
+        LOG.info("executing {}", command);
         CommandLine cmd = CommandLine.parse(command);
         DefaultExecutor executor = new DefaultExecutor();
 
