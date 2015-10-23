@@ -79,7 +79,6 @@ public class ResourceActor extends UntypedActorWithStash {
 
         getSender().tell(resource.info(), getSelf());
         getContext().parent().tell(resource.info(), getSelf());
-        log.info("activate");
         unstashAll();
         getContext().become(active);
 
