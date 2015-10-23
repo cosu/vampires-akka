@@ -7,12 +7,14 @@ import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.resources.AbstractResourceProvider;
 import ro.cosu.vampires.server.resources.Resource;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 public class EC2ResourceProvider extends AbstractResourceProvider {
     static final Logger LOG = LoggerFactory.getLogger(EC2ResourceProvider.class);
 
     @Inject
+    @Nullable
     AmazonEC2Client amazonEC2Client;
 
 

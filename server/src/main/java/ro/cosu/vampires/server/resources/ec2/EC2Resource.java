@@ -38,6 +38,7 @@ public class EC2Resource extends AbstractResource {
         String cloudInit = Resources.toString(cloudInitResource, Charsets.UTF_8);
 
         cloudInit = cloudInit.replace("$command", parameters.command());
+        LOG.info("command {}", parameters.command());
 
         RunInstancesRequest request = runInstancesRequest.withImageId(parameters.imageId())
                 .withInstanceType(parameters.instanceType())
