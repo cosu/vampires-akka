@@ -58,7 +58,7 @@ public class ClientActor extends UntypedActor {
                 log.info("starting {} workers", settings.getParallel());
                 //bootstrapping via an empty job
                 IntStream.range(0, settings.getParallel())
-                        .forEach( i ->execute(Job.empty()));
+                        .forEach(i -> execute(Job.empty()));
 
 
                 getContext().become(active, true);
@@ -72,7 +72,7 @@ public class ClientActor extends UntypedActor {
     }
 
     Procedure<Object> active = message -> {
-        log.info("{} -> {} {}" , getSelf().path() , message.toString(), getSender().toString());
+
         if (message instanceof Job){
 
             Job job = (Job) message;
@@ -81,6 +81,7 @@ public class ClientActor extends UntypedActor {
                 server.tell(job, getSelf());
             }
             else {
+                log.info("Execute {} -> {} {}" , getSelf().path() , job.computation(), getSender().toString());
                 execute(job);
             }
         }
@@ -92,6 +93,7 @@ public class ClientActor extends UntypedActor {
 
         }
         else {
+            log.info("Unhandled: {} -> {} {}" , getSelf().path() , message.toString(), getSender().toString());
             unhandled(message);
         }
     };
