@@ -71,8 +71,10 @@ public class WorkActor extends UntypedActor{
 
         }
         else {
-            log.info("killing {}", getSender());
-            return PoisonPill.getInstance();
+            log.info("Empty {}", getSender());
+
+            return Job.empty().withComputation(Computation.builder().command("sleep 9999").build());
+
         }
 
     }
