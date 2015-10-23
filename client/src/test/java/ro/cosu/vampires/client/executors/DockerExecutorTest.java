@@ -1,6 +1,7 @@
 package ro.cosu.vampires.client.executors;
 
-import jdk.nashorn.internal.ir.annotations.Ignore;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import ro.cosu.vampires.server.workload.Computation;
 
