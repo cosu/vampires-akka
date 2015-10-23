@@ -47,7 +47,8 @@ public abstract class Job implements Serializable {
     }
 
     public static Builder builder() {
-        return new AutoValue_Job.Builder().created(LocalDateTime.now()).id(UUID.randomUUID().toString());
+        return new AutoValue_Job.Builder().created(LocalDateTime.now()).status(JobStatus.NEW).id(UUID.randomUUID()
+                .toString());
     }
 
     @AutoValue.Builder
