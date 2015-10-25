@@ -16,7 +16,8 @@ import java.util.List;
 
 public class CommandExecutor implements Executor {
 
-    static final Logger LOG = LoggerFactory.getLogger(Executor.class);
+    static final Logger LOG = LoggerFactory.getLogger(CommandExecutor.class);
+    public static final int TIMEOUT_IN_MILIS = 600000;
 
 
     @Override
@@ -24,7 +25,7 @@ public class CommandExecutor implements Executor {
 
         String command = computation.command();
 
-        LOG.info("executing {}", command);
+        LOG.info("executing {} with timeout {} minutes", command, TIMEOUT_IN_MILIS/1000/60);
         CommandLine cmd = CommandLine.parse(command);
         DefaultExecutor executor = new DefaultExecutor();
 
@@ -33,7 +34,7 @@ public class CommandExecutor implements Executor {
         PumpStreamHandler handler = new PumpStreamHandler(collectingLogOutputStream);
 
         executor.setStreamHandler(handler);
-        executor.setWatchdog(new ExecuteWatchdog(15000));
+        executor.setWatchdog(new ExecuteWatchdog(TIMEOUT_IN_MILIS));
 
         executor.setWorkingDirectory(Paths.get("").toAbsolutePath().toFile());
 
@@ -58,7 +59,6 @@ public class CommandExecutor implements Executor {
                 .exitCode(exitCode)
                 .start(start)
                 .stop(stop)
-                .duration(duration)
                 .output(collectingLogOutputStream.getLines())
                 .build();
 

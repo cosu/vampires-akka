@@ -3,33 +3,27 @@ package ro.cosu.vampires.client.executors;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.Frame;
-import com.github.dockerjava.core.DockerClientBuilder;
-import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.command.LogContainerResultCallback;
+import com.google.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Result;
 
 import java.security.SecureRandom;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Collections;
 
 public class DockerExecutor implements Executor{
 
-    final DockerClient dockerClient;
+    static final Logger LOG = LoggerFactory.getLogger(DockerExecutor.class);
 
-    public DockerExecutor(){
-
-        DockerClientConfig config = DockerClientConfig.createDefaultConfigBuilder()
-                .withUri("https://192.168.99.100:2376")
-                .withDockerCertPath("/Users/cdumitru/.docker/machine/certs")
-                .build();
-
-        dockerClient = DockerClientBuilder.getInstance(config).build();
+    @Inject
+    DockerClient dockerClient;
 
 
 
-
-
-
-    }
 
     @Override
     public Result execute(Computation computation) {
@@ -40,26 +34,36 @@ public class DockerExecutor implements Executor{
                 .withName(containerName)
                 .exec();
 
+        LocalDateTime start = LocalDateTime.now();
+
         dockerClient.startContainerCmd(container.getId()).exec();
 
-        int exitCode = dockerClient.waitContainerCmd(container.getId()).exec();
+        LocalDateTime stop = LocalDateTime.now();
 
+        int exitCode = dockerClient.waitContainerCmd(container.getId()).exec();
+        String output ="";
         try {
-            String s = dockerClient.logContainerCmd(container.getId()).withStdOut().exec(new LogContainerTestCallback())
+             output = dockerClient.logContainerCmd(container.getId()).withStdOut().exec(new LogContainerTestCallback())
                     .awaitCompletion().toString();
-            System.out.println(s);
+
         } catch (InterruptedException e) {
-            //
+            exitCode = -1;
+            LOG.error("docker get log error {}", e);
         }
 
         dockerClient.removeContainerCmd(container.getId());
         dockerClient.waitContainerCmd(container.getId()).exec();
 
+        long duration = Duration.between(start, stop).toMillis();
 
 
-
-
-        return Result.empty();
+        return Result.builder()
+                .exitCode(exitCode)
+                .start(start)
+                .stop(stop)
+                .duration(duration)
+                .output(Collections.singletonList(output))
+                .build();
 
     }
 

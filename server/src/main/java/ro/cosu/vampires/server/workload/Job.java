@@ -42,12 +42,14 @@ public abstract class Job implements Serializable {
     public static Job empty() {
         return builder().computation(Computation.empty())
                 .metrics(Metrics.empty())
-                .status(JobStatus.NEW)
                 .result(Result.empty()).build();
     }
 
     public static Builder builder() {
-        return new AutoValue_Job.Builder().created(LocalDateTime.now()).id(UUID.randomUUID().toString());
+        return new AutoValue_Job.Builder()
+                .created(LocalDateTime.now())
+                .id(UUID.randomUUID().toString())
+                .status(JobStatus.NEW);
     }
 
     @AutoValue.Builder
