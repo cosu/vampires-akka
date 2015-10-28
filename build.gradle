@@ -13,7 +13,7 @@ idea{
 }
 
 wrapper {
-    gradleVersion = '2.8-rc-1'
+    gradleVersion = '2.8'
 }
 
 
@@ -23,7 +23,18 @@ allprojects {
             options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
         }
     }
+
+    task deleteLocalInstall(dependsOn: [clean, build, installDist],  type: Delete) {
+        delete System.properties['user.home'] + "/vampires-akka/${project.name}"
+    }
+
+    task installLocal(dependsOn: deleteLocalInstall,type: Copy) {
+        description 'Copies the resource directory to the target directory.'
+        from "${buildDir}/install"
+        into System.properties['user.home'] + "/vampires-akka"
+    }
 }
+
 
 subprojects {
     apply plugin: 'java'
@@ -75,6 +86,8 @@ subprojects {
         testCompile "com.typesafe.akka:akka-testkit_${akkaVersion}"
         testCompile "org.mockito:mockito-core:1.+"
     }
+
+
 }
 
 project(':client') {
@@ -98,4 +111,5 @@ project(':server'){
 
     }
 }
+
 

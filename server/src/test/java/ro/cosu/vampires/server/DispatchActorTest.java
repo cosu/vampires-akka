@@ -3,6 +3,7 @@ package ro.cosu.vampires.server;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.testkit.JavaTestKit;
+import org.junit.Ignore;
 import org.junit.Test;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Metrics;
@@ -15,6 +16,7 @@ public class DispatchActorTest extends AbstractActorTest{
 
 
     @Test
+    @Ignore
     public void testDispatch(){
         new JavaTestKit(system) {
             {

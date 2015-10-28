@@ -33,11 +33,13 @@ public class DockerExecutor implements Executor{
     @Override
     public Result execute(Computation computation) {
 
+        LOG.info("running docker job {}", computation);
         String containerName = "vampires-" + Math.abs(new SecureRandom().nextInt());
 
         String containerImage = config.getString("docker.image");
 
-        CreateContainerResponse container = dockerClient.createContainerCmd(containerImage).withCmd(computation.command().split(" "))
+        CreateContainerResponse container = dockerClient
+                .createContainerCmd(containerImage).withCmd(computation.command().split(" "))
                 .withName(containerName)
                 .exec();
 
@@ -49,7 +51,7 @@ public class DockerExecutor implements Executor{
 
         LocalDateTime stop = LocalDateTime.now();
 
-        String output ="";
+        String output = "";
         try {
              output = dockerClient.logContainerCmd(container.getId()).withStdOut().exec(new LogContainerTestCallback())
                     .awaitCompletion().toString();

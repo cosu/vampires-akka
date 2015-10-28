@@ -1,15 +1,16 @@
 package ro.cosu.vampires.server.writers.mongo;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import ro.cosu.vampires.server.workload.Computation;
+import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.workload.Metrics;
 import ro.cosu.vampires.server.workload.Result;
-import ro.cosu.vampires.server.workload.Job;
 
 public class MongoWriterTest {
 
     @Test
-//    @Ignore
+    @Ignore
     public void testWriteResult() throws Exception {
         MongoWriter writer = new MongoWriter();
         Job job = Job.builder()

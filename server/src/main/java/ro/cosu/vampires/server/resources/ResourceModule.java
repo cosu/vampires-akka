@@ -9,7 +9,6 @@ import com.typesafe.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.resources.das5.Das5ResourceModule;
-import ro.cosu.vampires.server.resources.ec2.EC2ResourceModule;
 import ro.cosu.vampires.server.resources.local.LocalResourceModule;
 import ro.cosu.vampires.server.resources.ssh.SshResourceModule;
 import ro.cosu.vampires.server.util.Ssh;
@@ -32,7 +31,7 @@ public class ResourceModule extends AbstractModule{
 
         install(new Das5ResourceModule());
         install(new LocalResourceModule());
-        install(new EC2ResourceModule());
+//        install(new EC2ResourceModule());
         install(new SshResourceModule());
 
     }

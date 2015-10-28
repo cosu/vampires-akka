@@ -28,7 +28,7 @@ public class LocalResource extends AbstractResource{
 
         CommandLine cmd = new CommandLine("/bin/sh");
         cmd.addArgument("-c");
-        cmd.addArgument("nohup " + parameters.command() + " > /dev/null 2>&1 &  echo $! ", false);
+        cmd.addArgument("nohup " + parameters.command() + " 2>&1 &  echo $! ", false);
 
         LOG.debug("execute {}", cmd.toString());
         execute(cmd);

@@ -1,6 +1,7 @@
 package ro.cosu.vampires.server;
 
 import akka.testkit.TestActorRef;
+import org.junit.Ignore;
 import org.junit.Test;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
@@ -16,6 +17,7 @@ import static org.junit.Assert.assertThat;
 public class ResourceManagerActorTest extends AbstractActorTest{
 
     @Test
+    @Ignore
     public void testStartResource() throws Exception {
 
         ResourceControl.Create createResource = getCreateResource();
