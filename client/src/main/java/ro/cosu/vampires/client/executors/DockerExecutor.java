@@ -5,6 +5,8 @@ import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.Frame;
 import com.github.dockerjava.core.command.LogContainerResultCallback;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
+import com.typesafe.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.workload.Computation;
@@ -22,15 +24,20 @@ public class DockerExecutor implements Executor{
     @Inject
     DockerClient dockerClient;
 
+    @Named("Config")
+    @Inject
+    Config config;
 
 
 
     @Override
     public Result execute(Computation computation) {
 
-        String containerName = "vampires-" + new SecureRandom().nextInt();
+        String containerName = "vampires-" + Math.abs(new SecureRandom().nextInt());
 
-        CreateContainerResponse container = dockerClient.createContainerCmd("busybox").withCmd("echo", "1")
+        String containerImage = config.getString("docker.image");
+
+        CreateContainerResponse container = dockerClient.createContainerCmd(containerImage).withCmd(computation.command().split(" "))
                 .withName(containerName)
                 .exec();
 
@@ -38,9 +45,10 @@ public class DockerExecutor implements Executor{
 
         dockerClient.startContainerCmd(container.getId()).exec();
 
+        int exitCode = dockerClient.waitContainerCmd(container.getId()).exec();
+
         LocalDateTime stop = LocalDateTime.now();
 
-        int exitCode = dockerClient.waitContainerCmd(container.getId()).exec();
         String output ="";
         try {
              output = dockerClient.logContainerCmd(container.getId()).withStdOut().exec(new LogContainerTestCallback())
