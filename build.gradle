@@ -28,10 +28,10 @@ allprojects {
         delete System.properties['user.home'] + "/vampires-akka/${project.name}"
     }
 
-    task installLocal(dependsOn: deleteLocalInstall,type: Copy) {
+    task installLocal(dependsOn: deleteLocalInstall,type: Sync) {
         description 'Copies the resource directory to the target directory.'
-        from "${buildDir}/install"
-        into System.properties['user.home'] + "/vampires-akka"
+        from "${buildDir}/install/${project.name}"
+        into System.properties['user.home'] + "/vampires-akka/${project.name}"
     }
 }
 
