@@ -41,6 +41,7 @@ public class ResourceManagerTest {
     }
 
     @Test
+    @Ignore
     public void testCreateLocalResource() throws  Exception  {
 
         Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.load().getConfig("vampires")));
