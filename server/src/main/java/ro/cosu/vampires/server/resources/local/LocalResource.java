@@ -28,7 +28,7 @@ public class LocalResource extends AbstractResource{
 
         CommandLine cmd = new CommandLine("/bin/sh");
         cmd.addArgument("-c");
-        cmd.addArgument("nohup " + parameters.command() + " 2>&1 &  echo $! ", false);
+        cmd.addArgument("nohup " + parameters.command() + " 2>&1 0</dev/null  &  echo $! ", false);
 
         execute(cmd);
 
@@ -39,7 +39,7 @@ public class LocalResource extends AbstractResource{
         DefaultExecutor executor = new DefaultExecutor();
         executor.setWorkingDirectory(Paths.get("").toAbsolutePath().toFile());
         executor.setStreamHandler(new PumpStreamHandler(collectingLogOutputStream));
-//        executor.setWatchdog(new ExecuteWatchdog(1500));
+        executor.setWatchdog(new ExecuteWatchdog(1500));
 
         int exitCode = 0;
         try {
