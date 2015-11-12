@@ -7,6 +7,7 @@ import akka.event.LoggingAdapter;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.typesafe.config.ConfigFactory;
+import ro.cosu.vampires.client.executors.DockerExecutor;
 import ro.cosu.vampires.client.executors.Executor;
 import ro.cosu.vampires.client.executors.ExecutorsManager;
 import ro.cosu.vampires.client.executors.ExecutorsModule;
@@ -33,8 +34,13 @@ public class ExecutorActor extends UntypedActor {
 
             ExecutorsManager em = injector.getInstance(ExecutorsManager.class);
 
-
-            Executor executor = em.getProvider("command").get();
+            Executor executor;
+            if (DockerExecutor.isAvailable()) {
+                executor = em.getProvider(Executor.Type.DOCKER).get();
+            }
+            else {
+                executor = em.getProvider(Executor.Type.COMMAND).get();
+            }
 
             Result result = executor.execute(job.computation());
 

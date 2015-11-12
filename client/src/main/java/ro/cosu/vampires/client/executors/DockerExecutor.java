@@ -7,11 +7,14 @@ import com.github.dockerjava.core.command.LogContainerResultCallback;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.typesafe.config.Config;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Result;
 
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -92,5 +95,19 @@ public class DockerExecutor implements Executor{
         }
     }
 
+
+    public static boolean isAvailable() {
+        DefaultExecutor executor = new DefaultExecutor();
+
+        int exitCode = 0;
+        try {
+            exitCode = executor.execute(CommandLine.parse("docker ps"));
+        } catch (IOException e) {
+            LOG.error("{}", e);
+        }
+
+        return (exitCode == 0);
+
+    }
 
 }
