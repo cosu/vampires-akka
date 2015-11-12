@@ -18,7 +18,6 @@ public class SshResourceTest {
         Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.load().getConfig("vampires")));
         ResourceManager rm = injector.getInstance(ResourceManager.class);
 
-
         ResourceProvider sshProvider = rm.getProviders().get(Resource.Type.SSH);
         Resource.Parameters parameters = sshProvider.getParameters("local");
 

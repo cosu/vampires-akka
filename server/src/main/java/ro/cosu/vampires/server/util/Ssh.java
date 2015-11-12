@@ -18,18 +18,20 @@ public class Ssh {
 
     public  String runCommand(String user, String privateKey, String address, String command, int port) throws JSchException,
             IOException {
+        LOG.debug("SSH: {}@{}:{}({}) command: {}",  user, address , port , privateKey ,command);
+
         JSch jsch = new JSch();
+        jsch.setLogger( new JSCHLogger());
 
         Session session = jsch.getSession(user, address, port);
         jsch.addIdentity(privateKey);
 
-        Properties config = new java.util.Properties();
+        Properties config = new Properties();
         config.put("StrictHostKeyChecking", "no");
         session.setConfig(config);
         session.connect();
         ChannelExec channel = (ChannelExec) session.openChannel("exec");
         BufferedReader in = new BufferedReader(new InputStreamReader(channel.getInputStream()));
-        LOG.debug("SSH@{}:{} command: {}",  address , port ,command);
         channel.setCommand(command);
         channel.connect();
         String msg;
@@ -44,4 +46,47 @@ public class Ssh {
         return sb.toString();
 
     }
-}
+
+    private static class JSCHLogger implements com.jcraft.jsch.Logger
+    {
+
+        static java.util.Hashtable<Integer,String> name = new java.util.Hashtable<>();
+
+        static
+        {
+            name.put(DEBUG, "DEBUG: ");
+            name.put(INFO, "INFO: ");
+            name.put(WARN, "WARN: ");
+            name.put(ERROR, "ERROR: ");
+            name.put(FATAL, "FATAL: ");
+        }
+
+        public boolean isEnabled(int level)
+        {
+            return true;
+        }
+
+        public void log(int level, String message)
+        {
+            if(level == DEBUG)
+            {
+                LOG.debug(message);
+            }
+            else if(level == INFO)
+            {
+                LOG.info(message);
+            }
+            else if(level == WARN)
+            {
+                LOG.warn(message);
+            }
+            else if(level == ERROR)
+            {
+                LOG.error(message);
+            }
+            else if(level == FATAL)
+            {
+                LOG.error(message);
+            }
+        }
+    } }
