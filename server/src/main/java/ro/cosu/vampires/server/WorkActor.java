@@ -46,7 +46,7 @@ public class WorkActor extends UntypedActor{
 
         if (message instanceof Job) {
             resultActor.forward(message, getContext());
-            log.info("Work result from {}", getSender().toString());
+            log.debug("Work result from {}", getSender().toString());
             Object work = this.getNewWorkload(Optional.ofNullable(workQueue.poll()));
             getSender().tell(work, getSelf());
 
@@ -66,12 +66,12 @@ public class WorkActor extends UntypedActor{
 
         if (work.isPresent()) {
             Computation computation = Computation.builder().command(work.get()).build();
-            log.info("computation {}", computation);
+            log.debug("computation {}", computation);
             return Job.empty().withComputation(computation);
 
         }
         else {
-            log.info("Empty {}", getSender());
+            log.debug("Empty {}", getSender());
 
             return Job.empty().withComputation(Computation.builder().command("sleep 9999").build());
 
