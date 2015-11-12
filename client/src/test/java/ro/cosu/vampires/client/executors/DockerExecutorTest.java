@@ -21,7 +21,7 @@ public class DockerExecutorTest {
 
         ExecutorsManager em= injector.getInstance(ExecutorsManager.class);
 
-        Result execute = em.getProvider("docker").get().execute(Computation.builder().command("echo 1").build());
+        Result execute = em.getProvider(Executor.Type.DOCKER).get().execute(Computation.builder().command("echo 1").build());
 
 
         assertThat(execute.duration(), not(0));
