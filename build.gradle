@@ -28,7 +28,7 @@ allprojects {
         delete System.properties['user.home'] + "/vampires-akka/${project.name}"
     }
 
-    task copyScripts(dependsOn: deleteLocalInstall, type: Sync){
+    task copyScripts(dependsOn: deleteLocalInstall, type: Copy){
         from "scripts"
         into System.properties['user.home'] + "/vampires-akka/scripts"
 
@@ -58,7 +58,7 @@ subprojects {
         options.fork = true
 
         //enable incremental compilation
-//        options.incremental = true
+        options.incremental = true
     }
 
     group 'ro.cosu.vampires'
