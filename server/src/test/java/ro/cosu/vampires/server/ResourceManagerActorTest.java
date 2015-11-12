@@ -14,7 +14,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
-public class ResourceManagerActorTest extends AbstractActorTest{
+public class ResourceManagerActorTest extends AbstractActorTest {
 
     @Test
     public void testStartResource() throws Exception {
@@ -22,16 +22,16 @@ public class ResourceManagerActorTest extends AbstractActorTest{
         ResourceControl.Create createResource = getCreateResource();
 
 
-        TestActorRef<ResourceManagerActor> resourceManagerActor = TestActorRef.create(system, ResourceManagerActor.props(),
+        TestActorRef<ResourceManagerActor> resourceManagerActor = TestActorRef.create(system, ResourceManagerActor
+                .props(),
                 "resourceManagerActor");
 
 
         resourceManagerActor.tell(createResource, ActorRef.noSender());
 
 
-
-        final Future<Object> infoFuture = akka.pattern.Patterns.ask(resourceManagerActor,new ResourceControl.Info (),
-                3000);
+        final Future<Object> infoFuture = akka.pattern.Patterns.ask(resourceManagerActor, new ResourceControl.Info(),
+                5000);
 
         ResourceInfo ci = (ResourceInfo) Await.result(infoFuture, Duration.create("5 seconds"));
 
@@ -40,18 +40,18 @@ public class ResourceManagerActorTest extends AbstractActorTest{
 
         ResourceControl.Info resourceInfo = new ResourceControl.Info();
 
-        final Future<Object> statusFuture = akka.pattern.Patterns.ask(resourceManagerActor, resourceInfo , 3000);
+        final Future<Object> statusFuture = akka.pattern.Patterns.ask(resourceManagerActor, resourceInfo, 5000);
 
         ResourceInfo si = (ResourceInfo) Await.result(statusFuture, Duration.create("5 seconds"));
 
         assertThat(si.status(), is(equalTo(Resource.Status.RUNNING)));
 
-        final Future<Object> destroyFuture = akka.pattern.Patterns.ask(resourceManagerActor,new ResourceControl.Shutdown(), 3000);
+        final Future<Object> destroyFuture = akka.pattern.Patterns.ask(resourceManagerActor, new ResourceControl
+                .Shutdown(), 5000);
 
         ResourceInfo di = (ResourceInfo) Await.result(destroyFuture, Duration.create("5 seconds"));
 
         assertThat(di.status(), is(equalTo(Resource.Status.STOPPED)));
-
 
     }
 
