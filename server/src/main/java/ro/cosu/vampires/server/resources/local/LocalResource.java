@@ -30,7 +30,6 @@ public class LocalResource extends AbstractResource{
         cmd.addArgument("-c");
         cmd.addArgument("nohup " + parameters.command() + " 2>&1 &  echo $! ", false);
 
-        LOG.debug("execute {}", cmd.toString());
         execute(cmd);
 
         LOG.debug("local starting");
@@ -40,11 +39,13 @@ public class LocalResource extends AbstractResource{
         DefaultExecutor executor = new DefaultExecutor();
         executor.setWorkingDirectory(Paths.get("").toAbsolutePath().toFile());
         executor.setStreamHandler(new PumpStreamHandler(collectingLogOutputStream));
-        executor.setWatchdog(new ExecuteWatchdog(1500));
+//        executor.setWatchdog(new ExecuteWatchdog(1500));
 
         int exitCode = 0;
         try {
+            LOG.debug("execute {}", cmd.toString());
             exitCode =executor.execute(cmd);
+            LOG.debug("Output {}", collectingLogOutputStream.getLines());
         } catch (IOException e) {
             LOG.debug("{} has failed with error {}: {}", this, exitCode, e);
             LOG.debug("{}", Joiner.on("\n").join(collectingLogOutputStream.getLines()));

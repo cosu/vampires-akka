@@ -1,7 +1,7 @@
 package ro.cosu.vampires.server;
 
+import akka.actor.ActorRef;
 import akka.testkit.TestActorRef;
-import org.junit.Ignore;
 import org.junit.Test;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
@@ -17,7 +17,6 @@ import static org.junit.Assert.assertThat;
 public class ResourceManagerActorTest extends AbstractActorTest{
 
     @Test
-    @Ignore
     public void testStartResource() throws Exception {
 
         ResourceControl.Create createResource = getCreateResource();
@@ -27,9 +26,14 @@ public class ResourceManagerActorTest extends AbstractActorTest{
                 "resourceManagerActor");
 
 
-        final Future<Object> createFuture = akka.pattern.Patterns.ask(resourceManagerActor,createResource , 3000);
+        resourceManagerActor.tell(createResource, ActorRef.noSender());
 
-        ResourceInfo ci = (ResourceInfo) Await.result(createFuture, Duration.create("5 seconds"));
+
+
+        final Future<Object> infoFuture = akka.pattern.Patterns.ask(resourceManagerActor,new ResourceControl.Info (),
+                3000);
+
+        ResourceInfo ci = (ResourceInfo) Await.result(infoFuture, Duration.create("5 seconds"));
 
         assertThat(ci.description().type(), is(equalTo(Resource.Type.LOCAL)));
 

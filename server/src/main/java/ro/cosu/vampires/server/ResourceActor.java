@@ -38,6 +38,7 @@ public class ResourceActor extends UntypedActorWithStash {
         ActorRef sender = getSender();
         if (message instanceof ResourceControl.Create) {
 
+
             Optional<Resource> resource = create((ResourceControl.Create) message, sender);
             if (!resource.isPresent()) {
                 getSelf().tell(Resource.Status.FAILED, sender);
@@ -51,6 +52,7 @@ public class ResourceActor extends UntypedActorWithStash {
             }
         }
         else {
+            log.debug("stash {}", message);
             stash();
         }
     }
@@ -61,7 +63,9 @@ public class ResourceActor extends UntypedActorWithStash {
 
         resource.ifPresent(created -> this.resource = created);
         resource.ifPresent(created -> created.start()
-                .thenAccept(started -> getSelf().tell(started.status(), sender)));
+                .thenAccept(started -> {
+                    log.debug("started!!");
+                    getSelf().tell(started.status(), sender); }));
 
         return resource;
 

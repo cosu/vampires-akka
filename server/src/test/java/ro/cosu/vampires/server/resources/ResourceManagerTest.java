@@ -10,8 +10,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import ro.cosu.vampires.server.resources.das5.Das5ResourceParameters;
-import ro.cosu.vampires.server.resources.local.LocalResourceParameters;
-import ro.cosu.vampires.server.resources.ssh.SshResourceParameters;
 import ro.cosu.vampires.server.util.Ssh;
 
 import java.util.concurrent.TimeUnit;
@@ -23,17 +21,7 @@ import static org.mockito.Mockito.mock;
 
 public class ResourceManagerTest {
 
-    private SshResourceParameters getSshConfig() {
 
-        return SshResourceParameters.builder()
-                .command("/Users/cdumitru/Documents/workspace/java/vampires-akka/client/build/install/client/bin" +
-                        "/client")
-                .user("cdumitru")
-                .address("localhost")
-                .privateKey("/Users/cdumitru/.ssh/id_rsa")
-                .build();
-
-    }
 
     private Das5ResourceParameters getDasConfig() {
         return Das5ResourceParameters.builder()
@@ -53,15 +41,13 @@ public class ResourceManagerTest {
     }
 
     @Test
-    @Ignore
     public void testCreateLocalResource() throws  Exception  {
 
+        Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.load().getConfig("vampires")));
 
-        LocalResourceParameters parameters = LocalResourceParameters.builder().command("sleep 5").build();
-
-        Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.empty()));
         ResourceManager rm = injector.getInstance(ResourceManager.class);
         ResourceProvider localProvider = rm.getProviders().get(Resource.Type.LOCAL);
+        Resource.Parameters parameters = localProvider.getParameters("local");
         Resource resource = localProvider.create(parameters).get();
 
         assertThat(resource.start().get(2, TimeUnit.SECONDS).status(), is(Resource.Status.RUNNING));
@@ -72,11 +58,12 @@ public class ResourceManagerTest {
     @Test
     @Ignore
     public void testCreateSSHResource() throws  Exception  {
-
-        Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.empty()));
+        Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.load().getConfig("vampires")));
         ResourceManager rm = injector.getInstance(ResourceManager.class);
         ResourceProvider sshProvider = rm.getProviders().get(Resource.Type.SSH);
-        Resource resource = sshProvider.create(getSshConfig()).get();
+        Resource.Parameters parameters = sshProvider.getParameters("local");
+
+        Resource resource = sshProvider.create(parameters).get();
 
         assertThat(resource.start().get(1, TimeUnit.SECONDS).status(), is(Resource.Status.RUNNING));
         assertThat(resource.stop().get(1, TimeUnit.SECONDS).status(), is(Resource.Status.STOPPED));

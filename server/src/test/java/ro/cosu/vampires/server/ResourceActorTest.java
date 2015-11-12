@@ -11,12 +11,11 @@ import ro.cosu.vampires.server.resources.*;
 import ro.cosu.vampires.server.resources.local.LocalResourceParameters;
 import scala.concurrent.duration.FiniteDuration;
 
-public class ResourceActorTest extends AbstractActorTest{
+public class ResourceActorTest extends AbstractActorTest {
 
-    private ResourceProvider getLocalProvider(){
+    private ResourceProvider getLocalProvider() {
         Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.load()));
         ResourceManager rm = injector.getInstance(ResourceManager.class);
-
 
         return rm.getProviders().get(Resource.Type.LOCAL);
 
@@ -30,8 +29,6 @@ public class ResourceActorTest extends AbstractActorTest{
     }
 
 
-
-
     @Test
     public void testResourceActor() throws Exception {
 
@@ -42,14 +39,13 @@ public class ResourceActorTest extends AbstractActorTest{
 
                 resourceProbe.setAutoPilot(new TestActor.AutoPilot() {
                     public TestActor.AutoPilot run(ActorRef sender, Object msg) {
+
                         if (msg instanceof ResourceInfo) {
                             ResourceInfo resourceInfo = (ResourceInfo) msg;
 
                             if (resourceInfo.status().equals(Resource.Status.RUNNING)) {
-
-                                resourceActor.tell(new ResourceControl.Destroy(),resourceProbe.getRef());
+                                resourceActor.tell(new ResourceControl.Destroy(), resourceProbe.getRef());
                             } else {
-
                                 return noAutoPilot();
                             }
                         }
@@ -59,9 +55,7 @@ public class ResourceActorTest extends AbstractActorTest{
 
                 resourceActor.tell(getCreateResource(), resourceProbe.getRef());
 
-                resourceProbe.receiveN(2, FiniteDuration.create(3 , "seconds"));
-
-
+                resourceProbe.receiveN(2, FiniteDuration.create(3, "seconds"));
 
 
             }
