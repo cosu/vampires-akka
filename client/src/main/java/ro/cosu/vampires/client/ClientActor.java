@@ -4,6 +4,7 @@ import akka.actor.*;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.japi.Procedure;
+import ro.cosu.vampires.client.monitoring.HostInfo;
 import ro.cosu.vampires.server.settings.Settings;
 import ro.cosu.vampires.server.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.Job;
@@ -57,45 +58,43 @@ public class ClientActor extends UntypedActor {
             } else {
                 getContext().watch(server);
 
-                log.info("starting {} workers", settings.getParallel());
+                int parallel = HostInfo.getParallel();
+                log.info("starting {} workers", parallel);
                 //bootstrapping via an empty job
-                IntStream.range(0, settings.getParallel())
-                        .forEach(i -> execute(Job.empty()));
+                IntStream.range(0, parallel).forEach(i -> execute(Job.empty()));
 
 
                 getContext().become(active, true);
             }
-        }else if (message instanceof ReceiveTimeout) {
+        } else if (message instanceof ReceiveTimeout) {
             sendIdentifyRequest();
         } else {
-             log.info("Not ready yet");
+            log.info("Not ready yet");
 
         }
     }
 
     Procedure<Object> active = message -> {
 
-        if (message instanceof Job){
+        if (message instanceof Job) {
 
             Job job = (Job) message;
 
             if (JobStatus.COMPLETE.equals(job.status())) {
                 server.tell(job, getSelf());
-            }
-            else {
-                log.info("Execute {} -> {} {}" , getSelf().path() , job.computation(), getSender().toString());
+            } else {
+                log.info("Execute {} -> {} {}", getSelf().path(), job.computation(), getSender().toString());
                 execute(job);
             }
         }
         if (message instanceof Terminated) {
-            if (getSender().equals(server)){
+            if (getSender().equals(server)) {
                 log.info("server left. shutting down");
                 getContext().stop(getSelf());
             }
 
-        }
-        else {
-            log.info("Unhandled: {} -> {} {}" , getSelf().path() , message.toString(), getSender().toString());
+        } else {
+            log.info("Unhandled: {} -> {} {}", getSelf().path(), message.toString(), getSender().toString());
             unhandled(message);
         }
     };
@@ -105,7 +104,6 @@ public class ClientActor extends UntypedActor {
         executor.tell(job, getSelf());
 
     }
-
 
 
 }
