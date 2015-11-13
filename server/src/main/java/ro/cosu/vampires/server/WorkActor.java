@@ -72,7 +72,7 @@ public class WorkActor extends UntypedActor{
         }
         else {
             log.debug("Empty {}", getSender());
-            return Job.empty();
+            return Job.waitForever();
 
         }
 

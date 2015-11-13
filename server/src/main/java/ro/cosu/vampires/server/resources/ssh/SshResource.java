@@ -27,21 +27,18 @@ public class SshResource extends AbstractResource {
     @Override
     public void onStart() throws IOException, JSchException {
         String command = "nohup " + parameters.command() + " > /dev/null 2>&1 &  echo $! ";
-
         this.commandOutput = exec(command);
 
     }
 
     @Override
     public void onStop() throws IOException, JSchException {
-        LOG.debug("ssh stopping");
         String command = "kill " + Integer.parseInt(commandOutput);
         this.commandOutput = exec(command);
     }
 
     @Override
     public void onFail() throws IOException, JSchException {
-        LOG.debug("ssh failed");
         String command = "kill -9" + Integer.parseInt(commandOutput);
         this.commandOutput = exec(command);
     }

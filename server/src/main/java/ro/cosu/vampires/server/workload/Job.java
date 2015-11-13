@@ -45,6 +45,12 @@ public abstract class Job implements Serializable {
                 .result(Result.empty()).build();
     }
 
+    public static Job waitForever() {
+        return builder().computation(Computation.builder().command("sleep 9999").build())
+                .metrics(Metrics.empty())
+                .result(Result.empty()).build();
+    }
+
     public static Builder builder() {
         return new AutoValue_Job.Builder()
                 .created(LocalDateTime.now())
