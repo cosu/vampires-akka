@@ -48,8 +48,7 @@ public class SshResource extends AbstractResource {
 
 
     private String exec(String command) throws IOException, JSchException {
-
-        LOG.debug("ssh starting: " + command);
+        LOG.debug("ssh command: " + command);
         return ssh.runCommand(parameters.user(), parameters.privateKey(), parameters.address(), command, parameters.port());
     }
 
