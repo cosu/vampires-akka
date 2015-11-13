@@ -37,6 +37,8 @@ public class ClientActor extends UntypedActor {
     }
 
     private void sendIdentifyRequest() {
+
+        log.info("connectiong to {}", path);
         getContext().actorSelection(path).tell(new Identify(path), getSelf());
         getContext()
                 .system()

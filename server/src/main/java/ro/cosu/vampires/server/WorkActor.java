@@ -72,8 +72,7 @@ public class WorkActor extends UntypedActor{
         }
         else {
             log.debug("Empty {}", getSender());
-
-            return Job.empty().withComputation(Computation.builder().command("sleep 9999").build());
+            return Job.empty();
 
         }
 

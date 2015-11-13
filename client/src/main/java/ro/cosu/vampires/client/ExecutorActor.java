@@ -29,13 +29,13 @@ public class ExecutorActor extends UntypedActor {
         if (message instanceof Job) {
             Job job = (Job) message;
 
-
             Injector injector = Guice.createInjector(new ExecutorsModule(ConfigFactory.load().getConfig("vampires")));
 
             ExecutorsManager em = injector.getInstance(ExecutorsManager.class);
 
             Executor executor;
             if (DockerExecutor.isAvailable()) {
+
                 executor = em.getProvider(Executor.Type.DOCKER).get();
             }
             else {

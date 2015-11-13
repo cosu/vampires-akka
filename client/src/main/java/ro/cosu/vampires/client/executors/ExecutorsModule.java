@@ -33,8 +33,8 @@ public class ExecutorsModule extends AbstractModule {
         MapBinder<Executor.Type, Executor> mapbinder
                 = MapBinder.newMapBinder(binder(), Executor.Type.class, Executor.class);
 
-        mapbinder.addBinding(Executor.Type.COMMAND).to(DockerExecutor.class);
-        mapbinder.addBinding(Executor.Type.DOCKER).to(CommandExecutor.class);
+        mapbinder.addBinding(Executor.Type.DOCKER).to(DockerExecutor.class);
+        mapbinder.addBinding(Executor.Type.COMMAND).to(CommandExecutor.class);
     }
 
     @Provides

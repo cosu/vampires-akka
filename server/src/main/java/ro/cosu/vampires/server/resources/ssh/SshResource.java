@@ -26,7 +26,6 @@ public class SshResource extends AbstractResource {
 
     @Override
     public void onStart() throws IOException, JSchException {
-        LOG.debug("ssh starting");
         String command = "nohup " + parameters.command() + " > /dev/null 2>&1 &  echo $! ";
 
         this.commandOutput = exec(command);
@@ -49,6 +48,8 @@ public class SshResource extends AbstractResource {
 
 
     private String exec(String command) throws IOException, JSchException {
+
+        LOG.debug("ssh starting: " + command);
         return ssh.runCommand(parameters.user(), parameters.privateKey(), parameters.address(), command, parameters.port());
     }
 

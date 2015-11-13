@@ -18,7 +18,7 @@ public class Ssh {
 
     public  String runCommand(String user, String privateKey, String address, String command, int port) throws JSchException,
             IOException {
-        LOG.debug("SSH: {}@{}:{}({}) command: {}",  user, address , port , privateKey ,command);
+        LOG.info("SSH: {}@{}:{}({}) command: {}",  user, address , port , privateKey ,command);
 
         JSch jsch = new JSch();
         jsch.setLogger( new JSCHLogger());

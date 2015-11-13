@@ -99,14 +99,12 @@ public class DockerExecutor implements Executor{
     public static boolean isAvailable() {
         DefaultExecutor executor = new DefaultExecutor();
 
-        int exitCode = 0;
         try {
-            exitCode = executor.execute(CommandLine.parse("docker ps"));
+            executor.execute(CommandLine.parse("docker ps"));
+            return true;
         } catch (IOException e) {
-            LOG.error("{}", e);
+            return false;
         }
-
-        return (exitCode == 0);
 
     }
 
