@@ -9,6 +9,7 @@ package ro.cosu.vampires.client.executors;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
+import com.github.dockerjava.jaxrs.DockerCmdExecFactoryImpl;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.MapBinder;
@@ -42,12 +43,21 @@ public class ExecutorsModule extends AbstractModule {
         String uri = config.getString("docker.uri");
         String certPath = config.getString("docker.certPath");
 
+        DockerCmdExecFactoryImpl dockerCmdExecFactory = new DockerCmdExecFactoryImpl()
+                .withReadTimeout(1000)
+                .withConnectTimeout(1000)
+                .withMaxTotalConnections(100)
+                .withMaxPerRouteConnections(10);
+
         DockerClientConfig config = DockerClientConfig.createDefaultConfigBuilder()
+
                 .withUri(uri)
                 .withDockerCertPath(certPath)
                 .build();
 
-        return DockerClientBuilder.getInstance(config).build();
+        return DockerClientBuilder.getInstance(config)
+                .withDockerCmdExecFactory(dockerCmdExecFactory)
+                .build();
 
     }
 }

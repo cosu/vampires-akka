@@ -64,6 +64,11 @@ public class CommandExecutor implements Executor {
 
     }
 
+    @Override
+    public int getNCpu() {
+        // this uses jvm info. We could use sigar to get this also but it adds a weird dependency here
+        return Runtime.getRuntime().availableProcessors();
+    }
 
 
     private static class CollectingLogOutputStream extends LogOutputStream {

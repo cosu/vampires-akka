@@ -10,5 +10,8 @@ public interface Executor {
     }
     Result execute(Computation computation);
 
+    int getNCpu();
+
+    default boolean isAvailable() { return  true;}
 
 }

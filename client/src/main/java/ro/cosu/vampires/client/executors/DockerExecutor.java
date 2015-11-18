@@ -3,18 +3,16 @@ package ro.cosu.vampires.client.executors;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.Frame;
+import com.github.dockerjava.api.model.Info;
 import com.github.dockerjava.core.command.LogContainerResultCallback;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.typesafe.config.Config;
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Result;
 
-import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -80,6 +78,14 @@ public class DockerExecutor implements Executor{
 
     }
 
+    @Override
+    public int getNCpu() {
+        final Info exec = dockerClient.infoCmd().exec();
+        return exec.getNCPU();
+    }
+
+
+
     public static class LogContainerTestCallback extends LogContainerResultCallback {
         protected final StringBuffer log = new StringBuffer();
 
@@ -96,16 +102,23 @@ public class DockerExecutor implements Executor{
     }
 
 
-    public static boolean isAvailable() {
-        DefaultExecutor executor = new DefaultExecutor();
+    @Override
+    public  boolean isAvailable() {
+
 
         try {
-            executor.execute(CommandLine.parse("docker ps"));
+            dockerClient.pingCmd().exec();
+            LOG.info("docker is available");
+
             return true;
-        } catch (IOException e) {
-            return false;
+        }
+        catch (Exception e){
+            LOG.info("docker is not available");
+            return  false;
         }
 
     }
+
+
 
 }

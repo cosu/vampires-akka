@@ -37,4 +37,12 @@ public class CommandExecutorTest {
 
         assertThat(executor.execute(computation).exitCode(), is(0));
     }
+
+    @Test
+    public void testGetNCPU() throws Exception {
+
+        CommandExecutor executor = new CommandExecutor();
+        assertThat(executor.getNCpu(), not(0));
+
+    }
 }

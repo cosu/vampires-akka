@@ -3,7 +3,6 @@ package ro.cosu.vampires.client.executors;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.typesafe.config.ConfigFactory;
-import org.junit.Ignore;
 import org.junit.Test;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Result;
@@ -14,17 +13,20 @@ import static org.hamcrest.core.IsNot.not;
 public class DockerExecutorTest {
 
     @Test
-    @Ignore
+//    @Ignore
     public void testExecute() throws Exception {
+
 
         Injector injector = Guice.createInjector(new ExecutorsModule(ConfigFactory.load().getConfig("vampires")));
 
         ExecutorsManager em= injector.getInstance(ExecutorsManager.class);
+        final Executor dockerExecutor = em.getProvider(Executor.Type.DOCKER).get();
+        if (dockerExecutor.isAvailable()) {
 
-        Result execute = em.getProvider(Executor.Type.DOCKER).get().execute(Computation.builder().command("echo 1").build());
+            Result execute = dockerExecutor.execute(Computation.builder().command("echo 1").build());
 
-
-        assertThat(execute.duration(), not(0));
+            assertThat(execute.duration(), not(0));
+        }
 
     }
 }
