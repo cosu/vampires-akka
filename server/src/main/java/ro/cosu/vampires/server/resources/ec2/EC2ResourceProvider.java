@@ -13,19 +13,24 @@ public class EC2ResourceProvider extends AbstractResourceProvider {
     static final Logger LOG = LoggerFactory.getLogger(EC2ResourceProvider.class);
 
     @Inject
-    AmazonEC2Client amazonEC2Client;
+    Optional<AmazonEC2Client> amazonEC2Client;
 
 
 
 
     @Override
     public Optional<Resource> create(Resource.Parameters parameters) {
-        if (parameters instanceof EC2ResourceParameters)
-            return Optional.of(new EC2Resource((EC2ResourceParameters) parameters, amazonEC2Client));
-        else {
-            LOG.error("invalid parameter type. expected " + EC2ResourceParameters.class);
-            return Optional.empty();
+
+        if (amazonEC2Client.isPresent()) {
+            if (parameters instanceof EC2ResourceParameters)
+                return Optional.of(new EC2Resource((EC2ResourceParameters) parameters, amazonEC2Client.get()));
+            else {
+                LOG.error("invalid parameter type. expected " + EC2ResourceParameters.class);
+
+            }
         }
+        LOG.error("Failed to create amazon ec2 resource");
+        return  Optional.empty();
     }
 
     @Override

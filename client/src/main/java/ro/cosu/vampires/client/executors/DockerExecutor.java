@@ -5,11 +5,14 @@ import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.Frame;
 import com.github.dockerjava.api.model.Info;
 import com.github.dockerjava.core.command.LogContainerResultCallback;
+import com.google.common.base.Joiner;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.typesafe.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ro.cosu.vampires.client.allocation.CpuAllocator;
+import ro.cosu.vampires.client.allocation.CpuSet;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Result;
 
@@ -30,6 +33,8 @@ public class DockerExecutor implements Executor{
     Config config;
 
 
+    @Inject
+    CpuAllocator cpuAllocator;
 
     @Override
     public Result execute(Computation computation) {
@@ -39,9 +44,13 @@ public class DockerExecutor implements Executor{
 
         String containerImage = config.getString("docker.image");
 
+        CpuSet acqCpuSet =  cpuAllocator.acquireCpuSet().get();
+        final String cpuSet = Joiner.on(",").join(acqCpuSet.getCpuSet());
+        LOG.info("cpu set{}" , cpuSet);
         CreateContainerResponse container = dockerClient
                 .createContainerCmd(containerImage).withCmd(computation.command().split(" "))
                 .withName(containerName)
+                .withCpuset(cpuSet)
                 .exec();
 
         LocalDateTime start = LocalDateTime.now();
@@ -67,6 +76,7 @@ public class DockerExecutor implements Executor{
 
         long duration = Duration.between(start, stop).toMillis();
 
+        cpuAllocator.releaseCpuSets(acqCpuSet);
 
         return Result.builder()
                 .exitCode(exitCode)

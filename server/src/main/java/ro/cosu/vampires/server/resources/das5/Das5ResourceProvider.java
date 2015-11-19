@@ -1,6 +1,7 @@
 package ro.cosu.vampires.server.resources.das5;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.resources.AbstractResourceProvider;
@@ -13,6 +14,7 @@ public class Das5ResourceProvider extends AbstractResourceProvider{
     static final Logger LOG = LoggerFactory.getLogger(Das5ResourceProvider.class);
 
     @Inject
+    @Named("DASSSH")
     Ssh ssh;
 
     @Override

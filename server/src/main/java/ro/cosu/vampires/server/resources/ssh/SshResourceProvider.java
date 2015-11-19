@@ -1,6 +1,7 @@
 package ro.cosu.vampires.server.resources.ssh;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.resources.AbstractResourceProvider;
@@ -9,10 +10,11 @@ import ro.cosu.vampires.server.util.Ssh;
 
 import java.util.Optional;
 
-public class SshResourceProvider  extends AbstractResourceProvider {
+public class SshResourceProvider extends AbstractResourceProvider {
     static final Logger LOG = LoggerFactory.getLogger(SshResourceProvider.class);
 
     @Inject
+    @Named("Ssh")
     Ssh ssh;
 
     @Override
@@ -21,7 +23,8 @@ public class SshResourceProvider  extends AbstractResourceProvider {
             return Optional.of(new SshResource((SshResourceParameters) parameters, ssh));
         else {
 
-            LOG.error("invalid parameter type. expected "  + SshResourceParameters.class + " but got " + parameters.getClass().getName());
+            LOG.error("invalid parameter type. expected " + SshResourceParameters.class + " but got " + parameters
+                    .getClass().getName());
             return Optional.empty();
         }
     }

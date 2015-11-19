@@ -58,7 +58,7 @@ public class ClientActor extends UntypedActor {
             } else {
                 getContext().watch(server);
 
-                int parallel = HostInfo.getParallel();
+                int parallel = HostInfo.getAvailableProcs();
                 log.info("starting {} workers", parallel);
                 //bootstrapping via an empty job
                 IntStream.range(0, parallel).forEach(i -> execute(Job.empty()));

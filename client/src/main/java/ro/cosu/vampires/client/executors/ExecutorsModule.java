@@ -6,17 +6,19 @@
  */
 package ro.cosu.vampires.client.executors;
 
-import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.core.DockerClientBuilder;
-import com.github.dockerjava.core.DockerClientConfig;
-import com.github.dockerjava.jaxrs.DockerCmdExecFactoryImpl;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.multibindings.MapBinder;
+import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.typesafe.config.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ro.cosu.vampires.client.allocation.CpuAllocator;
+import ro.cosu.vampires.client.allocation.FixedCpuSetAllocator;
+import ro.cosu.vampires.client.monitoring.HostInfo;
 
 public class ExecutorsModule extends AbstractModule {
+    static final Logger LOG = LoggerFactory.getLogger(ExecutorsModule.class);
 
     private final Config config;
 
@@ -26,38 +28,29 @@ public class ExecutorsModule extends AbstractModule {
         return this.config;
     }
 
+
     public ExecutorsModule(Config config) {
         this.config = config;
     }
 
     protected void configure() {
-        MapBinder<Executor.Type, Executor> mapbinder
-                = MapBinder.newMapBinder(binder(), Executor.Type.class, Executor.class);
 
-        mapbinder.addBinding(Executor.Type.DOCKER).to(DockerExecutor.class);
-        mapbinder.addBinding(Executor.Type.COMMAND).to(CommandExecutor.class);
+        install(new DockerModule());
+        install(new CommandModule());
     }
+
 
     @Provides
-    DockerClient provideDockerCLient() {
-        String uri = config.getString("docker.uri");
-        String certPath = config.getString("docker.certPath");
+    @Singleton
+    CpuAllocator provideCpuAllocator() {
 
-        DockerCmdExecFactoryImpl dockerCmdExecFactory = new DockerCmdExecFactoryImpl()
-                .withReadTimeout(1000)
-                .withConnectTimeout(1000)
-                .withMaxTotalConnections(100)
-                .withMaxPerRouteConnections(10);
+        int cpuCount = HostInfo.getAvailableProcs();
+        final int cpuSetSize = config.getInt("cpuSetSize");
+        LOG.info(" cpucount: {} coutSetSize: {}", cpuCount, cpuSetSize);
 
-        DockerClientConfig config = DockerClientConfig.createDefaultConfigBuilder()
-
-                .withUri(uri)
-                .withDockerCertPath(certPath)
-                .build();
-
-        return DockerClientBuilder.getInstance(config)
-                .withDockerCmdExecFactory(dockerCmdExecFactory)
-                .build();
+        return FixedCpuSetAllocator.builder().cpuSetSize(cpuSetSize).totalCpuCount(cpuCount).build();
 
     }
+
+
 }
