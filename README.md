@@ -1,4 +1,6 @@
-# vampires-akka
+![Build Status](https://travis-ci.org/cosu/vampires-akka.svg)
+# vampires-akka  
+
 Vampires-akka is a task farming utility with support for various computing resources.
 Currently supported "resources":
 
