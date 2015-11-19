@@ -2,6 +2,7 @@ apply plugin: 'idea'
 apply plugin: 'base'
 apply plugin: 'distribution'
 
+
 idea{
     project {
         languageLevel = '1.8'
@@ -38,6 +39,7 @@ allprojects {
         from "${buildDir}/install/${project.name}"
         into System.properties['user.home'] + "/vampires-akka/${project.name}"
     }
+
 }
 
 
@@ -46,9 +48,10 @@ subprojects {
     apply plugin: 'application'
     apply plugin: 'idea'
 
+
     idea {
         module {
-            generatedSourceDirs += file('client')
+            generatedSourceDirs += file('generated')
         }
     }
 
@@ -67,6 +70,23 @@ subprojects {
     repositories {
         mavenCentral()
     }
+
+    sourceSets {
+        integrationTest {
+            java.srcDir file('src/integTest/java')
+            resources.srcDir file('src/integTest/resources')
+        }
+    }
+
+    task integrationTest(type: Test) {
+        testClassesDir = sourceSets.integrationTest.output.classesDir
+        classpath = sourceSets.integrationTest.runtimeClasspath
+
+    }
+
+
+    check.dependsOn integrationTest
+    integrationTest.dependsOn test
 
     dependencies {
         def akkaVersion = "2.11:2.4.0"
@@ -90,7 +110,19 @@ subprojects {
         testCompile 'junit:junit:4.12'
         testCompile "com.typesafe.akka:akka-testkit_${akkaVersion}"
         testCompile "org.mockito:mockito-core:1.+"
+
+        integrationTestCompile sourceSets.main.output
+        integrationTestCompile sourceSets.test.output
+        integrationTestCompile configurations.testCompile
+        integrationTestRuntime configurations.testRuntime
+
     }
+
+
+
+
+
+
 
 
 }
