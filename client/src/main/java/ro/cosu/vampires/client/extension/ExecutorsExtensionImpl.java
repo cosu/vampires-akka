@@ -1,6 +1,7 @@
 package ro.cosu.vampires.client.extension;
 
 import akka.actor.Extension;
+import com.google.common.base.Preconditions;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.typesafe.config.Config;
@@ -23,6 +24,7 @@ public class ExecutorsExtensionImpl implements Extension {
 
         try {
             injector = Guice.createInjector(new DockerExecutorModule(vampires));
+            Preconditions.checkArgument(getExecutor().isAvailable());
         }
         catch (Exception e) {
             LOG.info("can not start docker executor");
