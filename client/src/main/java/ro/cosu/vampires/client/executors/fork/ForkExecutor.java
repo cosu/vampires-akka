@@ -36,9 +36,10 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
         String command = computation.command();
 
         final Optional<CpuSet> cpuSet = cpuAllocator.acquireCpuSet();
+        LOG.info("cpuset {}", cpuSet);
         if (cpuSet.isPresent() && isNumaEnabled()){
             final String cpus = Joiner.on(",").join(cpuSet.get().getCpuSet());
-            command = "numactl --physcpubind=" + cpus  + " " + command;
+            command = "numactl --physcpubind=" + cpus  + " bash -c\"" + command + "\"";
         }
 
         LOG.info("executing {} with timeout {} minutes", command, TIMEOUT_IN_MILIS/1000/60);
@@ -106,11 +107,12 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
     private boolean isNumaEnabled(){
         int exitCode;
         try {
-            exitCode = executor.execute( new CommandLine("numactl --hardware"));
-            LOG.info("numa available");
+            exitCode = executor.execute( CommandLine.parse("numactl --hardware"));
+
         } catch (IOException e) {
             exitCode = -1;
         }
+        LOG.info("numa out {}", exitCode);
         return  (exitCode == 0);
 
     }

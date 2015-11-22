@@ -27,7 +27,7 @@ public class ForkExecutorTest {
 
         Executor executor = getFork();
 
-        assertThat(executor.execute(computation).exitCode(), is(-1));
+        assertThat(executor.execute(computation).exitCode(), not(0));
     }
 
     @Test
