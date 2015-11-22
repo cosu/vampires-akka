@@ -23,8 +23,6 @@ public class ClientActor extends UntypedActor {
     private final ExecutorsExtensionImpl executors = ExecutorsExtension.ExecutorsProvider.get(getContext().system());
 
 
-
-
     public static Props props(String path) {
         return Props.create(ClientActor.class, path);
     }
@@ -85,8 +83,7 @@ public class ClientActor extends UntypedActor {
                 log.info("Execute {} -> {} {}", getSelf().path(), job.computation(), getSender().toString());
                 execute(job);
             }
-        }
-        if (message instanceof Terminated) {
+        } else if (message instanceof Terminated) {
             if (getSender().equals(server)) {
                 log.info("server left. shutting down");
                 getContext().stop(getSelf());

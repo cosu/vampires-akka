@@ -107,6 +107,7 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
         int exitCode;
         try {
             exitCode = executor.execute( new CommandLine("numactl --hardware"));
+            LOG.info("numa available");
         } catch (IOException e) {
             exitCode = -1;
         }
