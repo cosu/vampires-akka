@@ -3,6 +3,9 @@ package ro.cosu.vampires.client;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import org.slf4j.bridge.SLF4JBridgeHandler;
+import ro.cosu.vampires.client.actors.ClientActor;
+import ro.cosu.vampires.client.actors.MonitoringActor;
+import ro.cosu.vampires.client.actors.TerminatorActor;
 import ro.cosu.vampires.client.monitoring.MonitoringManager;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
@@ -35,7 +38,7 @@ public class Client {
         final ActorRef monitor = system.actorOf(MonitoringActor.props(MonitoringManager.getMetricRegistry()), "monitor");
 
         final ActorRef client = system.actorOf(ClientActor.props(path), "client");
-        final ActorRef terminator = system.actorOf(Terminator.props(client), "terminator");
+        final ActorRef terminator = system.actorOf(TerminatorActor.props(client), "terminator");
 
 
         Await.result(system.whenTerminated(), Duration.Inf());

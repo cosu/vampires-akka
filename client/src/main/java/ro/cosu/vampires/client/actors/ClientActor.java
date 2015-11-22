@@ -1,12 +1,11 @@
-package ro.cosu.vampires.client;
+package ro.cosu.vampires.client.actors;
 
 import akka.actor.*;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.japi.Procedure;
-import ro.cosu.vampires.client.monitoring.HostInfo;
-import ro.cosu.vampires.server.settings.Settings;
-import ro.cosu.vampires.server.settings.SettingsImpl;
+import ro.cosu.vampires.client.extension.ExecutorsExtension;
+import ro.cosu.vampires.client.extension.ExecutorsExtensionImpl;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.workload.JobStatus;
 import scala.concurrent.duration.Duration;
@@ -18,29 +17,29 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class ClientActor extends UntypedActor {
 
-    private final String path;
+    private final String serverPath;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private ActorRef server;
+    private final ExecutorsExtensionImpl executors = ExecutorsExtension.ExecutorsProvider.get(getContext().system());
 
-    final SettingsImpl settings =
-            Settings.SettingsProvider.get(getContext().system());
+
+
 
     public static Props props(String path) {
         return Props.create(ClientActor.class, path);
     }
 
 
-    public ClientActor(String path) {
-        this.path = path;
+    public ClientActor(String serverPath) {
+        this.serverPath = serverPath;
         sendIdentifyRequest();
-
 
     }
 
     private void sendIdentifyRequest() {
 
-        log.info("connectiong to {}", path);
-        getContext().actorSelection(path).tell(new Identify(path), getSelf());
+        log.info("connecting to {}", serverPath);
+        getContext().actorSelection(serverPath).tell(new Identify(serverPath), getSelf());
         getContext()
                 .system()
                 .scheduler()
@@ -54,14 +53,14 @@ public class ClientActor extends UntypedActor {
         if (message instanceof ActorIdentity) {
             server = ((ActorIdentity) message).getRef();
             if (server == null) {
-                log.warning("Remote actor not available: {}", path);
+                log.warning("Remote actor not available: {}", serverPath);
             } else {
                 getContext().watch(server);
 
-                int parallel = HostInfo.getAvailableProcs();
-                log.info("starting {} workers", parallel);
+                int numberOfExecutors = executors.getExecutor().getNCpu();
+                log.info("starting {} workers", numberOfExecutors);
                 //bootstrapping via an empty job
-                IntStream.range(0, parallel).forEach(i -> execute(Job.empty()));
+                IntStream.range(0, numberOfExecutors).forEach(i -> execute(Job.empty()));
 
 
                 getContext().become(active, true);
@@ -100,8 +99,8 @@ public class ClientActor extends UntypedActor {
     };
 
     private void execute(Job job) {
-        ActorRef executor = getContext().actorOf(ExecutorActor.props());
-        executor.tell(job, getSelf());
+        ActorRef executorActor = getContext().actorOf(ExecutorActor.props());
+        executorActor.tell(job, getSelf());
 
     }
 

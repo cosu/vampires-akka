@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import ro.cosu.vampires.client.actors.MonitoringActor;
 import ro.cosu.vampires.client.monitoring.MonitoringManager;
 import ro.cosu.vampires.server.workload.*;
 import scala.concurrent.Await;

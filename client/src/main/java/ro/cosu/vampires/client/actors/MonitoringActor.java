@@ -1,4 +1,4 @@
-package ro.cosu.vampires.client;
+package ro.cosu.vampires.client.actors;
 
 import akka.actor.Props;
 import akka.actor.UntypedActor;

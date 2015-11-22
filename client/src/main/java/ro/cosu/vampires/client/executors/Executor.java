@@ -5,7 +5,7 @@ import ro.cosu.vampires.server.workload.Result;
 
 public interface Executor {
     enum Type {
-        COMMAND,
+        FORK,
         DOCKER
     }
     Result execute(Computation computation);

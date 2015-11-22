@@ -1,4 +1,4 @@
-package ro.cosu.vampires.client;
+package ro.cosu.vampires.client.actors;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;
@@ -8,17 +8,17 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 
 
-public class Terminator extends UntypedActor {
+public class TerminatorActor extends UntypedActor {
 
     private final LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private final ActorRef ref;
 
 
     public static Props props(ActorRef ref) {
-        return Props.create(Terminator.class, ref);
+        return Props.create(TerminatorActor.class, ref);
     }
 
-    public Terminator(ActorRef ref) {
+    public TerminatorActor(ActorRef ref) {
         this.ref = ref;
         getContext().watch(ref);
     }

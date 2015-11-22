@@ -1,21 +1,31 @@
-package ro.cosu.vampires.client;
+package ro.cosu.vampires.client.executors.fork;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.typesafe.config.ConfigFactory;
 import org.junit.Test;
-import ro.cosu.vampires.client.executors.CommandExecutor;
+import ro.cosu.vampires.client.executors.Executor;
 import ro.cosu.vampires.server.workload.Computation;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNot.not;
 
-public class CommandExecutorTest {
+public class ForkExecutorTest {
 
+
+    Executor getFork(){
+        Injector injector = Guice.createInjector(new ForkExecutorModule(ConfigFactory.load().getConfig("vampires")));
+
+        return injector.getInstance(Executor.class);
+
+    }
 
     @Test
     public void testNoCommand() throws Exception {
         Computation computation = Computation.builder().id("test").command("bla").build();
 
-        CommandExecutor executor = new CommandExecutor();
+        Executor executor = getFork();
 
         assertThat(executor.execute(computation).exitCode(), is(-1));
     }
@@ -25,7 +35,7 @@ public class CommandExecutorTest {
 
         Computation computation = Computation.builder().id("test").command("cat /dev/null1").build();
 
-        CommandExecutor executor = new CommandExecutor();
+        Executor executor = getFork();
 
         assertThat(executor.execute(computation).exitCode(), is(not(0)));
     }
@@ -33,7 +43,8 @@ public class CommandExecutorTest {
     @Test
     public void testExecuteSuccess() throws Exception {
         Computation computation = Computation.builder().id("test").command("cat /dev/null").build();
-        CommandExecutor executor = new CommandExecutor();
+
+        Executor executor = getFork();
 
         assertThat(executor.execute(computation).exitCode(), is(0));
     }
@@ -41,7 +52,7 @@ public class CommandExecutorTest {
     @Test
     public void testGetNCPU() throws Exception {
 
-        CommandExecutor executor = new CommandExecutor();
+        Executor executor = getFork();
         assertThat(executor.getNCpu(), not(0));
 
     }

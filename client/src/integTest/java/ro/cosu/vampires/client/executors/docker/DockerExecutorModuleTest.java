@@ -1,26 +1,22 @@
-package ro.cosu.vampires.client.executors;
+package ro.cosu.vampires.client.executors.docker;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.typesafe.config.ConfigFactory;
 import org.junit.Test;
+import ro.cosu.vampires.client.executors.Executor;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Result;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNot.not;
 
-public class DockerExecutorTest {
-
+public class DockerExecutorModuleTest {
     @Test
-//    @Ignore
-    public void testExecute() throws Exception {
+    public void testDockerStart() throws Exception {
+        Injector injector = Guice.createInjector(new DockerExecutorModule(ConfigFactory.load().getConfig("vampires")));
 
-
-        Injector injector = Guice.createInjector(new ExecutorsModule(ConfigFactory.load().getConfig("vampires")));
-
-        ExecutorsManager em= injector.getInstance(ExecutorsManager.class);
-        final Executor dockerExecutor = em.getProvider(Executor.Type.DOCKER).get();
+        final Executor dockerExecutor = injector.getInstance(Executor.class);
         if (dockerExecutor.isAvailable()) {
 
             Result execute = dockerExecutor.execute(Computation.builder().command("echo 1").build());

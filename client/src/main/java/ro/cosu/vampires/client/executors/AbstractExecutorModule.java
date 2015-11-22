@@ -17,8 +17,8 @@ import ro.cosu.vampires.client.allocation.CpuAllocator;
 import ro.cosu.vampires.client.allocation.FixedCpuSetAllocator;
 import ro.cosu.vampires.client.monitoring.HostInfo;
 
-public class ExecutorsModule extends AbstractModule {
-    static final Logger LOG = LoggerFactory.getLogger(ExecutorsModule.class);
+public abstract class AbstractExecutorModule extends AbstractModule {
+    static final Logger LOG = LoggerFactory.getLogger(AbstractExecutorModule.class);
 
     private final Config config;
 
@@ -29,26 +29,27 @@ public class ExecutorsModule extends AbstractModule {
     }
 
 
-    public ExecutorsModule(Config config) {
+    public AbstractExecutorModule(Config config) {
         this.config = config;
     }
 
-    protected void configure() {
-
-        install(new DockerModule());
-        install(new CommandModule());
-    }
+    protected abstract  void configure();
 
 
     @Provides
     @Singleton
     CpuAllocator provideCpuAllocator() {
-
+        // the assumption is that the executor runs on localhost
+        // so it's ok to use the host info to get the # of cpus
         int cpuCount = HostInfo.getAvailableProcs();
         final int cpuSetSize = config.getInt("cpuSetSize");
-        LOG.info(" cpucount: {} coutSetSize: {}", cpuCount, cpuSetSize);
 
-        return FixedCpuSetAllocator.builder().cpuSetSize(cpuSetSize).totalCpuCount(cpuCount).build();
+        LOG.info(" cpuCount: {} countSetSize: {}", cpuCount, cpuSetSize);
+
+        return FixedCpuSetAllocator.builder()
+                .cpuSetSize(cpuSetSize)
+                .totalCpuCount(cpuCount)
+                .build();
 
     }
 
