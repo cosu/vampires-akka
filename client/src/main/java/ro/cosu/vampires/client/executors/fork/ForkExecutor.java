@@ -108,6 +108,7 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
     private boolean isNumaEnabled() {
         int exitCode;
         try {
+            executor.setStreamHandler(new PumpStreamHandler(new CollectingLogOutputStream()));
             exitCode = executor.execute(CommandLine.parse("numactl --hardware"));
 
         } catch (IOException e) {
