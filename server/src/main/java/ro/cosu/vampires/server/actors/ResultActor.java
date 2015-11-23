@@ -47,8 +47,9 @@ public class ResultActor extends UntypedActor{
             Job job = (Job) message;
             if (!Computation.empty().equals(job.computation())) {
                 results.add(job);
-                log.info("got result {}:{} {}/{}",job.computation().command(), job.result(), results.size(),
+                log.info("got result of {} . received {}/{}",job.computation().command(), results.size(),
                         numberOfResults);
+                log.debug("result {}", job.result());
 
                 writers.forEach(r -> r.writeResult(job));
             }
