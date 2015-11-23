@@ -40,7 +40,7 @@ public class EC2ResourceModule extends AbstractModule {
                 PropertiesCredentials credentials = new PropertiesCredentials(new FileInputStream(credentialsFile));
                 amazonEC2Client = new AmazonEC2Client(credentials);
             } catch (IOException e) {
-                LOG.error("failed to create amazon client {}", e);
+                LOG.error("failed to create amazon client", e);
             }
         }
 
