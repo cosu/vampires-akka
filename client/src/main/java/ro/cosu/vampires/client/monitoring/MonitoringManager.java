@@ -9,12 +9,12 @@ import org.hyperic.sigar.Sigar;
 
 import java.util.Set;
 
-public class MonitoringManager  {
+public class MonitoringManager {
     private final Set<Source> sources;
 
     @Inject
     public MonitoringManager(Set<Source> sources) {
-        this.sources= sources;
+        this.sources = sources;
     }
 
     public void register() {

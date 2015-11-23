@@ -30,10 +30,8 @@ public class HostSource implements Source {
         metricRegistry.register(name(getName(), "cpu-cache"), this.cpuCacheGague());
 
 
-
         try {
-            for (String iface : sigar.getNetInterfaceList())
-            {
+            for (String iface : sigar.getNetInterfaceList()) {
                 metricRegistry.register(name(getName(), "hardware-address", iface), this.getHWAddress(iface));
                 metricRegistry.register(name(getName(), "address", iface), this.getAddress(iface));
                 metricRegistry.register(name(getName(), "netmask", iface), this.getNetMask(iface));
@@ -142,8 +140,7 @@ public class HostSource implements Source {
         };
     }
 
-    private Gauge<String> getHWAddress(final String iface)
-    {
+    private Gauge<String> getHWAddress(final String iface) {
         return () -> {
             try {
                 NetInterfaceConfig nic = sigar.getNetInterfaceConfig(iface);
@@ -155,8 +152,7 @@ public class HostSource implements Source {
         };
     }
 
-    private Gauge<String> getAddress(final String iface)
-    {
+    private Gauge<String> getAddress(final String iface) {
         return () -> {
             try {
                 NetInterfaceConfig nic = sigar.getNetInterfaceConfig(iface);
@@ -168,8 +164,7 @@ public class HostSource implements Source {
         };
     }
 
-    private Gauge<String> getNetMask(final String iface)
-    {
+    private Gauge<String> getNetMask(final String iface) {
         return () -> {
             try {
                 NetInterfaceConfig nic = sigar.getNetInterfaceConfig(iface);

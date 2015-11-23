@@ -1,4 +1,4 @@
-package ro.cosu.vampires.server;
+package ro.cosu.vampires.server.actors;
 
 import ro.cosu.vampires.server.resources.Resource;
 

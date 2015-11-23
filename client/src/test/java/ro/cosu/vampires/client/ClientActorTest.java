@@ -12,7 +12,7 @@ import org.junit.Test;
 import ro.cosu.vampires.client.actors.ClientActor;
 import ro.cosu.vampires.client.actors.MonitoringActor;
 import ro.cosu.vampires.client.monitoring.MonitoringManager;
-import ro.cosu.vampires.server.RegisterActor;
+import ro.cosu.vampires.server.actors.RegisterActor;
 import ro.cosu.vampires.server.workload.Job;
 
 public class ClientActorTest {

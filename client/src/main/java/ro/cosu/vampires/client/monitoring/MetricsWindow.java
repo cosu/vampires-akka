@@ -19,13 +19,13 @@ public class MetricsWindow {
     ConcurrentSkipListMap<LocalDateTime, ImmutableMap<String, Double>> metricWindow = new ConcurrentSkipListMap
             <>();
 
-    Cache<LocalDateTime, Object> cache = CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).removalListener(notification -> {
+    Cache<LocalDateTime, Object> cache = CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES)
+            .removalListener(notification -> {
         if (notification.getKey() != null && notification.getKey() instanceof LocalDateTime) {
             LocalDateTime key = (LocalDateTime) notification.getKey();
             metricWindow.remove(key);
         }
     }).build();
-
 
 
     public void add(LocalDateTime time, SortedMap<String, Gauge> metrics) {
@@ -53,10 +53,10 @@ public class MetricsWindow {
 
         gauges.entrySet().stream().forEach(entry -> {
             String gaugeName = entry.getKey();
-            Object gaugeValue  = entry.getValue().getValue();
+            Object gaugeValue = entry.getValue().getValue();
             if (gaugeValue instanceof Number) {
                 double n = ((Number) gaugeValue).doubleValue();
-                if (!Double.isNaN(n) && !Double.isInfinite(n))  {
+                if (!Double.isNaN(n) && !Double.isInfinite(n)) {
                     //replace dots with - ;dots in field names are bad
                     builder.put(gaugeName.replace(".", "-"), n);
                 }
@@ -72,7 +72,7 @@ public class MetricsWindow {
 
         gauges.entrySet().stream().forEach(entry -> {
             String gaugeName = entry.getKey();
-            String gaugeValue  = entry.getValue().getValue().toString();
+            String gaugeValue = entry.getValue().getValue().toString();
             builder.put(gaugeName.replace(".", "-"), gaugeValue);
 
         });

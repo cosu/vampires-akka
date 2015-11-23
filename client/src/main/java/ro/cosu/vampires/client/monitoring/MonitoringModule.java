@@ -10,7 +10,7 @@ public class MonitoringModule extends AbstractModule {
     private final MetricRegistry metricRegistry;
     private final Sigar sigar;
 
-    public MonitoringModule(MetricRegistry metricRegistry, Sigar sigar){
+    public MonitoringModule(MetricRegistry metricRegistry, Sigar sigar) {
 
         this.metricRegistry = metricRegistry;
         this.sigar = sigar;

@@ -6,6 +6,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.typesafe.config.ConfigFactory;
 import org.junit.Test;
+import ro.cosu.vampires.server.actors.ResourceControl;
+import ro.cosu.vampires.server.actors.ResourceManagerActor;
 import ro.cosu.vampires.server.resources.*;
 import scala.concurrent.Await;
 import scala.concurrent.Future;

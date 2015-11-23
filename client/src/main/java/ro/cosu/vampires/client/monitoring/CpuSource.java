@@ -26,7 +26,6 @@ public class CpuSource implements Source {
         metricRegistry.register(name(getName(), "cpu-total-usage"), this.cpuTotalUsageGague());
         metricRegistry.register(name(getName(), "cpu-wait-usage"), this.cpuWaitUsageGague());
         metricRegistry.register(name(getName(), "cpu-user-usage"), this.cpuUserUsageGague());
-
         metricRegistry.register(name(getName(), "load-one-minute-average"), this.oneMinLoadGague());
         metricRegistry.register(name(getName(), "load-five-minute-average"), this.fiveMinLoadGague());
         metricRegistry.register(name(getName(), "load-fifteen-minute-average"), this

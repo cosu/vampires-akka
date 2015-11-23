@@ -1,4 +1,4 @@
-package ro.cosu.vampires.server;
+package ro.cosu.vampires.server.actors;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;

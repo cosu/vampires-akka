@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.testkit.JavaTestKit;
 import org.junit.Test;
+import ro.cosu.vampires.server.actors.DispatchActor;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.workload.Metrics;

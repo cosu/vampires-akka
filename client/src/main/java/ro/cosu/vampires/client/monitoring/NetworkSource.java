@@ -43,8 +43,7 @@ public class NetworkSource implements Source {
     }
 
 
-    private Gauge<Long> txBytesGague(final String iface)
-    {
+    private Gauge<Long> txBytesGague(final String iface) {
         return () -> {
             try {
                 NetInterfaceStat nis = sigar.getNetInterfaceStat(iface);
@@ -56,8 +55,7 @@ public class NetworkSource implements Source {
         };
     }
 
-    private Gauge<Long> rxBytesGague(final String iface)
-    {
+    private Gauge<Long> rxBytesGague(final String iface) {
         return () -> {
             try {
                 NetInterfaceStat nis = sigar.getNetInterfaceStat(iface);
