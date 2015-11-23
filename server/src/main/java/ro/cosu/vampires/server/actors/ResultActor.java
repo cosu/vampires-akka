@@ -63,7 +63,6 @@ public class ResultActor extends UntypedActor{
             //this should be a predicate
             if (results.size() == numberOfResults) {
                 log.info("DONE!");
-                log.info("Total Duration: {}", formatDuration(Duration.between(startTime, LocalDateTime.now())));
                 shutdown();
             }
         }
@@ -76,9 +75,11 @@ public class ResultActor extends UntypedActor{
     }
 
     private void shutdown() {
+        log.info("Total Duration: {}", formatDuration(Duration.between(startTime, LocalDateTime.now())));
         log.info("shutting down");
         writers.forEach(ResultsWriter::close);
         // init shutdown
+
         getContext().actorSelection("/user/terminator").tell(new ResourceControl.Shutdown(), getSelf());
         getContext().stop(getSelf());
     }
