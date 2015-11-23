@@ -114,7 +114,6 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
         } catch (IOException e) {
             exitCode = -1;
         }
-        LOG.info("numa out {}", exitCode);
         return (exitCode == 0);
 
     }
