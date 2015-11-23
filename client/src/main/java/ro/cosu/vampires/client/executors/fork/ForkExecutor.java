@@ -36,7 +36,8 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
         String command = computation.command();
 
         final Optional<CpuSet> cpuSet = cpuAllocator.acquireCpuSet();
-        LOG.info("cpuset {}", cpuSet);
+        LOG.debug("cpuset {}", cpuSet);
+
         if (cpuSet.isPresent() && isNumaEnabled()) {
             final String cpus = Joiner.on(",").join(cpuSet.get().getCpuSet());
             command = "numactl --physcpubind=" + cpus + " " + command;

@@ -80,7 +80,7 @@ public class ClientActor extends UntypedActor {
             if (JobStatus.COMPLETE.equals(job.status())) {
                 server.tell(job, getSelf());
             } else {
-                log.info("Execute {} -> {} {}", getSelf().path(), job.computation(), getSender().toString());
+                log.debug("Execute {} -> {} {}", getSelf().path(), job.computation(), getSender().toString());
                 execute(job);
             }
         } else if (message instanceof Terminated) {
@@ -90,7 +90,7 @@ public class ClientActor extends UntypedActor {
             }
 
         } else {
-            log.info("Unhandled: {} -> {} {}", getSelf().path(), message.toString(), getSender().toString());
+            log.error("Unhandled: {} -> {} {}", getSelf().path(), message.toString(), getSender().toString());
             unhandled(message);
         }
     };

@@ -58,13 +58,16 @@ public class MonitoringActor extends UntypedActor {
     @Override
     public void onReceive(Object message) throws Exception {
 
-        log.info("{} from {}", message, getSender());
+
+        log.debug("{} from {}", message, getSender());
 
 
         if (message instanceof Job) {
             Job job= (Job) message;
 
             if (JobStatus.EXECUTED.equals(job.status())) {
+                log.info("id: {} -> status:{} duration: {}", job.id(),  job.status(), job.result().duration());
+
                 ImmutableList<Metric> metricsWindowInterval = metricsWindow.getInterval
                         (job.result().start(), job.result().stop());
                 SortedMap<String, Gauge> hostGauges = metricRegistry.getGauges((name, metric) -> name.startsWith
