@@ -10,9 +10,8 @@
 
 
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>${user.home}/server-${bySecond}.txt</file>
+        <file>${user.home}/server-${HOSTNAME}-${bySecond}.txt</file>
         <append>true</append>
-
         <encoder>
             <pattern>%date{ISO8601} %-5level %logger{36} [%X{sourceThread}] [%X{akkaSource}]- %msg%n</pattern>
         </encoder>
