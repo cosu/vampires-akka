@@ -32,7 +32,7 @@ public class Server {
         system.actorOf(DispatchActor.props(workActor), "server");
 
 
-        final LocalDateTime startTime = LocalDateTime.now();
+
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
@@ -49,9 +49,6 @@ public class Server {
         });
 
         Await.result(system.whenTerminated(), Duration.Inf());
-
-        log.info("Total Duration: {}", java.time.Duration.between(startTime, LocalDateTime.now()));
-
 
     }
 }

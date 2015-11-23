@@ -10,6 +10,7 @@ import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.writers.ResultsWriter;
 
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,6 +23,8 @@ public class ResultActor extends UntypedActor{
 
     final SettingsImpl settings =
             Settings.SettingsProvider.get(getContext().system());
+
+    final LocalDateTime startTime = LocalDateTime.now();
 
 
     public static Props props(int numberOfResults){
@@ -37,7 +40,9 @@ public class ResultActor extends UntypedActor{
     @Override
     public  void preStart() {
         getContext().actorSelection("/user/terminator").tell(new ResourceControl.Up(), getSelf());
+
     }
+
 
 
     @Override
@@ -57,6 +62,7 @@ public class ResultActor extends UntypedActor{
             //this should be a predicate
             if (results.size() == numberOfResults) {
                 log.info("DONE!");
+                log.info("Total Duration: {}", java.time.Duration.between(startTime, LocalDateTime.now()));
                 shutdown();
             }
         }
