@@ -31,18 +31,18 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
     Executor executor;
 
     @Override
-    public  Result execute(Computation computation) {
+    public Result execute(Computation computation) {
 
         String command = computation.command();
 
         final Optional<CpuSet> cpuSet = cpuAllocator.acquireCpuSet();
         LOG.info("cpuset {}", cpuSet);
-        if (cpuSet.isPresent() && isNumaEnabled()){
+        if (cpuSet.isPresent() && isNumaEnabled()) {
             final String cpus = Joiner.on(",").join(cpuSet.get().getCpuSet());
-            command = "numactl --physcpubind=" + cpus  + " bash -c\"" + command + "\"";
+            command = "numactl --physcpubind=" + cpus + " " + command;
         }
 
-        LOG.info("executing {} with timeout {} minutes", command, TIMEOUT_IN_MILIS/1000/60);
+        LOG.info("executing {} with timeout {} minutes", command, TIMEOUT_IN_MILIS / 1000 / 60);
         CommandLine cmd = CommandLine.parse(command);
 
         CollectingLogOutputStream collectingLogOutputStream = new CollectingLogOutputStream();
@@ -58,9 +58,8 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
 
         int exitCode;
         try {
-            exitCode =executor.execute(cmd);
-        }
-        catch (ExecuteException e){
+            exitCode = executor.execute(cmd);
+        } catch (ExecuteException e) {
             LOG.warn("{}", e);
             exitCode = e.getExitValue();
         } catch (IOException e) {
@@ -72,7 +71,7 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
 
         long duration = Duration.between(start, stop).toMillis();
 
-        if (cpuSet.isPresent()){
+        if (cpuSet.isPresent()) {
             cpuAllocator.releaseCpuSets(cpuSet.get());
         }
 
@@ -93,27 +92,29 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
     }
 
 
-
     private static class CollectingLogOutputStream extends LogOutputStream {
         private final List<String> lines = new LinkedList<>();
-        @Override protected void processLine(String line, int level) {
+
+        @Override
+        protected void processLine(String line, int level) {
             lines.add(line);
         }
+
         public List<String> getLines() {
             return lines;
         }
     }
 
-    private boolean isNumaEnabled(){
+    private boolean isNumaEnabled() {
         int exitCode;
         try {
-            exitCode = executor.execute( CommandLine.parse("numactl --hardware"));
+            exitCode = executor.execute(CommandLine.parse("numactl --hardware"));
 
         } catch (IOException e) {
             exitCode = -1;
         }
         LOG.info("numa out {}", exitCode);
-        return  (exitCode == 0);
+        return (exitCode == 0);
 
     }
 }

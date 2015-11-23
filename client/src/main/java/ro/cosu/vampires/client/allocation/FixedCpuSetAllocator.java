@@ -24,7 +24,7 @@ public class FixedCpuSetAllocator implements CpuAllocator {
 
     public FixedCpuSetAllocator(Builder builder) {
         final List<Integer> integerList = IntStream.iterate(0, i -> i + 1)
-                .boxed().limit(builder.cpuSetSize * builder.totalCpuCount)
+                .boxed().limit(builder.totalCpuCount)
                 .collect(Collectors.toList());
 
 
