@@ -10,6 +10,7 @@ import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.writers.ResultsWriter;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,7 +63,7 @@ public class ResultActor extends UntypedActor{
             //this should be a predicate
             if (results.size() == numberOfResults) {
                 log.info("DONE!");
-                log.info("Total Duration: {}", java.time.Duration.between(startTime, LocalDateTime.now()));
+                log.info("Total Duration: {}", formatDuration(Duration.between(startTime, LocalDateTime.now())));
                 shutdown();
             }
         }
@@ -80,6 +81,17 @@ public class ResultActor extends UntypedActor{
         // init shutdown
         getContext().actorSelection("/user/terminator").tell(new ResourceControl.Shutdown(), getSelf());
         getContext().stop(getSelf());
+    }
+
+    public static String formatDuration(Duration duration) {
+        long seconds = duration.getSeconds();
+        long absSeconds = Math.abs(seconds);
+        String positive = String.format(
+                "%d:%02d:%02d",
+                absSeconds / 3600,
+                (absSeconds % 3600) / 60,
+                absSeconds % 60);
+        return seconds < 0 ? "-" + positive : positive;
     }
 
 }
