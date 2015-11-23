@@ -14,6 +14,7 @@ import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceProvider;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -40,7 +41,11 @@ public class EC2ResourceModule extends AbstractModule {
                 PropertiesCredentials credentials = new PropertiesCredentials(new FileInputStream(credentialsFile));
                 amazonEC2Client = new AmazonEC2Client(credentials);
             } catch (IOException e) {
-                LOG.error("failed to create amazon client", e);
+                if (e instanceof FileNotFoundException){
+                    LOG.error("failed to create amazon client: {}", e.getMessage());
+                } else {
+                    LOG.error("failed to create amazon client", e);
+                }
             }
         }
 
