@@ -25,7 +25,7 @@ allprojects {
         }
     }
 
-    task deleteLocalInstall(dependsOn: [clean, build, installDist],  type: Delete) {
+    task deleteLocalInstall(type: Delete) {
         delete System.properties['user.home'] + "/vampires-akka/${project.name}"
     }
 
@@ -35,7 +35,7 @@ allprojects {
 
     }
 
-    task installLocal(dependsOn:[ deleteLocalInstall, copyScripts, installDist],type: Sync) {
+    task installLocal(dependsOn: [installDist, copyScripts],type: Sync) {
         from "${buildDir}/install/${project.name}"
         into System.properties['user.home'] + "/vampires-akka/${project.name}"
     }
