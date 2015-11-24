@@ -24,6 +24,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 public class MonitoringActor extends UntypedActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
+    private static final int MONITORING_INTERVAL_MILIS = 1000;
 
     private final MetricRegistry metricRegistry;
 
@@ -43,7 +44,7 @@ public class MonitoringActor extends UntypedActor {
     @Override
     public void preStart() {
         getContext().system().scheduler().schedule(Duration.Zero(),
-                Duration.create(500, MILLISECONDS), () -> {
+                Duration.create(MONITORING_INTERVAL_MILIS, MILLISECONDS), () -> {
 
                     LocalDateTime now = LocalDateTime.now();
                     SortedMap<String, Gauge> gauges = metricRegistry.getGauges((name, metric) -> name.startsWith

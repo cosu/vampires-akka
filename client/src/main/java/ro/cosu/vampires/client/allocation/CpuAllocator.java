@@ -7,4 +7,6 @@ public interface CpuAllocator {
     Optional<CpuSet> acquireCpuSet();
 
     void releaseCpuSets(CpuSet cpuSet);
+
+    int totalCpuCount();
 }

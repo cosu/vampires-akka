@@ -8,15 +8,14 @@ import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.client.allocation.CpuAllocator;
 import ro.cosu.vampires.client.allocation.CpuSet;
 import ro.cosu.vampires.server.workload.Computation;
+import ro.cosu.vampires.server.workload.ExecInfo;
 import ro.cosu.vampires.server.workload.Result;
 
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor {
@@ -34,6 +33,7 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
     public Result execute(Computation computation) {
 
         String command = computation.command();
+
 
         final Optional<CpuSet> cpuSet = cpuAllocator.acquireCpuSet();
         LOG.debug("cpuset {}", cpuSet);
@@ -72,13 +72,16 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
 
         long duration = Duration.between(start, stop).toMillis();
 
+        Set<Integer> usedSet  = new HashSet<>();
         if (cpuSet.isPresent()) {
             cpuAllocator.releaseCpuSets(cpuSet.get());
+            usedSet = cpuSet.get().getCpuSet();
         }
 
         return Result.builder()
                 .duration(duration)
                 .exitCode(exitCode)
+                .execInfo(ExecInfo.withNoMetrics().cpuSet(usedSet).build())
                 .start(start)
                 .stop(stop)
                 .output(collectingLogOutputStream.getLines())

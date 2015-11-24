@@ -18,6 +18,7 @@ public class FixedCpuSetAllocator implements CpuAllocator {
      * acquiring
      */
     static final Logger LOG = LoggerFactory.getLogger(FixedCpuSetAllocator.class);
+    private final int totalCpuCount;
 
     BlockingDeque<CpuSet> cpuList = Queues.newLinkedBlockingDeque();
 
@@ -30,6 +31,8 @@ public class FixedCpuSetAllocator implements CpuAllocator {
 
         Lists.partition(integerList, builder.cpuSetSize).stream().map(HashSet::new).map(CpuSet::new).forEach
                 (cpuList::addLast);
+
+        this.totalCpuCount = builder.totalCpuCount;
 
     }
 
@@ -55,6 +58,11 @@ public class FixedCpuSetAllocator implements CpuAllocator {
         LOG.debug("put {}", cpuSet);
         cpuList.addLast(cpuSet);
 
+    }
+
+    @Override
+    public int totalCpuCount() {
+        return totalCpuCount;
     }
 
     public static class Builder {

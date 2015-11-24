@@ -12,4 +12,9 @@ public class NoCpuSetAllocator implements CpuAllocator {
     public void releaseCpuSets(CpuSet cpuSet) {
         // nothing
     }
+
+    @Override
+    public int totalCpuCount() {
+        return 0;
+    }
 }

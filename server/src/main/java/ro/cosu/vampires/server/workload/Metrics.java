@@ -12,7 +12,7 @@ public abstract class Metrics implements Serializable{
 
     public abstract ImmutableList<Metric> metrics();
     public abstract ImmutableMap<String, String> metadata();
-    public abstract  String id();
+    public abstract String id();
 
 
     public static Builder builder() {

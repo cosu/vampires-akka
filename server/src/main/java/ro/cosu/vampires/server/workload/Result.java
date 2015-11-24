@@ -8,13 +8,19 @@ import java.util.LinkedList;
 import java.util.List;
 
 @AutoValue
-public abstract class  Result  implements Serializable {
+public abstract class Result implements Serializable {
 
     public abstract List<String> output();
+
     public abstract int exitCode();
+
     public abstract LocalDateTime start();
+
     public abstract LocalDateTime stop();
-    public abstract  long duration ();
+
+    public abstract long duration();
+
+    public abstract ExecInfo execInfo();
 
 
     public static Builder builder() {
@@ -25,6 +31,7 @@ public abstract class  Result  implements Serializable {
         return new AutoValue_Result.Builder()
                 .output(new LinkedList<>())
                 .exitCode(-1)
+                .execInfo(ExecInfo.empty())
                 .start(LocalDateTime.parse("2000-01-01T00:00:00"))
                 .stop(LocalDateTime.parse("2000-01-01T00:00:00"))
                 .duration(0)
@@ -34,13 +41,18 @@ public abstract class  Result  implements Serializable {
     @AutoValue.Builder
     public abstract static class Builder {
         public abstract Builder output(List<String> output);
+
         public abstract Builder exitCode(int exitCode);
+
         public abstract Builder start(LocalDateTime start);
+
         public abstract Builder stop(LocalDateTime stop);
+
         public abstract Builder duration(long duration);
 
-        public abstract Result build();
+        public abstract Builder execInfo(ExecInfo execInfo);
 
+        public abstract Result build();
 
 
     }

@@ -19,7 +19,8 @@ public class DockerExecutorModuleTest {
         final Executor dockerExecutor = injector.getInstance(Executor.class);
         if (dockerExecutor.isAvailable()) {
 
-            Result execute = dockerExecutor.execute(Computation.builder().command("echo 1").build());
+            Result execute = dockerExecutor.execute(Computation.builder().command("wget http://ipv4.download" +
+                    ".thinkbroadband.com/100MB.zip").build());
 
             assertThat(execute.duration(), not(0));
         }

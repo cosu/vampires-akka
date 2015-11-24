@@ -93,6 +93,7 @@ public class CpuSource implements Source {
     private Gauge<Double> fiveMinLoadGague() {
         return () -> {
             try {
+
                 double[] la = sigar.getLoadAverage();
                 return la[1];
             } catch (SigarException e) {

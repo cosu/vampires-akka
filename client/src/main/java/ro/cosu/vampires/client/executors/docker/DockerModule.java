@@ -10,6 +10,7 @@ import com.google.inject.Provides;
 import com.google.inject.name.Named;
 import com.typesafe.config.Config;
 import ro.cosu.vampires.client.executors.Executor;
+import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
 
 public class DockerModule extends AbstractModule{
 
@@ -17,6 +18,8 @@ public class DockerModule extends AbstractModule{
     protected void configure() {
         
         bind(Executor.class).to(DockerExecutor.class);
+
+        bind(ExecutorMetricsCollector.class).to(DockerExecutorMetricsCollector.class);
     }
 
     @Provides
@@ -28,18 +31,20 @@ public class DockerModule extends AbstractModule{
         String certPath = config.getString("docker.certPath");
 
         DockerCmdExecFactoryImpl dockerCmdExecFactory = new DockerCmdExecFactoryImpl()
-                .withReadTimeout(1000)
+                .withReadTimeout(5000)
                 .withConnectTimeout(1000)
                 .withMaxTotalConnections(100)
                 .withMaxPerRouteConnections(10);
 
         DockerClientConfig dockerClientConfig = DockerClientConfig.createDefaultConfigBuilder()
+                // NOTE: api version should be changed when >1.21  is supported by docker-java
+                .withVersion("1.20")
                 .withUri(uri)
                 .withDockerCertPath(certPath)
                 .build();
 
+
         return DockerClientBuilder.getInstance(dockerClientConfig)
-                .withDockerCmdExecFactory(dockerCmdExecFactory)
                 .build();
     }
 

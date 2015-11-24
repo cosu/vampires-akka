@@ -16,7 +16,9 @@ import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.client.allocation.CpuAllocator;
 import ro.cosu.vampires.client.allocation.CpuSet;
 import ro.cosu.vampires.client.executors.Executor;
+import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
 import ro.cosu.vampires.server.workload.Computation;
+import ro.cosu.vampires.server.workload.ExecInfo;
 import ro.cosu.vampires.server.workload.Result;
 
 import javax.ws.rs.ProcessingException;
@@ -24,7 +26,9 @@ import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 public class DockerExecutor implements Executor {
 
@@ -33,6 +37,7 @@ public class DockerExecutor implements Executor {
     @Inject
     DockerClient dockerClient;
 
+
     @Named("Config")
     @Inject
     Config config;
@@ -40,13 +45,16 @@ public class DockerExecutor implements Executor {
     @Inject
     CpuAllocator cpuAllocator;
 
+    @Inject
+    ExecutorMetricsCollector executorMetricsCollector;
+
     @Override
     public Result execute(Computation computation) {
 
         LOG.info("running docker job {}", computation);
-        String containerName = "vampires-" + Math.abs(new SecureRandom().nextInt());
+        final String containerName = "vampires-" + Math.abs(new SecureRandom().nextInt());
 
-        String containerImage = config.getString("docker.image");
+        final String containerImage = config.getString("docker.image");
 
         final CreateContainerCmd createContainerCmd = dockerClient
                 .createContainerCmd(containerImage).withCmd(computation.command().split(" "))
@@ -55,6 +63,7 @@ public class DockerExecutor implements Executor {
         final Optional<CpuSet> cpuSet = cpuAllocator.acquireCpuSet();
         if (cpuSet.isPresent()) {
             final String cpus = Joiner.on(",").join(cpuSet.get().getCpuSet());
+            LOG.debug("docker cpuset {}", cpus);
             createContainerCmd.withCpuset(cpus);
         }
 
@@ -64,37 +73,46 @@ public class DockerExecutor implements Executor {
 
         dockerClient.startContainerCmd(container.getId()).exec();
 
-        int exitCode = dockerClient.waitContainerCmd(container.getId()).exec();
+        executorMetricsCollector.startMonitoring(container.getId());
 
         LocalDateTime stop = LocalDateTime.now();
 
+        int exitCode = dockerClient.waitContainerCmd(container.getId()).exec();
+
         String output = "";
         try {
-             output = dockerClient.logContainerCmd(container.getId())
-                     .withStdErr()
-                     .withStdOut().exec(new LogContainerTestCallback())
-                     .awaitCompletion().toString();
+            output = dockerClient.logContainerCmd(container.getId())
+                    .withStdErr()
+                    .withStdOut().exec(new LogContainerTestCallback())
+                    .awaitCompletion().toString();
 
         } catch (InterruptedException e) {
             exitCode = -1;
             LOG.error("docker get log error {}", e);
         }
 
+
         dockerClient.waitContainerCmd(container.getId()).exec();
+        executorMetricsCollector.stopMonitoring();
+        LOG.debug("{}", executorMetricsCollector.getMetrics());
 
         dockerClient.removeContainerCmd(container.getId()).exec();
 
 
         long duration = Duration.between(start, stop).toMillis();
 
+        Set<Integer> usedSet = new HashSet<>();
         if (cpuSet.isPresent()) {
             cpuAllocator.releaseCpuSets(cpuSet.get());
+            usedSet = cpuSet.get().getCpuSet();
         }
+
 
         return Result.builder()
                 .exitCode(exitCode)
                 .start(start)
                 .stop(stop)
+                .execInfo(ExecInfo.builder().cpuSet(usedSet).metrics(executorMetricsCollector.getMetrics()).build())
                 .duration(duration)
                 .output(Collections.singletonList(output))
                 .build();
@@ -106,7 +124,6 @@ public class DockerExecutor implements Executor {
         final Info exec = dockerClient.infoCmd().exec();
         return exec.getNCPU();
     }
-
 
 
     public static class LogContainerTestCallback extends LogContainerResultCallback {
@@ -126,17 +143,18 @@ public class DockerExecutor implements Executor {
 
 
     @Override
-    public  boolean isAvailable() {
+    public boolean isAvailable() {
 
         try {
             dockerClient.pingCmd().exec();
             LOG.info("docker is available");
 
             return true;
-        }
-        catch (DockerException | ProcessingException e){
-            LOG.error("docker is not available: {} ",e);
-            return  false;
+        } catch (DockerException | ProcessingException e) {
+            LOG.error("docker is not available: {} ", e);
+            return false;
         }
     }
+
+
 }
