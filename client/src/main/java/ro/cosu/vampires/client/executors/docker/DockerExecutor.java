@@ -26,9 +26,7 @@ import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 public class DockerExecutor implements Executor {
 
@@ -48,40 +46,49 @@ public class DockerExecutor implements Executor {
     @Inject
     ExecutorMetricsCollector executorMetricsCollector;
 
-    @Override
-    public Result execute(Computation computation) {
+    private String containerId;
 
-        LOG.info("running docker job {}", computation);
+    private Optional<CpuSet> cpuSet;
+
+    private void createContainer(String[] command) {
         final String containerName = "vampires-" + Math.abs(new SecureRandom().nextInt());
 
         final String containerImage = config.getString("docker.image");
 
         final CreateContainerCmd createContainerCmd = dockerClient
-                .createContainerCmd(containerImage).withCmd(computation.command().split(" "))
+                .createContainerCmd(containerImage).withCmd(command)
                 .withName(containerName);
 
-        final Optional<CpuSet> cpuSet = cpuAllocator.acquireCpuSet();
-        if (cpuSet.isPresent()) {
-            final String cpus = Joiner.on(",").join(cpuSet.get().getCpuSet());
-            LOG.debug("docker cpuset {}", cpus);
-            createContainerCmd.withCpuset(cpus);
-        }
+        cpuSet = cpuAllocator.acquireCpuSet();
 
+        if (cpuSet.isPresent()) {
+            LOG.debug("docker cpuset {}", cpuSet);
+            createContainerCmd.withCpuset(Joiner.on(",").join(cpuSet.get().getCpuSet()));
+        }
         CreateContainerResponse container = createContainerCmd.exec();
+        containerId = container.getId();
+    }
+
+    @Override
+    public Result execute(Computation computation) {
+
+        createContainer(computation.command().split(" "));
+
+        LOG.info("running docker job {}", computation);
 
         LocalDateTime start = LocalDateTime.now();
 
-        dockerClient.startContainerCmd(container.getId()).exec();
+        dockerClient.startContainerCmd(containerId).exec();
 
-        executorMetricsCollector.startMonitoring(container.getId());
+        executorMetricsCollector.startMonitoring(containerId);
 
         LocalDateTime stop = LocalDateTime.now();
 
-        int exitCode = dockerClient.waitContainerCmd(container.getId()).exec();
+        int exitCode = dockerClient.waitContainerCmd(containerId).exec();
 
         String output = "";
         try {
-            output = dockerClient.logContainerCmd(container.getId())
+            output = dockerClient.logContainerCmd(containerId)
                     .withStdErr()
                     .withStdOut().exec(new LogContainerTestCallback())
                     .awaitCompletion().toString();
@@ -91,32 +98,39 @@ public class DockerExecutor implements Executor {
             LOG.error("docker get log error {}", e);
         }
 
+        dockerClient.waitContainerCmd(containerId).exec();
 
-        dockerClient.waitContainerCmd(container.getId()).exec();
         executorMetricsCollector.stopMonitoring();
-        LOG.debug("{}", executorMetricsCollector.getMetrics());
 
-        dockerClient.removeContainerCmd(container.getId()).exec();
-
+        dockerClient.removeContainerCmd(containerId).exec();
 
         long duration = Duration.between(start, stop).toMillis();
-
-        Set<Integer> usedSet = new HashSet<>();
-        if (cpuSet.isPresent()) {
-            cpuAllocator.releaseCpuSets(cpuSet.get());
-            usedSet = cpuSet.get().getCpuSet();
-        }
-
 
         return Result.builder()
                 .exitCode(exitCode)
                 .start(start)
                 .stop(stop)
-                .execInfo(ExecInfo.builder().cpuSet(usedSet).metrics(executorMetricsCollector.getMetrics()).build())
+                .execInfo(getExecInfo())
                 .duration(duration)
                 .output(Collections.singletonList(output))
                 .build();
 
+    }
+
+    private ExecInfo getExecInfo() {
+        final ExecInfo.Builder builder = ExecInfo.builder()
+                .metrics(executorMetricsCollector.getMetrics())
+                .start(LocalDateTime.now())
+                .stop(LocalDateTime.now())
+                .totalCpuCount(cpuAllocator.totalCpuCount());
+
+        if (cpuSet.isPresent()) {
+            builder.cpuSet(cpuSet.get().getCpuSet());
+        }
+        final ExecInfo execInfo = builder.build();
+
+        LOG.debug("{}", execInfo);
+        return  execInfo;
     }
 
     @Override
@@ -125,6 +139,19 @@ public class DockerExecutor implements Executor {
         return exec.getNCPU();
     }
 
+    @Override
+    public boolean isAvailable() {
+
+        try {
+            dockerClient.pingCmd().exec();
+            LOG.info("docker is available");
+
+            return true;
+        } catch (DockerException | ProcessingException e) {
+            LOG.error("docker is not available: {} ", e);
+            return false;
+        }
+    }
 
     public static class LogContainerTestCallback extends LogContainerResultCallback {
         protected final StringBuffer log = new StringBuffer();
@@ -138,21 +165,6 @@ public class DockerExecutor implements Executor {
         @Override
         public String toString() {
             return log.toString();
-        }
-    }
-
-
-    @Override
-    public boolean isAvailable() {
-
-        try {
-            dockerClient.pingCmd().exec();
-            LOG.info("docker is available");
-
-            return true;
-        } catch (DockerException | ProcessingException e) {
-            LOG.error("docker is not available: {} ", e);
-            return false;
         }
     }
 

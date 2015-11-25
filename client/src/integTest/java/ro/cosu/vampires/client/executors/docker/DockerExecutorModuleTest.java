@@ -20,7 +20,7 @@ public class DockerExecutorModuleTest {
         if (dockerExecutor.isAvailable()) {
 
             Result execute = dockerExecutor.execute(Computation.builder().command("wget http://ipv4.download" +
-                    ".thinkbroadband.com/100MB.zip").build());
+                    ".thinkbroadband.com/5MB.zip").build());
 
             assertThat(execute.duration(), not(0));
         }

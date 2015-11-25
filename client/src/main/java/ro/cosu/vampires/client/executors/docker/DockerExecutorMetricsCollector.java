@@ -50,7 +50,7 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
     @Override
     public Metrics getMetrics() {
         final ImmutableList<Metric> statisticsList = ImmutableList.copyOf(statsCallback.getStatisticsList());
-        return Metrics.builder().id(id).metadata(ImmutableMap.of()).metrics(statisticsList).build();
+        return Metrics.builder().id(id).metadata(ImmutableMap.of("docker", id)).metrics(statisticsList).build();
 
     }
 
@@ -73,19 +73,24 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
 
     private static Metric convertDockerStatsToMetrics(Statistics stat) {
 
+        // the current stat api makes the 'read' field private so we put our own timestamp
+        // future versions of the api will hopefully fix this
         Map<String, Double> data = new HashMap<>();
-        data.putAll(convert("network", stat.getNetworkStats()));
-        data.putAll(convert("memory", stat.getMemoryStats()));
-        data.putAll(convert("io", stat.getBlkioStats()));
-        data.putAll(convert("cpu", stat.getCpuStats()));
+        data.putAll(flattenMap("network", stat.getNetworkStats()));
+        data.putAll(flattenMap("memory", stat.getMemoryStats()));
+        data.putAll(flattenMap("io", stat.getBlkioStats()));
+        data.putAll(flattenMap("cpu", stat.getCpuStats()));
 
         return Metric.builder().values(ImmutableMap.copyOf(data)).time(LocalDateTime.now()).build();
     }
 
-
-    private static Map<String, Double> convert(String prefix, Map<String, Object> stringMapMap) {
-        // the reason this  method exists is the lack of a type safe way of getting metrics from
-        // the docker api. it's ugly but it works (tm)
+    @SuppressWarnings("unchecked")
+    private static Map<String, Double> flattenMap(String prefix, Map<String, Object> stringMapMap) {
+        // the reason this  method exists is the lack of a type safe way of getting nested metrics from
+        // the docker api. it concatenates the keys and converts all the values to doubles
+        // also if it encounters any list, it flattens it by appending the index of the value in the list to the key
+        // effectively a: [1,2,3] becomes a-0: 1, a-1:2, a-2:3
+        // it's ugly but it works (tm)
         Map<String, Double> redata = new HashMap<>();
 
         for (Map.Entry<String, Object> entry : stringMapMap.entrySet()) {
@@ -93,7 +98,7 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
             Object val = entry.getValue();
 
             if (val instanceof Map) {
-                redata.putAll(convert(key, (Map<String, Object>) val));
+                redata.putAll(flattenMap(key, (Map<String, Object>) val));
             } else if (val instanceof List) {
                 final List valAsList = (List) val;
 
