@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.client.allocation.CpuAllocator;
 import ro.cosu.vampires.client.allocation.FixedCpuSetAllocator;
-import ro.cosu.vampires.client.monitoring.HostInfo;
 
 public abstract class AbstractExecutorModule extends AbstractModule {
     static final Logger LOG = LoggerFactory.getLogger(AbstractExecutorModule.class);
@@ -38,10 +37,7 @@ public abstract class AbstractExecutorModule extends AbstractModule {
 
     @Provides
     @Singleton
-    CpuAllocator provideCpuAllocator() {
-        // the assumption is that the executor runs on localhost
-        // so it's ok to use the host info to get the # of cpus
-        int cpuCount = HostInfo.getAvailableProcs();
+    CpuAllocator provideCpuAllocator(@Named("cpuCount")  int cpuCount) {
         final int cpuSetSize = config.getInt("cpuSetSize");
 
         LOG.info(" cpuCount: {} countSetSize: {}", cpuCount, cpuSetSize);

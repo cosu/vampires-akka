@@ -1,6 +1,7 @@
 package ro.cosu.vampires.client.executors.docker;
 
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.model.Info;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.jaxrs.DockerCmdExecFactoryImpl;
@@ -20,6 +21,13 @@ public class DockerModule extends AbstractModule{
         bind(Executor.class).to(DockerExecutor.class);
 
         bind(ExecutorMetricsCollector.class).to(DockerExecutorMetricsCollector.class);
+    }
+
+    @Provides
+    @Named("cpuCount")
+    int provideCpuCount(DockerClient dockerClient){
+        final Info exec = dockerClient.infoCmd().exec();
+        return exec.getNCPU();
     }
 
     @Provides

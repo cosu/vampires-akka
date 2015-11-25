@@ -49,6 +49,7 @@ public class MonitoringActorTest {
         Computation computation = Computation.builder().command("test").id("test").build();
         Result result = Result.builder().duration(10).exitCode(0).output(new LinkedList<>())
                 .stop(LocalDateTime.now())
+                .execInfo(ExecInfo.empty())
                 .start(LocalDateTime.now().minus(seconds, ChronoUnit.SECONDS))
                 .build();
 

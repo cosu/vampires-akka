@@ -35,7 +35,8 @@ public class Client {
 
 
 
-        final ActorRef monitor = system.actorOf(MonitoringActor.props(MonitoringManager.getMetricRegistry()), "monitor");
+        final ActorRef monitor = system.actorOf(MonitoringActor.props(MonitoringManager.getMetricRegistry()),
+                "monitor");
 
         final ActorRef client = system.actorOf(ClientActor.props(path), "client");
         final ActorRef terminator = system.actorOf(TerminatorActor.props(client), "terminator");
@@ -44,5 +45,7 @@ public class Client {
         Await.result(system.whenTerminated(), Duration.Inf());
 
     }
+
+
 
 }

@@ -21,9 +21,7 @@ public class MonitoringManager {
         sources.stream().forEach(Source::register);
     }
 
-    public static MetricRegistry getMetricRegistry() throws Exception {
-        SigarProvisioner.provision();
-        Sigar sigar = new Sigar();
+    public static MetricRegistry getMetricRegistry(Sigar sigar) throws Exception {
         MetricRegistry metricRegistry = new MetricRegistry();
 
         Injector injector = Guice.createInjector(new MonitoringModule(metricRegistry, sigar));
@@ -31,5 +29,15 @@ public class MonitoringManager {
         injector.getInstance(MonitoringManager.class).register();
         return metricRegistry;
 
+    }
+
+    private static Sigar getSigar() throws Exception {
+        SigarProvisioner.provision();
+        return  new Sigar();
+
+    }
+
+    public static MetricRegistry getMetricRegistry() throws Exception{
+        return  getMetricRegistry(getSigar());
     }
 }

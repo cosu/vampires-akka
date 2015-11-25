@@ -133,7 +133,6 @@ public class DockerExecutor implements Executor {
         return  execInfo;
     }
 
-    @Override
     public int getNCpu() {
         final Info exec = dockerClient.infoCmd().exec();
         return exec.getNCPU();

@@ -78,10 +78,16 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
             usedSet = cpuSet.get().getCpuSet();
         }
 
+        ExecInfo execInfo = ExecInfo.withNoMetrics()
+                .cpuSet(usedSet)
+                .start(start)
+                .stop(stop)
+                .totalCpuCount(getNCpu())
+                .build();
         return Result.builder()
                 .duration(duration)
                 .exitCode(exitCode)
-                .execInfo(ExecInfo.withNoMetrics().cpuSet(usedSet).build())
+                .execInfo(execInfo)
                 .start(start)
                 .stop(stop)
                 .output(collectingLogOutputStream.getLines())
@@ -89,7 +95,6 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
 
     }
 
-    @Override
     public int getNCpu() {
         // this uses jvm info. We could use sigar to get this also but it adds a weird dependency here
         return Runtime.getRuntime().availableProcessors();
