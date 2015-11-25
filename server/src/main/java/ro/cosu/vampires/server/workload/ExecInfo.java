@@ -3,12 +3,13 @@ package ro.cosu.vampires.server.workload;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.Sets;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 
 @AutoValue
-public abstract class ExecInfo {
+public abstract class ExecInfo implements Serializable{
 
     public abstract LocalDateTime start();
 
