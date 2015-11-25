@@ -31,7 +31,7 @@ public class ClientActorTest {
     }
 
     @Test
-    public void testRegisterActorRegistration() throws Exception {
+    public void testClientActor() throws Exception {
 
         TestActorRef<MonitoringActor> monitor = TestActorRef.create(system, MonitoringActor
                 .props(MonitoringManager.getMetricRegistry()), "monitor");

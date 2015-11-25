@@ -147,7 +147,7 @@ public class DockerExecutor implements Executor {
 
             return true;
         } catch (DockerException | ProcessingException e) {
-            LOG.error("docker is not available: {} ", e);
+            LOG.error("docker is not available: ", e.getCause());
             return false;
         }
     }
