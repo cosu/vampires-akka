@@ -39,7 +39,7 @@ public class LocalResource extends AbstractResource{
         DefaultExecutor executor = new DefaultExecutor();
         executor.setWorkingDirectory(Paths.get("").toAbsolutePath().toFile());
         executor.setStreamHandler(new PumpStreamHandler(collectingLogOutputStream));
-        executor.setWatchdog(new ExecuteWatchdog(1500));
+        executor.setWatchdog(new ExecuteWatchdog(10000));
 
         int exitCode = 0;
         try {
