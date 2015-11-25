@@ -36,7 +36,7 @@ public class DockerModule extends AbstractModule{
             cpuCount = exec.getNCPU();
         }
         catch (ProcessingException e){
-            LOG.error("failed to get docker cpu count", e.getCause());
+            LOG.error("failed to get docker cpu count : {}", e.getMessage());
         }
         return cpuCount;
     }

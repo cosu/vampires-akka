@@ -92,7 +92,6 @@ public class DockerExecutor implements Executor {
                     .withStdErr()
                     .withStdOut().exec(new LogContainerTestCallback())
                     .awaitCompletion().toString();
-
         } catch (InterruptedException e) {
             exitCode = -1;
             LOG.error("docker get log error {}", e);
@@ -147,7 +146,7 @@ public class DockerExecutor implements Executor {
 
             return true;
         } catch (DockerException | ProcessingException e) {
-            LOG.error("docker is not available: ", e.getCause());
+            LOG.error("docker is not available: {}", e.getMessage());
             return false;
         }
     }
