@@ -10,14 +10,13 @@ import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.client.executors.Executor;
 import ro.cosu.vampires.client.executors.docker.DockerExecutorModule;
 import ro.cosu.vampires.client.executors.fork.ForkExecutorModule;
-import ro.cosu.vampires.server.settings.Settings;
 
 import java.util.Objects;
 
 public class ExecutorsExtensionImpl implements Extension {
 
     public final Config vampires;
-    static final Logger LOG = LoggerFactory.getLogger(Settings.class);
+    static final Logger LOG = LoggerFactory.getLogger(ExecutorsExtensionImpl.class);
     private Injector injector;
     public ExecutorsExtensionImpl(Config config) {
         vampires = config.getConfig("vampires");

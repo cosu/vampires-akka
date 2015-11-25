@@ -13,7 +13,7 @@ import static org.hamcrest.core.IsNot.not;
 
 public class DockerExecutorModuleTest {
     @Test
-    public void testDockerStart() throws Exception {
+    public void testDockerStart() {
         Injector injector = Guice.createInjector(new DockerExecutorModule(ConfigFactory.load().getConfig("vampires")));
 
         final Executor dockerExecutor = injector.getInstance(Executor.class);

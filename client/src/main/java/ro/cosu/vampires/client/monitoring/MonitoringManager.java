@@ -31,7 +31,7 @@ public class MonitoringManager {
 
     }
 
-    private static Sigar getSigar() throws Exception {
+    public static Sigar getSigar() throws Exception {
         SigarProvisioner.provision();
         return  new Sigar();
 
