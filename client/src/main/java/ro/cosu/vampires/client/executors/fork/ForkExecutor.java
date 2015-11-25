@@ -29,13 +29,11 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
     @Inject
     Executor executor;
 
-    @Override
-    public Result execute(Computation computation) {
+    private Optional<CpuSet> cpuSet;
 
-        String command = computation.command();
+    private CommandLine getCommandLine(String command){
 
-
-        final Optional<CpuSet> cpuSet = cpuAllocator.acquireCpuSet();
+        cpuSet = cpuAllocator.acquireCpuSet();
         LOG.debug("cpuset {}", cpuSet);
 
         if (cpuSet.isPresent() && isNumaEnabled()) {
@@ -44,50 +42,52 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
         }
 
         LOG.info("executing {} with timeout {} minutes", command, TIMEOUT_IN_MILIS / 1000 / 60);
-        CommandLine cmd = CommandLine.parse(command);
+        return  CommandLine.parse(command);
+    }
+
+    @Override
+    public Result execute(Computation computation) {
+
+        CommandLine commandLine = getCommandLine(computation.command());
 
         CollectingLogOutputStream collectingLogOutputStream = new CollectingLogOutputStream();
-
         PumpStreamHandler handler = new PumpStreamHandler(collectingLogOutputStream);
-
         executor.setStreamHandler(handler);
         executor.setWatchdog(new ExecuteWatchdog(TIMEOUT_IN_MILIS));
-
         executor.setWorkingDirectory(Paths.get("").toAbsolutePath().toFile());
 
-        LocalDateTime start = LocalDateTime.now();
+        DefaultExecuteResultHandler resultHandler = new DefaultExecuteResultHandler();
 
+        LocalDateTime start = LocalDateTime.now();
         int exitCode;
         try {
-            exitCode = executor.execute(cmd);
-        } catch (ExecuteException e) {
-            LOG.warn("{}", e);
-            exitCode = e.getExitValue();
+            executor.execute(commandLine, resultHandler);
         } catch (IOException e) {
-            LOG.warn("{}", e);
-            exitCode = -1;
+            LOG.error("failed to exec", resultHandler.getException());
         }
+
+        try {
+            resultHandler.waitFor();
+        } catch (InterruptedException e) {
+            LOG.error("failed to exec", resultHandler.getException());
+        }
+
+        exitCode = resultHandler.hasResult()? resultHandler.getExitValue(): -1;
+
+        LOG.info("exit code {} {} {}", exitCode, collectingLogOutputStream.getLines(), resultHandler.getException());
+
+        //TODO take different action for failed commands so we can collect the output (stderr or java exception)
+
 
         LocalDateTime stop = LocalDateTime.now();
 
         long duration = Duration.between(start, stop).toMillis();
 
-        Set<Integer> usedSet  = new HashSet<>();
-        if (cpuSet.isPresent()) {
-            cpuAllocator.releaseCpuSets(cpuSet.get());
-            usedSet = cpuSet.get().getCpuSet();
-        }
 
-        ExecInfo execInfo = ExecInfo.withNoMetrics()
-                .cpuSet(usedSet)
-                .start(start)
-                .stop(stop)
-                .totalCpuCount(getNCpu())
-                .build();
         return Result.builder()
                 .duration(duration)
                 .exitCode(exitCode)
-                .execInfo(execInfo)
+                .execInfo(getExecInfo())
                 .start(start)
                 .stop(stop)
                 .output(collectingLogOutputStream.getLines())
@@ -95,6 +95,37 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
 
     }
 
+    private int runCommand(CommandLine commandLine) {
+        int exitCode;
+        try {
+            exitCode = executor.execute(commandLine);
+        } catch (ExecuteException e) {
+            LOG.warn("{}", e);
+            exitCode = e.getExitValue();
+        } catch (IOException e) {
+            LOG.warn("{}", e);
+            exitCode = -1;
+        }
+        return  exitCode;
+    }
+
+    private ExecInfo getExecInfo() {
+        final ExecInfo.Builder builder = ExecInfo
+                .withNoMetrics()
+                .start(LocalDateTime.now())
+                .stop(LocalDateTime.now())
+                .totalCpuCount(cpuAllocator.totalCpuCount());
+
+        if (cpuSet.isPresent()) {
+            builder.cpuSet(cpuSet.get().getCpuSet());
+        }
+        final ExecInfo execInfo = builder.build();
+
+        LOG.debug("{}", execInfo);
+        return  execInfo;
+    }
+
+    @Override
     public int getNCpu() {
         // this uses jvm info. We could use sigar to get this also but it adds a weird dependency here
         return Runtime.getRuntime().availableProcessors();

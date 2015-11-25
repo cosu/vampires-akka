@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.stream.IntStream;
 
 public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector {
-    static final Logger LOG = LoggerFactory.getLogger(DockerExecutor.class);
+    static final Logger LOG = LoggerFactory.getLogger(DockerExecutorMetricsCollector.class);
 
     StatsCallback statsCallback = new StatsCallback();
 
