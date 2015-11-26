@@ -77,6 +77,7 @@ public class ClientActor extends UntypedActor {
 
             Job job = (Job) message;
 
+
             if (JobStatus.COMPLETE.equals(job.status())) {
                 server.tell(job, getSelf());
             } else {
@@ -96,9 +97,10 @@ public class ClientActor extends UntypedActor {
     };
 
     private void execute(Job job) {
-        ActorRef executorActor = getContext().actorOf(ExecutorActor.props());
-        executorActor.tell(job, getSelf());
-
+        if (!job.equals(Job.waitForever())) {
+            ActorRef executorActor = getContext().actorOf(ExecutorActor.props());
+            executorActor.tell(job, getSelf());
+        }
     }
 
 

@@ -33,7 +33,7 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
 
     private CommandLine getCommandLine(String command){
 
-        cpuSet = cpuAllocator.acquireCpuSet();
+
         LOG.debug("cpuset {}", cpuSet);
 
         if (cpuSet.isPresent() && isNumaEnabled()) {
@@ -47,6 +47,8 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
 
     @Override
     public Result execute(Computation computation) {
+
+        acquireResources();
 
         CommandLine commandLine = getCommandLine(computation.command());
 
@@ -74,8 +76,6 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
 
         exitCode = resultHandler.hasResult()? resultHandler.getExitValue(): -1;
 
-        LOG.info("exit code {} {} {}", exitCode, collectingLogOutputStream.getLines(), resultHandler.getException());
-
         //TODO take different action for failed commands so we can collect the output (stderr or java exception)
 
 
@@ -83,7 +83,7 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
 
         long duration = Duration.between(start, stop).toMillis();
 
-
+        releaseResources();
         return Result.builder()
                 .duration(duration)
                 .exitCode(exitCode)
@@ -95,18 +95,14 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
 
     }
 
-    private int runCommand(CommandLine commandLine) {
-        int exitCode;
-        try {
-            exitCode = executor.execute(commandLine);
-        } catch (ExecuteException e) {
-            LOG.warn("{}", e);
-            exitCode = e.getExitValue();
-        } catch (IOException e) {
-            LOG.warn("{}", e);
-            exitCode = -1;
-        }
-        return  exitCode;
+    @Override
+    public void acquireResources() {
+        cpuSet = cpuAllocator.acquireCpuSet();
+    }
+
+    @Override
+    public void releaseResources() {
+        cpuSet.ifPresent(c -> cpuAllocator.releaseCpuSets(c));
     }
 
     private ExecInfo getExecInfo() {

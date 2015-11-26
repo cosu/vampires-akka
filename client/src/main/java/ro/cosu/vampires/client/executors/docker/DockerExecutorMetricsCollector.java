@@ -15,10 +15,7 @@ import ro.cosu.vampires.server.workload.Metrics;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector {
@@ -105,13 +102,28 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
 
                 IntStream.range(0, valAsList.size())
                         .filter(i -> valAsList.size() >= i)
-                        .forEach(i -> redata.put(key + "-" + i, Double.parseDouble(valAsList.get(i).toString())));
+                        .forEach(i -> Optional.ofNullable(getDoubleFrom(valAsList.get(i)))
+                                .ifPresent(newValue -> redata.put(key + "-" + i, newValue)));
+
 
             } else {
-                redata.put(key, Double.parseDouble(val.toString()));
+                Optional.ofNullable(getDoubleFrom(val)).ifPresent(newValue -> redata.put(key,
+                        newValue));
             }
         }
 
         return redata;
+    }
+    private static Double getDoubleFrom(Object object){
+        Double val = 0.;
+        try {
+
+            val = Double.parseDouble(object.toString());
+        }
+        catch (Exception e){
+            LOG.warn("can't convert {} to double", object);
+        }
+        return  val;
+
     }
 }

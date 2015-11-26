@@ -59,8 +59,6 @@ public class DockerExecutor implements Executor {
                 .createContainerCmd(containerImage).withCmd(command)
                 .withName(containerName);
 
-        cpuSet = cpuAllocator.acquireCpuSet();
-
         if (cpuSet.isPresent()) {
             LOG.debug("docker cpuset {}", cpuSet);
             createContainerCmd.withCpuset(Joiner.on(",").join(cpuSet.get().getCpuSet()));
@@ -71,6 +69,8 @@ public class DockerExecutor implements Executor {
 
     @Override
     public Result execute(Computation computation) {
+
+        acquireResources();
 
         createContainer(computation.command().split(" "));
 
@@ -104,6 +104,8 @@ public class DockerExecutor implements Executor {
         dockerClient.removeContainerCmd(containerId).exec();
 
         long duration = Duration.between(start, stop).toMillis();
+
+        releaseResources();
 
         return Result.builder()
                 .exitCode(exitCode)
@@ -149,6 +151,16 @@ public class DockerExecutor implements Executor {
             LOG.error("docker is not available: {}", e.getMessage());
             return false;
         }
+    }
+
+    @Override
+    public void acquireResources() {
+        cpuSet = cpuAllocator.acquireCpuSet();
+    }
+
+    @Override
+    public void releaseResources() {
+        cpuSet.ifPresent(c -> cpuAllocator.releaseCpuSets(c));
     }
 
     public static class LogContainerTestCallback extends LogContainerResultCallback {

@@ -14,4 +14,7 @@ public interface Executor {
 
     default boolean isAvailable() { return  true;}
 
+    void acquireResources();
+    void releaseResources();
+
 }
