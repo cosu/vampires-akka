@@ -40,6 +40,7 @@ allprojects {
         into System.properties['user.home'] + "/vampires-akka/${project.name}"
     }
 
+
 }
 
 
@@ -47,6 +48,8 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'application'
     apply plugin: 'idea'
+    apply plugin: 'jacoco'
+
 
 
     idea {
@@ -83,6 +86,15 @@ subprojects {
         classpath = sourceSets.integrationTest.runtimeClasspath
 
     }
+    
+    jacocoTestReport {
+        reports {
+            xml.enabled = true
+            html.enabled = true
+        }
+    }
+
+    check.dependsOn jacocoTestReport
 
 
 //    check.dependsOn integrationTest
