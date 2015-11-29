@@ -27,7 +27,7 @@ public class SettingsImpl implements Extension {
         List<ResultsWriter> writers = new LinkedList<>();
         List<String> enabledWriters = vampires.getStringList("enabled-writers");
         if (enabledWriters.contains("json")){
-            writers.add(new JsonResultsWriter());
+            writers.add(new JsonResultsWriter(vampires));
         }
 
         if (enabledWriters.contains("mongo")){
@@ -36,7 +36,7 @@ public class SettingsImpl implements Extension {
 
         if (writers.isEmpty()){
             LOG.info("no writers configured. using default writer: json");
-            writers.add(new JsonResultsWriter());
+            writers.add(new JsonResultsWriter(vampires));
 
         }
 
