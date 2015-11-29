@@ -6,7 +6,6 @@ import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Reservation;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -17,7 +16,6 @@ import java.util.List;
 public class EC2ResourceTest {
 
     @Test
-    @Ignore
     public void testCreate() throws Exception {
 
         File credentialsFile = Paths.get(System.getProperty("user.home"), ".aws").toFile();

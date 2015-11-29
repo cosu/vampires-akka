@@ -19,7 +19,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class ResourceManagerTest {
+public class ResourceManagerIT {
 
 
 

@@ -7,7 +7,7 @@ import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.workload.Metrics;
 import ro.cosu.vampires.server.workload.Result;
 
-public class MongoWriterTest {
+public class MongoWriterIT {
 
     @Test
     @Ignore
