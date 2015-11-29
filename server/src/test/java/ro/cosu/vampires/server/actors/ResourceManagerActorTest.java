@@ -1,4 +1,4 @@
-package ro.cosu.vampires.server;
+package ro.cosu.vampires.server.actors;
 
 import akka.actor.ActorRef;
 import akka.testkit.TestActorRef;
@@ -6,9 +6,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.typesafe.config.ConfigFactory;
 import org.junit.Test;
-import ro.cosu.vampires.server.actors.AbstractActorTest;
-import ro.cosu.vampires.server.actors.ResourceControl;
-import ro.cosu.vampires.server.actors.ResourceManagerActor;
 import ro.cosu.vampires.server.resources.*;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
@@ -39,7 +36,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         ResourceInfo ci = (ResourceInfo) Await.result(infoFuture, Duration.create("5 seconds"));
 
-        assertThat(ci.description().type(), is(equalTo(Resource.Type.SSH)));
+        assertThat(ci.description().type(), is(equalTo(Resource.Type.LOCAL)));
 
 
         ResourceControl.Info resourceInfo = new ResourceControl.Info();
@@ -64,9 +61,9 @@ public class ResourceManagerActorTest extends AbstractActorTest {
         Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.load().getConfig("vampires")));
         ResourceManager rm = injector.getInstance(ResourceManager.class);
 
-        ResourceProvider sshProvider = rm.getProviders().get(Resource.Type.SSH);
+        ResourceProvider sshProvider = rm.getProviders().get(Resource.Type.LOCAL);
         Resource.Parameters parameters = sshProvider.getParameters("local");
 
-        return new ResourceControl.Create(Resource.Type.SSH, parameters);
+        return new ResourceControl.Create(Resource.Type.LOCAL, parameters);
     }
 }
