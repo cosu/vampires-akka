@@ -7,6 +7,7 @@ import com.typesafe.config.Config;
 import ro.cosu.vampires.server.resources.das5.Das5ResourceModule;
 import ro.cosu.vampires.server.resources.ec2.EC2ResourceModule;
 import ro.cosu.vampires.server.resources.local.LocalResourceModule;
+import ro.cosu.vampires.server.resources.mock.MockResourceModule;
 import ro.cosu.vampires.server.resources.ssh.SshResourceModule;
 
 public class ResourceModule extends AbstractModule{
@@ -26,6 +27,7 @@ public class ResourceModule extends AbstractModule{
         install(new LocalResourceModule());
         install(new EC2ResourceModule());
         install(new SshResourceModule());
+        install(new MockResourceModule());
 
     }
 

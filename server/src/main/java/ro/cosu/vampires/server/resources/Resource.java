@@ -29,7 +29,8 @@ public interface Resource {
         SSH,
         LOCAL,
         DAS5,
-        EC2
+        EC2,
+        MOCK
     }
 
     CompletableFuture<Resource> start();
