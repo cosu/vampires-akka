@@ -1,4 +1,4 @@
-package ro.cosu.vampires.server;
+package ro.cosu.vampires.server.actors;
 
 import akka.actor.ActorRef;
 import akka.testkit.JavaTestKit;
@@ -7,8 +7,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.typesafe.config.ConfigFactory;
 import org.junit.Test;
-import ro.cosu.vampires.server.actors.ResourceActor;
-import ro.cosu.vampires.server.actors.ResourceControl;
 import ro.cosu.vampires.server.resources.*;
 import ro.cosu.vampires.server.resources.local.LocalResourceParameters;
 import scala.concurrent.duration.FiniteDuration;

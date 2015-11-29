@@ -1,4 +1,4 @@
-package ro.cosu.vampires.server;
+package ro.cosu.vampires.server.actors;
 
 import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
@@ -6,7 +6,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 public class AbstractActorTest {
-    static ActorSystem system;
+    protected  static ActorSystem system;
 
     @BeforeClass
     public static void setup() {

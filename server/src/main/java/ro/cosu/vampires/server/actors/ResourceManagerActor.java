@@ -8,6 +8,7 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceManager;
 import ro.cosu.vampires.server.resources.ResourceModule;
 import ro.cosu.vampires.server.resources.ResourceProvider;
@@ -16,6 +17,7 @@ import ro.cosu.vampires.server.settings.SettingsImpl;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class ResourceManagerActor extends UntypedActor {
     private final SettingsImpl settings =
@@ -31,6 +33,25 @@ public class ResourceManagerActor extends UntypedActor {
 
         rm = injector.getInstance(ResourceManager.class);
 
+    }
+
+    private void startResources() {
+        settings.vampires.getConfigList("start").stream().forEach(config ->
+        {
+            String type = config.getString("type");
+            int count = config.getInt("count");
+            String provider = config.getString("provider");
+            log.info("starting {} x  {} from provider {}", count, type, provider);
+
+            IntStream.rangeClosed(1, count).forEach(i ->
+                    getSelf().tell(new ResourceControl.Start(Resource.Type.valueOf(provider
+                            .toUpperCase()), type), getSelf()));
+        });
+    }
+
+    @Override
+    public void preStart() {
+        startResources();
     }
 
     private void createResource(ResourceProvider rp, ResourceControl.Create create) {
@@ -56,9 +77,7 @@ public class ResourceManagerActor extends UntypedActor {
             ResourceControl.Start start = (ResourceControl.Start) message;
             rm.getProvider(start.type).ifPresent(rp -> startResource(rp, start));
 
-        }
-
-        if (message instanceof ResourceControl.Create) {
+        } else if (message instanceof ResourceControl.Create) {
             ResourceControl.Create create = (ResourceControl.Create) message;
             rm.getProvider(create.type).ifPresent(rp -> createResource(rp, create));
 

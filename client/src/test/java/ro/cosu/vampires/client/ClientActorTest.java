@@ -12,7 +12,6 @@ import org.junit.Test;
 import ro.cosu.vampires.client.actors.ClientActor;
 import ro.cosu.vampires.client.actors.MonitoringActor;
 import ro.cosu.vampires.client.monitoring.MonitoringManager;
-import ro.cosu.vampires.server.actors.RegisterActor;
 import ro.cosu.vampires.server.workload.Job;
 
 public class ClientActorTest {
@@ -36,7 +35,7 @@ public class ClientActorTest {
         TestActorRef<MonitoringActor> monitor = TestActorRef.create(system, MonitoringActor
                 .props(MonitoringManager.getMetricRegistry()), "monitor");
 
-        TestActorRef<RegisterActor> client = TestActorRef.create(system, ClientActor.props("test"), "client1");
+        TestActorRef<ClientActor> client = TestActorRef.create(system, ClientActor.props("test"), "client1");
 
         final JavaTestKit remoteProbe = new JavaTestKit(system);
 

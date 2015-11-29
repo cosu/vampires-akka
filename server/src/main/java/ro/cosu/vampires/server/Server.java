@@ -5,10 +5,9 @@ import akka.actor.ActorSystem;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.*;
+import ro.cosu.vampires.server.actors.Terminator;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
-
-import java.time.LocalDateTime;
 
 public class Server {
 
@@ -25,7 +24,6 @@ public class Server {
 
         ActorRef resourceManagerActor = system.actorOf(ResourceManagerActor.props(), "resourceManager");
 
-        ActorRef registerActor = system.actorOf(RegisterActor.props(resourceManagerActor), "registerActor");
 
         ActorRef terminator = system.actorOf(Terminator.props(), "terminator");
 
