@@ -57,9 +57,5 @@ public class SettingsImpl implements Extension {
 
     }
 
-    public int getParallel(){
-        return vampires.getInt("parallel");
-    }
-
 }
 
