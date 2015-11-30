@@ -3,6 +3,7 @@ package ro.cosu.vampires.server.actors;
 import akka.testkit.TestActorRef;
 import akka.testkit.TestProbe;
 import org.junit.Test;
+import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 
 public class TerminatorTest extends AbstractActorTest{
@@ -17,8 +18,9 @@ public class TerminatorTest extends AbstractActorTest{
 
         system.stop(testProbe.ref());
 
-        system.awaitTermination(Duration.create("1 second"));
 
+
+        Await.result(system.whenTerminated(), Duration.create("1 second"));
 
     }
 }
