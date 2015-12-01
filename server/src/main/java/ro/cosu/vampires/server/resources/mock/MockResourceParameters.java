@@ -9,10 +9,10 @@ import ro.cosu.vampires.server.resources.Resource;
 public abstract class MockResourceParameters implements Resource.Parameters{
 
     public abstract String command();
-    public abstract  Resource.Type type();
+    public abstract Resource.Provider type();
 
     public static Builder builder() {
-        return new AutoValue_MockResourceParameters.Builder().type(Resource.Type.MOCK);
+        return new AutoValue_MockResourceParameters.Builder().type(Resource.Provider.MOCK);
     }
     @AutoValue.Builder
     public abstract static class Builder implements  Resource.Parameters.Builder{
@@ -21,7 +21,7 @@ public abstract class MockResourceParameters implements Resource.Parameters{
             return  this;
         }
 
-        abstract Builder type(Resource.Type type);
+        abstract Builder type(Resource.Provider provider);
 
         public abstract Builder command(String command);
         public abstract MockResourceParameters build();

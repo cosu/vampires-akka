@@ -8,10 +8,10 @@ import ro.cosu.vampires.server.resources.ResourceProvider;
 public class MockResourceModule extends AbstractModule{
     @Override
     protected void configure() {
-        MapBinder<Resource.Type, ResourceProvider> mapbinder
-                = MapBinder.newMapBinder(binder(), Resource.Type.class, ResourceProvider.class);
+        MapBinder<Resource.Provider, ResourceProvider> mapbinder
+                = MapBinder.newMapBinder(binder(), Resource.Provider.class, ResourceProvider.class);
 
-        mapbinder.addBinding(Resource.Type.MOCK).to(MockResourceProvider.class).asEagerSingleton();
+        mapbinder.addBinding(Resource.Provider.MOCK).to(MockResourceProvider.class).asEagerSingleton();
 
     }
 }

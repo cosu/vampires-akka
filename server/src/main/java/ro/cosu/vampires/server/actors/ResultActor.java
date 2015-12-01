@@ -15,7 +15,10 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ResultActor extends UntypedActor{
+import static java.util.concurrent.TimeUnit.SECONDS;
+
+
+public class ResultActor extends UntypedActor {
     private final int numberOfResults;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
@@ -28,7 +31,7 @@ public class ResultActor extends UntypedActor{
     final LocalDateTime startTime = LocalDateTime.now();
 
 
-    public static Props props(int numberOfResults){
+    public static Props props(int numberOfResults) {
         return Props.create(ResultActor.class, numberOfResults);
     }
 
@@ -39,11 +42,14 @@ public class ResultActor extends UntypedActor{
     }
 
     @Override
-    public  void preStart() {
+    public void preStart() {
         getContext().actorSelection("/user/terminator").tell(new ResourceControl.Up(), getSelf());
 
+        getContext().system().scheduler().schedule(scala.concurrent.duration.Duration.Zero(),
+                scala.concurrent.duration.Duration.create(5 , SECONDS), () -> {
+                    log.info("results so far: {}/{}", results.size(), numberOfResults);
+                }, getContext().system().dispatcher());
     }
-
 
 
     @Override
@@ -53,7 +59,7 @@ public class ResultActor extends UntypedActor{
             Job job = (Job) message;
             if (!Computation.empty().equals(job.computation())) {
                 results.add(job);
-                log.info("got result of {} . received {}/{}",job.computation().command(), results.size(),
+                log.info("got result of {} . received {}/{}", job.computation().command(), results.size(),
                         numberOfResults);
                 log.debug("result {}", job.result());
 
@@ -68,8 +74,7 @@ public class ResultActor extends UntypedActor{
         }
         if (message instanceof ResourceControl.Shutdown) {
             shutdown();
-        }
-        else {
+        } else {
             unhandled(message);
         }
     }

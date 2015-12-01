@@ -12,11 +12,11 @@ public abstract  class SshResourceParameters implements Resource.Parameters  {
     abstract String address();
     abstract String privateKey();
     abstract int port();
-    public abstract Resource.Type type();
+    public abstract Resource.Provider type();
 
 
     public static Builder builder() {
-        return new AutoValue_SshResourceParameters.Builder().port(22).type(Resource.Type.SSH);
+        return new AutoValue_SshResourceParameters.Builder().port(22).type(Resource.Provider.SSH);
     }
 
     @AutoValue.Builder
@@ -33,7 +33,7 @@ public abstract  class SshResourceParameters implements Resource.Parameters  {
             return this;
         }
 
-        abstract Builder type(Resource.Type type);
+        abstract Builder type(Resource.Provider provider);
         public abstract Builder command(String s);
         public abstract Builder user(String s);
         public abstract Builder address(String s);

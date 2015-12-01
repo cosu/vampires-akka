@@ -27,7 +27,7 @@ import static org.junit.Assert.assertThat;
 
 public class ResourceManagerActorTest extends AbstractActorTest {
 
-    private static final Resource.Type resourceType = Resource.Type.MOCK;
+    private static final Resource.Provider RESOURCE_PROVIDER = Resource.Provider.MOCK;
 
     @Test
     public void testStartResourceFail() throws Exception {
@@ -45,7 +45,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
                 5000);
 
         ResourceInfo ci = (ResourceInfo) Await.result(infoFuture, Duration.create("5 seconds"));
-        assertThat(ci.description().type(), is(equalTo(resourceType)));
+        assertThat(ci.description().provider(), is(equalTo(RESOURCE_PROVIDER)));
 
     }
 
@@ -68,7 +68,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         ResourceInfo ci = (ResourceInfo) Await.result(infoFuture, Duration.create("5 seconds"));
 
-        assertThat(ci.description().type(), is(equalTo(resourceType)));
+        assertThat(ci.description().provider(), is(equalTo(RESOURCE_PROVIDER)));
 
 
         ResourceControl.Info resourceInfo = new ResourceControl.Info();
@@ -112,11 +112,11 @@ public class ResourceManagerActorTest extends AbstractActorTest {
         Injector injector = Guice.createInjector(getMockModule());
         ResourceManager rm = injector.getInstance(ResourceManager.class);
 
-        ResourceProvider resourceProvider = rm.getProviders().get(resourceType);
+        ResourceProvider resourceProvider = rm.getProviders().get(RESOURCE_PROVIDER);
 
         Resource.Parameters parameters = resourceProvider.getBuilder().fromConfig(ConfigFactory.parseString
                 ("command=" + command)).build();
 
-        return new ResourceControl.Create(resourceType, parameters);
+        return new ResourceControl.Create(RESOURCE_PROVIDER, parameters);
     }
 }

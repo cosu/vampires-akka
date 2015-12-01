@@ -21,7 +21,7 @@ public class LocalResourceProviderTest {
         ResourceManager rm = injector.getInstance(ResourceManager.class);
 
 
-        ResourceProvider localProvider = rm.getProviders().get(Resource.Type.LOCAL);
+        ResourceProvider localProvider = rm.getProviders().get(Resource.Provider.LOCAL);
         Resource.Parameters parameters = localProvider.getParameters("local");
 
         Resource resource = localProvider.create(parameters).get();

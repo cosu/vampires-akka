@@ -26,8 +26,6 @@ public class Das5Resource extends AbstractResource {
 
     @Override
     public void onStart() throws Exception {
-        LOG.debug("das5 starting");
-
         String command = "sbatch -N 1 " + parameters.command();
         this.commandOutput = exec(command);
 
@@ -35,7 +33,6 @@ public class Das5Resource extends AbstractResource {
 
     @Override
     public void onStop() throws Exception {
-        LOG.debug("das5 stopping");
         LOG.debug("das " + commandOutput);
         String command = "scancel " + commandOutput.split(" ")[3];
         this.commandOutput = exec(command);
@@ -44,7 +41,6 @@ public class Das5Resource extends AbstractResource {
 
     @Override
     public void onFail() throws Exception {
-        LOG.debug("das5 fail");
         String command = "scancel " + commandOutput.split(" ")[3];
         this.commandOutput = exec(command);
 

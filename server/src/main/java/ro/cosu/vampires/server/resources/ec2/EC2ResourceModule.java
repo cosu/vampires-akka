@@ -23,9 +23,9 @@ public class EC2ResourceModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        MapBinder<Resource.Type, ResourceProvider> mapbinder
-                = MapBinder.newMapBinder(binder(), Resource.Type.class, ResourceProvider.class);
-        mapbinder.addBinding(Resource.Type.EC2).to(EC2ResourceProvider.class).in(Scopes.SINGLETON);
+        MapBinder<Resource.Provider, ResourceProvider> mapbinder
+                = MapBinder.newMapBinder(binder(), Resource.Provider.class, ResourceProvider.class);
+        mapbinder.addBinding(Resource.Provider.EC2).to(EC2ResourceProvider.class).in(Scopes.SINGLETON);
     }
 
     @Provides

@@ -28,7 +28,7 @@ public class LocalResourceProvider extends AbstractResourceProvider{
     }
 
     @Override
-    public Resource.Type getType() {
-        return Resource.Type.LOCAL;
+    public Resource.Provider getType() {
+        return Resource.Provider.LOCAL;
     }
 }

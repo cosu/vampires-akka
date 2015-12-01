@@ -35,9 +35,9 @@ public class ResourceManagerIT {
 
     @Test
     public void testCreateResourceDescription() throws  Exception {
-        ResourceDescription test = ResourceDescription.create("test", Resource.Type.LOCAL);
+        ResourceDescription test = ResourceDescription.create("test", Resource.Provider.LOCAL);
         assertThat(test.id(), is(equalTo("test")));
-        assertThat(test.type(), is(equalTo(Resource.Type.LOCAL)));
+        assertThat(test.provider(), is(equalTo(Resource.Provider.LOCAL)));
     }
 
     @Test
@@ -47,7 +47,7 @@ public class ResourceManagerIT {
         Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.load().getConfig("vampires")));
 
         ResourceManager rm = injector.getInstance(ResourceManager.class);
-        ResourceProvider localProvider = rm.getProviders().get(Resource.Type.LOCAL);
+        ResourceProvider localProvider = rm.getProviders().get(Resource.Provider.LOCAL);
         Resource.Parameters parameters = localProvider.getParameters("local");
         Resource resource = localProvider.create(parameters).get();
 
@@ -61,7 +61,7 @@ public class ResourceManagerIT {
     public void testCreateSSHResource() throws  Exception  {
         Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.load().getConfig("vampires")));
         ResourceManager rm = injector.getInstance(ResourceManager.class);
-        ResourceProvider sshProvider = rm.getProviders().get(Resource.Type.SSH);
+        ResourceProvider sshProvider = rm.getProviders().get(Resource.Provider.SSH);
         Resource.Parameters parameters = sshProvider.getParameters("local");
 
         Resource resource = sshProvider.create(parameters).get();
@@ -91,7 +91,7 @@ public class ResourceManagerIT {
         Module override = Modules.override(new ResourceModule(ConfigFactory.empty())).with(new TestModule());
         Injector injector = Guice.createInjector(override );
         ResourceManager rm = injector.getInstance(ResourceManager.class);
-        ResourceProvider localProvider = rm.getProviders().get(Resource.Type.DAS5);
+        ResourceProvider localProvider = rm.getProviders().get(Resource.Provider.DAS5);
         Resource resource = localProvider.create(getDasConfig()).get();
 
         assertThat(resource.start().get(2, TimeUnit.SECONDS).status(), is(Resource.Status.RUNNING));

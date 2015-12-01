@@ -7,7 +7,7 @@ import java.util.concurrent.CompletableFuture;
 public interface Resource {
 
     interface  Parameters{
-        Type type();
+        Provider type();
         interface Builder {
             Builder fromConfig(Config config);
             Resource.Parameters build();
@@ -24,7 +24,7 @@ public interface Resource {
         UNKNOWN
     }
 
-    enum Type {
+    enum Provider {
         SSH,
         LOCAL,
         DAS5,

@@ -34,8 +34,8 @@ public class EC2ResourceProvider extends AbstractResourceProvider {
     }
 
     @Override
-    public Resource.Type getType() {
-        return Resource.Type.EC2;
+    public Resource.Provider getType() {
+        return Resource.Provider.EC2;
     }
 
     @Override

@@ -19,36 +19,36 @@ public class ResourceControl {
 
 
     public static class Create implements Serializable {
-        final Resource.Type type;
+        final Resource.Provider provider;
         final Resource.Parameters parameters;
 
-        public Create(Resource.Type type, Resource.Parameters parameters) {
-            this.type = type;
+        public Create(Resource.Provider provider, Resource.Parameters parameters) {
+            this.provider = provider;
             this.parameters = parameters;
         }
 
         @Override
         public String toString() {
             return "Create{" +
-                    "type=" + type +
+                    "provider=" + provider +
                     ", parameters=" + parameters +
                     '}';
         }
     }
 
     public static class Bootstrap {
-        final Resource.Type type;
+        final Resource.Provider provider;
         final String name;
 
-        public Bootstrap(Resource.Type type, String name) {
-            this.type = type;
+        public Bootstrap(Resource.Provider provider, String name) {
+            this.provider = provider;
             this.name = name;
         }
 
         @Override
         public String toString() {
             return "Bootstrap{" +
-                    "type=" + type +
+                    "provider=" + provider +
                     ", name='" + name + '\'' +
                     '}';
         }

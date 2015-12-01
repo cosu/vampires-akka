@@ -39,14 +39,13 @@ public class ResourceManagerActor extends UntypedActor {
     private void startResources() {
         settings.vampires.getConfigList("start").stream().forEach(config ->
         {
-            String type = config.getString("type");
+            String type = config.getString("provider");
             int count = config.getInt("count");
-            String provider = config.getString("provider");
+            final Resource.Provider provider = Resource.Provider.valueOf(config.getString("provider").toUpperCase());
             log.info("starting {} x  {} from provider {}", count, type, provider);
 
             IntStream.rangeClosed(1, count).forEach(i ->
-                    getSelf().tell(new ResourceControl.Bootstrap(Resource.Type.valueOf(provider
-                            .toUpperCase()), type), getSelf()));
+                    getSelf().tell(new ResourceControl.Bootstrap(provider, type), getSelf()));
         });
     }
 
@@ -58,20 +57,20 @@ public class ResourceManagerActor extends UntypedActor {
     private void createResource(ResourceControl.Create create) {
         log.info("create resource {}", create);
 
-        final Optional<ResourceProvider> provider = rm.getProvider(create.type);
+        final Optional<ResourceProvider> provider = rm.getProvider(create.provider);
         if (provider.isPresent()) {
             ActorRef resource = getContext().actorOf(ResourceActor.props(provider.get()));
             resource.forward(create, getContext());
             resources.add(resource);
             getContext().watch(resource);
         } else {
-            log.error("Error getting {} provider", create.type);
+            log.error("Error getting {} provider", create.provider);
         }
     }
 
 
     private void bootstrapResource(ResourceProvider rp, ResourceControl.Bootstrap bootstrap) {
-        ResourceControl.Create create = new ResourceControl.Create(bootstrap.type, rp.getParameters(bootstrap.name));
+        ResourceControl.Create create = new ResourceControl.Create(bootstrap.provider, rp.getParameters(bootstrap.name));
 
         createResource(create);
     }
@@ -83,7 +82,7 @@ public class ResourceManagerActor extends UntypedActor {
         if (message instanceof ResourceControl.Bootstrap) {
 
             ResourceControl.Bootstrap bootstrap = (ResourceControl.Bootstrap) message;
-            rm.getProvider(bootstrap.type).ifPresent(rp -> bootstrapResource(rp, bootstrap));
+            rm.getProvider(bootstrap.provider).ifPresent(rp -> bootstrapResource(rp, bootstrap));
 
         } else if (message instanceof ResourceControl.Create) {
             ResourceControl.Create create = (ResourceControl.Create) message;

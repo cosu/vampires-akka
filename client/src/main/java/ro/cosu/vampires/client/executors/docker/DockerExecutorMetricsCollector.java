@@ -84,7 +84,7 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
     @SuppressWarnings("unchecked")
 
     private static Map<String, Double> flattenMap(String prefix, Map<String, Object> stringMapMap) {
-        // the reason this  method exists is the lack of a type safe way of getting nested metrics from
+        // the reason this  method exists is the lack of a provider safe way of getting nested metrics from
         // the docker api. it concatenates the keys and converts all the values to doubles
         // also if it encounters any list, it flattens it by appending the index of the value in the list to the key
         // effectively a: [1,2,3] becomes a-0: 1, a-1:2, a-2:3

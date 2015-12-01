@@ -7,9 +7,9 @@ import com.google.auto.value.AutoValue;
 public abstract class ResourceDescription {
 
     public abstract String id();
-    public abstract Resource.Type type();
-    static ResourceDescription create(String id, Resource.Type type){
-        return new AutoValue_ResourceDescription(id, type);
+    public abstract Resource.Provider provider();
+    static ResourceDescription create(String id, Resource.Provider provider){
+        return new AutoValue_ResourceDescription(id, provider);
     }
 
 }

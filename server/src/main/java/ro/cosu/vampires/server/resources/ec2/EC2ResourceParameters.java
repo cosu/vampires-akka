@@ -12,10 +12,10 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
     public abstract String keyName();
     public abstract String region();
     public abstract String securityGroup();
-    public abstract Resource.Type type();
+    public abstract Resource.Provider type();
 
     public static Builder builder() {
-        return new AutoValue_EC2ResourceParameters.Builder().type(Resource.Type.EC2);
+        return new AutoValue_EC2ResourceParameters.Builder().type(Resource.Provider.EC2);
     }
 
 
@@ -27,7 +27,7 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
         public abstract Builder keyName(String s);
         public abstract Builder region(String s);
         public abstract Builder securityGroup(String s);;
-        public abstract Builder type(Resource.Type type);
+        public abstract Builder type(Resource.Provider provider);
 
 
         public Builder fromConfig(Config config){

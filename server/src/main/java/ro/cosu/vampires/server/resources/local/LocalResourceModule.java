@@ -9,10 +9,10 @@ public class LocalResourceModule extends AbstractModule{
 
     @Override
     protected void configure() {
-        MapBinder<Resource.Type, ResourceProvider> mapbinder
-                = MapBinder.newMapBinder(binder(), Resource.Type.class, ResourceProvider.class);
+        MapBinder<Resource.Provider, ResourceProvider> mapbinder
+                = MapBinder.newMapBinder(binder(), Resource.Provider.class, ResourceProvider.class);
 
-        mapbinder.addBinding(Resource.Type.LOCAL).to(LocalResourceProvider.class).asEagerSingleton();
+        mapbinder.addBinding(Resource.Provider.LOCAL).to(LocalResourceProvider.class).asEagerSingleton();
 
     }
 }

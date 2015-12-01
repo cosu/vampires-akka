@@ -12,12 +12,12 @@ public abstract  class Das5ResourceParameters implements Resource.Parameters {
     abstract String address();
     abstract String privateKey();
     abstract int port();
-    public abstract Resource.Type type();
+    public abstract Resource.Provider type();
 
 
 
     public static Builder builder() {
-        return new AutoValue_Das5ResourceParameters.Builder().port(22).type(Resource.Type.DAS5);
+        return new AutoValue_Das5ResourceParameters.Builder().port(22).type(Resource.Provider.DAS5);
     }
 
     @AutoValue.Builder
@@ -27,7 +27,7 @@ public abstract  class Das5ResourceParameters implements Resource.Parameters {
         public abstract Builder address(String s);
         public abstract Builder privateKey(String s);
         public abstract Builder port(int i);
-        abstract Builder type(Resource.Type type);
+        abstract Builder type(Resource.Provider provider);
 
 
         public Builder fromConfig(Config config){

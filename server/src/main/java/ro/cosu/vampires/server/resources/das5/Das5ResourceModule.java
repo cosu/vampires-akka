@@ -12,9 +12,9 @@ public class Das5ResourceModule extends AbstractModule{
 
     @Override
     protected void configure() {
-        MapBinder<Resource.Type, ResourceProvider> mapbinder
-                = MapBinder.newMapBinder(binder(), Resource.Type.class, ResourceProvider.class);
-        mapbinder.addBinding(Resource.Type.DAS5).to(Das5ResourceProvider.class).asEagerSingleton();
+        MapBinder<Resource.Provider, ResourceProvider> mapbinder
+                = MapBinder.newMapBinder(binder(), Resource.Provider.class, ResourceProvider.class);
+        mapbinder.addBinding(Resource.Provider.DAS5).to(Das5ResourceProvider.class).asEagerSingleton();
 
     }
 
