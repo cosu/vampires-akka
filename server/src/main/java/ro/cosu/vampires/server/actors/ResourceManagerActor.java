@@ -17,6 +17,7 @@ import ro.cosu.vampires.server.settings.SettingsImpl;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class ResourceManagerActor extends UntypedActor {
@@ -44,7 +45,7 @@ public class ResourceManagerActor extends UntypedActor {
             log.info("starting {} x  {} from provider {}", count, type, provider);
 
             IntStream.rangeClosed(1, count).forEach(i ->
-                    getSelf().tell(new ResourceControl.Start(Resource.Type.valueOf(provider
+                    getSelf().tell(new ResourceControl.Bootstrap(Resource.Type.valueOf(provider
                             .toUpperCase()), type), getSelf()));
         });
     }
@@ -54,32 +55,39 @@ public class ResourceManagerActor extends UntypedActor {
         startResources();
     }
 
-    private void createResource(ResourceProvider rp, ResourceControl.Create create) {
+    private void createResource(ResourceControl.Create create) {
         log.info("create resource {}", create);
-        ActorRef resource = getContext().actorOf(ResourceActor.props(rp));
-        resource.forward(create, getContext());
-        resources.add(resource);
-        getContext().watch(resource);
 
+        final Optional<ResourceProvider> provider = rm.getProvider(create.type);
+        if (provider.isPresent()) {
+            ActorRef resource = getContext().actorOf(ResourceActor.props(provider.get()));
+            resource.forward(create, getContext());
+            resources.add(resource);
+            getContext().watch(resource);
+        } else {
+            log.error("Error getting {} provider", create.type);
+        }
     }
 
-    private void startResource(ResourceProvider rp, ResourceControl.Start start) {
-        ResourceControl.Create create = new ResourceControl.Create(start.type, rp.getParameters(start.name));
-        createResource(rp, create);
+
+    private void bootstrapResource(ResourceProvider rp, ResourceControl.Bootstrap bootstrap) {
+        ResourceControl.Create create = new ResourceControl.Create(bootstrap.type, rp.getParameters(bootstrap.name));
+
+        createResource(create);
     }
 
 
     @Override
     public void onReceive(Object message) throws Exception {
 
-        if (message instanceof ResourceControl.Start) {
+        if (message instanceof ResourceControl.Bootstrap) {
 
-            ResourceControl.Start start = (ResourceControl.Start) message;
-            rm.getProvider(start.type).ifPresent(rp -> startResource(rp, start));
+            ResourceControl.Bootstrap bootstrap = (ResourceControl.Bootstrap) message;
+            rm.getProvider(bootstrap.type).ifPresent(rp -> bootstrapResource(rp, bootstrap));
 
         } else if (message instanceof ResourceControl.Create) {
             ResourceControl.Create create = (ResourceControl.Create) message;
-            rm.getProvider(create.type).ifPresent(rp -> createResource(rp, create));
+            createResource(create);
 
         } else if (message instanceof ResourceControl.Info) {
             //broadcast for now

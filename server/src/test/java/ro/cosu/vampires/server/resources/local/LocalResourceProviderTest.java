@@ -26,8 +26,9 @@ public class LocalResourceProviderTest {
 
         Resource resource = localProvider.create(parameters).get();
 
-
         assertThat(resource.status(), equalTo(Resource.Status.CREATING));
 
     }
+
+
 }

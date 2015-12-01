@@ -6,13 +6,19 @@ import ro.cosu.vampires.server.resources.AbstractResource;
 public class MockResource extends AbstractResource{
 
 
+    private final MockResourceParameters parameters;
+
     public MockResource(Parameters parameters) {
         super(parameters);
+        this.parameters = (MockResourceParameters) parameters;
+
     }
 
     @Override
     public void onStart() throws Exception {
-
+        if (parameters.command().equals("fail")){
+            throw new RuntimeException("fail");
+        }
     }
 
     @Override

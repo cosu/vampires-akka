@@ -19,6 +19,7 @@ public class ResourceControl {
     }
 
 
+
     public static class Create implements Serializable {
         final Resource.Type type;
         final Resource.Parameters parameters;
@@ -37,18 +38,18 @@ public class ResourceControl {
         }
     }
 
-    public static class Start {
+    public static class Bootstrap {
         final Resource.Type type;
         final String name;
 
-        public Start(Resource.Type type, String name) {
+        public Bootstrap(Resource.Type type, String name) {
             this.type = type;
             this.name = name;
         }
 
         @Override
         public String toString() {
-            return "Start{" +
+            return "Bootstrap{" +
                     "type=" + type +
                     ", name='" + name + '\'' +
                     '}';
