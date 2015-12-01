@@ -36,7 +36,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
         ResourceControl.Create createResourceWhichFails = getCreateResource("fail");
         ResourceControl.Create createResourceWhichSucceeds = getCreateResource("foo");
         TestActorRef<ResourceManagerActor> resourceManagerActor = TestActorRef.create(system, ResourceManagerActor
-                .props(), "resourceManagerActor");
+                .props());
 
         resourceManagerActor.tell(createResourceWhichFails, ActorRef.noSender());
         resourceManagerActor.tell(createResourceWhichSucceeds, testProbe.ref());
@@ -57,7 +57,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
 
         TestActorRef<ResourceManagerActor> resourceManagerActor = TestActorRef.create(system, ResourceManagerActor
-                .props(), "resourceManagerActor");
+                .props());
 
 
         resourceManagerActor.tell(createResource, ActorRef.noSender());
