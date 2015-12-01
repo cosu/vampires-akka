@@ -94,7 +94,7 @@ public class ResourceManagerActor extends UntypedActor {
             resources.forEach(r -> r.forward(message, getContext()));
 
         } else if (message instanceof ResourceControl.Shutdown) {
-            resources.forEach(r -> r.forward(new ResourceControl.Destroy(), getContext()));
+            resources.forEach(r -> r.forward(new ResourceControl.Shutdown(), getContext()));
 
         } else if (message instanceof Terminated) {
             log.info("terminated {}", getSender());

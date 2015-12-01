@@ -17,7 +17,6 @@ public interface Resource {
     enum Status {
         CREATING,
         STARTING,
-        IDLE,
         RUNNING,
         FAILED,
         STOPPING,

@@ -63,7 +63,9 @@ public class DockerModule extends AbstractModule{
                 .build();
 
 
-        return DockerClientBuilder.getInstance(dockerClientConfig)
+        return DockerClientBuilder
+                .getInstance(dockerClientConfig)
+                .withDockerCmdExecFactory(dockerCmdExecFactory)
                 .build();
     }
 

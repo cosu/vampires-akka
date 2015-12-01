@@ -12,8 +12,6 @@ public class ResourceControl {
     public static class Up implements Serializable {
     }
 
-    public static class Destroy implements Serializable {
-    }
 
     public static class Info implements Serializable {
     }

@@ -3,6 +3,7 @@ package ro.cosu.vampires.server.resources.ssh;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.typesafe.config.ConfigFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceManager;
@@ -14,6 +15,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 
 public class SshResourceTest {
     @Test
+    @Ignore
     public void testSshResoure() throws Exception {
         Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.load().getConfig("vampires")));
         ResourceManager rm = injector.getInstance(ResourceManager.class);

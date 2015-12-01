@@ -44,7 +44,7 @@ public class ResourceActorTest extends AbstractActorTest {
                             ResourceInfo resourceInfo = (ResourceInfo) msg;
 
                             if (resourceInfo.status().equals(Resource.Status.RUNNING)) {
-                                resourceActor.tell(new ResourceControl.Destroy(), resourceProbe.getRef());
+                                resourceActor.tell(new ResourceControl.Shutdown(), resourceProbe.getRef());
                             } else {
                                 return noAutoPilot();
                             }

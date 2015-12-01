@@ -57,7 +57,7 @@ public class ResourceManagerIT {
     }
 
     @Test
-
+    @Ignore
     public void testCreateSSHResource() throws  Exception  {
         Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.load().getConfig("vampires")));
         ResourceManager rm = injector.getInstance(ResourceManager.class);
