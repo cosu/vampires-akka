@@ -39,7 +39,7 @@ public class ResourceManagerActor extends UntypedActor {
     private void startResources() {
         settings.vampires.getConfigList("start").stream().forEach(config ->
         {
-            String type = config.getString("provider");
+            String type = config.getString("type");
             int count = config.getInt("count");
             final Resource.Provider provider = Resource.Provider.valueOf(config.getString("provider").toUpperCase());
             log.info("starting {} x  {} from provider {}", count, type, provider);
