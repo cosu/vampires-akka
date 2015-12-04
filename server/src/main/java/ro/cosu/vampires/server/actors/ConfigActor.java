@@ -32,8 +32,10 @@ public class ConfigActor extends UntypedActor {
     private ClientConfig getConfigFor(ClientInfo clientInfo) {
 
         //take the first executor defined in the config
-        final Optional<String> firstAvailableExecutor = settings.getExecutors().stream().filter(ex -> clientInfo
-                .executors().containsKey(ex)).findFirst();
+        final Optional<String> firstAvailableExecutor = settings
+                .getExecutors().stream()
+                .filter(ex -> clientInfo.executors().containsKey(ex))
+                .findFirst();
 
 
         if (!firstAvailableExecutor.isPresent()) {

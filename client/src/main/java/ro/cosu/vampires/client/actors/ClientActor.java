@@ -18,18 +18,21 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 public class ClientActor extends UntypedActor {
 
     private final String serverPath;
+    private  String clientId ;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private ActorRef server;
     private final ExecutorsExtensionImpl executors = ExecutorsExtension.ExecutorsProvider.get(getContext().system());
 
 
-    public static Props props(String path) {
-        return Props.create(ClientActor.class, path);
+
+    public static Props props(String path, String clientId) {
+        return Props.create(ClientActor.class, path, clientId);
     }
 
 
-    public ClientActor(String serverPath) {
+    public ClientActor(String serverPath, String clientId) {
         this.serverPath = serverPath;
+        this.clientId = clientId;
         sendIdentifyRequest();
 
     }
@@ -71,11 +74,11 @@ public class ClientActor extends UntypedActor {
 
             Job job = (Job) message;
 
-
             if (JobStatus.COMPLETE.equals(job.status())) {
+                job.from(clientId);
                 server.tell(job, getSelf());
             } else {
-                log.debug("Execute {} -> {} {}", getSelf().path(), job.computation(), getSender().toString());
+                log.debug("Execute {} -> {} {}", getSelf().path(), job.computation(), getSender());
                 execute(job);
             }
         } else if (message instanceof Terminated) {
@@ -85,7 +88,7 @@ public class ClientActor extends UntypedActor {
             }
 
         } else {
-            log.error("Unhandled: {} -> {} {}", getSelf().path(), message.toString(), getSender().toString());
+            log.error("Unhandled: {} -> {} {}", getSelf().path(), message.toString(), getSender());
             unhandled(message);
         }
     };
@@ -118,7 +121,7 @@ public class ClientActor extends UntypedActor {
 
         Metrics m = Metrics.empty();
 
-        return ClientInfo.builder().executors(executorInfo).metrics(m).build();
+        return ClientInfo.builder().id(clientId).executors(executorInfo).metrics(m).build();
     }
 
 

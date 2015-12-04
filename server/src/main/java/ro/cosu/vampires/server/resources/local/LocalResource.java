@@ -28,11 +28,12 @@ public class LocalResource extends AbstractResource{
 
         CommandLine cmd = new CommandLine("/bin/sh");
         cmd.addArgument("-c");
-        cmd.addArgument("nohup " + parameters.command() + " 2>&1 0</dev/null  &  echo $! ", false);
+        cmd.addArgument("nohup " + parameters.command() + " "+ description().id()  + " 2>&1 0</dev/null  &  echo $! ", false);
 
+        LOG.debug("local starting {}", cmd);
         execute(cmd);
 
-        LOG.debug("local starting");
+
     }
 
     private void execute(CommandLine cmd) throws IOException {

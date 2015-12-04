@@ -12,23 +12,24 @@ import scala.concurrent.duration.Duration;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class ConfigActorTest extends AbstractActorTest{
+public class ConfigActorTest extends AbstractActorTest {
 
     @Test
     public void testGetConfig() throws Exception {
         final JavaTestKit remoteProbe = new JavaTestKit(system);
 
         TestActorRef<ConfigActor> config = TestActorRef.create(system, ConfigActor.props(), "config");
-        Map<String, Integer> executors =Maps.newHashMap();
-        executors.put("FORK", 1 );
+        Map<String, Integer> executors = Maps.newHashMap();
+        executors.put("FORK", 1);
         executors.put("DOCKER", 2);
-        final ClientInfo clientInfo = ClientInfo.builder().executors(executors).metrics(Metrics.empty()).build();
-        config.tell(clientInfo,remoteProbe.getRef() );
+        final ClientInfo clientInfo = ClientInfo.builder()
+                .executors(executors)
+                .metrics(Metrics.empty())
+                .id("foo")
+                .build();
+        config.tell(clientInfo, remoteProbe.getRef());
 
         remoteProbe.expectMsgClass(Duration.create(1, TimeUnit.SECONDS), ClientConfig.class);
-
-
-
 
 
     }

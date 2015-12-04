@@ -35,7 +35,7 @@ public class ClientActorTest {
         TestActorRef<MonitoringActor> monitor = TestActorRef.create(system, MonitoringActor
                 .props(MonitoringManager.getMetricRegistry()), "monitor");
 
-        TestActorRef<ClientActor> client = TestActorRef.create(system, ClientActor.props("test"), "client1");
+        TestActorRef<ClientActor> client = TestActorRef.create(system, ClientActor.props("test", "client1"), "client1");
 
         final JavaTestKit remoteProbe = new JavaTestKit(system);
 

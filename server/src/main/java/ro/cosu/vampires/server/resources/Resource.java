@@ -8,6 +8,7 @@ public interface Resource {
 
     interface  Parameters{
         Provider type();
+        String command();
         interface Builder {
             Builder fromConfig(Config config);
             Resource.Parameters build();

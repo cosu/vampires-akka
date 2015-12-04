@@ -38,7 +38,7 @@ public class EC2Resource extends AbstractResource {
         String cloudInit = Resources.toString(cloudInitResource, Charsets.UTF_8);
 
         cloudInit = cloudInit.replace("$command", parameters.command());
-        LOG.info("command {}", parameters.command());
+        LOG.debug("command {}", parameters.command() + " " + description().id() );
 
         RunInstancesRequest request = runInstancesRequest.withImageId(parameters.imageId())
                 .withInstanceType(parameters.instanceType())
@@ -55,7 +55,7 @@ public class EC2Resource extends AbstractResource {
 
         instanceId = result.getReservation().getInstances().get(0).getInstanceId();
 
-        LOG.info("Started amazon instance {}", instanceId);
+        LOG.debug("Started amazon instance {}", instanceId);
 
         CreateTagsRequest createTagsRequest = new CreateTagsRequest();
 
@@ -81,7 +81,7 @@ public class EC2Resource extends AbstractResource {
     public void onStop() throws Exception {
         TerminateInstancesRequest terminateInstancesRequest = new TerminateInstancesRequest().withInstanceIds(instanceId);
         TerminateInstancesResult terminateInstancesResult = amazonEC2Client.terminateInstances(terminateInstancesRequest);
-        LOG.info("terminate instance {}", terminateInstancesResult.toString());
+        LOG.debug("terminate instance {}", terminateInstancesResult.toString());
     }
 
     @Override

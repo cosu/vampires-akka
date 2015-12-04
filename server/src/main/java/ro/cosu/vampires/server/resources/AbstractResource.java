@@ -19,22 +19,24 @@ public abstract class AbstractResource implements Resource {
         this.description = ResourceDescription.create(generateId(), parameters.type());
 
         LOG.debug("{}", description);
+        LOG.debug("{}", parameters);
         setStatus(Status.CREATING);
 
 
     }
 
+
     private String generateId() {
         return UUID.randomUUID().toString();
     }
 
-    public CompletableFuture<Resource> start(){
+    public CompletableFuture<Resource> start() {
 
         return CompletableFuture.supplyAsync(this::startCall)
                 .exceptionally(this::fail);
     }
 
-    public CompletableFuture<Resource> stop(){
+    public CompletableFuture<Resource> stop() {
         return CompletableFuture.supplyAsync(this::stopCall)
                 .exceptionally(this::fail);
 
@@ -57,15 +59,14 @@ public abstract class AbstractResource implements Resource {
             this.onFail();
         } catch (Exception e) {
             throw new CompletionException(e);
-        }
-        finally {
+        } finally {
             setStatus(Status.FAILED);
         }
         return this;
     }
 
     public Resource stopCall() {
-        if (status.equals(Status.STOPPED) || status.equals(Status.STOPPING) )
+        if (status.equals(Status.STOPPED) || status.equals(Status.STOPPING))
             return this;
         setStatus(Status.STOPPING);
         try {
@@ -78,12 +79,10 @@ public abstract class AbstractResource implements Resource {
     }
 
 
-
     @Override
     public ResourceDescription description() {
         return description;
     }
-
 
 
     @Override
@@ -100,7 +99,7 @@ public abstract class AbstractResource implements Resource {
     @Override
     public String toString() {
         return "AbstractResource{"
-                + "description=" + description+ ", "
+                + "description=" + description + ", "
                 + "status=" + status
                 + "}";
     }

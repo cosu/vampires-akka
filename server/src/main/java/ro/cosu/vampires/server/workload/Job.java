@@ -22,7 +22,17 @@ public abstract class Job implements Serializable {
 
     public abstract String id();
 
+    public abstract String from();
+
+
     public abstract Builder toBuilder();
+
+    public Job from(String from) {
+        return toBuilder()
+                .from(from)
+                .build();
+    }
+
 
     public Job withMetrics(Metrics metrics) {
         return toBuilder().metrics(metrics)
@@ -48,7 +58,7 @@ public abstract class Job implements Serializable {
     }
 
     public static Job waitForever() {
-        return builder().computation(Computation.builder().command("sleep 9999").build())
+        return builder().computation(Computation.builder().command("sleep 666").build())
                 .metrics(Metrics.empty())
                 .result(Result.empty()).build();
     }
@@ -57,6 +67,7 @@ public abstract class Job implements Serializable {
         return new AutoValue_Job.Builder()
                 .created(LocalDateTime.now())
                 .id(UUID.randomUUID().toString())
+                .from("")
                 .status(JobStatus.NEW);
     }
 
@@ -69,6 +80,8 @@ public abstract class Job implements Serializable {
         public abstract Builder metrics(Metrics metrics);
 
         public abstract Builder created(LocalDateTime created);
+
+        public abstract Builder from(String from);
 
         public abstract Builder status(JobStatus jobstatus);
 

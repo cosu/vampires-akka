@@ -1,11 +1,13 @@
 package ro.cosu.vampires.server.resources.mock;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.resources.AbstractResource;
 
 
-public class MockResource extends AbstractResource{
+public class MockResource extends AbstractResource {
 
-
+    static final Logger LOG = LoggerFactory.getLogger(MockResource.class);
     private final MockResourceParameters parameters;
 
     public MockResource(Parameters parameters) {
@@ -16,7 +18,8 @@ public class MockResource extends AbstractResource{
 
     @Override
     public void onStart() throws Exception {
-        if (parameters.command().equals("fail")){
+        LOG.debug("mock start: {}", parameters);
+        if (parameters.command().equals("fail")) {
             throw new RuntimeException("fail");
         }
     }

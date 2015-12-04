@@ -26,8 +26,6 @@ public class DispatchActor extends UntypedActor {
     @Override
     public void onReceive(Object message) throws Exception {
 
-
-
         if (message instanceof Job) {
             workActor.forward(message, getContext());
         }

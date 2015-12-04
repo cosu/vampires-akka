@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 @AutoValue
 public abstract  class ClientConfig implements Serializable {
+
     public abstract String executor();
 
     public abstract int cpuSetSize();

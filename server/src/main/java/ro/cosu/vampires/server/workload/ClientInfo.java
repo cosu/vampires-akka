@@ -8,6 +8,7 @@ import java.util.Map;
 @AutoValue
 public abstract class ClientInfo  implements Serializable {
 
+    public abstract  String id();
     public abstract Map<String, Integer> executors();
     public abstract Metrics metrics();
 
@@ -21,6 +22,8 @@ public abstract class ClientInfo  implements Serializable {
         public abstract Builder executors (Map<String, Integer> executors);
 
         public abstract Builder metrics(Metrics metrics);
+
+        public abstract Builder id(String id);
 
         public abstract ClientInfo build();
 

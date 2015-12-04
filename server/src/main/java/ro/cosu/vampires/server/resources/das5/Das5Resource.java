@@ -26,7 +26,7 @@ public class Das5Resource extends AbstractResource {
 
     @Override
     public void onStart() throws Exception {
-        String command = "sbatch -N 1 " + parameters.command();
+        String command = "sbatch -N 1 " + parameters.command() + " " + description().id();
         this.commandOutput = exec(command);
 
     }

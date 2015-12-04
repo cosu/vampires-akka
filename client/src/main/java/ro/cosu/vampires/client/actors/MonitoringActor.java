@@ -47,11 +47,10 @@ public class MonitoringActor extends UntypedActor {
                 Duration.create(MONITORING_INTERVAL_MILIS, MILLISECONDS), () -> {
 
                     LocalDateTime now = LocalDateTime.now();
-                    SortedMap<String, Gauge> gauges = metricRegistry.getGauges((name, metric) -> name.startsWith
-                            ("cpu") || name.startsWith("network"));
+                    SortedMap<String, Gauge> gauges = metricRegistry
+                            .getGauges((name, metric) -> name.startsWith("cpu") || name.startsWith("network"));
 
                     metricsWindow.add(now, gauges);
-
 
                 }, getContext().system().dispatcher());
     }
@@ -64,10 +63,10 @@ public class MonitoringActor extends UntypedActor {
 
 
         if (message instanceof Job) {
-            Job job= (Job) message;
+            Job job = (Job) message;
 
             if (JobStatus.EXECUTED.equals(job.status())) {
-                log.info("id: {} -> status:{} duration: {}", job.id(),  job.status(), job.result().duration());
+                log.info("id: {} -> status:{} duration: {}", job.id(), job.status(), job.result().duration());
 
                 ImmutableList<Metric> metricsWindowInterval = metricsWindow.getInterval
                         (job.result().start(), job.result().stop());
