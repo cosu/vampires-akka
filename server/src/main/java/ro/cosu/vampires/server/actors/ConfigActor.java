@@ -22,7 +22,7 @@ public class ConfigActor extends UntypedActor {
         if (message instanceof ClientInfo) {
             ClientInfo clientInfo = (ClientInfo) message;
             final ClientConfig configFor = getConfigFor(clientInfo);
-            log.info("config for client {}", configFor);
+            log.info("config for client {}, {}", clientInfo, configFor);
             getSender().tell(configFor, getSelf());
         } else {
             unhandled(message);
