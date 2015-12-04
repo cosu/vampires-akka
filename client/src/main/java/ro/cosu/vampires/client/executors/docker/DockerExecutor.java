@@ -163,6 +163,11 @@ public class DockerExecutor implements Executor {
         cpuSet.ifPresent(c -> cpuAllocator.releaseCpuSets(c));
     }
 
+    @Override
+    public Type getType() {
+        return Type.DOCKER;
+    }
+
     public static class LogContainerTestCallback extends LogContainerResultCallback {
         protected final StringBuffer log = new StringBuffer();
 

@@ -12,7 +12,7 @@ import org.junit.Test;
 import ro.cosu.vampires.client.actors.ClientActor;
 import ro.cosu.vampires.client.actors.MonitoringActor;
 import ro.cosu.vampires.client.monitoring.MonitoringManager;
-import ro.cosu.vampires.server.workload.Job;
+import ro.cosu.vampires.server.workload.ClientInfo;
 
 public class ClientActorTest {
 
@@ -42,8 +42,7 @@ public class ClientActorTest {
         scala.Option<ActorRef> actorRefOption = Option.Some.option(remoteProbe.getRef()).asScala();
         client.tell(new ActorIdentity(null, actorRefOption), ActorRef.noSender());
 
-
-        remoteProbe.expectMsgClass(Job.class);
+        remoteProbe.expectMsgClass(ClientInfo.class);
 
 
     }

@@ -26,15 +26,15 @@ public class SettingsImpl implements Extension {
     public List<ResultsWriter> getWriters() {
         List<ResultsWriter> writers = new LinkedList<>();
         List<String> enabledWriters = vampires.getStringList("enabled-writers");
-        if (enabledWriters.contains("json")){
+        if (enabledWriters.contains("json")) {
             writers.add(new JsonResultsWriter(vampires));
         }
 
-        if (enabledWriters.contains("mongo")){
+        if (enabledWriters.contains("mongo")) {
             writers.add(new MongoWriter());
         }
 
-        if (writers.isEmpty()){
+        if (writers.isEmpty()) {
             LOG.info("no writers configured. using default writer: json");
             writers.add(new JsonResultsWriter(vampires));
 
@@ -44,7 +44,7 @@ public class SettingsImpl implements Extension {
 
     }
 
-    public List<String> getWorkload(){
+    public List<String> getWorkload() {
         Config config = vampires.getConfig("workload");
         String task = config.getString("task");
         int startCount = config.getInt("start");
@@ -54,7 +54,25 @@ public class SettingsImpl implements Extension {
         return IntStream.rangeClosed(startCount, stopCount).mapToObj(i -> String.format(task, i))
                 .collect(Collectors.toList());
 
+    }
 
+    public List<String> getExecutors() {
+        if (vampires.hasPath("executors")) {
+            return vampires.getStringList("executors").stream().map(String::toUpperCase).collect(Collectors.toList());
+        } else {
+            LOG.error("missing executors config value");
+            throw new IllegalArgumentException("missing executors config value");
+        }
+
+    }
+
+    public int getCpuSetSize() {
+        if (vampires.hasPath("cpuSetSize")) {
+            return vampires.getInt("cpuSetSize");
+        } else {
+            LOG.error("missing executor cpuSetSize");
+        }
+        return 1;
     }
 
 }

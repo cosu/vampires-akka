@@ -5,6 +5,7 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Job;
 
 public class DispatchActor extends UntypedActor {
@@ -25,8 +26,15 @@ public class DispatchActor extends UntypedActor {
     @Override
     public void onReceive(Object message) throws Exception {
 
+
+
         if (message instanceof Job) {
             workActor.forward(message, getContext());
+        }
+        else if (message instanceof ClientInfo){
+            ActorRef configActor = getContext().actorOf(ConfigActor.props());
+            log.debug("got client info {}", message);
+            configActor.forward(message, getContext());
         }
         else {
             log.error("Unhandled  request from {} , {}",  getSender().toString(),message);

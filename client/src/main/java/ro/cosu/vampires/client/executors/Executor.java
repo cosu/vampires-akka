@@ -17,4 +17,6 @@ public interface Executor {
     void acquireResources();
     void releaseResources();
 
+    Type getType();
+
 }

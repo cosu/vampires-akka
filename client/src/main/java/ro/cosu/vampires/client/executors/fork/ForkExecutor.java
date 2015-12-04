@@ -15,7 +15,9 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 
 public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor {
@@ -103,6 +105,11 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
     @Override
     public void releaseResources() {
         cpuSet.ifPresent(c -> cpuAllocator.releaseCpuSets(c));
+    }
+
+    @Override
+    public Type getType() {
+        return Type.FORK;
     }
 
     private ExecInfo getExecInfo() {

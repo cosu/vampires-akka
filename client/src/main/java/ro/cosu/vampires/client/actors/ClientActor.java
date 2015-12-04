@@ -6,10 +6,10 @@ import akka.event.LoggingAdapter;
 import akka.japi.Procedure;
 import ro.cosu.vampires.client.extension.ExecutorsExtension;
 import ro.cosu.vampires.client.extension.ExecutorsExtensionImpl;
-import ro.cosu.vampires.server.workload.Job;
-import ro.cosu.vampires.server.workload.JobStatus;
+import ro.cosu.vampires.server.workload.*;
 import scala.concurrent.duration.Duration;
 
+import java.util.Map;
 import java.util.stream.IntStream;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -54,20 +54,14 @@ public class ClientActor extends UntypedActor {
                 log.warning("Remote actor not available: {}", serverPath);
             } else {
                 getContext().watch(server);
+                server.tell(getClientInfo(), getSelf());
 
-                int numberOfExecutors = executors.getExecutor().getNCpu();
-                log.info("starting {} workers", numberOfExecutors);
-                //bootstrapping via an empty job
-                IntStream.range(0, numberOfExecutors).forEach(i -> execute(Job.empty()));
-
-
-                getContext().become(active, true);
+                getContext().become(waitForConfig, true);
             }
         } else if (message instanceof ReceiveTimeout) {
             sendIdentifyRequest();
         } else {
             log.info("Not ready yet");
-
         }
     }
 
@@ -96,11 +90,35 @@ public class ClientActor extends UntypedActor {
         }
     };
 
+    Procedure<Object> waitForConfig = messsage -> {
+        if (messsage instanceof ClientConfig) {
+            ClientConfig config = (ClientConfig) messsage;
+            executors.configure(config);
+            log.info("starting {} workers", config.numberOfExecutors());
+            //bootstrapping via an empty job
+            IntStream.range(0, config.numberOfExecutors()).forEach(i -> execute(Job.empty()));
+
+            getContext().become(active, true);
+        } else {
+            unhandled(messsage);
+        }
+    };
+
+
+
     private void execute(Job job) {
         if (!job.equals(Job.waitForever())) {
             ActorRef executorActor = getContext().actorOf(ExecutorActor.props());
             executorActor.tell(job, getSelf());
         }
+    }
+
+    private ClientInfo getClientInfo() {
+        final Map<String, Integer> executorInfo = executors.getExecutorInfo();
+
+        Metrics m = Metrics.empty();
+
+        return ClientInfo.builder().executors(executorInfo).metrics(m).build();
     }
 
 

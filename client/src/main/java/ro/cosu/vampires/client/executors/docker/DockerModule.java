@@ -50,8 +50,8 @@ public class DockerModule extends AbstractModule{
         String certPath = config.getString("docker.certPath");
 
         DockerCmdExecFactoryImpl dockerCmdExecFactory = new DockerCmdExecFactoryImpl()
-                .withReadTimeout(5000)
-                .withConnectTimeout(1000)
+                .withReadTimeout(10000)
+                .withConnectTimeout(2000)
                 .withMaxTotalConnections(100)
                 .withMaxPerRouteConnections(10);
 

@@ -21,11 +21,11 @@ public class MetricsWindow {
 
     Cache<LocalDateTime, Object> cache = CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES)
             .removalListener(notification -> {
-        if (notification.getKey() != null && notification.getKey() instanceof LocalDateTime) {
-            LocalDateTime key = (LocalDateTime) notification.getKey();
-            metricWindow.remove(key);
-        }
-    }).build();
+                if (notification.getKey() != null && notification.getKey() instanceof LocalDateTime) {
+                    LocalDateTime key = (LocalDateTime) notification.getKey();
+                    metricWindow.remove(key);
+                }
+            }).build();
 
 
     public void add(LocalDateTime time, SortedMap<String, Gauge> metrics) {
@@ -34,8 +34,7 @@ public class MetricsWindow {
         cache.put(time, time);
     }
 
-    public ImmutableList<Metric> getInterval(LocalDateTime start,
-                                             LocalDateTime stop) {
+    public ImmutableList<Metric> getInterval(LocalDateTime start, LocalDateTime stop) {
 
 
         List<Metric> metricList = metricWindow.subMap(start, stop).entrySet().stream().map(entry -> Metric.builder()
