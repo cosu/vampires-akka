@@ -12,14 +12,13 @@ import com.google.inject.name.Named;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.junit.Test;
-import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.resources.ResourceInfo;
-import ro.cosu.vampires.server.resources.ResourceManager;
-import ro.cosu.vampires.server.resources.ResourceProvider;
+import ro.cosu.vampires.server.resources.*;
 import ro.cosu.vampires.server.resources.mock.MockResourceModule;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -41,17 +40,25 @@ public class ResourceManagerActorTest extends AbstractActorTest {
         resourceManagerActor.tell(createResourceWhichFails, ActorRef.noSender());
         resourceManagerActor.tell(createResourceWhichSucceeds, testProbe.ref());
 
-        final Future<Object> infoFuture = Patterns.ask(resourceManagerActor, new ResourceControl.Info(),
+        testProbe.expectMsgClass(Duration.create(1, TimeUnit.SECONDS), ResourceInfo.class);
+
+        final ResourceInfo msg = (ResourceInfo) testProbe.lastMessage().msg();
+
+        final Future<Object> infoFuture = Patterns.ask(resourceManagerActor, new ResourceControl.Info
+                        (msg.description().id()),
                 5000);
 
         ResourceInfo ci = (ResourceInfo) Await.result(infoFuture, Duration.create("5 seconds"));
         assertThat(ci.description().provider(), is(equalTo(RESOURCE_PROVIDER)));
+
+        assertThat(resourceManagerActor.underlyingActor().resources.size(), is(1));
 
     }
 
     @Test
     public void testStartResource() throws Exception {
 
+        final TestProbe testProbe = new TestProbe(system);
 
         ResourceControl.Create createResource = getCreateResource("foo");
 
@@ -59,19 +66,24 @@ public class ResourceManagerActorTest extends AbstractActorTest {
         TestActorRef<ResourceManagerActor> resourceManagerActor = TestActorRef.create(system, ResourceManagerActor
                 .props());
 
+        resourceManagerActor.tell(createResource, testProbe.ref());
 
-        resourceManagerActor.tell(createResource, ActorRef.noSender());
+        testProbe.expectMsgClass(Duration.create(1, TimeUnit.SECONDS), ResourceInfo.class);
+
+        final ResourceInfo msg = (ResourceInfo) testProbe.lastMessage().msg();
+
+        ResourceDescription resourceDescription = msg.description();
 
 
-        final Future<Object> infoFuture = Patterns.ask(resourceManagerActor, new ResourceControl.Info(),
-                5000);
+        final Future<Object> infoFuture = Patterns.ask(resourceManagerActor, new ResourceControl.Info
+                (resourceDescription.id()), 5000);
 
         ResourceInfo ci = (ResourceInfo) Await.result(infoFuture, Duration.create("5 seconds"));
 
         assertThat(ci.description().provider(), is(equalTo(RESOURCE_PROVIDER)));
 
-
-        ResourceControl.Info resourceInfo = new ResourceControl.Info();
+        // here we assume that the resource is started fairly quickly so we don't see other statuses
+        ResourceControl.Info resourceInfo = new ResourceControl.Info(resourceDescription.id());
 
         final Future<Object> statusFuture = Patterns.ask(resourceManagerActor, resourceInfo, 5000);
 

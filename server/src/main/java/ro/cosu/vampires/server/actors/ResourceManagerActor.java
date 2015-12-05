@@ -6,18 +6,15 @@ import akka.actor.Terminated;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.resources.ResourceManager;
-import ro.cosu.vampires.server.resources.ResourceModule;
-import ro.cosu.vampires.server.resources.ResourceProvider;
+import ro.cosu.vampires.server.resources.*;
 import ro.cosu.vampires.server.settings.Settings;
 import ro.cosu.vampires.server.settings.SettingsImpl;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class ResourceManagerActor extends UntypedActor {
@@ -27,7 +24,11 @@ public class ResourceManagerActor extends UntypedActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     private ResourceManager rm;
-    private List<ActorRef> resources = new LinkedList<>();
+    protected List<ActorRef> resources = new LinkedList<>();
+    protected BiMap<ActorRef, String> resourceActorsToClientIds = HashBiMap.create();
+    protected BiMap<String, ResourceDescription> clientIdsToDescriptions = HashBiMap.create();
+    protected List<String> registeredResources = new LinkedList<>();
+
 
     public ResourceManagerActor() {
         Injector injector = Guice.createInjector(new ResourceModule(settings.vampires));
@@ -70,7 +71,8 @@ public class ResourceManagerActor extends UntypedActor {
 
 
     private void bootstrapResource(ResourceProvider rp, ResourceControl.Bootstrap bootstrap) {
-        ResourceControl.Create create = new ResourceControl.Create(bootstrap.provider, rp.getParameters(bootstrap.name));
+        ResourceControl.Create create = new ResourceControl.Create(bootstrap.provider, rp.getParameters(bootstrap
+                .name));
 
         createResource(create);
     }
@@ -89,22 +91,45 @@ public class ResourceManagerActor extends UntypedActor {
             createResource(create);
 
         } else if (message instanceof ResourceControl.Info) {
-            //broadcast for now
-            resources.forEach(r -> r.forward(message, getContext()));
+            lookupAndSendToResource(message);
 
         } else if (message instanceof ResourceControl.Shutdown) {
             resources.forEach(r -> r.forward(new ResourceControl.Shutdown(), getContext()));
+        } else if (message instanceof ResourceInfo) {
+            log.debug("resource info {}", message);
+            //register resources
+            final ResourceInfo resourceInfo = (ResourceInfo) message;
+            resourceActorsToClientIds.put(getSender(), resourceInfo.description().id());
+            clientIdsToDescriptions.put(resourceInfo.description().id(), resourceInfo.description());
 
+        } else if (message instanceof ResourceControl.Register) {
+            final ResourceControl.Register register = (ResourceControl.Register) message;
+            log.info("registered new client {} {}", register, clientIdsToDescriptions.get(register.clientId));
+
+            registeredResources.add(register.clientId);
         } else if (message instanceof Terminated) {
             log.info("terminated {}", getSender());
             resources.remove(getSender());
+
+            final String clientId = resourceActorsToClientIds.get(getSender());
+            resourceActorsToClientIds.remove(getSender());
+            clientIdsToDescriptions.remove(clientId);
+
             //terminate condition
             if (resources.isEmpty())
                 getContext().stop(getSelf());
 
         } else {
+            log.debug("unhandled {}", message);
             unhandled(message);
         }
+    }
+
+    private void lookupAndSendToResource(Object message) {
+        final ResourceControl.Info infoRequest = (ResourceControl.Info) message;
+        final ActorRef resource = resourceActorsToClientIds.inverse().get(infoRequest.resourceId);
+        resource.tell(message, getSender());
+
     }
 
     public static Props props() {

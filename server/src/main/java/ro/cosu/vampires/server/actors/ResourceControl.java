@@ -12,8 +12,38 @@ public class ResourceControl {
     public static class Up implements Serializable {
     }
 
+    public static class Register implements Serializable {
+        public final String clientId;
+
+        public Register(String clientId) {
+            this.clientId= clientId;
+        }
+
+        @Override
+        public String toString() {
+            return "Register{" +
+                    "clientId='" + clientId + '\'' +
+                    '}';
+        }
+    }
+
+
+
+
 
     public static class Info implements Serializable {
+        public final String resourceId;
+
+        public Info(String resourceId) {
+            this.resourceId = resourceId;
+        }
+
+        @Override
+        public String toString() {
+            return "Info{" +
+                    "resourceId='" + resourceId + '\'' +
+                    '}';
+        }
     }
 
 
