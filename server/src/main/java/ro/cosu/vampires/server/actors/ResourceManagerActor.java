@@ -108,6 +108,7 @@ public class ResourceManagerActor extends UntypedActor {
             log.info("registered new client {} {}", register, clientIdsToDescriptions.get(register.id()));
 
             registeredClients.put(register, getSender());
+            log.info("registered {}/{}", registeredClients.size(), resourceActorsToClientIds.size());
 
         } else if (message instanceof Terminated) {
             log.info("terminated {}", getSender());
