@@ -13,6 +13,7 @@ import com.google.inject.Injector;
 import ro.cosu.vampires.server.resources.*;
 import ro.cosu.vampires.server.settings.Settings;
 import ro.cosu.vampires.server.settings.SettingsImpl;
+import ro.cosu.vampires.server.workload.ClientInfo;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -27,7 +28,7 @@ public class ResourceManagerActor extends UntypedActor {
     protected List<ActorRef> resources = new LinkedList<>();
     protected BiMap<ActorRef, String> resourceActorsToClientIds = HashBiMap.create();
     protected BiMap<String, ResourceDescription> clientIdsToDescriptions = HashBiMap.create();
-    protected List<String> registeredResources = new LinkedList<>();
+    protected BiMap<ClientInfo, ActorRef> registeredClients = HashBiMap.create();
 
 
     public ResourceManagerActor() {
@@ -102,11 +103,12 @@ public class ResourceManagerActor extends UntypedActor {
             resourceActorsToClientIds.put(getSender(), resourceInfo.description().id());
             clientIdsToDescriptions.put(resourceInfo.description().id(), resourceInfo.description());
 
-        } else if (message instanceof ResourceControl.Register) {
-            final ResourceControl.Register register = (ResourceControl.Register) message;
-            log.info("registered new client {} {}", register, clientIdsToDescriptions.get(register.clientId));
+        } else if (message instanceof ClientInfo) {
+            final ClientInfo register = (ClientInfo) message;
+            log.info("registered new client {} {}", register, clientIdsToDescriptions.get(register.id()));
 
-            registeredResources.add(register.clientId);
+            registeredClients.put(register, getSender());
+
         } else if (message instanceof Terminated) {
             log.info("terminated {}", getSender());
             resources.remove(getSender());
@@ -114,6 +116,10 @@ public class ResourceManagerActor extends UntypedActor {
             final String clientId = resourceActorsToClientIds.get(getSender());
             resourceActorsToClientIds.remove(getSender());
             clientIdsToDescriptions.remove(clientId);
+
+            final Optional<ClientInfo> first = registeredClients.keySet().stream().filter(clientInfo1 -> clientInfo1
+                    .id().equals(clientId)).findFirst();
+            first.ifPresent(clientInfo -> registeredClients.remove(clientInfo));
 
             //terminate condition
             if (resources.isEmpty())

@@ -6,6 +6,7 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.*;
 import ro.cosu.vampires.server.actors.Terminator;
+import ro.cosu.vampires.server.actors.ResourceControl;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 
