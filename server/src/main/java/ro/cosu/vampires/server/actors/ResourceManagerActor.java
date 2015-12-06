@@ -6,8 +6,6 @@ import akka.actor.Terminated;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import ro.cosu.vampires.server.resources.*;
@@ -15,7 +13,7 @@ import ro.cosu.vampires.server.settings.Settings;
 import ro.cosu.vampires.server.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.ClientInfo;
 
-import java.util.*;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class ResourceManagerActor extends UntypedActor {
@@ -25,16 +23,14 @@ public class ResourceManagerActor extends UntypedActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     private ResourceManager rm;
-    protected List<ActorRef> resources = new LinkedList<>();
-    protected BiMap<ActorRef, String> resourceActorsToClientIds = HashBiMap.create();
-    protected BiMap<String, ResourceDescription> clientIdsToDescriptions = HashBiMap.create();
-    protected BiMap<ClientInfo, ActorRef> registeredClients = HashBiMap.create();
 
+    protected ResourceRegistry resourceRegistry = new ResourceRegistry();
 
     public ResourceManagerActor() {
         Injector injector = Guice.createInjector(new ResourceModule(settings.vampires));
 
         rm = injector.getInstance(ResourceManager.class);
+
 
     }
 
@@ -63,7 +59,9 @@ public class ResourceManagerActor extends UntypedActor {
         if (provider.isPresent()) {
             ActorRef resource = getContext().actorOf(ResourceActor.props(provider.get()));
             resource.forward(create, getContext());
-            resources.add(resource);
+
+            resourceRegistry.addResource(resource);
+
             getContext().watch(resource);
         } else {
             log.error("Error getting {} provider", create.provider);
@@ -92,38 +90,33 @@ public class ResourceManagerActor extends UntypedActor {
             createResource(create);
 
         } else if (message instanceof ResourceControl.Info) {
-            lookupAndSendToResource(message);
+            resourceRegistry.lookupResource(((ResourceControl.Info) message).resourceId).tell(message, getSender());
 
         } else if (message instanceof ResourceControl.Shutdown) {
-            resources.forEach(r -> r.forward(new ResourceControl.Shutdown(), getContext()));
+            resourceRegistry.getResources().forEach(r -> r.forward(new ResourceControl.Shutdown(), getContext()));
         } else if (message instanceof ResourceInfo) {
             log.debug("resource info {}", message);
             //register resources
             final ResourceInfo resourceInfo = (ResourceInfo) message;
-            resourceActorsToClientIds.put(getSender(), resourceInfo.description().id());
-            clientIdsToDescriptions.put(resourceInfo.description().id(), resourceInfo.description());
+            resourceRegistry.registerResource(getSender(), resourceInfo);
+
 
         } else if (message instanceof ClientInfo) {
             final ClientInfo register = (ClientInfo) message;
-            log.info("registered new client {} {}", register, clientIdsToDescriptions.get(register.id()));
 
-            registeredClients.put(register, getSender());
-            log.info("registered {}/{}", registeredClients.size(), resourceActorsToClientIds.size());
+            resourceRegistry.registerClient(getSender(), register);
+            resourceRegistry.lookupResource(register).forward(message, getContext());
+
+            log.info("registered {}/{}", resourceRegistry.getRegisteredClients().size(), resourceRegistry
+                    .getResources().size());
+
 
         } else if (message instanceof Terminated) {
             log.info("terminated {}", getSender());
-            resources.remove(getSender());
-
-            final String clientId = resourceActorsToClientIds.get(getSender());
-            resourceActorsToClientIds.remove(getSender());
-            clientIdsToDescriptions.remove(clientId);
-
-            final Optional<ClientInfo> first = registeredClients.keySet().stream().filter(clientInfo1 -> clientInfo1
-                    .id().equals(clientId)).findFirst();
-            first.ifPresent(clientInfo -> registeredClients.remove(clientInfo));
+            resourceRegistry.removeResource(getSender());
 
             //terminate condition
-            if (resources.isEmpty())
+            if (resourceRegistry.getResources().isEmpty())
                 getContext().stop(getSelf());
 
         } else {
@@ -132,12 +125,6 @@ public class ResourceManagerActor extends UntypedActor {
         }
     }
 
-    private void lookupAndSendToResource(Object message) {
-        final ResourceControl.Info infoRequest = (ResourceControl.Info) message;
-        final ActorRef resource = resourceActorsToClientIds.inverse().get(infoRequest.resourceId);
-        resource.tell(message, getSender());
-
-    }
 
     public static Props props() {
         return Props.create(ResourceManagerActor.class);
