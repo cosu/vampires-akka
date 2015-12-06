@@ -84,7 +84,10 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         assertThat(ci.description().provider(), is(equalTo(RESOURCE_PROVIDER)));
 
+        Thread.sleep(200);
+
         // here we assume that the resource is started fairly quickly so we don't see other statuses
+
         ResourceControl.Info resourceInfo = new ResourceControl.Info(resourceDescription.id());
 
         final Future<Object> statusFuture = Patterns.ask(resourceManagerActor, resourceInfo, 5000);
