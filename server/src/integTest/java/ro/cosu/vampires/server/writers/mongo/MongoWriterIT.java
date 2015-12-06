@@ -19,6 +19,6 @@ public class MongoWriterIT {
                 .result(Result.empty())
                 .build();
 
-        writer.writeResult(job);
+        writer.addResult(job);
     }
 }

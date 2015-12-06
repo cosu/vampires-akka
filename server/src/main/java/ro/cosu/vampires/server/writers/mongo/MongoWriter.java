@@ -3,6 +3,7 @@ package ro.cosu.vampires.server.writers.mongo;
 import com.mongodb.MongoClient;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
+import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.writers.ResultsWriter;
 
@@ -25,8 +26,13 @@ public class MongoWriter implements ResultsWriter {
     }
 
     @Override
-    public void writeResult(Job result) {
+    public void addResult(Job result) {
         datastore.save(result);
+    }
+
+    @Override
+    public void addClient(ClientInfo clientInfo) {
+     datastore.save(clientInfo);
     }
 
     @Override

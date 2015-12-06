@@ -6,6 +6,7 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.settings.Settings;
 import ro.cosu.vampires.server.settings.SettingsImpl;
+import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.writers.ResultsWriter;
@@ -23,6 +24,7 @@ public class ResultActor extends UntypedActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     private List<Job> results = new LinkedList<>();
+    private List<ClientInfo> clients = new LinkedList<>();
     List<ResultsWriter> writers;
 
     final SettingsImpl settings =
@@ -63,7 +65,8 @@ public class ResultActor extends UntypedActor {
                         numberOfResults);
                 log.debug("result {}", job.result());
 
-                writers.forEach(r -> r.writeResult(job));
+                writers.forEach(r -> r.addResult(job));
+
             }
 
             //this should be a predicate
@@ -72,7 +75,11 @@ public class ResultActor extends UntypedActor {
                 shutdown();
             }
         }
-        if (message instanceof ResourceControl.Shutdown) {
+        else if (message instanceof ClientInfo) {
+            clients.add((ClientInfo) message);
+            writers.forEach(r -> r.addClient((ClientInfo) message));
+        }
+        else if (message instanceof ResourceControl.Shutdown) {
             shutdown();
         } else {
             unhandled(message);
@@ -84,6 +91,7 @@ public class ResultActor extends UntypedActor {
         log.info("shutting down");
         writers.forEach(ResultsWriter::close);
         // init shutdown
+
 
         getContext().actorSelection("/user/terminator").tell(new ResourceControl.Shutdown(), getSelf());
         getContext().stop(getSelf());

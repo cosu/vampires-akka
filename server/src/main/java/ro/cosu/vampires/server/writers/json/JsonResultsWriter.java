@@ -1,10 +1,12 @@
 package ro.cosu.vampires.server.writers.json;
 
+import autovalue.shaded.com.google.common.common.collect.Maps;
 import com.google.common.base.Preconditions;
 import com.google.gson.*;
 import com.typesafe.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.writers.ResultsWriter;
 
@@ -19,12 +21,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class JsonResultsWriter implements ResultsWriter {
     static final Logger LOG = LoggerFactory.getLogger(JsonResultsWriter.class);
     private final Config config;
 
     List<Job> results = new LinkedList<>();
+    private List<ClientInfo> clients = new LinkedList<>();
 
 
     public JsonResultsWriter(Config config) {
@@ -44,8 +48,13 @@ public class JsonResultsWriter implements ResultsWriter {
     }
 
     @Override
-    public void writeResult(Job result) {
+    public void addResult(Job result) {
         results.add(result);
+    }
+
+    @Override
+    public void addClient(ClientInfo clientInfo) {
+        clients.add(clientInfo);
     }
 
     public void close() {
@@ -60,7 +69,10 @@ public class JsonResultsWriter implements ResultsWriter {
                     .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
                     .create();
 
-            gson.toJson(results, writer);
+            Map<String, Object> res = Maps.newHashMap();
+            res.put("results", results);
+            res.put("clients", clients);
+            gson.toJson(res, writer);
             writer.close();
             LOG.info("wrote results to {}", resultsFile.getAbsolutePath());
 

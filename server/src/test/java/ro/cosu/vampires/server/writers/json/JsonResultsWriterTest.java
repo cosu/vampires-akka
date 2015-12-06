@@ -16,7 +16,7 @@ public class JsonResultsWriterTest {
 
         final JsonResultsWriter jsonResultsWriter = new JsonResultsWriter(ConfigFactory.parseString("writers.json" +
                 ".dir=" + tempDir.getAbsolutePath()));
-        jsonResultsWriter.writeResult(Job.empty());
+        jsonResultsWriter.addResult(Job.empty());
         jsonResultsWriter.close();
 
     }
