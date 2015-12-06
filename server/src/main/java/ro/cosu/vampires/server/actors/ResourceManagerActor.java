@@ -58,11 +58,12 @@ public class ResourceManagerActor extends UntypedActor {
         final Optional<ResourceProvider> provider = rm.getProvider(create.provider);
         if (provider.isPresent()) {
             ActorRef resource = getContext().actorOf(ResourceActor.props(provider.get()));
-            resource.forward(create, getContext());
-
+            getContext().watch(resource);
             resourceRegistry.addResource(resource);
 
-            getContext().watch(resource);
+            resource.forward(create, getContext());
+
+
         } else {
             log.error("Error getting {} provider", create.provider);
         }
