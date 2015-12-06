@@ -6,7 +6,7 @@ import com.google.auto.value.AutoValue;
 public abstract class ResourceInfo {
     public abstract ResourceDescription description();
     public abstract Resource.Status status();
-    static ResourceInfo  create(ResourceDescription description, Resource.Status status){
+    public  static ResourceInfo  create(ResourceDescription description, Resource.Status status){
         return new AutoValue_ResourceInfo(description, status);
     }
 

@@ -91,7 +91,8 @@ public class ResourceManagerActor extends UntypedActor {
             createResource(create);
 
         } else if (message instanceof ResourceControl.Info) {
-            resourceRegistry.lookupResource(((ResourceControl.Info) message).resourceId).tell(message, getSender());
+            final ResourceControl.Info info = (ResourceControl.Info) message;
+            resourceRegistry.lookupResourceOfClient(info.resourceId).tell(message, getSender());
 
         } else if (message instanceof ResourceControl.Shutdown) {
             resourceRegistry.getResources().forEach(r -> r.forward(new ResourceControl.Shutdown(), getContext()));
@@ -106,7 +107,7 @@ public class ResourceManagerActor extends UntypedActor {
             final ClientInfo register = (ClientInfo) message;
 
             resourceRegistry.registerClient(getSender(), register);
-            resourceRegistry.lookupResource(register).forward(message, getContext());
+            resourceRegistry.lookupResourceOfClient(register.id()).forward(message, getContext());
 
             log.info("registered {}/{}", resourceRegistry.getRegisteredClients().size(), resourceRegistry
                     .getResources().size());

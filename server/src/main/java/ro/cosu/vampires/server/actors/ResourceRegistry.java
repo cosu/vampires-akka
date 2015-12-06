@@ -31,13 +31,8 @@ public class ResourceRegistry {
         return registeredClients;
     }
 
-    ActorRef lookupResource(String clientId) {
+    public ActorRef lookupResourceOfClient(String clientId) {
         return resourceActorsToClientIds.inverse().get(clientId);
-    }
-
-
-    ActorRef lookupResource(ClientInfo clientInfo) {
-        return resourceActorsToClientIds.inverse().get(clientInfo.id());
     }
 
 

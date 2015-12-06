@@ -8,7 +8,7 @@ public abstract class ResourceDescription {
 
     public abstract String id();
     public abstract Resource.Provider provider();
-    static ResourceDescription create(String id, Resource.Provider provider){
+    public static ResourceDescription create(String id, Resource.Provider provider){
         return new AutoValue_ResourceDescription(id, provider);
     }
 
