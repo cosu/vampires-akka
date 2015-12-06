@@ -51,7 +51,6 @@ public class ResourceRegistry {
     }
 
     public void removeResource(ActorRef sender) {
-        System.out.println("remove " + sender);
         final String clientId = resourceActorsToClientIds.get(sender);
         resourceActorsToClientIds.remove(sender);
         clientIdsToDescriptions.remove(clientId);
