@@ -56,6 +56,7 @@ public class ResultActor extends UntypedActor {
 
     @Override
     public void onReceive(Object message) throws Exception {
+
         if (message instanceof Job) {
 
             Job job = (Job) message;

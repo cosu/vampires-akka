@@ -4,15 +4,31 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.actors.*;
 import ro.cosu.vampires.server.actors.Terminator;
-import ro.cosu.vampires.server.actors.ResourceControl;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 
+import static spark.Spark.*;
+
 public class Server {
 
+    static final Logger LOG = LoggerFactory.getLogger(Server.class);
+
+    private static void runSpark(){
+        port(8080);
+        webSocket("/",WebsocketHandler.class);
+        staticFileLocation("/public");
+        LOG.info("starting spark server");
+        init();
+
+    }
+
     public static void main(String[] args) throws Exception {
+
+        runSpark();
 
         final ActorSystem system = ActorSystem.create("ServerSystem");
 
@@ -48,6 +64,8 @@ public class Server {
         });
 
         Await.result(system.whenTerminated(), Duration.Inf());
+        stop();
+
 
     }
 }

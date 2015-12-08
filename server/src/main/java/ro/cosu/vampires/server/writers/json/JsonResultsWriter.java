@@ -6,6 +6,7 @@ import com.google.gson.*;
 import com.typesafe.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ro.cosu.vampires.server.WebsocketHandler;
 import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.writers.ResultsWriter;
@@ -49,6 +50,12 @@ public class JsonResultsWriter implements ResultsWriter {
 
     @Override
     public void addResult(Job result) {
+        Gson gson = new GsonBuilder().setPrettyPrinting()
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
+                .create();
+
+        WebsocketHandler.broadcastMessage("foo", gson.toJson(result));
+
         results.add(result);
     }
 
