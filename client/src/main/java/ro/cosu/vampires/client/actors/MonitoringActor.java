@@ -16,6 +16,7 @@ import ro.cosu.vampires.server.workload.Metrics;
 import scala.concurrent.duration.Duration;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.SortedMap;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -70,10 +71,8 @@ public class MonitoringActor extends UntypedActor {
 
                 ImmutableList<Metric> metricsWindowInterval = metricsWindow.getInterval
                         (job.result().start(), job.result().stop());
-                SortedMap<String, Gauge> hostGauges = metricRegistry.getGauges((name, metric) -> name.startsWith
-                        ("host"));
 
-                ImmutableMap<String, String> hostValues = MetricsWindow.convertGaugesToString(hostGauges);
+                ImmutableMap<String, String> hostValues = getHostMetrics();
 
                 Metrics metrics = Metrics.builder().metadata(hostValues).metrics(metricsWindowInterval).build();
                 job = job.withMetrics(metrics);
@@ -81,10 +80,27 @@ public class MonitoringActor extends UntypedActor {
             } else {
                 log.error("received workload result not present");
             }
+        } else if (message instanceof Metrics) {
+            log.debug("got metrics request ");
+
+
+            final ImmutableList<Metric> interval = metricsWindow.getInterval(
+                    LocalDateTime.now().minus(MONITORING_INTERVAL_MILIS, ChronoUnit.MILLIS), LocalDateTime.now());
+            final Metrics metrics = Metrics.builder().metadata(getHostMetrics()).metrics(interval).build();
+            getSender().tell(metrics, getSelf());
+
+
         } else {
             log.error("received unknown type of message");
             unhandled(message);
         }
 
+    }
+
+    private ImmutableMap<String, String> getHostMetrics() {
+        SortedMap<String, Gauge> hostGauges = metricRegistry.getGauges((name, metric) -> name.startsWith
+                ("host"));
+
+        return MetricsWindow.convertGaugesToString(hostGauges);
     }
 }

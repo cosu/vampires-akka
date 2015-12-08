@@ -19,6 +19,8 @@ public abstract class Metrics implements Serializable{
         return new AutoValue_Metrics.Builder().id(UUID.randomUUID().toString());
     }
 
+    public abstract Builder toBuilder();
+
     public static Metrics empty(){
 
         return new AutoValue_Metrics.Builder()

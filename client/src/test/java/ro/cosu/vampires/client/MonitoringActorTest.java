@@ -37,14 +37,15 @@ public class MonitoringActorTest {
     }
 
 
+    private int seconds = 2;
+
     @Test
     public void testMetrics() throws Exception {
-        int seconds = 2;
 
         TestActorRef<MonitoringActor> ref = TestActorRef.create(system, MonitoringActor
-                .props(MonitoringManager.getMetricRegistry()), "monitoring");
+                .props(MonitoringManager.getMetricRegistry()));
 
-        Thread.sleep(seconds*1000);
+        Thread.sleep(seconds * 1000);
 
         Computation computation = Computation.builder().command("test").id("test").build();
         Result result = Result.builder().duration(10).exitCode(0).output(new LinkedList<>())
@@ -70,8 +71,26 @@ public class MonitoringActorTest {
         assertThat(job.metrics().metadata().keySet().size(), not(0));
 
 
-
     }
 
+    @Test
+    public void testReplyToMetrics() throws Exception {
+        TestActorRef<MonitoringActor> ref = TestActorRef.create(system, MonitoringActor
+                .props(MonitoringManager.getMetricRegistry()));
 
+        Thread.sleep(2000);
+
+        final Future<Object> future = akka.pattern.Patterns.ask(ref, Metrics.empty(), 3000);
+
+        Metrics metrics = (Metrics) Await.result(future, Duration.create("2 seconds"));
+
+        ImmutableList<Metric> timedMetrics = metrics.metrics();
+
+        assertThat(timedMetrics.size(), not(0));
+
+        assertThat(metrics.metadata().keySet().size(), not(0));
+
+
+
+    }
 }

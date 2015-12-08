@@ -4,9 +4,13 @@ import akka.actor.*;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.japi.Procedure;
+import akka.pattern.Patterns;
+import akka.util.Timeout;
 import ro.cosu.vampires.client.extension.ExecutorsExtension;
 import ro.cosu.vampires.client.extension.ExecutorsExtensionImpl;
 import ro.cosu.vampires.server.workload.*;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
 import java.util.Map;
@@ -116,12 +120,16 @@ public class ClientActor extends UntypedActor {
         }
     }
 
-    private ClientInfo getClientInfo() {
+    private ClientInfo getClientInfo() throws Exception {
         final Map<String, Integer> executorInfo = executors.getExecutorInfo();
 
-        Metrics m = Metrics.empty();
+        final ActorSelection monitorActor = getContext().actorSelection("/user/monitor");
 
-        return ClientInfo.builder().id(clientId).executors(executorInfo).metrics(m).build();
+        final Future<Object> metricsFuture = Patterns.ask(monitorActor, Metrics.empty(), Timeout.apply(1000, SECONDS));
+        Metrics metrics = (Metrics) Await.result(metricsFuture, Duration.create("5 seconds"));
+
+
+        return ClientInfo.builder().id(clientId).executors(executorInfo).metrics(metrics).build();
     }
 
 
