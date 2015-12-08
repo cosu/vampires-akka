@@ -121,6 +121,7 @@ public class DockerExecutor implements Executor {
     private ExecInfo getExecInfo() {
         final ExecInfo.Builder builder = ExecInfo.builder()
                 .metrics(executorMetricsCollector.getMetrics())
+                .executor(Type.DOCKER.toString())
                 .start(LocalDateTime.now())
                 .stop(LocalDateTime.now())
                 .totalCpuCount(cpuAllocator.totalCpuCount());

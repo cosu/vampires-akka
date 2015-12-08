@@ -21,12 +21,15 @@ public abstract class ExecInfo implements Serializable{
 
     public abstract int totalCpuCount();
 
+    public abstract String executor();
+
     public static ExecInfo empty() {
         return builder().cpuSet(Sets.newHashSet())
                 .start(LocalDateTime.parse("2000-01-01T00:00:00"))
                 .stop(LocalDateTime.parse("2000-01-01T00:00:00"))
                 .totalCpuCount(0)
                 .metrics(Metrics.empty())
+                .executor("unknown")
                 .build();
     }
 
@@ -41,6 +44,8 @@ public abstract class ExecInfo implements Serializable{
 
     @AutoValue.Builder
     public abstract static class Builder {
+
+        public abstract Builder executor(String executor);
 
         public abstract Builder metrics(Metrics metrics);
 

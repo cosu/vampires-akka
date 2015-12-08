@@ -115,6 +115,7 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
     private ExecInfo getExecInfo() {
         final ExecInfo.Builder builder = ExecInfo
                 .withNoMetrics()
+                .executor(Type.DOCKER.toString())
                 .start(LocalDateTime.now())
                 .stop(LocalDateTime.now())
                 .totalCpuCount(cpuAllocator.totalCpuCount());
