@@ -125,7 +125,7 @@ public class ClientActor extends UntypedActor {
 
         final ActorSelection monitorActor = getContext().actorSelection("/user/monitor");
 
-        final Future<Object> metricsFuture = Patterns.ask(monitorActor, Metrics.empty(), Timeout.apply(1000, SECONDS));
+        final Future<Object> metricsFuture = Patterns.ask(monitorActor, Metrics.empty(), Timeout.apply(1, SECONDS));
         Metrics metrics = (Metrics) Await.result(metricsFuture, Duration.create("5 seconds"));
 
 
