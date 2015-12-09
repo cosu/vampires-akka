@@ -48,7 +48,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
                         (msg.description().id()),
                 5000);
 
-        Thread.sleep(200);
+        Thread.sleep(500);
 
         ResourceInfo ci = (ResourceInfo) Await.result(infoFuture, Duration.create("5 seconds"));
         assertThat(ci.description().provider(), is(equalTo(RESOURCE_PROVIDER)));
