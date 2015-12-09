@@ -37,7 +37,7 @@ public class MonitoringActorTest {
     }
 
 
-    private int seconds = 2;
+
 
     @Test
     public void testMetrics() throws Exception {
@@ -45,7 +45,8 @@ public class MonitoringActorTest {
         TestActorRef<MonitoringActor> ref = TestActorRef.create(system, MonitoringActor
                 .props(MonitoringManager.getMetricRegistry()));
 
-        Thread.sleep(seconds * 1000);
+        int seconds = 2;
+        Thread.sleep((seconds + 1) * 1000);
 
         Computation computation = Computation.builder().command("test").id("test").build();
         Result result = Result.builder().duration(10).exitCode(0).output(new LinkedList<>())
