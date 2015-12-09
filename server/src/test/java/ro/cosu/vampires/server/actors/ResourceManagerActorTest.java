@@ -84,7 +84,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         assertThat(ci.description().provider(), is(equalTo(RESOURCE_PROVIDER)));
 
-        Thread.sleep(200);
+        Thread.sleep(500);
 
         // here we assume that the resource is started fairly quickly so we don't see other statuses
 
