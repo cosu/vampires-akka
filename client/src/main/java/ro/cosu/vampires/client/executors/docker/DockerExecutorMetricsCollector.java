@@ -73,7 +73,8 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
         // the current stat api makes the 'read' field private so we put our own timestamp
         // future versions of the api will hopefully fix this
         Map<String, Double> data = new HashMap<>();
-        data.putAll(flattenMap("network", stat.getNetworkStats()));
+
+        data.putAll(flattenMap("network", stat.getNetworks()));
         data.putAll(flattenMap("memory", stat.getMemoryStats()));
         data.putAll(flattenMap("io", stat.getBlkioStats()));
         data.putAll(flattenMap("cpu", stat.getCpuStats()));

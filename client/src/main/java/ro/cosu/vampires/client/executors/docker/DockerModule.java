@@ -57,7 +57,7 @@ public class DockerModule extends AbstractModule{
 
         DockerClientConfig dockerClientConfig = DockerClientConfig.createDefaultConfigBuilder()
                 // NOTE: api version should be changed when >1.21  is supported by docker-java
-                .withVersion("1.20")
+//                .withVersion("1.20")
                 .withUri(uri)
                 .withDockerCertPath(certPath)
                 .build();
