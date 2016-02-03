@@ -30,8 +30,8 @@ public class SshResourceProvider extends AbstractResourceProvider {
     }
 
     @Override
-    public Resource.Provider getType() {
-        return Resource.Provider.SSH;
+    public Resource.Type getType() {
+        return Resource.Type.SSH;
     }
 
     @Override

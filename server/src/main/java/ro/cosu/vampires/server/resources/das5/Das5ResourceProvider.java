@@ -29,8 +29,8 @@ public class Das5ResourceProvider extends AbstractResourceProvider{
     }
 
     @Override
-    public Resource.Provider getType() {
-        return Resource.Provider.DAS5;
+    public Resource.Type getType() {
+        return Resource.Type.DAS5;
     }
 
     @Override

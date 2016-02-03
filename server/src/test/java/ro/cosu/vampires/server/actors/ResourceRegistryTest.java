@@ -48,7 +48,7 @@ public class ResourceRegistryTest extends AbstractActorTest {
         final ActorRef actorRef = createActorRef();
         resourceRegistry.addResource(actorRef);
 
-        final ResourceInfo resourceInfo = ResourceInfo.create(ResourceDescription.create("foo", Resource.Provider.MOCK),
+        final ResourceInfo resourceInfo = ResourceInfo.create(ResourceDescription.create("foo", Resource.Type.MOCK),
                 Resource.Status.RUNNING);
         resourceRegistry.registerResource(actorRef, resourceInfo);
         final ClientInfo clientInfo = ClientInfo.builder().executors(Maps.newHashMap()).id
@@ -66,7 +66,7 @@ public class ResourceRegistryTest extends AbstractActorTest {
         final ActorRef actorRef = createActorRef();
         resourceRegistry.addResource(actorRef);
 
-        final ResourceInfo resourceInfo = ResourceInfo.create(ResourceDescription.create("foo", Resource.Provider.MOCK),
+        final ResourceInfo resourceInfo = ResourceInfo.create(ResourceDescription.create("foo", Resource.Type.MOCK),
                 Resource.Status.RUNNING);
         resourceRegistry.registerResource(actorRef, resourceInfo);
         final ActorRef foo = resourceRegistry.lookupResourceOfClient("foo");

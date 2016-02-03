@@ -10,10 +10,10 @@ public abstract class LocalResourceParameters implements Resource.Parameters {
 
     public abstract String command();
 
-    public abstract Resource.Provider type();
+    public abstract Resource.Type type();
 
     public static Builder builder() {
-        return new AutoValue_LocalResourceParameters.Builder().type(Resource.Provider.LOCAL);
+        return new AutoValue_LocalResourceParameters.Builder().type(Resource.Type.LOCAL);
     }
 
     @AutoValue.Builder
@@ -23,7 +23,7 @@ public abstract class LocalResourceParameters implements Resource.Parameters {
             return this;
         }
 
-        public abstract Builder type(Resource.Provider provider);
+        public abstract Builder type(Resource.Type type);
 
 
         public abstract Builder command(String command);

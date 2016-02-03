@@ -18,11 +18,11 @@ public abstract class SshResourceParameters implements Resource.Parameters {
 
     public abstract int port();
 
-    public abstract Resource.Provider type();
+    public abstract Resource.Type type();
 
 
     public static Builder builder() {
-        return new AutoValue_SshResourceParameters.Builder().port(22).type(Resource.Provider.SSH);
+        return new AutoValue_SshResourceParameters.Builder().port(22).type(Resource.Type.SSH);
     }
 
     @AutoValue.Builder
@@ -40,7 +40,7 @@ public abstract class SshResourceParameters implements Resource.Parameters {
         }
 
 
-        public abstract Builder type(Resource.Provider provider);
+        public abstract Builder type(Resource.Type type);
 
         public abstract Builder command(String s);
 

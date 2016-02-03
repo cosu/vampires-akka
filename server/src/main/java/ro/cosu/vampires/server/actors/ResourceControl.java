@@ -12,54 +12,52 @@ public class ResourceControl {
     public static class Up implements Serializable {
     }
 
-
-    public static class Info implements Serializable {
+    public static class Query implements Serializable {
         public final String resourceId;
 
-        public Info(String resourceId) {
+        public Query(String resourceId) {
             this.resourceId = resourceId;
         }
 
         @Override
         public String toString() {
-            return "Info{" +
+            return "Query{" +
                     "resourceId='" + resourceId + '\'' +
                     '}';
         }
     }
 
-
     public static class Create implements Serializable {
-        final Resource.Provider provider;
+        final Resource.Type type;
         final Resource.Parameters parameters;
 
-        public Create(Resource.Provider provider, Resource.Parameters parameters) {
-            this.provider = provider;
+        public Create(Resource.Type type, Resource.Parameters parameters) {
+            this.type = type;
             this.parameters = parameters;
         }
 
         @Override
         public String toString() {
             return "Create{" +
-                    "provider=" + provider +
+                    "type=" + type +
                     ", parameters=" + parameters +
                     '}';
         }
     }
 
     public static class Bootstrap {
-        final Resource.Provider provider;
+        final Resource.Type type;
         final String name;
 
-        public Bootstrap(Resource.Provider provider, String name) {
-            this.provider = provider;
+        public Bootstrap(Resource.Type type, String name) {
+            this.type = type;
             this.name = name;
         }
 
         @Override
         public String toString() {
             return "Bootstrap{" +
-                    "provider=" + provider +
+                    "type=" + type +
                     ", name='" + name + '\'' +
                     '}';
         }

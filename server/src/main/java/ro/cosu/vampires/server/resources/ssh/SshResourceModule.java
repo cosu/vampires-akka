@@ -12,10 +12,10 @@ public class SshResourceModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        MapBinder<Resource.Provider, ResourceProvider> mapbinder
-                = MapBinder.newMapBinder(binder(), Resource.Provider.class, ResourceProvider.class);
+        MapBinder<Resource.Type, ResourceProvider> mapbinder
+                = MapBinder.newMapBinder(binder(), Resource.Type.class, ResourceProvider.class);
 
-        mapbinder.addBinding(Resource.Provider.SSH).to(SshResourceProvider.class).asEagerSingleton();
+        mapbinder.addBinding(Resource.Type.SSH).to(SshResourceProvider.class).asEagerSingleton();
     }
     @Provides
     @Named("Ssh")

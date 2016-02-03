@@ -24,7 +24,6 @@ public class ResourceRegistry {
 
     void registerClient(ActorRef sender, ClientInfo register) {
         registeredClients.put(register, sender);
-
     }
 
     public BiMap<ClientInfo, ActorRef> getRegisteredClients() {

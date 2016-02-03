@@ -11,10 +11,10 @@ public abstract class MockResourceParameters implements Resource.Parameters {
 
     public abstract String command();
 
-    public abstract Resource.Provider type();
+    public abstract Resource.Type type();
 
     public static Builder builder() {
-        return new AutoValue_MockResourceParameters.Builder().type(Resource.Provider.MOCK);
+        return new AutoValue_MockResourceParameters.Builder().type(Resource.Type.MOCK);
     }
 
     @AutoValue.Builder
@@ -25,7 +25,7 @@ public abstract class MockResourceParameters implements Resource.Parameters {
         }
 
 
-        public abstract Builder type(Resource.Provider provider);
+        public abstract Builder type(Resource.Type type);
 
         public abstract Builder command(String command);
 

@@ -18,11 +18,11 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
 
     public abstract int port();
 
-    public abstract Resource.Provider type();
+    public abstract Resource.Type type();
 
 
     public static Builder builder() {
-        return new AutoValue_Das5ResourceParameters.Builder().port(22).type(Resource.Provider.DAS5);
+        return new AutoValue_Das5ResourceParameters.Builder().port(22).type(Resource.Type.DAS5);
     }
 
     @AutoValue.Builder
@@ -38,7 +38,7 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
 
         public abstract Builder port(int i);
 
-        abstract Builder type(Resource.Provider provider);
+        abstract Builder type(Resource.Type type);
 
 
         public Builder fromConfig(Config config) {

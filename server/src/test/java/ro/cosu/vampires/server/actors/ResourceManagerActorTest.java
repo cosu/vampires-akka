@@ -26,7 +26,7 @@ import static org.junit.Assert.assertThat;
 
 public class ResourceManagerActorTest extends AbstractActorTest {
 
-    private static final Resource.Provider RESOURCE_PROVIDER = Resource.Provider.MOCK;
+    private static final Resource.Type RESOURCE_TYPE = Resource.Type.MOCK;
 
     @Test
     public void testStartResourceFail() throws Exception {
@@ -44,14 +44,15 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         final ResourceInfo msg = (ResourceInfo) testProbe.lastMessage().msg();
 
-        final Future<Object> infoFuture = Patterns.ask(resourceManagerActor, new ResourceControl.Info
+
+        final Future<Object> infoFuture = Patterns.ask(resourceManagerActor, new ResourceControl.Query
                         (msg.description().id()),
                 5000);
 
         Thread.sleep(500);
 
         ResourceInfo ci = (ResourceInfo) Await.result(infoFuture, Duration.create("5 seconds"));
-        assertThat(ci.description().provider(), is(equalTo(RESOURCE_PROVIDER)));
+        assertThat(ci.description().provider(), is(equalTo(RESOURCE_TYPE)));
 
         assertThat(resourceManagerActor.underlyingActor().resourceRegistry.getResources().size(), is(1));
 
@@ -76,21 +77,20 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         ResourceDescription resourceDescription = msg.description();
 
-
-        final Future<Object> infoFuture = Patterns.ask(resourceManagerActor, new ResourceControl.Info
+        final Future<Object> infoFuture = Patterns.ask(resourceManagerActor, new ResourceControl.Query
                 (resourceDescription.id()), 5000);
 
         ResourceInfo ci = (ResourceInfo) Await.result(infoFuture, Duration.create("5 seconds"));
 
-        assertThat(ci.description().provider(), is(equalTo(RESOURCE_PROVIDER)));
+        assertThat(ci.description().provider(), is(equalTo(RESOURCE_TYPE)));
 
         Thread.sleep(500);
 
         // here we assume that the resource is started fairly quickly so we don't see other statuses
 
-        ResourceControl.Info resourceInfo = new ResourceControl.Info(resourceDescription.id());
+        ResourceControl.Query resourceQuery = new ResourceControl.Query(resourceDescription.id());
 
-        final Future<Object> statusFuture = Patterns.ask(resourceManagerActor, resourceInfo, 5000);
+        final Future<Object> statusFuture = Patterns.ask(resourceManagerActor, resourceQuery, 5000);
 
         ResourceInfo si = (ResourceInfo) Await.result(statusFuture, Duration.create("5 seconds"));
 
@@ -129,11 +129,11 @@ public class ResourceManagerActorTest extends AbstractActorTest {
         Injector injector = Guice.createInjector(getMockModule());
         ResourceManager rm = injector.getInstance(ResourceManager.class);
 
-        ResourceProvider resourceProvider = rm.getProviders().get(RESOURCE_PROVIDER);
+        ResourceProvider resourceProvider = rm.getProviders().get(RESOURCE_TYPE);
 
         Resource.Parameters parameters = resourceProvider.getBuilder().fromConfig(ConfigFactory.parseString
                 ("command=" + command)).build();
 
-        return new ResourceControl.Create(RESOURCE_PROVIDER, parameters);
+        return new ResourceControl.Create(RESOURCE_TYPE, parameters);
     }
 }

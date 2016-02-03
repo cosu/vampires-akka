@@ -44,10 +44,10 @@ public class DockerModule extends AbstractModule{
     @Provides
     DockerClient provideDockerClient(@Named("Config") Config config) {
         Preconditions.checkArgument(config.hasPath("docker.uri"), "missing docker uri on config");
-        Preconditions.checkArgument(config.hasPath("docker.certPath"), "missing docker certpath");
+//        Preconditions.checkArgument(config.hasPath("docker.certPath"), "missing docker certpath");
 
         String uri = config.getString("docker.uri");
-        String certPath = config.getString("docker.certPath");
+//        String certPath = config.getString("docker.certPath");
 
         DockerCmdExecFactoryImpl dockerCmdExecFactory = new DockerCmdExecFactoryImpl()
                 .withReadTimeout(10000)
@@ -56,10 +56,8 @@ public class DockerModule extends AbstractModule{
                 .withMaxPerRouteConnections(10);
 
         DockerClientConfig dockerClientConfig = DockerClientConfig.createDefaultConfigBuilder()
-                // NOTE: api version should be changed when >1.21  is supported by docker-java
-//                .withVersion("1.20")
                 .withUri(uri)
-                .withDockerCertPath(certPath)
+//                .withDockerCertPath(certPath)
                 .build();
 
 

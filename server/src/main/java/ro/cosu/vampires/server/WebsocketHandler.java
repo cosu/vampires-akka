@@ -19,7 +19,7 @@ public class WebsocketHandler {
 
     public static void broadcastMessage(String sender, String message) {
 
-        LOG.info("message from {} : {}", sender);
+        LOG.info("message from {} : {}", sender, message);
         clients.keySet().stream().filter(Session::isOpen).forEach(session -> {
             try {
                 session.getRemote().sendString(message);

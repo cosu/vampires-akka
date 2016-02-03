@@ -6,18 +6,18 @@ import java.util.Map;
 import java.util.Optional;
 
 public class ResourceManager {
-    private final Map<Resource.Provider, ResourceProvider> providers;
+    private final Map<Resource.Type, ResourceProvider> providers;
 
     @Inject
-    public ResourceManager(Map<Resource.Provider, ResourceProvider> resources) {
+    public ResourceManager(Map<Resource.Type, ResourceProvider> resources) {
         this.providers= resources;
     }
 
-    public Map<Resource.Provider, ResourceProvider> getProviders() {
+    public Map<Resource.Type, ResourceProvider> getProviders() {
         return providers;
     }
 
-    public Optional<ResourceProvider > getProvider(Resource.Provider provider){
-        return Optional.ofNullable(providers.get(provider));
+    public Optional<ResourceProvider > getProvider(Resource.Type type){
+        return Optional.ofNullable(providers.get(type));
     }
 }

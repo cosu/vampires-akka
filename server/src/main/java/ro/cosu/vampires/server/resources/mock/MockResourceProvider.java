@@ -22,8 +22,8 @@ public class MockResourceProvider extends AbstractResourceProvider{
     }
 
     @Override
-    public Resource.Provider getType() {
-        return Resource.Provider.MOCK;
+    public Resource.Type getType() {
+        return Resource.Type.MOCK;
     }
 
     @Override

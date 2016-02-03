@@ -10,4 +10,8 @@ public abstract class ResourceInfo {
         return new AutoValue_ResourceInfo(description, status);
     }
 
+    public static ResourceInfo unknown(Resource.Type type){
+        return new AutoValue_ResourceInfo(ResourceDescription.empty(type), Resource.Status.UNKNOWN);
+    }
+
 }

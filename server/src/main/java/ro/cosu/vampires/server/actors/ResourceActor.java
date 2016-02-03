@@ -7,6 +7,7 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.japi.Procedure;
 import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.resources.ResourceProvider;
 
 import java.util.Optional;
@@ -25,7 +26,6 @@ public class ResourceActor extends UntypedActorWithStash {
 
     ResourceActor(ResourceProvider resourceProvider) {
         this.resourceProvider = resourceProvider;
-
     }
 
     @Override
@@ -37,14 +37,12 @@ public class ResourceActor extends UntypedActorWithStash {
     public void onReceive(Object message) throws Exception {
         ActorRef sender = getSender();
         if (message instanceof ResourceControl.Create) {
-
-            Optional<Resource> resource = create((ResourceControl.Create) message, sender);
-            if (!resource.isPresent()) {
-                getSelf().tell(Resource.Status.FAILED, sender);
-            }
-
+            ResourceControl.Create create = (ResourceControl.Create) message;
+            createResource(create, sender);
+        } else if (message instanceof ResourceControl.Query) {
+            sendResourceInfo(sender);
         } else if (message instanceof Resource.Status) {
-            if (message.equals(Resource.Status.RUNNING)) {
+            if (Resource.Status.RUNNING.equals(message)) {
                 activate();
             } else {
                 fail();
@@ -55,19 +53,26 @@ public class ResourceActor extends UntypedActorWithStash {
         }
     }
 
-    private Optional<Resource> create(ResourceControl.Create create, ActorRef sender) {
-
+    private void createResource(ResourceControl.Create create, ActorRef sender) {
         Optional<Resource> resourceOptional = resourceProvider.create(create.parameters);
+        if (resourceOptional.isPresent()) {
+            this.resource = resourceOptional.get();
+            // do it async because activate needs a context
+            // which is not available after the future completes
+            this.resource.start()
+                    .thenAccept(started -> {
+                        log.info("started");
+                        getSelf().tell(started.status(), sender);
+                    }).exceptionally(exception -> signalFailed(exception, sender));
+        } else {
+           getSelf().tell(Resource.Status.FAILED, sender);
+        }
+    }
 
-        resourceOptional.ifPresent(created -> this.resource = created);
-        resourceOptional.ifPresent(created -> created.start()
-                .thenAccept(started -> {
-                    log.debug("started!!");
-                    getSelf().tell(started.status(), sender);
-                }));
-
-        return resourceOptional;
-
+    private Void signalFailed(Throwable throwable, ActorRef sender) {
+        getSelf().tell(Resource.Status.FAILED, sender);
+        log.error("Actor failed to start resource {}", throwable);
+        return null;
     }
 
     private Void fail() {
@@ -78,13 +83,10 @@ public class ResourceActor extends UntypedActorWithStash {
 
 
     private void activate() {
-
-        getSender().tell(resource.info(), getSelf());
-        getContext().parent().tell(resource.info(), getSelf());
+        sendResourceInfo(getContext().parent());
+        sendResourceInfo(getSender());
         unstashAll();
         getContext().become(active);
-
-
     }
 
     @Override
@@ -97,12 +99,11 @@ public class ResourceActor extends UntypedActorWithStash {
             }
     }
 
-
     Procedure<Object> active = message -> {
         ActorRef sender = getSender();
 
-        if (message instanceof ResourceControl.Info) {
-            sender.tell(resource.info(), getSelf());
+        if (message instanceof ResourceControl.Query) {
+            sendResourceInfo(sender);
         }
         else if (message instanceof ResourceControl.Shutdown) {
             log.debug("shutdown " + message);
@@ -112,4 +113,11 @@ public class ResourceActor extends UntypedActorWithStash {
             unhandled(message);
         }
     };
+
+    private void sendResourceInfo(ActorRef toActor) {
+        ResourceInfo info = Optional.ofNullable(this.resource)
+                    .map(resource -> resource.info())
+                    .orElse(ResourceInfo.unknown(resourceProvider.getType()));
+        toActor.tell(info, getSelf());
+    }
 }

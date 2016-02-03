@@ -7,7 +7,7 @@ import java.util.Optional;
 public interface ResourceProvider {
     Optional<Resource> create(Resource.Parameters parameters);
 
-    Resource.Provider getType();
+    Resource.Type getType();
 
     Config getConfig();
 
@@ -20,14 +20,9 @@ public interface ResourceProvider {
                 .withFallback(appDefaults);
     }
 
-
     default Resource.Parameters getParameters(String instanceName) {
-
         return  getBuilder().fromConfig(getConfigForInstance(instanceName)).build();
-
     }
 
     Resource.Parameters.Builder getBuilder();
-
-
 }

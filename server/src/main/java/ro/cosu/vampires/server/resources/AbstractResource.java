@@ -31,7 +31,6 @@ public abstract class AbstractResource implements Resource {
     }
 
     public CompletableFuture<Resource> start() {
-
         return CompletableFuture.supplyAsync(this::startCall)
                 .exceptionally(this::fail);
     }

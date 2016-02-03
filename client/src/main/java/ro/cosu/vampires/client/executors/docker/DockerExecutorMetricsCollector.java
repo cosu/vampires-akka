@@ -76,7 +76,7 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
 
         data.putAll(flattenMap("network", stat.getNetworks()));
         data.putAll(flattenMap("memory", stat.getMemoryStats()));
-        data.putAll(flattenMap("io", stat.getBlkioStats()));
+//        data.putAll(flattenMap("io", stat.getBlkioStats()));
         data.putAll(flattenMap("cpu", stat.getCpuStats()));
 
         return Metric.builder().values(ImmutableMap.copyOf(data)).time(LocalDateTime.now()).build();
