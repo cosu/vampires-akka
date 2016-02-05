@@ -65,7 +65,6 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         ResourceControl.Create createResource = getCreateResource("foo");
 
-
         TestActorRef<ResourceManagerActor> resourceManagerActor = TestActorRef.create(system, ResourceManagerActor
                 .props());
 

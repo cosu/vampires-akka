@@ -33,10 +33,14 @@ public class ResourceManagerActor extends UntypedActor {
 
         rm = injector.getInstance(ResourceManager.class);
 
-
     }
 
     private void startResources() {
+        if (!settings.vampires.hasPath("start")) {
+            log.error("no start config found. exiting");
+            getContext().actorSelection("/user/terminator").tell(new ResourceControl.Shutdown(), getSelf());
+            return;
+        }
         settings.vampires.getConfigList("start").stream().forEach(config ->
         {
             String type = config.getString("type");
@@ -51,6 +55,7 @@ public class ResourceManagerActor extends UntypedActor {
 
     @Override
     public void preStart() {
+        getContext().actorSelection("/user/terminator").tell(new ResourceControl.Up(), getSelf());
         startResources();
     }
 
@@ -65,7 +70,7 @@ public class ResourceManagerActor extends UntypedActor {
             resource.forward(create, getContext());
 
         } else {
-            log.error("Error getting {} type", create.type);
+            log.error("Error getting {} type resource provider.", create.type);
         }
     }
 
@@ -81,25 +86,26 @@ public class ResourceManagerActor extends UntypedActor {
     @Override
     public void onReceive(Object message) throws Exception {
 
+        ActorRef sender = getSender();
         if (message instanceof Bootstrap) {
-            Bootstrap bootstrap = (Bootstrap) message;
+            final Bootstrap bootstrap = (Bootstrap) message;
             bootstrapResource(bootstrap);
         } else if (message instanceof Create) {
-            Create create = (Create) message;
+            final Create create = (Create) message;
             createResource(create);
         } else if (message instanceof Query) {
             final Query query = (Query) message;
-            queryResource(query);
+            queryResource(query, sender);
         } else if (message instanceof Shutdown) {
             shutdownResources();
         } else if (message instanceof ResourceInfo) {
             final ResourceInfo resourceInfo = (ResourceInfo) message;
-            registerResource(resourceInfo);
+            registerResource(resourceInfo, sender);
         } else if (message instanceof ClientInfo) {
             final ClientInfo clientInfo = (ClientInfo) message;
             registerClient(clientInfo);
         } else if (message instanceof Terminated) {
-            terminateResource();
+            terminatedResource(sender);
         } else {
             log.debug("unhandled {}", message);
             unhandled(message);
@@ -110,9 +116,9 @@ public class ResourceManagerActor extends UntypedActor {
         rm.getProvider(bootstrap.type).ifPresent(rp -> bootstrapResource(rp, bootstrap));
     }
 
-    private void terminateResource() {
-        log.info("terminated {}", getSender());
-        resourceRegistry.removeResource(getSender());
+    private void terminatedResource(ActorRef sender) {
+        log.info("terminated {}", sender);
+        resourceRegistry.removeResource(sender);
         if (resourceRegistry.getResources().isEmpty())
             getContext().stop(getSelf());
     }
@@ -128,13 +134,13 @@ public class ResourceManagerActor extends UntypedActor {
                 .getResources().size());
     }
 
-    private void registerResource(ResourceInfo resourceInfo) {
-        log.debug("resource info {}", resourceInfo);
-        resourceRegistry.registerResource(getSender(), resourceInfo);
+    private void registerResource(ResourceInfo resourceInfo, ActorRef sender) {
+        log.debug("resource register {}", resourceInfo);
+        resourceRegistry.registerResource(sender, resourceInfo);
     }
 
-    private void queryResource(Query query) {
-        resourceRegistry.lookupResourceOfClient(query.resourceId).tell(query, getSender());
+    private void queryResource(Query query, ActorRef sender) {
+        resourceRegistry.lookupResourceOfClient(query.resourceId).tell(query, sender);
     }
 
     private void shutdownResources() {

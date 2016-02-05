@@ -28,10 +28,6 @@ public class ResourceActor extends UntypedActorWithStash {
         this.resourceProvider = resourceProvider;
     }
 
-    @Override
-    public void preStart() {
-        getContext().actorSelection("/user/terminator").tell(new ResourceControl.Up(), getSelf());
-    }
 
     @Override
     public void onReceive(Object message) throws Exception {
@@ -54,7 +50,13 @@ public class ResourceActor extends UntypedActorWithStash {
     }
 
     private void createResource(ResourceControl.Create create, ActorRef sender) {
+        if (resource != null && resource.status().equals(Resource.Status.RUNNING)) {
+            log.warning("atempting to start an already started resource. doing nothing");
+            return;
+        }
+
         Optional<Resource> resourceOptional = resourceProvider.create(create.parameters);
+
         if (resourceOptional.isPresent()) {
             this.resource = resourceOptional.get();
             // do it async because activate needs a context

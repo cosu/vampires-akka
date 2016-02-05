@@ -20,15 +20,16 @@ public class Terminator extends UntypedActor {
 
     @Override
     public void onReceive(Object msg) {
+        ActorRef sender = getSender();
         if (msg instanceof ResourceControl.Shutdown) {
-
             refs.forEach(r -> r.tell(PoisonPill.getInstance(), getSelf()));
         } else if (msg instanceof ResourceControl.Up) {
-            refs.add(getSender());
-            getContext().watch(getSender());
+            log.debug("new watch {}", sender);
+            refs.add(sender);
+            getContext().watch(sender);
         } else if (msg instanceof Terminated) {
-            boolean remove = refs.remove(getSender());
-            log.debug("removed {} {}", remove, getSender());
+            boolean remove = refs.remove(sender);
+            log.debug("removed {} {}", remove, sender);
             if (refs.isEmpty()) {
                 log.debug("shutting down system");
                 getContext().system().terminate();

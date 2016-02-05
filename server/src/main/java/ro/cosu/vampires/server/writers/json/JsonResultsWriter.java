@@ -54,7 +54,7 @@ public class JsonResultsWriter implements ResultsWriter {
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
                 .create();
 
-        WebsocketHandler.broadcastMessage("foo", gson.toJson(result));
+//        WebsocketHandler.broadcastMessage("foo", gson.toJson(result));
 
         results.add(result);
     }

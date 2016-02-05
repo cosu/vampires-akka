@@ -28,26 +28,14 @@ public class Server {
 
     public static void main(String[] args) throws Exception {
 
-        runSpark();
+//        runSpark();
 
         final ActorSystem system = ActorSystem.create("ServerSystem");
-
         LoggingAdapter log = Logging.getLogger(system, Server.class);
-
-        log.info("starting actor system");
-
-        ActorRef workActor = system.actorOf(WorkActor.props(), "workActor");
-
-
-        ActorRef resourceManagerActor = system.actorOf(ResourceManagerActor.props(), "resourceManager");
-
-
         ActorRef terminator = system.actorOf(Terminator.props(), "terminator");
-
+        ActorRef workActor = system.actorOf(WorkActor.props(), "workActor");
+        ActorRef resourceManagerActor = system.actorOf(ResourceManagerActor.props(), "resourceManager");
         system.actorOf(DispatchActor.props(workActor), "server");
-
-
-
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override

@@ -26,9 +26,10 @@ public class LocalResource extends AbstractResource{
     @Override
     public void onStart() throws IOException {
 
+        // TODO check somehow that the file exists and then exit
         CommandLine cmd = new CommandLine("/bin/sh");
         cmd.addArgument("-c");
-        cmd.addArgument("nohup " + parameters.command() + " "+ description().id()  + " 2>&1 0</dev/null  &  echo $! ", false);
+        cmd.addArgument("nohup " + parameters.command() + " "+ description().id()  + " 2>&1 0</dev/null  & echo $! ", false);
 
         LOG.debug("local starting {}", cmd);
         execute(cmd);
@@ -45,7 +46,7 @@ public class LocalResource extends AbstractResource{
         int exitCode = 0;
         try {
             LOG.debug("execute {}", cmd.toString());
-            exitCode =executor.execute(cmd);
+            exitCode = executor.execute(cmd);
             LOG.debug("Output {}", collectingLogOutputStream.getLines());
         } catch (IOException e) {
             LOG.debug("{} has failed with error {}: {}", this, exitCode, e);
@@ -57,11 +58,16 @@ public class LocalResource extends AbstractResource{
     @Override
     public void onStop() throws IOException {
         LOG.debug("local stopping");
-        Integer pid = collectingLogOutputStream.getLines().stream().map(Integer::parseInt).findFirst().get();
-        CommandLine cmd = new CommandLine("/bin/sh");
-        cmd.addArgument("-c");
-        cmd.addArgument("kill " + pid, false);
-        execute(cmd);
+        try {
+            Integer pid = collectingLogOutputStream.getLines().stream().map(Integer::parseInt).findFirst().get();
+            CommandLine cmd = new CommandLine("/bin/sh");
+            cmd.addArgument("-c");
+            cmd.addArgument("kill " + pid, false);
+            execute(cmd);
+        }
+        catch (NumberFormatException ex) {
+            LOG.warn("Failed to get pid value. nohup process exited prematurely");
+        }
 
     }
 
