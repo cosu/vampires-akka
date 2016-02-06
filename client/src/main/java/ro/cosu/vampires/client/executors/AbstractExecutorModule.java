@@ -23,7 +23,7 @@ public abstract class AbstractExecutorModule extends AbstractModule {
 
     @Provides
     @Named("Config")
-    Config provideConfig() {
+    private  Config provideConfig() {
         return this.config;
     }
 
@@ -37,7 +37,7 @@ public abstract class AbstractExecutorModule extends AbstractModule {
 
     @Provides
     @Singleton
-    CpuAllocator provideCpuAllocator(@Named("cpuCount")  int cpuCount) {
+    private  CpuAllocator provideCpuAllocator(@Named("cpuCount")  int cpuCount) {
         final int cpuSetSize = config.getInt("cpuSetSize");
 
         LOG.info(" cpuCount: {} countSetSize: {}", cpuCount, cpuSetSize);

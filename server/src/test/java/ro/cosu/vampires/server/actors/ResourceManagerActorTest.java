@@ -1,6 +1,5 @@
 package ro.cosu.vampires.server.actors;
 
-import akka.actor.ActorRef;
 import akka.pattern.Patterns;
 import akka.testkit.TestActorRef;
 import akka.testkit.TestProbe;

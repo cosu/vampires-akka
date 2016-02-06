@@ -89,7 +89,6 @@ public class MonitoringActor extends UntypedActor {
             final Metrics metrics = Metrics.builder().metadata(getHostMetrics()).metrics(interval).build();
             getSender().tell(metrics, getSelf());
 
-
         } else {
             log.error("received unknown type of message");
             unhandled(message);

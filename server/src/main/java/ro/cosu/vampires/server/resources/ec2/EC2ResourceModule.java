@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 public class EC2ResourceModule extends AbstractModule {
-    static final Logger LOG = LoggerFactory.getLogger(EC2ResourceModule.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EC2ResourceModule.class);
 
     @Override
     protected void configure() {
@@ -29,7 +29,8 @@ public class EC2ResourceModule extends AbstractModule {
     }
 
     @Provides
-    Optional<AmazonEC2Client> provideAmazonEc2(@Named("Config") Config config) {
+    private Optional<AmazonEC2Client> provideAmazonEc2(@Named("Config") Config config) {
+
 
         AmazonEC2Client amazonEC2Client = null;
 

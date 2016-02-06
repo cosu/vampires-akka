@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static ro.cosu.vampires.server.actors.ResourceControl.*;
+import static ro.cosu.vampires.server.actors.ResourceControl.Shutdown;
 
 public class ResourceManagerActor extends UntypedActor {
     private final SettingsImpl settings =
@@ -38,7 +39,7 @@ public class ResourceManagerActor extends UntypedActor {
     private void startResources() {
         if (!settings.vampires.hasPath("start")) {
             log.error("no start config found. exiting");
-            getContext().actorSelection("/user/terminator").tell(new ResourceControl.Shutdown(), getSelf());
+            getContext().actorSelection("/user/terminator").tell(new Shutdown(), getSelf());
             return;
         }
         settings.vampires.getConfigList("start").stream().forEach(config ->
@@ -55,7 +56,7 @@ public class ResourceManagerActor extends UntypedActor {
 
     @Override
     public void preStart() {
-        getContext().actorSelection("/user/terminator").tell(new ResourceControl.Up(), getSelf());
+        getContext().actorSelection("/user/terminator").tell(new Up(), getSelf());
         startResources();
     }
 

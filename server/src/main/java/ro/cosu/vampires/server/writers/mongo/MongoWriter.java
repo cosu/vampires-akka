@@ -8,8 +8,8 @@ import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.writers.ResultsWriter;
 
 public class MongoWriter implements ResultsWriter {
-    final Morphia morphia = new Morphia();
-    final Datastore datastore;
+    private Morphia morphia = new Morphia();
+    private final Datastore datastore;
 
     public MongoWriter(){
         morphia.mapPackage("ro.cosu.vampires.server.writers.mongo");

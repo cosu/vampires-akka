@@ -11,11 +11,11 @@ import ro.cosu.vampires.server.util.Ssh;
 import java.util.Optional;
 
 public class SshResourceProvider extends AbstractResourceProvider {
-    static final Logger LOG = LoggerFactory.getLogger(SshResourceProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SshResourceProvider.class);
 
     @Inject
     @Named("Ssh")
-    Ssh ssh;
+    private Ssh ssh;
 
     @Override
     public Optional<Resource> create(Resource.Parameters parameters) {

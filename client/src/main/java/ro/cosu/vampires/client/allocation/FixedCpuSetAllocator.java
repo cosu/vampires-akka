@@ -20,7 +20,7 @@ public class FixedCpuSetAllocator implements CpuAllocator {
     static final Logger LOG = LoggerFactory.getLogger(FixedCpuSetAllocator.class);
     private final int totalCpuCount;
 
-    BlockingDeque<CpuSet> cpuList = Queues.newLinkedBlockingDeque();
+    private BlockingDeque<CpuSet> cpuList = Queues.newLinkedBlockingDeque();
 
 
     public FixedCpuSetAllocator(Builder builder) {

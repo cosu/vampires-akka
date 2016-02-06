@@ -3,6 +3,7 @@ package ro.cosu.vampires.server.resources.ec2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.*;
 import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
 import com.google.common.io.Resources;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
@@ -69,9 +70,16 @@ public class EC2Resource extends AbstractResource {
 
         describeRequest.withInstanceIds(instanceId);
 
-        DescribeInstancesResult describeInstanceResult = amazonEC2Client.describeInstances(describeRequest);
 
-        String publicDnsName = describeInstanceResult.getReservations().get(0).getInstances().get(0).getPublicDnsName();
+        String publicDnsName = "";
+        int tries = 0;
+        while (Strings.isNullOrEmpty(publicDnsName) && tries < 10){
+
+            DescribeInstancesResult describeInstanceResult = amazonEC2Client.describeInstances(describeRequest);
+            publicDnsName = describeInstanceResult.getReservations().get(0).getInstances().get(0).getPublicDnsName();
+            tries++;
+            Thread.sleep(2000);
+        }
         LOG.info("instance {} : {}", instanceId, publicDnsName);
 
     }

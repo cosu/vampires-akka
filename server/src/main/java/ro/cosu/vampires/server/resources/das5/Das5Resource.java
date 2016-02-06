@@ -9,7 +9,7 @@ import ro.cosu.vampires.server.util.Ssh;
 import java.io.IOException;
 
 public class Das5Resource extends AbstractResource {
-    static final Logger LOG = LoggerFactory.getLogger(Das5Resource.class);
+    private  static final Logger LOG = LoggerFactory.getLogger(Das5Resource.class);
 
     private final Das5ResourceParameters parameters;
     private String commandOutput;

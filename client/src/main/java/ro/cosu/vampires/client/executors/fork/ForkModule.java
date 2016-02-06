@@ -15,7 +15,7 @@ public class ForkModule extends AbstractModule{
     }
 
     @Provides
-    org.apache.commons.exec.Executor provideExecutor(){
+    private  org.apache.commons.exec.Executor provideExecutor(){
         return  new DefaultExecutor();
     }
 
@@ -23,7 +23,7 @@ public class ForkModule extends AbstractModule{
 
     @Provides
     @Named("cpuCount")
-    int provideCpuCount(){
+    private  int provideCpuCount(){
         return HostInfo.getAvailableProcs();
     }
 }

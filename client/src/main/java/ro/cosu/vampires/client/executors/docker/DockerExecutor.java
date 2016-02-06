@@ -33,18 +33,18 @@ public class DockerExecutor implements Executor {
     static final Logger LOG = LoggerFactory.getLogger(DockerExecutor.class);
 
     @Inject
-    DockerClient dockerClient;
+    private  DockerClient dockerClient;
 
 
     @Named("Config")
     @Inject
-    Config config;
+    private  Config config;
 
     @Inject
-    CpuAllocator cpuAllocator;
+    private  CpuAllocator cpuAllocator;
 
     @Inject
-    ExecutorMetricsCollector executorMetricsCollector;
+    private  ExecutorMetricsCollector executorMetricsCollector;
 
     private String containerId;
 
@@ -130,7 +130,7 @@ public class DockerExecutor implements Executor {
         }
         final ExecInfo execInfo = builder.build();
 
-        LOG.debug("{}", execInfo);
+        LOG.debug("ExecInfo: {}", execInfo);
         return  execInfo;
     }
 

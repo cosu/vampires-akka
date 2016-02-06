@@ -15,7 +15,7 @@ public class Das5ResourceProvider extends AbstractResourceProvider{
 
     @Inject
     @Named("DASSSH")
-    Ssh ssh;
+    private Ssh ssh;
 
     @Override
     public Optional<Resource> create(Resource.Parameters parameters) {

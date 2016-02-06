@@ -23,15 +23,15 @@ import static org.junit.Assert.assertThat;
 
 public class MonitoringActorTest {
 
-    static ActorSystem system;
+    private  static ActorSystem system;
 
     @BeforeClass
-    public static void setup() {
+    public static void setUp() {
         system = ActorSystem.create();
     }
 
     @AfterClass
-    public static void teardown() {
+    public static void tearDown() {
         JavaTestKit.shutdownActorSystem(system);
         system = null;
     }
