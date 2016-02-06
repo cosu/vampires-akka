@@ -55,6 +55,7 @@ public class DockerModule extends AbstractModule{
                 .withMaxTotalConnections(100)
                 .withMaxPerRouteConnections(10);
 
+
         DockerClientConfig dockerClientConfig = DockerClientConfig.createDefaultConfigBuilder()
                 .withUri(uri)
 //                .withDockerCertPath(certPath)
@@ -63,7 +64,7 @@ public class DockerModule extends AbstractModule{
 
         return DockerClientBuilder
                 .getInstance(dockerClientConfig)
-                .withDockerCmdExecFactory(dockerCmdExecFactory)
+//                .withDockerCmdExecFactory(dockerCmdExecFactory)
                 .build();
     }
 
