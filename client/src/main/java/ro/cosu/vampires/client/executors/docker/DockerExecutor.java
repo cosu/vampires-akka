@@ -82,10 +82,9 @@ public class DockerExecutor implements Executor {
 
         executorMetricsCollector.startMonitoring(containerId);
 
-        LocalDateTime stop = LocalDateTime.now();
-
         int exitCode = dockerClient.waitContainerCmd(containerId).exec();
 
+        LocalDateTime stop = LocalDateTime.now();
         String output = "";
         try {
             output = dockerClient.logContainerCmd(containerId)
