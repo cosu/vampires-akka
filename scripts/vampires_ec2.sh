@@ -6,4 +6,4 @@ export SERVER_IP=$1
 export HOME=/home/ubuntu
 shift
 
-/home/ubuntu/vampires-akka/client/build/install/client/bin/client "$@"
+/home/ubuntu/vampires-akka/client/build/install/client/bin/client -Dkamon.sigar.folder=/tmp "$@"
