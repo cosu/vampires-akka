@@ -43,13 +43,10 @@ public class DockerModule extends AbstractModule{
     }
 
     @Provides
-    @Singleton
     DockerClient provideDockerClient(@Named("Config") Config config) {
         Preconditions.checkArgument(config.hasPath("docker.uri"), "missing docker uri on config");
-//        Preconditions.checkArgument(config.hasPath("docker.certPath"), "missing docker certpath");
 
         String uri = config.getString("docker.uri");
-//        String certPath = config.getString("docker.certPath");
 
         DockerCmdExecFactoryImpl dockerCmdExecFactory = new DockerCmdExecFactoryImpl()
                 .withReadTimeout(10000)
