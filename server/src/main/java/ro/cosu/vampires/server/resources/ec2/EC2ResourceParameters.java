@@ -25,7 +25,6 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
         return new AutoValue_EC2ResourceParameters.Builder().type(Resource.Type.EC2);
     }
 
-
     @AutoValue.Builder
     public abstract static class Builder implements Resource.Parameters.Builder {
 
@@ -41,10 +40,7 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
 
         public abstract Builder securityGroup(String s);
 
-        ;
-
         public abstract Builder type(Resource.Type type);
-
 
         public Builder fromConfig(Config config) {
 

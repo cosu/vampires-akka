@@ -17,7 +17,7 @@ public class EC2Resource extends AbstractResource {
 
     private final AmazonEC2Client amazonEC2Client;
     private final EC2ResourceParameters parameters;
-    private  String instanceId;
+    private String instanceId;
 
     public EC2Resource(EC2ResourceParameters parameters, AmazonEC2Client amazonEC2Client) {
         super(parameters);
@@ -33,12 +33,12 @@ public class EC2Resource extends AbstractResource {
 
         amazonEC2Client.setEndpoint(String.format("ec2.%1s.amazonaws.com", parameters.region()));
 
-
         URL cloudInitResource = Resources.getResource("cloud_init.yaml");
         String cloudInit = Resources.toString(cloudInitResource, Charsets.UTF_8);
 
-        cloudInit = cloudInit.replace("$command", parameters.command());
-        LOG.debug("command {}", parameters.command() + " " + description().id() );
+        String command = parameters.command() + " " + description().id();
+        LOG.debug("command {}", command);
+        cloudInit = cloudInit.replace("$command", command);
 
         RunInstancesRequest request = runInstancesRequest.withImageId(parameters.imageId())
                 .withInstanceType(parameters.instanceType())
@@ -47,7 +47,6 @@ public class EC2Resource extends AbstractResource {
                 .withKeyName(parameters.keyName())
                 .withSecurityGroups(parameters.securityGroup())
                 .withUserData(Base64.encodeBase64String(cloudInit.getBytes()));
-
 
         RunInstancesResult result;
 
@@ -73,7 +72,7 @@ public class EC2Resource extends AbstractResource {
         DescribeInstancesResult describeInstanceResult = amazonEC2Client.describeInstances(describeRequest);
 
         String publicDnsName = describeInstanceResult.getReservations().get(0).getInstances().get(0).getPublicDnsName();
-        LOG.info("instance {} : {}",instanceId, publicDnsName );
+        LOG.info("instance {} : {}", instanceId, publicDnsName);
 
     }
 

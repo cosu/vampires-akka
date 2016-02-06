@@ -14,4 +14,9 @@ public abstract class ResourceInfo {
         return new AutoValue_ResourceInfo(ResourceDescription.empty(type), Resource.Status.UNKNOWN);
     }
 
+    public static ResourceInfo failed(Resource.Type type){
+        return new AutoValue_ResourceInfo(ResourceDescription.empty(type), Resource.Status.FAILED);
+    }
+
+
 }

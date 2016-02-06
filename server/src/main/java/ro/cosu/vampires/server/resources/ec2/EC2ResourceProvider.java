@@ -15,9 +15,6 @@ public class EC2ResourceProvider extends AbstractResourceProvider {
     @Inject
     Optional<AmazonEC2Client> amazonEC2Client;
 
-
-
-
     @Override
     public Optional<Resource> create(Resource.Parameters parameters) {
 

@@ -34,13 +34,6 @@ public class ResourceManagerIT {
     }
 
     @Test
-    public void testCreateResourceDescription() throws  Exception {
-        ResourceDescription test = ResourceDescription.create("test", Resource.Type.LOCAL);
-        assertThat(test.id(), is(equalTo("test")));
-        assertThat(test.provider(), is(equalTo(Resource.Type.LOCAL)));
-    }
-
-    @Test
     @Ignore
     public void testCreateLocalResource() throws  Exception  {
 

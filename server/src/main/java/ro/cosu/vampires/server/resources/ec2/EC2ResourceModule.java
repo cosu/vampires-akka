@@ -33,16 +33,15 @@ public class EC2ResourceModule extends AbstractModule {
 
         AmazonEC2Client amazonEC2Client = null;
 
-
         if (config.hasPath("resources.ec2.credentialsFile")) {
             String credentialsFile = config.getString("resources.ec2.credentialsFile");
-            LOG.info("reading credentials  AWS from {}", credentialsFile);
+            LOG.debug("reading credentials  AWS from {}", credentialsFile);
             try {
                 PropertiesCredentials credentials = new PropertiesCredentials(new FileInputStream(credentialsFile));
                 amazonEC2Client = new AmazonEC2Client(credentials);
             } catch (IOException e) {
                 if (e instanceof FileNotFoundException){
-                    LOG.error("failed to create amazon client: {}", e.getMessage());
+                    LOG.error("could not find ec2 credentials file: " + credentialsFile);
                 } else {
                     LOG.error("failed to create amazon client", e);
                 }

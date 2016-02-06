@@ -77,20 +77,24 @@ public class ResourceActor extends UntypedActorWithStash {
 
     private Void signalFailed(Throwable throwable, ActorRef sender) {
         sendFailed(sender);
-        log.error(throwable,"Actor failed to start resource with reason:");
+        log.error(throwable,"Actor failed to start resource");
         return null;
     }
 
     private Void fail() {
-        log.debug("actor failed to interact with resource ");
+        log.error("actor failed to interact with resource ");
+        sendInfo();
         getContext().stop(getSelf());
         return null;
     }
 
-
-    private void activate() {
+    private void sendInfo(){
         sendResourceInfo(getContext().parent());
         sendResourceInfo(getSender());
+    }
+
+    private void activate() {
+        sendInfo();
         unstashAll();
         getContext().become(active);
     }
@@ -123,7 +127,7 @@ public class ResourceActor extends UntypedActorWithStash {
     private void sendResourceInfo(ActorRef toActor) {
         ResourceInfo info = Optional.ofNullable(this.resource)
                     .map(resource -> resource.info())
-                    .orElse(ResourceInfo.unknown(resourceProvider.getType()));
+                    .orElse(ResourceInfo.failed(resourceProvider.getType()));
         toActor.tell(info, getSelf());
     }
 }
