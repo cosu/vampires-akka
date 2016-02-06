@@ -12,19 +12,14 @@ public abstract class AbstractResource implements Resource {
     static final Logger LOG = LoggerFactory.getLogger(AbstractResource.class);
 
     private final ResourceDescription description;
-    private Resource.Status status = Status.UNKNOWN;
+    private Resource.Status status;
 
     public AbstractResource(Resource.Parameters parameters) {
-
+        setStatus(Status.SLEEPING);
         this.description = ResourceDescription.create(generateId(), parameters.type());
-
-        LOG.debug("{}", description);
-        LOG.debug("{}", parameters);
-        setStatus(Status.CREATING);
-
-
+        LOG.debug("resource parameters {}", parameters);
+        LOG.debug("creating resource with description {}", description);
     }
-
 
     private String generateId() {
         return UUID.randomUUID().toString();

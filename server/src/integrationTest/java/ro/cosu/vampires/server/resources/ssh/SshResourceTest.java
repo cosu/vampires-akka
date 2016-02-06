@@ -26,7 +26,7 @@ public class SshResourceTest {
         Resource resource = sshProvider.create(parameters).get();
 
 
-        assertThat(resource.status(), equalTo(Resource.Status.CREATING));
+        assertThat(resource.status(), equalTo(Resource.Status.SLEEPING));
 
     }
 

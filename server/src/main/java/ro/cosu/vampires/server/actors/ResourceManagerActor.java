@@ -45,7 +45,7 @@ public class ResourceManagerActor extends UntypedActor {
         {
             String type = config.getString("type");
             int count = config.getInt("count");
-            final Resource.Type provider = Resource.Type.valueOf(config.getString("type").toUpperCase());
+            final Resource.Type provider = Resource.Type.valueOf(config.getString("provider").toUpperCase());
             log.info("starting {} x  {} from type {}", count, type, provider);
 
             IntStream.rangeClosed(1, count).forEach(i ->

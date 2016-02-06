@@ -50,8 +50,8 @@ public class ResourceActor extends UntypedActorWithStash {
     }
 
     private void createResource(ResourceControl.Create create, ActorRef sender) {
-        if (resource != null && resource.status().equals(Resource.Status.RUNNING)) {
-            log.warning("atempting to start an already started resource. doing nothing");
+        if (resource != null && !resource.status().equals(Resource.Status.SLEEPING)) {
+            log.warning("Attempting to start an already started resource. doing nothing");
             return;
         }
 
@@ -67,13 +67,17 @@ public class ResourceActor extends UntypedActorWithStash {
                         getSelf().tell(started.status(), sender);
                     }).exceptionally(exception -> signalFailed(exception, sender));
         } else {
-           getSelf().tell(Resource.Status.FAILED, sender);
+           sendFailed(sender);
         }
     }
 
-    private Void signalFailed(Throwable throwable, ActorRef sender) {
+    private void sendFailed(ActorRef sender) {
         getSelf().tell(Resource.Status.FAILED, sender);
-        log.error("Actor failed to start resource {}", throwable);
+    }
+
+    private Void signalFailed(Throwable throwable, ActorRef sender) {
+        sendFailed(sender);
+        log.error(throwable,"Actor failed to start resource with reason:");
         return null;
     }
 
@@ -97,7 +101,7 @@ public class ResourceActor extends UntypedActorWithStash {
             try {
                 resource.stop().get();
             } catch (InterruptedException | ExecutionException e) {
-                log.error("failed to stop resource {}", e);
+                log.error(e, "failed to stop resource");
             }
     }
 

@@ -16,13 +16,13 @@ public interface Resource {
     }
 
     enum Status {
-        CREATING,
+        SLEEPING,
         STARTING,
         RUNNING,
         FAILED,
         STOPPING,
         STOPPED,
-        UNKNOWN
+        UNKNOWN,
     }
 
     enum Type {
