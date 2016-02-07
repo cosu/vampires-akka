@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-IP=`curl http://ip.cosu.ro/?ip`
+IP=`curl http://ip.cosu.ro/?ip |  tr -d '[[:space:]]'`
 export BIND_HOST=${IP}
 export HOST="0.0.0.0"
 export SERVER_OPTS="-Dconfig.file=$1"
