@@ -9,7 +9,7 @@ import java.util.concurrent.CompletionException;
 
 public abstract class AbstractResource implements Resource {
 
-    static final Logger LOG = LoggerFactory.getLogger(AbstractResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractResource.class);
 
     private final ResourceDescription description;
     private Resource.Status status;

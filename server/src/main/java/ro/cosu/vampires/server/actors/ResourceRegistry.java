@@ -3,56 +3,52 @@ package ro.cosu.vampires.server.actors;
 import akka.actor.ActorRef;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import ro.cosu.vampires.server.resources.ResourceDescription;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.workload.ClientInfo;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 public class ResourceRegistry {
-    protected List<ActorRef> resources = new LinkedList<>();
-    protected BiMap<ActorRef, String> resourceActorsToClientIds = HashBiMap.create();
-    protected BiMap<String, ResourceDescription> clientIdsToDescriptions = HashBiMap.create();
-    protected BiMap<ClientInfo, ActorRef> registeredClients = HashBiMap.create();
+    /**
+     * ResourceActors - local akka actors
+     * clients - client remote akka actors
+     * ClientIds - initialized at creation - shared by both remote and resource
+     *
+     */
+    protected List<ActorRef> resourceActors = new LinkedList<>();
+    protected BiMap<String, ActorRef> clientIdsToResourceActors = HashBiMap.create();
+    protected BiMap<String, ActorRef> clientIdsToClientActors = HashBiMap.create();
 
-
-    void addResource(ActorRef resource) {
-        resources.add(resource);
+    public void addResourceActor(ActorRef resource) {
+        resourceActors.add(resource);
     }
 
-    void registerClient(ActorRef sender, ClientInfo register) {
-        registeredClients.put(register, sender);
-    }
-
-    public BiMap<ClientInfo, ActorRef> getRegisteredClients() {
-        return registeredClients;
+    public BiMap<String, ActorRef> getRegisteredClients() {
+        return clientIdsToClientActors;
     }
 
     public ActorRef lookupResourceOfClient(String clientId) {
-        return resourceActorsToClientIds.inverse().get(clientId);
+        return clientIdsToResourceActors.get(clientId);
     }
 
-
-    public List<ActorRef> getResources() {
-        return resources;
+    public List<ActorRef> getResourceActors() {
+        return resourceActors;
     }
 
-    public void registerResource(ActorRef sender, ResourceInfo resourceInfo) {
-        resourceActorsToClientIds.put(sender, resourceInfo.description().id());
-        clientIdsToDescriptions.put(resourceInfo.description().id(), resourceInfo.description());
+    public void registerResource(ActorRef localResourceActor, ResourceInfo resourceInfo) {
+        String clientId = resourceInfo.description().id();
+        clientIdsToResourceActors.put(clientId, localResourceActor);
     }
 
-    public void removeResource(ActorRef sender) {
-        final String clientId = resourceActorsToClientIds.get(sender);
-        resourceActorsToClientIds.remove(sender);
-        clientIdsToDescriptions.remove(clientId);
-        resources.remove(sender);
+    public void registerClient(ActorRef clientActor, ClientInfo clientInfo) {
+        clientIdsToClientActors.put(clientInfo.id(), clientActor);
+    }
 
-        final Optional<ClientInfo> first = registeredClients.keySet().stream().filter(clientInfo1 -> clientInfo1
-                .id().equals(clientId)).findFirst();
-        first.ifPresent(clientInfo -> registeredClients.remove(clientInfo));
-
+    public void removeResource(ActorRef resourceActor) {
+        String clientId = clientIdsToResourceActors.inverse().get(resourceActor);
+        clientIdsToClientActors.remove(clientId);
+        clientIdsToResourceActors.remove(clientId);
+        resourceActors.remove(resourceActor);
     }
 }

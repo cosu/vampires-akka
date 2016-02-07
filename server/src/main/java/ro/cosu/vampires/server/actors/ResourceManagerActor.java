@@ -61,20 +61,18 @@ public class ResourceManagerActor extends UntypedActor {
     }
 
     private void createResource(Create create) {
-        log.info("create resource {}", create);
+        log.debug("create resource {}", create.type);
 
         final Optional<ResourceProvider> provider = rm.getProvider(create.type);
         if (provider.isPresent()) {
-            ActorRef resource = getContext().actorOf(ResourceActor.props(provider.get()));
-            getContext().watch(resource);
-            resourceRegistry.addResource(resource);
-            resource.forward(create, getContext());
-
+            ActorRef resourceActor = getContext().actorOf(ResourceActor.props(provider.get()));
+            getContext().watch(resourceActor);
+            resourceRegistry.addResourceActor(resourceActor);
+            resourceActor.forward(create, getContext());
         } else {
             log.error("Error getting {} type resource provider.", create.type);
         }
     }
-
 
     private void bootstrapResource(ResourceProvider resourceProvider, Bootstrap bootstrap) {
         Create create = new Create(
@@ -82,7 +80,6 @@ public class ResourceManagerActor extends UntypedActor {
 
         createResource(create);
     }
-
 
     @Override
     public void onReceive(Object message) throws Exception {
@@ -104,6 +101,7 @@ public class ResourceManagerActor extends UntypedActor {
             registerResource(resourceInfo, sender);
         } else if (message instanceof ClientInfo) {
             final ClientInfo clientInfo = (ClientInfo) message;
+
             registerClient(clientInfo);
         } else if (message instanceof Terminated) {
             terminatedResource(sender);
@@ -120,19 +118,21 @@ public class ResourceManagerActor extends UntypedActor {
     private void terminatedResource(ActorRef sender) {
         log.info("terminated {}", sender);
         resourceRegistry.removeResource(sender);
-        if (resourceRegistry.getResources().isEmpty())
+        if (resourceRegistry.getResourceActors().isEmpty())
             getContext().stop(getSelf());
     }
 
     private void registerClient(ClientInfo clientInfo) {
+        getContext().watch(getSender());
+        log.info("watch {}" , getSender());
         resourceRegistry.registerClient(getSender(), clientInfo);
         resourceRegistry.lookupResourceOfClient(clientInfo.id()).forward(clientInfo, getContext());
         logCurrentClients();
     }
 
     private void logCurrentClients() {
-        log.info("clients {} / resources {} ", resourceRegistry.getRegisteredClients().size(), resourceRegistry
-                .getResources().size());
+        log.info("clients {} / resourceActors {} ", resourceRegistry.getRegisteredClients().size(), resourceRegistry
+                .getResourceActors().size());
     }
 
     private void registerResource(ResourceInfo resourceInfo, ActorRef sender) {
@@ -145,7 +145,7 @@ public class ResourceManagerActor extends UntypedActor {
     }
 
     private void shutdownResources() {
-        resourceRegistry.getResources().forEach(r -> r.forward(new Shutdown(), getContext()));
+        resourceRegistry.getResourceActors().forEach(r -> r.forward(new Shutdown(), getContext()));
     }
 
 

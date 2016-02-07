@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 public class WorkActor extends UntypedActor{
 
-    private int MAX_JOB_LENGTH = 5;
+    private int MAX_JOB_LENGTH = 30;
     private final SettingsImpl settings = Settings.SettingsProvider.get(getContext().system());
 
     private final ConcurrentLinkedQueue<String> workQueue  = new ConcurrentLinkedQueue<>();
@@ -26,12 +26,15 @@ public class WorkActor extends UntypedActor{
     private ActorRef resultActor;
 
 
-    private Cache<String, Computation> pendingJobs = CacheBuilder.newBuilder().expireAfterWrite(MAX_JOB_LENGTH, TimeUnit.MINUTES)
+    private Cache<String, Job> pendingJobs = CacheBuilder.newBuilder().expireAfterWrite(MAX_JOB_LENGTH, TimeUnit.SECONDS)
     .removalListener(notification -> {
+        if (!notification.wasEvicted()){
+            return;
+        }
         if (notification.getKey() != null && notification.getKey() instanceof String) {
-            Computation computation = (Computation) notification.getValue();
-            log.warning("Job {} failed to return. Re adding to queue", computation);
-            workQueue.add(computation.command());
+            Job job = (Job) notification.getValue();
+            log.warning("Job {}: {} failed to return. Re adding to queue", job.id() , job.computation().command());
+            workQueue.add(job.computation().command());
         }
     }).build();
 
@@ -55,12 +58,11 @@ public class WorkActor extends UntypedActor{
     public void onReceive(Object message) throws Exception {
         if (message instanceof Job) {
             Job job = (Job) message;
-            resultActor.forward(message, getContext());
-            log.info("Work result from {}. pending {} ", getSender(), pendingJobs.size());
-            pendingJobs.invalidate(job.computation().id());
+            resultActor.forward(job, getContext());
+            log.info("Work result from {}. pending {} ", job.from(), pendingJobs.size());
+            pendingJobs.invalidate(job.id());
             Object work = this.getNewWorkload(Optional.ofNullable(workQueue.poll()));
             getSender().tell(work, getSelf());
-
         } else if (message instanceof ResourceControl.Shutdown){
             log.info("shutting down");
             resultActor.forward(message, getContext());
@@ -72,15 +74,17 @@ public class WorkActor extends UntypedActor{
     }
 
     private Object getNewWorkload(Optional<String> work) {
+        Job job = Job.backoff();
         if (work.isPresent()) {
             Computation computation = Computation.builder().command(work.get()).build();
             log.debug("computation {}", computation);
-            return Job.empty().withComputation(computation);
+            job = Job.empty().withComputation(computation);
+            pendingJobs.put(job.id(), job);
         }
         else {
-            log.debug("Empty {}", getSender());
-            return Job.waitForever();
+            log.debug("Backoff: {} ", getSender());
         }
+        return job;
     }
 
 }

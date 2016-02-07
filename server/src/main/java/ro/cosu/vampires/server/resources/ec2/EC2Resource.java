@@ -29,8 +29,7 @@ public class EC2Resource extends AbstractResource {
     @Override
     public void onStart() throws Exception {
 
-        RunInstancesRequest runInstancesRequest =
-                new RunInstancesRequest();
+        RunInstancesRequest runInstancesRequest = new RunInstancesRequest();
 
         amazonEC2Client.setEndpoint(String.format("ec2.%1s.amazonaws.com", parameters.region()));
 
@@ -78,7 +77,7 @@ public class EC2Resource extends AbstractResource {
             DescribeInstancesResult describeInstanceResult = amazonEC2Client.describeInstances(describeRequest);
             publicDnsName = describeInstanceResult.getReservations().get(0).getInstances().get(0).getPublicDnsName();
             tries++;
-            Thread.sleep(2000);
+            Thread.sleep(3000);
         }
         LOG.info("instance {} : {}", instanceId, publicDnsName);
 

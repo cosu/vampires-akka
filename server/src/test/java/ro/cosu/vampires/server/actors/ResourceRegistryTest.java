@@ -24,8 +24,8 @@ public class ResourceRegistryTest extends AbstractActorTest {
     @Test
     public void testAddResource() throws Exception {
         final ResourceRegistry resourceRegistry = new ResourceRegistry();
-        resourceRegistry.addResource(createActorRef());
-        assertThat(resourceRegistry.getResources().size(), is(1));
+        resourceRegistry.addResourceActor(createActorRef());
+        assertThat(resourceRegistry.getResourceActors().size(), is(1));
 
     }
 
@@ -33,7 +33,7 @@ public class ResourceRegistryTest extends AbstractActorTest {
     public void testRegisterClient() throws Exception {
         final ResourceRegistry resourceRegistry = new ResourceRegistry();
         final ActorRef actorRef = createActorRef();
-        resourceRegistry.addResource(actorRef);
+        resourceRegistry.addResourceActor(actorRef);
 
         resourceRegistry.registerClient(actorRef, ClientInfo.builder().executors(Maps.newHashMap()).id
                 ("foo").metrics(Metrics.empty()).build());
@@ -46,7 +46,7 @@ public class ResourceRegistryTest extends AbstractActorTest {
 
         final ResourceRegistry resourceRegistry = new ResourceRegistry();
         final ActorRef actorRef = createActorRef();
-        resourceRegistry.addResource(actorRef);
+        resourceRegistry.addResourceActor(actorRef);
 
         final ResourceInfo resourceInfo = ResourceInfo.create(ResourceDescription.create("foo", Resource.Type.MOCK),
                 Resource.Status.RUNNING);
@@ -64,7 +64,7 @@ public class ResourceRegistryTest extends AbstractActorTest {
     public void testRegisterResource() throws Exception {
         final ResourceRegistry resourceRegistry = new ResourceRegistry();
         final ActorRef actorRef = createActorRef();
-        resourceRegistry.addResource(actorRef);
+        resourceRegistry.addResourceActor(actorRef);
 
         final ResourceInfo resourceInfo = ResourceInfo.create(ResourceDescription.create("foo", Resource.Type.MOCK),
                 Resource.Status.RUNNING);
@@ -79,8 +79,8 @@ public class ResourceRegistryTest extends AbstractActorTest {
     public void testRemoveResource() throws Exception {
         final ResourceRegistry resourceRegistry = new ResourceRegistry();
         final ActorRef actorRef = createActorRef();
-        resourceRegistry.addResource(actorRef);
+        resourceRegistry.addResourceActor(actorRef);
         resourceRegistry.removeResource(actorRef);
-        assertThat(resourceRegistry.getResources().size(), is(0));
+        assertThat(resourceRegistry.getResourceActors().size(), is(0));
     }
 }

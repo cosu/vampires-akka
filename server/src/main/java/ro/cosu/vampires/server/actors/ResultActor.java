@@ -24,14 +24,12 @@ public class ResultActor extends UntypedActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     private List<Job> results = new LinkedList<>();
-    private List<ClientInfo> clients = new LinkedList<>();
     List<ResultsWriter> writers;
 
-    final SettingsImpl settings =
+    private final SettingsImpl settings =
             Settings.SettingsProvider.get(getContext().system());
 
-    final LocalDateTime startTime = LocalDateTime.now();
-
+    private final LocalDateTime startTime = LocalDateTime.now();
 
     public static Props props(int numberOfResults) {
         return Props.create(ResultActor.class, numberOfResults);
@@ -65,9 +63,7 @@ public class ResultActor extends UntypedActor {
                 log.info("got result of {} . received {}/{}", job.computation().command(), results.size(),
                         numberOfResults);
                 log.debug("result {}", job.result());
-
                 writers.forEach(r -> r.addResult(job));
-
             }
 
             //this should be a predicate
@@ -77,8 +73,8 @@ public class ResultActor extends UntypedActor {
             }
         }
         else if (message instanceof ClientInfo) {
-            clients.add((ClientInfo) message);
-            writers.forEach(r -> r.addClient((ClientInfo) message));
+            ClientInfo clientInfo = (ClientInfo) message;
+            writers.forEach(r -> r.addClient(clientInfo));
         }
         else if (message instanceof ResourceControl.Shutdown) {
             shutdown();
@@ -92,7 +88,6 @@ public class ResultActor extends UntypedActor {
         log.info("shutting down");
         writers.forEach(ResultsWriter::close);
         // init shutdown
-
 
         getContext().actorSelection("/user/terminator").tell(new ResourceControl.Shutdown(), getSelf());
         getContext().stop(getSelf());
@@ -108,5 +103,4 @@ public class ResultActor extends UntypedActor {
                 absSeconds % 60);
         return seconds < 0 ? "-" + positive : positive;
     }
-
 }
