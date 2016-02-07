@@ -16,41 +16,44 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
-public class WorkActor extends UntypedActor{
+public class WorkActor extends UntypedActor {
 
     private int MAX_JOB_LENGTH = 30;
     private final SettingsImpl settings = Settings.SettingsProvider.get(getContext().system());
 
-    private final ConcurrentLinkedQueue<String> workQueue  = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<String> workQueue = new ConcurrentLinkedQueue<>();
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private ActorRef resultActor;
 
 
-    private Cache<String, Job> pendingJobs = CacheBuilder.newBuilder().expireAfterWrite(MAX_JOB_LENGTH, TimeUnit.SECONDS)
-    .removalListener(notification -> {
-        if (!notification.wasEvicted()){
-            return;
-        }
-        if (notification.getKey() != null && notification.getKey() instanceof String) {
-            Job job = (Job) notification.getValue();
-            log.warning("Job {}: {} failed to return. Re adding to queue", job.id() , job.computation().command());
-            workQueue.add(job.computation().command());
-        }
-    }).build();
+    private Cache<String, Job> pendingJobs;
 
-    public static Props props(){
+    public static Props props() {
         return Props.create(WorkActor.class);
     }
 
     @Override
-    public  void preStart() {
+    public void preStart() {
+        int maxJobSeconds = settings.getMaxJobSeconds();
+        pendingJobs = CacheBuilder.newBuilder().expireAfterWrite(maxJobSeconds, TimeUnit.SECONDS)
+                .removalListener(notification -> {
+                    if (!notification.wasEvicted()) {
+                        return;
+                    }
+                    if (notification.getKey() != null && notification.getValue() != null
+                            && notification.getKey() instanceof String) {
+                        Job job = (Job) notification.getValue();
+                        log.warning("Job {}: {} failed to return. Re adding to queue", job.id(), job.computation().command());
+                        workQueue.add(job.computation().command());
+                    }
+                }).build();
         initq();
         resultActor = getContext().actorOf(ResultActor.props(workQueue.size()), "resultActor");
 
     }
 
-    private void initq (){
+    private void initq() {
         log.info("adding work init");
         settings.getWorkload().stream().forEach(workQueue::add);
     }
@@ -64,12 +67,12 @@ public class WorkActor extends UntypedActor{
             pendingJobs.invalidate(job.id());
             Object work = this.getNewWorkload(Optional.ofNullable(workQueue.poll()));
             getSender().tell(work, getSelf());
-        } else if (message instanceof ResourceControl.Shutdown){
+        } else if (message instanceof ResourceControl.Shutdown) {
             log.info("shutting down");
             resultActor.forward(message, getContext());
             getContext().stop(getSelf());
         } else {
-            log.warning("unhandled message from {}", getSender() );
+            log.warning("unhandled message from {}", getSender());
             unhandled(message);
         }
     }
@@ -81,8 +84,7 @@ public class WorkActor extends UntypedActor{
             log.debug("computation {}", computation);
             job = Job.empty().withComputation(computation);
             pendingJobs.put(job.id(), job);
-        }
-        else {
+        } else {
             log.debug("Backoff: {} ", getSender());
         }
         return job;
