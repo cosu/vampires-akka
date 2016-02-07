@@ -74,6 +74,11 @@ public abstract class AbstractResource implements Resource {
 
 
     @Override
+    public void connected(){
+        setStatus(Status.CONNECTED);
+    }
+
+    @Override
     public ResourceDescription description() {
         return description;
     }

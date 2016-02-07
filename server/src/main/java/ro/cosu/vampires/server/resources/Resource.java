@@ -6,6 +6,8 @@ import java.util.concurrent.CompletableFuture;
 
 public interface Resource {
 
+    void connected();
+
     interface  Parameters{
         Type type();
         String command();
@@ -22,7 +24,7 @@ public interface Resource {
         FAILED,
         STOPPING,
         STOPPED,
-        UNKNOWN,
+        UNKNOWN, CONNECTED,
     }
 
     enum Type {

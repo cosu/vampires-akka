@@ -32,7 +32,7 @@ public class ClientActorTest {
     @Test
     public void testClientActor() throws Exception {
 
-        TestActorRef<MonitoringActor> monitor = TestActorRef.create(system, MonitoringActor
+        TestActorRef.create(system, MonitoringActor
                 .props(MonitoringManager.getMetricRegistry()), "monitor");
 
         TestActorRef<ClientActor> client = TestActorRef.create(system, ClientActor.props("test", "client1"), "client1");

@@ -22,7 +22,6 @@ public class DockerModule extends AbstractModule{
     static final Logger LOG = LoggerFactory.getLogger(DockerModule.class);
     @Override
     protected void configure() {
-        
         bind(Executor.class).to(DockerExecutor.class);
 
         bind(ExecutorMetricsCollector.class).to(DockerExecutorMetricsCollector.class);
@@ -45,27 +44,22 @@ public class DockerModule extends AbstractModule{
     @Provides
     DockerClient provideDockerClient(@Named("Config") Config config) {
         Preconditions.checkArgument(config.hasPath("docker.uri"), "missing docker uri on config");
-
         String uri = config.getString("docker.uri");
 
-        DockerCmdExecFactoryImpl dockerCmdExecFactory = new DockerCmdExecFactoryImpl()
-                .withReadTimeout(10000)
-                .withConnectTimeout(2000)
-                .withMaxTotalConnections(100)
-                .withMaxPerRouteConnections(10);
-
+//        DockerCmdExecFactoryImpl dockerCmdExecFactory = new DockerCmdExecFactoryImpl()
+//                .withReadTimeout(10000)
+//                .withConnectTimeout(2000)
+//                .withMaxTotalConnections(100)
+//                .withMaxPerRouteConnections(10);
 
         DockerClientConfig dockerClientConfig = DockerClientConfig.createDefaultConfigBuilder()
                 .withUri(uri)
 //                .withDockerCertPath(certPath)
                 .build();
 
-
         return DockerClientBuilder
                 .getInstance(dockerClientConfig)
 //                .withDockerCmdExecFactory(dockerCmdExecFactory)
                 .build();
     }
-
-
 }

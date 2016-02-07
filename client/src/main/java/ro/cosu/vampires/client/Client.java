@@ -24,33 +24,21 @@ public class Client {
         SLF4JBridgeHandler.install();
     }
 
-
     public static void main(String[] args) throws Exception {
-
         if (args.length != 1) {
             throw  new IllegalArgumentException("missing client id");
         }
-
 
         String clientId = args[0];
         ActorSystem system = ActorSystem.create("ClientSystem");
 
         String host = system.settings().config().getString("vampires.server_ip");
-
         final String serverPath = "akka.tcp://ServerSystem@" + host + ":2552/user/server";
 
-
-        final ActorRef monitor = system.actorOf(MonitoringActor.props(MonitoringManager.getMetricRegistry()),
-                "monitor");
-
+        system.actorOf(MonitoringActor.props(MonitoringManager.getMetricRegistry()), "monitor");
         final ActorRef client = system.actorOf(ClientActor.props(serverPath, clientId), "client");
-        final ActorRef terminator = system.actorOf(TerminatorActor.props(client), "terminator");
-
+        system.actorOf(TerminatorActor.props(client), "terminator");
 
         Await.result(system.whenTerminated(), Duration.Inf());
-
     }
-
-
-
 }

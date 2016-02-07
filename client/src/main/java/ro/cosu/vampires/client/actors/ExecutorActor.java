@@ -20,8 +20,6 @@ public class ExecutorActor extends UntypedActor {
         return Props.create(ExecutorActor.class);
     }
 
-
-
     @Override
     public void onReceive(Object message) throws Exception {
         if (message instanceof Job) {
@@ -30,12 +28,11 @@ public class ExecutorActor extends UntypedActor {
 
             Result result = executor.execute(job.computation());
 
+            log.debug("done executing job", job.id());
             getContext().actorSelection("/user/monitor").tell(job.withResult(result), getSender());
-
         }
 
         getContext().stop(getSelf());
-
     }
 
 

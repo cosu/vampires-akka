@@ -32,9 +32,9 @@ public class Server {
 
         final ActorSystem system = ActorSystem.create("ServerSystem");
         LoggingAdapter log = Logging.getLogger(system, Server.class);
-        ActorRef terminator = system.actorOf(Terminator.props(), "terminator");
+        system.actorOf(Terminator.props(), "terminator");
         ActorRef workActor = system.actorOf(WorkActor.props(), "workActor");
-        ActorRef resourceManagerActor = system.actorOf(ResourceManagerActor.props(), "resourceManager");
+        system.actorOf(ResourceManagerActor.props(), "resourceManager");
         system.actorOf(DispatchActor.props(workActor), "server");
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -53,7 +53,5 @@ public class Server {
 
         Await.result(system.whenTerminated(), Duration.Inf());
         stop();
-
-
     }
 }

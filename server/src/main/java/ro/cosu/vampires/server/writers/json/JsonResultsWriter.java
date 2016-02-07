@@ -25,10 +25,10 @@ import java.util.List;
 import java.util.Map;
 
 public class JsonResultsWriter implements ResultsWriter {
-    static final Logger LOG = LoggerFactory.getLogger(JsonResultsWriter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JsonResultsWriter.class);
     private final Config config;
 
-    List<Job> results = new LinkedList<>();
+    private List<Job> results = new LinkedList<>();
     private List<ClientInfo> clients = new LinkedList<>();
 
 
@@ -50,10 +50,9 @@ public class JsonResultsWriter implements ResultsWriter {
 
     @Override
     public void addResult(Job result) {
-        Gson gson = new GsonBuilder().setPrettyPrinting()
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
-                .create();
-
+//        Gson gson = new GsonBuilder().setPrettyPrinting()
+//                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
+//                .create();
 //        WebsocketHandler.broadcastMessage("foo", gson.toJson(result));
 
         results.add(result);
@@ -68,8 +67,6 @@ public class JsonResultsWriter implements ResultsWriter {
         //write results to disk
         try {
             File resultsFile = getPath().toFile();
-
-
             Writer writer = new FileWriter(resultsFile);
 
             Gson gson = new GsonBuilder().setPrettyPrinting()

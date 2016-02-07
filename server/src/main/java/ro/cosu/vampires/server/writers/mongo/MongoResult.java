@@ -21,7 +21,4 @@ public class MongoResult {
         this.job = job;
     }
 
-
-
-    public MongoResult() {}
 }

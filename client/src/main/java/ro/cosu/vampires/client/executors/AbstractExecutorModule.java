@@ -27,13 +27,11 @@ public abstract class AbstractExecutorModule extends AbstractModule {
         return this.config;
     }
 
-
     public AbstractExecutorModule(Config config) {
         this.config = config;
     }
 
     protected abstract  void configure();
-
 
     @Provides
     @Singleton

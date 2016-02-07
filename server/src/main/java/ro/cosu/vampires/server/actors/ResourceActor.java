@@ -9,6 +9,7 @@ import akka.japi.Procedure;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.resources.ResourceProvider;
+import ro.cosu.vampires.server.workload.ClientInfo;
 
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -43,7 +44,8 @@ public class ResourceActor extends UntypedActorWithStash {
             } else {
                 fail();
             }
-        } else {
+        }
+        else {
             log.debug("stash {}", message);
             stash();
         }
@@ -115,14 +117,29 @@ public class ResourceActor extends UntypedActorWithStash {
         if (message instanceof ResourceControl.Query) {
             sendResourceInfo(sender);
         }
+        else if  (message instanceof ClientInfo) {
+            connectClient((ClientInfo) message);
+        }
         else if (message instanceof ResourceControl.Shutdown) {
             log.debug("shutdown " + message);
             Resource stoppedResource = resource.stop().get();
             sender.tell(stoppedResource.info(), getSelf());
         } else {
+            log.error("unhandled {}", message);
             unhandled(message);
         }
     };
+
+    private void connectClient(ClientInfo message) {
+        ClientInfo clientInfo = message;
+        if (clientInfo.id().equals(resource.description().id())){
+            log.info("client {} connected to resource {}" ,clientInfo, resource.info());
+            resource.connected();
+        }
+        else {
+            log.error("client info and resource info don't match {}, {}", clientInfo, resource.info());
+        }
+    }
 
     private void sendResourceInfo(ActorRef toActor) {
         ResourceInfo info = Optional.ofNullable(this.resource)
