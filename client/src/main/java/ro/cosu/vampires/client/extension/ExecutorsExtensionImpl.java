@@ -19,7 +19,7 @@ import java.util.Map;
 public class ExecutorsExtensionImpl implements Extension {
 
     public Config vampires;
-    static final Logger LOG = LoggerFactory.getLogger(ExecutorsExtensionImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ExecutorsExtensionImpl.class);
     private Injector injector;
     private Map<String, Integer> executorInfo = new HashMap<>();
 

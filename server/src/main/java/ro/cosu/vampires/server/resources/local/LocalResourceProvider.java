@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class LocalResourceProvider extends AbstractResourceProvider{
 
-    static final Logger LOG = LoggerFactory.getLogger(LocalResourceProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LocalResourceProvider.class);
 
     @Override
     public Optional<Resource> create(Resource.Parameters parameters) {

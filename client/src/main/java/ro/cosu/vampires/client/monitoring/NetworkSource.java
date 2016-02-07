@@ -14,14 +14,14 @@ import java.util.Arrays;
 import static com.codahale.metrics.MetricRegistry.name;
 
 public class NetworkSource implements Source {
-    static final Logger LOG = LoggerFactory.getLogger(NetworkSource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NetworkSource.class);
 
     private final static String NAME = "network";
 
     @Inject
-    Sigar sigar;
+    private Sigar sigar;
     @Inject
-    MetricRegistry metricRegistry;
+    private MetricRegistry metricRegistry;
 
     public void register() {
         try {

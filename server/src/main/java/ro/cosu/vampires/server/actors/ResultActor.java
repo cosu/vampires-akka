@@ -24,7 +24,7 @@ public class ResultActor extends UntypedActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     private List<Job> results = new LinkedList<>();
-    List<ResultsWriter> writers;
+    private List<ResultsWriter> writers;
 
     private final SettingsImpl settings =
             Settings.SettingsProvider.get(getContext().system());

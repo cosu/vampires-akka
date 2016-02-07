@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import static spark.Spark.*;
 
 public class ServerWebsocket {
-    static final Logger LOG = LoggerFactory.getLogger(Server.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Server.class);
 
     private static void runSpark(){
         port(8080);

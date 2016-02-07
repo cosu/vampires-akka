@@ -17,8 +17,7 @@ public class SshResourceModule extends AbstractModule {
 
         mapbinder.addBinding(Resource.Type.SSH).to(SshResourceProvider.class).asEagerSingleton();
     }
-    @Provides
-    @Named("Ssh")
+    @Provides @Named("Ssh")
     Ssh provideSsh (){
         return new Ssh();
     }

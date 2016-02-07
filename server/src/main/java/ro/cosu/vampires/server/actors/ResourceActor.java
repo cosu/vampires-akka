@@ -111,7 +111,7 @@ public class ResourceActor extends UntypedActorWithStash {
             }
     }
 
-    Procedure<Object> active = message -> {
+    private Procedure<Object> active = message -> {
         ActorRef sender = getSender();
 
         if (message instanceof ResourceControl.Query) {

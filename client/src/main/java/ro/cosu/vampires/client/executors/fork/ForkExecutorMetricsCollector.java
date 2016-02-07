@@ -8,15 +8,13 @@ import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
 import ro.cosu.vampires.server.workload.Metrics;
 
 public class ForkExecutorMetricsCollector implements ExecutorMetricsCollector{
-    static final Logger LOG = LoggerFactory.getLogger(ForkExecutorMetricsCollector.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ForkExecutorMetricsCollector.class);
 
     @Inject
-    Sigar sigar;
+    private Sigar sigar;
 
     @Override
     public void startMonitoring(String id) {
-
-
     }
 
     @Override

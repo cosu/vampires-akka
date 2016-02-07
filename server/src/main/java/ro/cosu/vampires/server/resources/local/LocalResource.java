@@ -13,7 +13,7 @@ import java.util.List;
 
 
 public class LocalResource extends AbstractResource{
-    static final Logger LOG = LoggerFactory.getLogger(LocalResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LocalResource.class);
     private final LocalResourceParameters parameters;
     private CollectingLogOutputStream collectingLogOutputStream = new CollectingLogOutputStream();
 

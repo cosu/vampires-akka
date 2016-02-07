@@ -97,7 +97,7 @@ public class ClientActor extends UntypedActor {
         }
     };
 
-    Procedure<Object> waitForConfig = messsage -> {
+    private Procedure<Object> waitForConfig = messsage -> {
         if (messsage instanceof ClientConfig) {
             ClientConfig config = (ClientConfig) messsage;
             executors.configure(config);

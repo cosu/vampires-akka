@@ -13,12 +13,9 @@ import ro.cosu.vampires.server.resources.ssh.SshResourceModule;
 public class ResourceModule extends AbstractModule{
     private Config config;
 
-
-
     public ResourceModule(Config config) {
         this.config = config;
     }
-
 
     @Override
     protected void configure() {
@@ -31,8 +28,7 @@ public class ResourceModule extends AbstractModule{
 
     }
 
-    @Provides
-    @Named("Config")
+    @Provides @Named("Config")
     Config provideConfig(){
         return this.config;
     }

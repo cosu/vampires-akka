@@ -31,6 +31,5 @@ public class ConfigActorTest extends AbstractActorTest {
 
         remoteProbe.expectMsgClass(Duration.create(1, TimeUnit.SECONDS), ClientConfig.class);
 
-
     }
 }

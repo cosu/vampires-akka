@@ -28,8 +28,8 @@ public class ResourceControl {
     }
 
     public static class Create implements Serializable {
-        final Resource.Type type;
-        final Resource.Parameters parameters;
+        public  final Resource.Type type;
+        public  final Resource.Parameters parameters;
 
         public Create(Resource.Type type, Resource.Parameters parameters) {
             this.type = type;
@@ -46,8 +46,8 @@ public class ResourceControl {
     }
 
     public static class Bootstrap {
-        final Resource.Type type;
-        final String name;
+        public final Resource.Type type;
+        public final String name;
 
         public Bootstrap(Resource.Type type, String name) {
             this.type = type;

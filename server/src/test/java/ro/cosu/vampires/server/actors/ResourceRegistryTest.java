@@ -16,7 +16,7 @@ import static org.hamcrest.core.IsNull.notNullValue;
 
 public class ResourceRegistryTest extends AbstractActorTest {
 
-    static ActorRef createActorRef() {
+    private static ActorRef createActorRef() {
         TestProbe testProbe = new TestProbe(system);
         return testProbe.ref();
     }

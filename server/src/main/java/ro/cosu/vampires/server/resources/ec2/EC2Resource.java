@@ -14,7 +14,7 @@ import java.net.URL;
 
 public class EC2Resource extends AbstractResource {
 
-    static final Logger LOG = LoggerFactory.getLogger(EC2Resource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EC2Resource.class);
 
     private final AmazonEC2Client amazonEC2Client;
     private final EC2ResourceParameters parameters;

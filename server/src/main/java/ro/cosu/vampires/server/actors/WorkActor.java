@@ -1,6 +1,8 @@
 package ro.cosu.vampires.server.actors;
 
-import akka.actor.*;
+import akka.actor.ActorRef;
+import akka.actor.Props;
+import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import com.google.common.cache.Cache;
@@ -10,7 +12,6 @@ import ro.cosu.vampires.server.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Job;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;

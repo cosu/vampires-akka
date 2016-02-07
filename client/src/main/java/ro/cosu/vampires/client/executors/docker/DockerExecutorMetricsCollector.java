@@ -19,20 +19,19 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector {
-    static final Logger LOG = LoggerFactory.getLogger(DockerExecutorMetricsCollector.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DockerExecutorMetricsCollector.class);
 
-    StatsCallback statsCallback = new StatsCallback();
+    private StatsCallback statsCallback = new StatsCallback();
 
-    String id;
+    private String id;
 
     @Inject
-    DockerClient dockerClient;
+    private DockerClient dockerClient;
 
     @Override
     public void startMonitoring(String id) {
         this.id = id;
         dockerClient.statsCmd().withContainerId(id).exec(statsCallback);
-
     }
 
     @Override
@@ -48,13 +47,10 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
     public Metrics getMetrics() {
         final ImmutableList<Metric> statisticsList = ImmutableList.copyOf(statsCallback.getStatisticsList());
         return Metrics.builder().id(id).metadata(ImmutableMap.of("docker", id)).metrics(statisticsList).build();
-
     }
 
     private class StatsCallback extends ResultCallbackTemplate<StatsCallback, Statistics> {
-
-
-        List<Metric> statisticsList = new LinkedList<>();
+        private  List<Metric> statisticsList = new LinkedList<>();
 
         @Override
         public void onNext(Statistics stats) {
@@ -112,9 +108,9 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
                         newValue));
             }
         }
-
         return redata;
     }
+
     private static Double getDoubleFrom(Object object){
         Double val = 0.;
         try {

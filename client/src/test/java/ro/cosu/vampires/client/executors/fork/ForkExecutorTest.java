@@ -14,7 +14,7 @@ import static org.hamcrest.core.IsNot.not;
 public class ForkExecutorTest {
 
 
-    Executor getFork(){
+    private Executor getFork(){
         Injector injector = Guice.createInjector(new ForkExecutorModule(ConfigFactory.load().getConfig("vampires")));
 
         return injector.getInstance(Executor.class);

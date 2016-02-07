@@ -35,16 +35,15 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
 
     private CommandLine getCommandLine(String command){
 
-
         LOG.debug("cpuset {}", cpuSet);
-
+        String newCommand = command;
         if (cpuSet.isPresent() && isNumaEnabled()) {
             final String cpus = Joiner.on(",").join(cpuSet.get().getCpuSet());
-            command = "numactl --physcpubind=" + cpus + " " + command;
+            newCommand = "numactl --physcpubind=" + cpus + " " + command;
         }
 
-        LOG.info("executing {} with timeout {} minutes", command, TIMEOUT_IN_MILIS / 1000 / 60);
-        return  CommandLine.parse(command);
+        LOG.info("executing {} with timeout {} minutes", newCommand, TIMEOUT_IN_MILIS / 1000 / 60);
+        return  CommandLine.parse(newCommand);
     }
 
     @Override

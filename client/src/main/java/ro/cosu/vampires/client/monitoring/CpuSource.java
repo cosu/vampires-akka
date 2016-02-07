@@ -13,7 +13,7 @@ import static com.codahale.metrics.MetricRegistry.name;
 
 public class CpuSource implements Source {
 
-    static final Logger LOG = LoggerFactory.getLogger(CpuSource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CpuSource.class);
 
     private static String NAME = "cpu";
 

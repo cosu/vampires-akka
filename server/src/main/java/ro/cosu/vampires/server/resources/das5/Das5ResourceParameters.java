@@ -38,7 +38,7 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
 
         public abstract Builder port(int i);
 
-        abstract Builder type(Resource.Type type);
+        public abstract Builder type(Resource.Type type);
 
 
         public Builder fromConfig(Config config) {

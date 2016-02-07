@@ -17,7 +17,7 @@ public class FixedCpuSetAllocator implements CpuAllocator {
      * Emits CPUSets to be used by numactl or docker cpusets This uses a round robin strategy w.r.t to releasing and
      * acquiring
      */
-    static final Logger LOG = LoggerFactory.getLogger(FixedCpuSetAllocator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FixedCpuSetAllocator.class);
     private final int totalCpuCount;
 
     private BlockingDeque<CpuSet> cpuList = Queues.newLinkedBlockingDeque();

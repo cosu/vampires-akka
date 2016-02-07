@@ -10,14 +10,14 @@ import org.slf4j.LoggerFactory;
 import static com.codahale.metrics.MetricRegistry.name;
 
 public class HostSource implements Source {
-    static final Logger LOG = LoggerFactory.getLogger(CpuSource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CpuSource.class);
 
     private final static String NAME = "host";
 
     @Inject
-    Sigar sigar;
+    private Sigar sigar;
     @Inject
-    MetricRegistry metricRegistry;
+    private MetricRegistry metricRegistry;
 
     public void register() {
         metricRegistry.register(name(getName(), "hostname"), this.hostNameGague());
@@ -44,9 +44,7 @@ public class HostSource implements Source {
         }
 
         LOG.debug("host info source");
-
     }
-
 
     @Override
     public String getName() {

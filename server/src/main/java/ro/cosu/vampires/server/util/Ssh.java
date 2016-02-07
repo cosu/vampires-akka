@@ -15,7 +15,6 @@ import java.util.Properties;
 public class Ssh {
     private static final Logger LOG = LoggerFactory.getLogger(Ssh.class);
 
-
     public  String runCommand(String user, String privateKey, String address, String command, int port) throws JSchException,
             IOException {
         LOG.info("SSH: {}@{}:{}({}) command: {}",  user, address , port , privateKey ,command);
@@ -50,7 +49,7 @@ public class Ssh {
     private static class JSCHLogger implements com.jcraft.jsch.Logger
     {
 
-        static java.util.Hashtable<Integer,String> name = new java.util.Hashtable<>();
+        public static java.util.Hashtable<Integer,String> name = new java.util.Hashtable<>();
 
         static
         {

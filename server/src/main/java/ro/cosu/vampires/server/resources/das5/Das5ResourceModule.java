@@ -18,8 +18,7 @@ public class Das5ResourceModule extends AbstractModule{
 
     }
 
-    @Provides
-    @Named("DASSSH")
+    @Provides @Named("DASSSH")
     Ssh provideSsh (){
         return new Ssh();
     }

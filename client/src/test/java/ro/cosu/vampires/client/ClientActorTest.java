@@ -43,7 +43,6 @@ public class ClientActorTest {
         client.tell(new ActorIdentity(null, actorRefOption), ActorRef.noSender());
 
         remoteProbe.expectMsgClass(ClientInfo.class);
-
-
+        
     }
 }

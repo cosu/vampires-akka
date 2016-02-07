@@ -10,7 +10,7 @@ import java.io.IOException;
 
 
 public class SshResource extends AbstractResource {
-    static final Logger LOG = LoggerFactory.getLogger(SshResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SshResource.class);
 
     private final SshResourceParameters parameters;
     private final Ssh ssh;

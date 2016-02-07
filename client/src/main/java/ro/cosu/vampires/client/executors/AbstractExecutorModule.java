@@ -17,7 +17,7 @@ import ro.cosu.vampires.client.allocation.CpuAllocator;
 import ro.cosu.vampires.client.allocation.FixedCpuSetAllocator;
 
 public abstract class AbstractExecutorModule extends AbstractModule {
-    static final Logger LOG = LoggerFactory.getLogger(AbstractExecutorModule.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractExecutorModule.class);
 
     private final Config config;
 

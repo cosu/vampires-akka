@@ -7,7 +7,7 @@ import ro.cosu.vampires.server.resources.AbstractResource;
 
 public class MockResource extends AbstractResource {
 
-    static final Logger LOG = LoggerFactory.getLogger(MockResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MockResource.class);
     private final MockResourceParameters parameters;
 
     public MockResource(Parameters parameters) {

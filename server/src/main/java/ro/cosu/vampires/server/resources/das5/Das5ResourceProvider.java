@@ -11,10 +11,9 @@ import ro.cosu.vampires.server.util.Ssh;
 import java.util.Optional;
 
 public class Das5ResourceProvider extends AbstractResourceProvider{
-    static final Logger LOG = LoggerFactory.getLogger(Das5ResourceProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Das5ResourceProvider.class);
 
-    @Inject
-    @Named("DASSSH")
+    @Inject @Named("DASSSH")
     private Ssh ssh;
 
     @Override

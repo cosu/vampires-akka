@@ -16,7 +16,7 @@ import static spark.Spark.*;
 
 public class Server {
 
-    static final Logger LOG = LoggerFactory.getLogger(Server.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Server.class);
 
     private static void runSpark(){
         port(8080);
