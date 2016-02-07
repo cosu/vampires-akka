@@ -25,8 +25,7 @@ public class DockerModule extends AbstractModule {
         bind(ExecutorMetricsCollector.class).to(DockerExecutorMetricsCollector.class);
     }
 
-    @Provides
-    @Named("cpuCount")
+    @Provides @Named("cpuCount")
     int provideCpuCount(DockerClient dockerClient) {
         int cpuCount = 0;
         try {

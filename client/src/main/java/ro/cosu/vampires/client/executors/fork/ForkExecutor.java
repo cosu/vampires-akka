@@ -22,14 +22,14 @@ import java.util.Optional;
 
 public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor {
 
-    static final Logger LOG = LoggerFactory.getLogger(ForkExecutor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ForkExecutor.class);
     public static final int TIMEOUT_IN_MILIS = 600000;
 
     @Inject
-    CpuAllocator cpuAllocator;
+    private CpuAllocator cpuAllocator;
 
     @Inject
-    Executor executor;
+    private Executor executor;
 
     private Optional<CpuSet> cpuSet;
 

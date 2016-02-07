@@ -10,10 +10,10 @@ import ro.cosu.vampires.server.resources.Resource;
 import java.util.Optional;
 
 public class EC2ResourceProvider extends AbstractResourceProvider {
-    static final Logger LOG = LoggerFactory.getLogger(EC2ResourceProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EC2ResourceProvider.class);
 
     @Inject
-    Optional<AmazonEC2Client> amazonEC2Client;
+    private Optional<AmazonEC2Client> amazonEC2Client;
 
     @Override
     public Optional<Resource> create(Resource.Parameters parameters) {

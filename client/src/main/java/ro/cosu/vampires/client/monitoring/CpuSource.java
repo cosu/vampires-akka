@@ -18,9 +18,9 @@ public class CpuSource implements Source {
     private static String NAME = "cpu";
 
     @Inject
-    Sigar sigar;
+    private Sigar sigar;
     @Inject
-    MetricRegistry metricRegistry;
+    private MetricRegistry metricRegistry;
 
     public void register() {
         metricRegistry.register(name(getName(), "cpu-total-usage"), this.cpuTotalUsageGague());

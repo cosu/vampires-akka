@@ -7,7 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ForkExecutorActorTest {
-    static ActorSystem system;
+    private static ActorSystem system;
 
     @BeforeClass
     public static void setUp() {

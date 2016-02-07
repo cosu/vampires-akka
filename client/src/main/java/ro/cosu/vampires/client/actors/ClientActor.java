@@ -27,12 +27,9 @@ public class ClientActor extends UntypedActor {
     private ActorRef server;
     private final ExecutorsExtensionImpl executors = ExecutorsExtension.ExecutorsProvider.get(getContext().system());
 
-
-
     public static Props props(String path, String clientId) {
         return Props.create(ClientActor.class, path, clientId);
     }
-
 
     public ClientActor(String serverPath, String clientId) {
         this.serverPath = serverPath;
@@ -72,7 +69,7 @@ public class ClientActor extends UntypedActor {
         }
     }
 
-    Procedure<Object> active = message -> {
+    private Procedure<Object> active = message -> {
 
         if (message instanceof Job) {
 
@@ -110,8 +107,6 @@ public class ClientActor extends UntypedActor {
             unhandled(messsage);
         }
     };
-
-
 
     private void execute(Job job) {
         if (!job.equals(Job.waitForever())) {

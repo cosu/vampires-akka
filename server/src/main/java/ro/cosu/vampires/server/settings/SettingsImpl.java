@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
 public class SettingsImpl implements Extension {
 
     public final Config vampires;
-    static final Logger LOG = LoggerFactory.getLogger(Settings.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Settings.class);
 
 
     public SettingsImpl(Config config) {

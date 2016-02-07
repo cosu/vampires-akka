@@ -20,7 +20,7 @@ public class MockResource extends AbstractResource {
     public void onStart() throws Exception {
         LOG.debug("mock start: {}", parameters);
         if (parameters.command().equals("fail")) {
-            throw new RuntimeException("fail");
+            throw new IllegalStateException("fail");
         }
     }
 

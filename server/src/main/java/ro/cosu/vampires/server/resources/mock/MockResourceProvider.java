@@ -8,7 +8,7 @@ import ro.cosu.vampires.server.resources.Resource;
 import java.util.Optional;
 
 public class MockResourceProvider extends AbstractResourceProvider{
-    static final Logger LOG = LoggerFactory.getLogger(MockResourceProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MockResourceProvider.class);
     @Override
     public Optional<Resource> create(Resource.Parameters parameters) {
 

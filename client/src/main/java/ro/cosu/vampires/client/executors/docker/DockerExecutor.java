@@ -30,11 +30,10 @@ import java.util.Optional;
 
 public class DockerExecutor implements Executor {
 
-    static final Logger LOG = LoggerFactory.getLogger(DockerExecutor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DockerExecutor.class);
 
     @Inject
     private  DockerClient dockerClient;
-
 
     @Named("Config")
     @Inject
