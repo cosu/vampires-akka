@@ -40,12 +40,12 @@ public class EC2ResourceModule extends AbstractModule {
             try {
                 PropertiesCredentials credentials = new PropertiesCredentials(new FileInputStream(credentialsFile));
                 amazonEC2Client = new AmazonEC2Client(credentials);
-            } catch (IOException e) {
-                if (e instanceof FileNotFoundException){
-                    LOG.error("could not find ec2 credentials file: " + credentialsFile);
-                } else {
-                    LOG.error("failed to create amazon client", e);
-                }
+            }
+            catch (FileNotFoundException e){
+                LOG.error("could not find ec2 credentials file: " + credentialsFile);
+            }
+            catch (IOException e) {
+                LOG.error("failed to create amazon client", e);
             }
         }
 

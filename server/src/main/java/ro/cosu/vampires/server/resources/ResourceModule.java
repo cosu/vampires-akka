@@ -29,7 +29,7 @@ public class ResourceModule extends AbstractModule{
     }
 
     @Provides @Named("Config")
-    Config provideConfig(){
+    private Config provideConfig(){
         return this.config;
     }
 

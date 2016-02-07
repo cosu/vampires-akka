@@ -26,7 +26,7 @@ public class DockerModule extends AbstractModule {
     }
 
     @Provides @Named("cpuCount")
-    int provideCpuCount(DockerClient dockerClient) {
+    private int provideCpuCount(DockerClient dockerClient) {
         int cpuCount = 0;
         try {
             final Info exec = dockerClient.infoCmd().exec();
@@ -38,7 +38,7 @@ public class DockerModule extends AbstractModule {
     }
 
     @Provides
-    DockerClient provideDockerClient(@Named("Config") Config config) {
+    private DockerClient provideDockerClient(@Named("Config") Config config) {
         Preconditions.checkArgument(config.hasPath("docker.uri"), "missing docker uri on config");
         String uri = config.getString("docker.uri");
 
