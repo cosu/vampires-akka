@@ -13,7 +13,7 @@ import java.io.InputStreamReader;
 import java.util.Properties;
 
 public class Ssh {
-    static final Logger LOG = LoggerFactory.getLogger(Ssh.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Ssh.class);
 
 
     public  String runCommand(String user, String privateKey, String address, String command, int port) throws JSchException,

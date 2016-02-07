@@ -16,17 +16,18 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class MetricsWindow {
-    ConcurrentSkipListMap<LocalDateTime, ImmutableMap<String, Double>> metricWindow = new ConcurrentSkipListMap
+
+    private int MAX_JOB_LENGTH = 5;
+    private ConcurrentSkipListMap<LocalDateTime, ImmutableMap<String, Double>> metricWindow = new ConcurrentSkipListMap
             <>();
 
-    Cache<LocalDateTime, Object> cache = CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES)
+    private Cache<LocalDateTime, Object> cache = CacheBuilder.newBuilder().expireAfterWrite(MAX_JOB_LENGTH, TimeUnit.MINUTES)
             .removalListener(notification -> {
                 if (notification.getKey() != null && notification.getKey() instanceof LocalDateTime) {
                     LocalDateTime key = (LocalDateTime) notification.getKey();
                     metricWindow.remove(key);
                 }
             }).build();
-
 
     public void add(LocalDateTime time, SortedMap<String, Gauge> metrics) {
 
@@ -35,15 +36,11 @@ public class MetricsWindow {
     }
 
     public ImmutableList<Metric> getInterval(LocalDateTime start, LocalDateTime stop) {
-
-
         List<Metric> metricList = metricWindow.subMap(start, stop).entrySet().stream().map(entry -> Metric.builder()
                 .time(entry.getKey()).values(entry.getValue()).build())
                 .collect(Collectors.toList());
 
         return ImmutableList.copyOf(metricList);
-
-
     }
 
 
@@ -63,7 +60,6 @@ public class MetricsWindow {
         });
 
         return builder.build();
-
     }
 
     public static ImmutableMap<String, String> convertGaugesToString(SortedMap<String, Gauge> gauges) {
@@ -77,7 +73,6 @@ public class MetricsWindow {
         });
 
         return builder.build();
-
     }
 
 

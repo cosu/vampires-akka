@@ -56,7 +56,11 @@ public abstract class Job implements Serializable {
                 .metrics(Metrics.empty())
                 .result(Result.empty()).build();
     }
-
+    public static Job backoff() {
+        return builder().computation(Computation.builder().command("sleep 10").build())
+                .metrics(Metrics.empty())
+                .result(Result.empty()).build();
+    }
     public static Job waitForever() {
         return builder().computation(Computation.builder().command("sleep 666").build())
                 .metrics(Metrics.empty())

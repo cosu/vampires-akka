@@ -3,31 +3,41 @@ package ro.cosu.vampires.server.actors;
 import akka.actor.*;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import ro.cosu.vampires.server.settings.Settings;
 import ro.cosu.vampires.server.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Job;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 
 public class WorkActor extends UntypedActor{
 
-
-    final SettingsImpl settings =
-            Settings.SettingsProvider.get(getContext().system());
+    private int MAX_JOB_LENGTH = 5;
+    private final SettingsImpl settings = Settings.SettingsProvider.get(getContext().system());
 
     private final ConcurrentLinkedQueue<String> workQueue  = new ConcurrentLinkedQueue<>();
-
-
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private ActorRef resultActor;
 
+
+    private Cache<String, Computation> pendingJobs = CacheBuilder.newBuilder().expireAfterWrite(MAX_JOB_LENGTH, TimeUnit.MINUTES)
+    .removalListener(notification -> {
+        if (notification.getKey() != null && notification.getKey() instanceof String) {
+            Computation computation = (Computation) notification.getValue();
+            log.warning("Job {} failed to return. Re adding to queue", computation);
+            workQueue.add(computation.command());
+        }
+    }).build();
+
     public static Props props(){
         return Props.create(WorkActor.class);
     }
-
 
     @Override
     public  void preStart() {
@@ -43,10 +53,11 @@ public class WorkActor extends UntypedActor{
 
     @Override
     public void onReceive(Object message) throws Exception {
-
         if (message instanceof Job) {
+            Job job = (Job) message;
             resultActor.forward(message, getContext());
-            log.debug("Work result from {}", getSender().toString());
+            log.info("Work result from {}. pending {} ", getSender(), pendingJobs.size());
+            pendingJobs.invalidate(job.computation().id());
             Object work = this.getNewWorkload(Optional.ofNullable(workQueue.poll()));
             getSender().tell(work, getSelf());
 
@@ -58,24 +69,18 @@ public class WorkActor extends UntypedActor{
             log.warning("unhandled message from {}", getSender() );
             unhandled(message);
         }
-
-
     }
 
     private Object getNewWorkload(Optional<String> work) {
-
         if (work.isPresent()) {
             Computation computation = Computation.builder().command(work.get()).build();
             log.debug("computation {}", computation);
             return Job.empty().withComputation(computation);
-
         }
         else {
             log.debug("Empty {}", getSender());
             return Job.waitForever();
-
         }
-
     }
 
 }

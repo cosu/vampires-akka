@@ -48,7 +48,7 @@ public class ResultActor extends UntypedActor {
         getContext().actorSelection("/user/terminator").tell(new ResourceControl.Up(), getSelf());
 
         getContext().system().scheduler().schedule(scala.concurrent.duration.Duration.Zero(),
-                scala.concurrent.duration.Duration.create(5 , SECONDS), () -> {
+                scala.concurrent.duration.Duration.create(30 , SECONDS), () -> {
                     log.info("results so far: {}/{}", results.size(), numberOfResults);
                 }, getContext().system().dispatcher());
     }
