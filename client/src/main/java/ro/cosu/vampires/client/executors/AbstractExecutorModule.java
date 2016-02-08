@@ -36,9 +36,10 @@ public abstract class AbstractExecutorModule extends AbstractModule {
     @Provides
     @Singleton
     private  CpuAllocator provideCpuAllocator(@Named("cpuCount")  int cpuCount) {
-        final int cpuSetSize = config.getInt("cpuSetSize");
+        int cpuSetSize = config.getInt("cpuSetSize");
 
         LOG.info(" cpuCount: {} countSetSize: {}", cpuCount, cpuSetSize);
+
 
         return FixedCpuSetAllocator.builder()
                 .cpuSetSize(cpuSetSize)

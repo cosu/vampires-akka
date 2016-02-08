@@ -46,11 +46,19 @@ public class ConfigActor extends UntypedActor {
         }
 
         final String executor = firstAvailableExecutor.get();
+        int executorCpuCount = clientInfo.executors().get(executor);
 
-        int numberOfExecutors = clientInfo.executors().get(executor) / settings.getCpuSetSize();
+        int cpuSetSize = Math.min(executorCpuCount, settings.getCpuSetSize());
+        //this happens if the server sent us instructions to use 2 cpus but the machine has only 1.
+
+        if (executorCpuCount < settings.getCpuSetSize()) {
+            log.error("Client reported less cpus ({}) than CPU_SET_SIZE ({})", executorCpuCount,
+                    settings.getCpuSetSize());
+        }
+        int numberOfExecutors = executorCpuCount/ cpuSetSize;
 
         return ClientConfig.builder()
-                .cpuSetSize(settings.getCpuSetSize())
+                .cpuSetSize(cpuSetSize)
                 .executor(executor)
                 .numberOfExecutors(numberOfExecutors)
                 .build();
