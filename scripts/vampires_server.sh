@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 IP=`curl http://ip.cosu.ro/?ip |  tr -d '[[:space:]]'`
-export BIND_HOST=${IP}
-export HOST="0.0.0.0"
+export BIND_HOST="0.0.0.0"
+export HOST=${IP}
 export SERVER_OPTS="-Dconfig.file=$1"
 shift
 echo "Binding to ${BIND_HOST} ${HOST}"

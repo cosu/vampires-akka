@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 public class WorkActor extends UntypedActor {
 
-    private int MAX_JOB_LENGTH = 30;
     private final SettingsImpl settings = Settings.SettingsProvider.get(getContext().system());
 
     private final ConcurrentLinkedQueue<String> workQueue = new ConcurrentLinkedQueue<>();
