@@ -14,7 +14,7 @@ import java.io.FileInputStream;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class EC2ResourceTest {
+public class EC2ResourceIT {
 
     @Test
     @Ignore

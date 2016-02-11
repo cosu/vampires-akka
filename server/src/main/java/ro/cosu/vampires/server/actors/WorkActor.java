@@ -25,7 +25,6 @@ public class WorkActor extends UntypedActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private ActorRef resultActor;
 
-
     private Cache<String, Job> pendingJobs;
 
     public static Props props() {
@@ -34,8 +33,8 @@ public class WorkActor extends UntypedActor {
 
     @Override
     public void preStart() {
-        int maxJobSeconds = settings.getMaxJobSeconds();
-        pendingJobs = CacheBuilder.newBuilder().expireAfterWrite(maxJobSeconds, TimeUnit.SECONDS)
+        int jobDeadlineSeconds = settings.getJobDeadline();
+        pendingJobs = CacheBuilder.newBuilder().expireAfterWrite(jobDeadlineSeconds, TimeUnit.SECONDS)
                 .removalListener(notification -> {
                     if (!notification.wasEvicted()) {
                         return;

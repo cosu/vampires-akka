@@ -18,7 +18,7 @@ public class SettingsImpl implements Extension {
     public final Config vampires;
     private static final Logger LOG = LoggerFactory.getLogger(Settings.class);
 
-    private final static int MAX_JOB_SECONDS = 60;
+    private final static int MAX_JOB_DEADLINE = 60;
 
     public SettingsImpl(Config config) {
         vampires = config.getConfig("vampires");
@@ -76,13 +76,13 @@ public class SettingsImpl implements Extension {
         return 1;
     }
 
-    public int getMaxJobSeconds() {
+    public int getJobDeadline() {
 
-        int maxJobSeconds = MAX_JOB_SECONDS;
-        if (vampires.hasPath("maxJobSeconds")){
-            maxJobSeconds = vampires.getInt("maxJobSeconds");
+        int maxJobSeconds = MAX_JOB_DEADLINE;
+        if (vampires.hasPath("jobDeadlineSeconds")){
+            maxJobSeconds = vampires.getInt("jobDeadlineSeconds");
         } else {
-            LOG.warn("maxJobSeconds not provided. Using default value of {}", MAX_JOB_SECONDS);
+            LOG.warn("maxJobSeconds not provided. Using default value of {}", MAX_JOB_DEADLINE);
         }
         return maxJobSeconds;
     }
