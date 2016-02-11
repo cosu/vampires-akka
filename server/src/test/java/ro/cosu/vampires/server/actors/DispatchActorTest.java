@@ -6,10 +6,13 @@ import akka.testkit.JavaTestKit;
 import com.google.common.collect.Maps;
 import org.junit.Test;
 import ro.cosu.vampires.server.workload.*;
+import scala.concurrent.duration.Duration;
 
 import java.util.Map;
 
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 public class DispatchActorTest extends AbstractActorTest{
 
@@ -53,11 +56,10 @@ public class DispatchActorTest extends AbstractActorTest{
 
                 ClientInfo clientInfo = getClientInfo();
 
-                dispatchActor.tell(clientInfo, getRef());
+                dispatchActor.tell(clientInfo, workProbe.getRef());
 
-                workProbe.expectMsgEquals(clientInfo);
-
-                assertEquals(getRef(), workProbe.getLastSender());
+                ClientConfig clientConfig = (ClientConfig) workProbe.receiveOne(Duration.create("1 second"));
+                assertThat(clientConfig.cpuSetSize(), not(0));
             }
         };
     }
