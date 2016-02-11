@@ -3,5 +3,9 @@ jdk:
   - oraclejdk8
 script: ./gradlew check --info
 sudo: false
+cache:
+  directories:
+  - $HOME/.gradle
+
 after_success:
   - bash <(curl -s https://codecov.io/bash)
