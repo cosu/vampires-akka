@@ -19,9 +19,10 @@ public class ConfigActorTest extends AbstractActorTest {
 
     @Test
     public void testGetConfig() throws Exception {
-        final TestProbe testProbe = new TestProbe(system);
+        TestProbe testProbe = new TestProbe(system);
 
-        TestActorRef<ConfigActor> config = TestActorRef.create(system, ConfigActor.props(), "config");
+        TestActorRef<ConfigActor> config = TestActorRef.create(system, ConfigActor.props());
+
         Map<String, Integer> executors = Maps.newHashMap();
         executors.put("FORK", 1);
         executors.put("DOCKER", 2);
@@ -38,13 +39,14 @@ public class ConfigActorTest extends AbstractActorTest {
         assertThat(clientConfig.numberOfExecutors(), is(2));
         assertThat(clientConfig.cpuSetSize(), is(1));
 
+
     }
 
     @Test
     public void testEmptyConfig() throws Exception {
         final TestProbe testProbe = new TestProbe(system);
 
-        TestActorRef<ConfigActor> config = TestActorRef.create(system, ConfigActor.props(), "config");
+        TestActorRef<ConfigActor> config = TestActorRef.create(system, ConfigActor.props());
         Map<String, Integer> executors = Maps.newHashMap();
 
         final ClientInfo clientInfo = ClientInfo.builder()
