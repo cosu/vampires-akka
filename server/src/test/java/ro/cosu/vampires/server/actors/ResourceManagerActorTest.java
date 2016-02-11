@@ -46,8 +46,6 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         resourceManagerActor.tell(createResourceWhichFails, testProbe.ref());
 
-        assertThat(resourceManagerActor.underlyingActor().resourceRegistry.getResourceActors().size(), is(1));
-
         testProbe.expectMsgClass(Duration.create(1, TimeUnit.SECONDS), ResourceInfo.class);
 
         final ResourceInfo resourceInfo = (ResourceInfo) testProbe.lastMessage().msg();
