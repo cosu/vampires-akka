@@ -42,17 +42,17 @@ public class ConfigActor extends UntypedActor {
 
         if (!firstAvailableExecutor.isPresent()) {
             log.error("client has reported unsupported executors: {} ", clientInfo.executors());
-            throw new IllegalArgumentException("unsupported executors");
+            return ClientConfig.empty();
         }
 
         final String executor = firstAvailableExecutor.get();
         int executorCpuCount = clientInfo.executors().get(executor);
 
         int cpuSetSize = Math.min(executorCpuCount, settings.getCpuSetSize());
-        //this happens if the server sent us instructions to use 2 cpus but the machine has only 1.
+        //this happens if the config says use 2 cpus but the machine has only 1.
 
         if (executorCpuCount < settings.getCpuSetSize()) {
-            log.error("Client reported less cpus ({}) than CPU_SET_SIZE ({})", executorCpuCount,
+            log.warning("Client reported less cpus ({}) than CPU_SET_SIZE ({})", executorCpuCount,
                     settings.getCpuSetSize());
         }
         int numberOfExecutors = executorCpuCount/ cpuSetSize;

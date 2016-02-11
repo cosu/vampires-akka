@@ -1,7 +1,7 @@
 package ro.cosu.vampires.server.actors;
 
-import akka.testkit.JavaTestKit;
 import akka.testkit.TestActorRef;
+import akka.testkit.TestProbe;
 import com.google.common.collect.Maps;
 import org.junit.Test;
 import ro.cosu.vampires.server.workload.ClientConfig;
@@ -12,11 +12,14 @@ import scala.concurrent.duration.Duration;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+
 public class ConfigActorTest extends AbstractActorTest {
 
     @Test
     public void testGetConfig() throws Exception {
-        final JavaTestKit remoteProbe = new JavaTestKit(system);
+        final TestProbe testProbe = new TestProbe(system);
 
         TestActorRef<ConfigActor> config = TestActorRef.create(system, ConfigActor.props(), "config");
         Map<String, Integer> executors = Maps.newHashMap();
@@ -27,9 +30,34 @@ public class ConfigActorTest extends AbstractActorTest {
                 .metrics(Metrics.empty())
                 .id("foo")
                 .build();
-        config.tell(clientInfo, remoteProbe.getRef());
+        config.tell(clientInfo, testProbe.ref());
 
-        remoteProbe.expectMsgClass(Duration.create(1, TimeUnit.SECONDS), ClientConfig.class);
+        testProbe.expectMsgClass(Duration.create(1, TimeUnit.SECONDS), ClientConfig.class);
+        ClientConfig clientConfig = (ClientConfig) testProbe.lastMessage().msg();
+        assertThat(clientConfig.executor(), is("DOCKER"));
+        assertThat(clientConfig.numberOfExecutors(), is(2));
+        assertThat(clientConfig.cpuSetSize(), is(1));
 
     }
+
+    @Test
+    public void testEmptyConfig() throws Exception {
+        final TestProbe testProbe = new TestProbe(system);
+
+        TestActorRef<ConfigActor> config = TestActorRef.create(system, ConfigActor.props(), "config");
+        Map<String, Integer> executors = Maps.newHashMap();
+
+        final ClientInfo clientInfo = ClientInfo.builder()
+                .executors(executors)
+                .metrics(Metrics.empty())
+                .id("foo")
+                .build();
+        config.tell(clientInfo, testProbe.ref());
+
+        testProbe.expectMsgClass(Duration.create(1, TimeUnit.SECONDS), ClientConfig.class);
+        ClientConfig clientConfig = (ClientConfig) testProbe.lastMessage().msg();
+        assertThat(clientConfig, is(ClientConfig.empty()));
+    }
+
+
 }

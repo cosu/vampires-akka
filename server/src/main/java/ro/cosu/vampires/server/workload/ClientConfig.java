@@ -20,6 +20,13 @@ public abstract  class ClientConfig implements Serializable {
     }
 
 
+    public static ClientConfig empty() {
+        return builder()
+                .cpuSetSize(1)
+                .executor("EMPTY")
+                .numberOfExecutors(0)
+                .build();
+    }
 
     @AutoValue.Builder
     public abstract static class Builder {
