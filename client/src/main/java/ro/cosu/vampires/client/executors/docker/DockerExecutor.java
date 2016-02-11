@@ -86,10 +86,7 @@ public class DockerExecutor implements Executor {
         LocalDateTime stop = LocalDateTime.now();
         String output = "";
         try {
-            output = dockerClient.logContainerCmd(containerId)
-                    .withStdErr()
-                    .withStdOut().exec(new LogContainerTestCallback())
-                    .awaitCompletion().toString();
+            output = getOutput();
         } catch (InterruptedException e) {
             exitCode = -1;
             LOG.error("docker get log error {}", e);
@@ -114,6 +111,15 @@ public class DockerExecutor implements Executor {
                 .output(Collections.singletonList(output))
                 .build();
 
+    }
+
+    private String getOutput() throws InterruptedException {
+        return  dockerClient.logContainerCmd(containerId)
+                .withStdErr()
+                .withStdOut()
+                .exec(new DockerLogResultCallback())
+                .awaitCompletion()
+                .toString();
     }
 
     private ExecInfo getExecInfo() {
@@ -167,7 +173,7 @@ public class DockerExecutor implements Executor {
         return Type.DOCKER;
     }
 
-    public static class LogContainerTestCallback extends LogContainerResultCallback {
+    public static class DockerLogResultCallback extends LogContainerResultCallback {
         protected final StringBuffer log = new StringBuffer();
 
         @Override

@@ -11,18 +11,16 @@ import ro.cosu.vampires.server.workload.Result;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNot.not;
 
-public class DockerExecutorModuleTest {
+public class DockerExecutorModuleIT {
     @Test
     public void testDockerStart() {
         Injector injector = Guice.createInjector(new DockerExecutorModule(ConfigFactory.load().getConfig("vampires")));
 
         final Executor dockerExecutor = injector.getInstance(Executor.class);
-        if (dockerExecutor.isAvailable()) {
 
-            Result execute = dockerExecutor.execute(Computation.builder().command("ping localhost -c2 ").build());
+        Result execute = dockerExecutor.execute(Computation.builder().command("ping localhost -c2 ").build());
 
-            assertThat(execute.duration(), not(0));
-        }
+        assertThat(execute.duration(), not(0));
 
     }
 }
