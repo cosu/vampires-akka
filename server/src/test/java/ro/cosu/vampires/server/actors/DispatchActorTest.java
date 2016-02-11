@@ -3,11 +3,11 @@ package ro.cosu.vampires.server.actors;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.testkit.JavaTestKit;
+import com.google.common.collect.Maps;
 import org.junit.Test;
-import ro.cosu.vampires.server.workload.Computation;
-import ro.cosu.vampires.server.workload.Job;
-import ro.cosu.vampires.server.workload.Metrics;
-import ro.cosu.vampires.server.workload.Result;
+import ro.cosu.vampires.server.workload.*;
+
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,7 +15,7 @@ public class DispatchActorTest extends AbstractActorTest{
 
 
     @Test
-    public void testDispatch(){
+    public void testDispatchOfJob(){
         new JavaTestKit(system) {
             {
                 // create a test probe
@@ -40,6 +40,37 @@ public class DispatchActorTest extends AbstractActorTest{
                 assertEquals(getRef(), workProbe.getLastSender());
             }
         };
+    }
+
+    @Test
+    public void testDispatchOfConfig(){
+        new JavaTestKit(system) {
+            {
+                final JavaTestKit workProbe = new JavaTestKit(system);
+
+                final Props props = DispatchActor.props(workProbe.getRef() );
+                final ActorRef dispatchActor = system.actorOf(props, "dispatchActor");
+
+                ClientInfo clientInfo = getClientInfo();
+
+                dispatchActor.tell(clientInfo, getRef());
+
+                workProbe.expectMsgEquals(clientInfo);
+
+                assertEquals(getRef(), workProbe.getLastSender());
+            }
+        };
+    }
+
+    private ClientInfo getClientInfo() {
+        Map<String, Integer> executors = Maps.newHashMap();
+        executors.put("FORK", 1);
+        executors.put("DOCKER", 2);
+        return ClientInfo.builder()
+                .executors(executors)
+                .metrics(Metrics.empty())
+                .id("foo")
+                .build();
     }
 
 }

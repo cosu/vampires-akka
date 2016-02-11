@@ -15,6 +15,7 @@ import java.util.stream.IntStream;
 
 public class SettingsImpl implements Extension {
 
+    private static final int DEFAULT_CPU_SET_SIZE = 1;
     public final Config vampires;
     private static final Logger LOG = LoggerFactory.getLogger(Settings.class);
 
@@ -71,9 +72,9 @@ public class SettingsImpl implements Extension {
         if (vampires.hasPath("cpuSetSize")) {
             return vampires.getInt("cpuSetSize");
         } else {
-            LOG.error("missing executor cpuSetSize");
+            LOG.error("missing executor cpuSetSize. Using default value: {}", DEFAULT_CPU_SET_SIZE);
         }
-        return 1;
+        return DEFAULT_CPU_SET_SIZE;
     }
 
     public int getJobDeadline() {
