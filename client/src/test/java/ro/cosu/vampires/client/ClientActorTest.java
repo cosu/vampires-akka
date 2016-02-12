@@ -12,7 +12,15 @@ import org.junit.Test;
 import ro.cosu.vampires.client.actors.ClientActor;
 import ro.cosu.vampires.client.actors.MonitoringActor;
 import ro.cosu.vampires.client.monitoring.MonitoringManager;
+import ro.cosu.vampires.server.workload.ClientConfig;
 import ro.cosu.vampires.server.workload.ClientInfo;
+import ro.cosu.vampires.server.workload.Computation;
+import ro.cosu.vampires.server.workload.Job;
+import scala.concurrent.duration.Duration;
+
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 public class ClientActorTest {
 
@@ -42,7 +50,12 @@ public class ClientActorTest {
         scala.Option<ActorRef> actorRefOption = Option.Some.option(remoteProbe.getRef()).asScala();
         client.tell(new ActorIdentity(null, actorRefOption), ActorRef.noSender());
 
-        remoteProbe.expectMsgClass(ClientInfo.class);
-        
+        ClientInfo clientInfo = (ClientInfo) remoteProbe.receiveOne(Duration.create("1 second"));
+        assertThat(clientInfo.executors().size(), not(0));
+        ClientConfig clientConfig = ClientConfig.withDefaults().numberOfExecutors(1).build();
+        client.tell(clientConfig, remoteProbe.getRef());
+        Job job = (Job) remoteProbe.receiveOne(Duration.create("1 second"));
+        assertThat(job.computation() ,is (Computation.empty()));
+
     }
 }
