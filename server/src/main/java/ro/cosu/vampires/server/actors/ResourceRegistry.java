@@ -8,6 +8,7 @@ import ro.cosu.vampires.server.workload.ClientInfo;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 public class ResourceRegistry {
     /**
@@ -28,8 +29,8 @@ public class ResourceRegistry {
         return clientIdsToClientActors;
     }
 
-    public ActorRef lookupResourceOfClient(String clientId) {
-        return clientIdsToResourceActors.get(clientId);
+    public Optional<ActorRef> lookupResourceOfClient(String clientId) {
+        return Optional.ofNullable(clientIdsToResourceActors.get(clientId));
     }
 
     public List<ActorRef> getResourceActors() {

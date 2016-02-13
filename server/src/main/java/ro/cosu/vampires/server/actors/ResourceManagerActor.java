@@ -124,7 +124,8 @@ public class ResourceManagerActor extends UntypedActor {
         getContext().watch(getSender());
         log.info("watch {}" , getSender());
         resourceRegistry.registerClient(getSender(), clientInfo);
-        resourceRegistry.lookupResourceOfClient(clientInfo.id()).forward(clientInfo, getContext());
+        resourceRegistry.lookupResourceOfClient(clientInfo.id())
+                .ifPresent(resourceActor -> resourceActor.forward(clientInfo, getContext()));
         logCurrentClients();
     }
 
@@ -139,7 +140,15 @@ public class ResourceManagerActor extends UntypedActor {
     }
 
     private void queryResource(Query query, ActorRef sender) {
-        resourceRegistry.lookupResourceOfClient(query.resourceId).tell(query, sender);
+        Optional<ActorRef> resourceOfClient = resourceRegistry.lookupResourceOfClient(query.resourceId);
+
+        if (resourceOfClient.isPresent()) {
+            ActorRef resourceActor = resourceOfClient.get();
+            resourceActor.tell(query, sender);
+        }
+        else {
+            log.warning("Query: {} does not match any existing resource" , query);
+        }
     }
 
     private void shutdownResources() {

@@ -87,30 +87,32 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         testProbe.expectMsgClass(Duration.create(1, TimeUnit.SECONDS), ResourceInfo.class);
 
-        final ResourceInfo msg = (ResourceInfo) testProbe.lastMessage().msg();
-
-        ResourceDescription resourceDescription = msg.description();
-
-        assertThat(resourceDescription.provider(), is(equalTo(RESOURCE_TYPE)));
-
-        ResourceControl.Query resourceQuery = new ResourceControl.Query(resourceDescription.id());
-
-        final Future<Object> infoFuture = Patterns.ask(resourceManagerActor, resourceQuery, 1000);
-
-        ResourceInfo resourceInfo = (ResourceInfo) Await.result(infoFuture, Duration.create("1 seconds"));
+        final ResourceInfo resourceInfo = (ResourceInfo) testProbe.lastMessage().msg();
 
         assertThat(resourceInfo.status(), is(equalTo(Resource.Status.RUNNING)));
 
         Thread.sleep(500);
 
-        // here we assume that the resource is started fairly quickly so we don't see other statuses
-
-        final Future<Object> destroyFuture = Patterns.ask(resourceManagerActor, new ResourceControl
-                .Shutdown(), 1000);
+        final Future<Object> destroyFuture = Patterns.ask(resourceManagerActor, new ResourceControl.Shutdown(), 1000);
 
         ResourceInfo di = (ResourceInfo) Await.result(destroyFuture, Duration.create("1 seconds"));
 
         assertThat(di.status(), is(equalTo(Resource.Status.STOPPED)));
+
+
+
+//        ResourceDescription resourceDescription = resourceInfo1.description();
+//
+//        assertThat(resourceDescription.provider(), is(equalTo(RESOURCE_TYPE)));
+//
+//        ResourceControl.Query resourceQuery = new ResourceControl.Query(resourceDescription.id());
+//
+//        Thread.sleep(500);
+//
+//        final Future<Object> infoFuture = Patterns.ask(resourceManagerActor, resourceQuery, 1000);
+//
+//        ResourceInfo resourceInfo = (ResourceInfo) Await.result(infoFuture, Duration.create("1 seconds"));
+
     }
 
 

@@ -55,7 +55,7 @@ public class ResourceRegistryTest extends AbstractActorTest {
                 ("foo").metrics(Metrics.empty()).build();
         resourceRegistry.registerClient(actorRef,clientInfo);
 
-        final ActorRef foo = resourceRegistry.lookupResourceOfClient(clientInfo.id());
+        final ActorRef foo = resourceRegistry.lookupResourceOfClient(clientInfo.id()).get();
         assertThat(foo, notNullValue());
     }
 
@@ -69,7 +69,7 @@ public class ResourceRegistryTest extends AbstractActorTest {
         final ResourceInfo resourceInfo = ResourceInfo.create(ResourceDescription.create("foo", Resource.Type.MOCK),
                 Resource.Status.RUNNING);
         resourceRegistry.registerResource(actorRef, resourceInfo);
-        final ActorRef foo = resourceRegistry.lookupResourceOfClient("foo");
+        final ActorRef foo = resourceRegistry.lookupResourceOfClient("foo").get();
 
         assertThat(foo, notNullValue());
 
