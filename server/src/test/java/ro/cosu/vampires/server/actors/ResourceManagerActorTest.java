@@ -106,6 +106,14 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         resourceManagerActor.tell(clientInfo, testProbe.ref());
 
+        ResourceControl.Query resourceQuery = new ResourceControl.Query(id);
+
+        final Future<Object> infoFuture = Patterns.ask(resourceManagerActor, resourceQuery, 1000);
+
+        resourceInfo = (ResourceInfo) Await.result(infoFuture, Duration.create("1 seconds"));
+
+        assertThat(resourceInfo.status() , is(Resource.Status.CONNECTED));
+
         Future<Object> destroyFuture = Patterns.ask(resourceManagerActor, new ResourceControl.Shutdown(), 1000);
 
         ResourceInfo di = (ResourceInfo) Await.result(destroyFuture, Duration.create("1 seconds"));
