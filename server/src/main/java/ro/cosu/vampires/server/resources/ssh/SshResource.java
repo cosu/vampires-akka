@@ -50,4 +50,8 @@ public class SshResource extends AbstractResource {
     }
 
 
+    @Override
+    protected Logger getLogger() {
+        return LOG;
+    }
 }

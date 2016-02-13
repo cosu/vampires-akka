@@ -1,7 +1,6 @@
 package ro.cosu.vampires.server.resources;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -9,7 +8,8 @@ import java.util.concurrent.CompletionException;
 
 public abstract class AbstractResource implements Resource {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractResource.class);
+    
+    protected abstract Logger getLogger();
 
     private final ResourceDescription description;
     private Resource.Status status;
@@ -17,8 +17,8 @@ public abstract class AbstractResource implements Resource {
     public AbstractResource(Resource.Parameters parameters) {
         setStatus(Status.SLEEPING);
         this.description = ResourceDescription.create(generateId(), parameters.type());
-        LOG.debug("resource parameters {}", parameters);
-        LOG.debug("creating resource with description {}", description);
+        getLogger().debug("resource parameters {}", parameters);
+        getLogger().debug("creating resource with description {}", description);
     }
 
     private String generateId() {
@@ -48,7 +48,7 @@ public abstract class AbstractResource implements Resource {
     }
 
     public Resource fail(Throwable ex) {
-        LOG.debug("failed resource", ex);
+        getLogger().debug("failed resource", ex);
         try {
             this.onFail();
         } catch (Exception e) {
@@ -90,14 +90,14 @@ public abstract class AbstractResource implements Resource {
     }
 
     public void setStatus(Status status) {
-        LOG.debug("{} => {}", this, status);
+        getLogger().debug("{} => {}", this, status);
         //TODO check for illegal state transition
         this.status = status;
     }
 
     @Override
     public String toString() {
-        return "AbstractResource{"
+        return getLogger().getName() + "{"
                 + "description=" + description + ", "
                 + "status=" + status
                 + "}";

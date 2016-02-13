@@ -50,4 +50,8 @@ public class Das5Resource extends AbstractResource {
         return ssh.runCommand(parameters.user(), parameters.privateKey(), parameters.address(), command, parameters.port());
     }
 
+    @Override
+    protected Logger getLogger() {
+        return LOG;
+    }
 }

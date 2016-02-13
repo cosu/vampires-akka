@@ -76,6 +76,11 @@ public class LocalResource extends AbstractResource{
         LOG.debug("local fail");
     }
 
+    @Override
+    protected Logger getLogger() {
+        return LOG;
+    }
+
     private static class CollectingLogOutputStream extends LogOutputStream {
         private final List<String> lines = new LinkedList<>();
         @Override protected void processLine(String line, int level) {

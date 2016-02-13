@@ -100,4 +100,9 @@ public class EC2Resource extends AbstractResource {
         LOG.debug("ec2 fail");
 
     }
+
+    @Override
+    protected Logger getLogger() {
+        return LOG;
+    }
 }
