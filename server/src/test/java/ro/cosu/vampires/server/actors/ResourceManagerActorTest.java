@@ -91,27 +91,13 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         assertThat(resourceInfo.status(), is(equalTo(Resource.Status.RUNNING)));
 
-        Thread.sleep(500);
+        Thread.sleep(100);
 
         final Future<Object> destroyFuture = Patterns.ask(resourceManagerActor, new ResourceControl.Shutdown(), 1000);
 
         ResourceInfo di = (ResourceInfo) Await.result(destroyFuture, Duration.create("1 seconds"));
 
         assertThat(di.status(), is(equalTo(Resource.Status.STOPPED)));
-
-
-
-//        ResourceDescription resourceDescription = resourceInfo1.description();
-//
-//        assertThat(resourceDescription.provider(), is(equalTo(RESOURCE_TYPE)));
-//
-//        ResourceControl.Query resourceQuery = new ResourceControl.Query(resourceDescription.id());
-//
-//        Thread.sleep(500);
-//
-//        final Future<Object> infoFuture = Patterns.ask(resourceManagerActor, resourceQuery, 1000);
-//
-//        ResourceInfo resourceInfo = (ResourceInfo) Await.result(infoFuture, Duration.create("1 seconds"));
 
     }
 

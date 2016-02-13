@@ -99,7 +99,6 @@ public class ResourceManagerActor extends UntypedActor {
             registerResource(resourceInfo, sender);
         } else if (message instanceof ClientInfo) {
             final ClientInfo clientInfo = (ClientInfo) message;
-
             registerClient(clientInfo);
         } else if (message instanceof Terminated) {
             terminatedResource(sender);

@@ -77,19 +77,18 @@ public class ResourceActor extends UntypedActorWithStash {
 
     private Void fail() {
         log.error("actor failed to interact with resource ");
-        sendInfo();
+        sendInfoToParent();
         getContext().stop(getSelf());
         return null;
     }
 
-    private void sendInfo(){
+    private void sendInfoToParent(){
         sendResourceInfo(getContext().parent());
-        sendResourceInfo(getSender());
     }
 
     private void activate() {
         log.info("active");
-        sendInfo();
+        sendInfoToParent();
         unstashAll();
         getContext().become(active);
     }
