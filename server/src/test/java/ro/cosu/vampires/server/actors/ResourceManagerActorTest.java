@@ -3,6 +3,7 @@ package ro.cosu.vampires.server.actors;
 import akka.pattern.Patterns;
 import akka.testkit.TestActorRef;
 import akka.testkit.TestProbe;
+import com.google.common.collect.Maps;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -14,6 +15,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import ro.cosu.vampires.server.resources.*;
 import ro.cosu.vampires.server.resources.mock.MockResourceModule;
+import ro.cosu.vampires.server.workload.ClientInfo;
+import ro.cosu.vampires.server.workload.Metrics;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
@@ -87,13 +90,23 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         testProbe.expectMsgClass(Duration.create(1, TimeUnit.SECONDS), ResourceInfo.class);
 
-        final ResourceInfo resourceInfo = (ResourceInfo) testProbe.lastMessage().msg();
+        ResourceInfo resourceInfo = (ResourceInfo) testProbe.lastMessage().msg();
 
         assertThat(resourceInfo.status(), is(equalTo(Resource.Status.RUNNING)));
 
         Thread.sleep(100);
 
-        final Future<Object> destroyFuture = Patterns.ask(resourceManagerActor, new ResourceControl.Shutdown(), 1000);
+        String id = resourceInfo.description().id();
+
+        ClientInfo clientInfo = ClientInfo.builder()
+                .executors(Maps.newHashMap())
+                .metrics(Metrics.empty())
+                .id(id)
+                .build();
+
+        resourceManagerActor.tell(clientInfo, testProbe.ref());
+
+        Future<Object> destroyFuture = Patterns.ask(resourceManagerActor, new ResourceControl.Shutdown(), 1000);
 
         ResourceInfo di = (ResourceInfo) Await.result(destroyFuture, Duration.create("1 seconds"));
 
