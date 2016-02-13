@@ -31,9 +31,7 @@ public class ResourceManagerActor extends UntypedActor {
 
     public ResourceManagerActor() {
         Injector injector = Guice.createInjector(new ResourceModule(settings.vampires));
-
         rm = injector.getInstance(ResourceManager.class);
-
     }
 
     private void startResources() {

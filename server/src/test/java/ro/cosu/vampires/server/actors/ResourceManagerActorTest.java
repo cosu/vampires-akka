@@ -111,6 +111,20 @@ public class ResourceManagerActorTest extends AbstractActorTest {
         ResourceInfo di = (ResourceInfo) Await.result(destroyFuture, Duration.create("1 seconds"));
 
         assertThat(di.status(), is(equalTo(Resource.Status.STOPPED)));
+    }
+
+
+    @Test
+    public void testBootstrap() throws Exception {
+        final TestProbe testProbe = new TestProbe(system);
+
+        TestActorRef<ResourceManagerActor> resourceManagerActor = TestActorRef.create(system,
+                ResourceManagerActor.props());
+        ResourceControl.Bootstrap bs = new ResourceControl.Bootstrap(RESOURCE_TYPE, "foo");
+        resourceManagerActor.tell(bs, testProbe.ref());
+        ResourceInfo ri = (ResourceInfo) testProbe.receiveOne(Duration.create("50 milliseconds"));
+        assertThat(ri.status(), equalTo(Resource.Status.RUNNING));
+        assertThat(ri.description().provider(), equalTo(Resource.Type.MOCK));
 
     }
 
@@ -125,7 +139,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
             @Provides
             @Named("Config")
             Config provideConfig() {
-                return ConfigFactory.empty();
+                return ConfigFactory.parseString("mock.foo={}");
             }
 
         };
