@@ -3,6 +3,7 @@ package ro.cosu.vampires.client.executors.docker;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.model.Statistics;
 import com.github.dockerjava.core.async.ResultCallbackTemplate;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -80,7 +81,8 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
 
     @SuppressWarnings("unchecked")
 
-    private static Map<String, Double> flattenMap(String prefix, Map<String, Object> stringMapMap) {
+    @VisibleForTesting
+    protected static Map<String, Double> flattenMap(String prefix, Map<String, Object> stringMapMap) {
         // the reason this  method exists is the lack of a provider safe way of getting nested metrics from
         // the docker api. it concatenates the keys and converts all the values to doubles
         // also if it encounters any list, it flattens it by appending the index of the value in the list to the key
