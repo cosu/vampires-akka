@@ -104,7 +104,7 @@ public class ResourceActorTest extends AbstractActorTest {
 
                 resourceActor.tell(getCreateResource("fail"), resourceProbe.getRef());
 
-                ResourceInfo ri = (ResourceInfo) resourceProbe.receiveOne(FiniteDuration.create(1, "seconds"));
+                ResourceInfo ri = (ResourceInfo) resourceProbe.receiveOne(FiniteDuration.create(100, "seconds"));
 
                 assertThat(ri.status(), is(Resource.Status.FAILED));
             }

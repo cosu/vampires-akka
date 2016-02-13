@@ -38,10 +38,12 @@ public class ResourceActor extends UntypedActorWithStash {
             createResource(create, sender);
         } else if (message instanceof ResourceControl.Query) {
             sendResourceInfo(sender);
-        } else if (message instanceof Resource.Status) {
-            if (Resource.Status.RUNNING.equals(message)) {
+        } else if (message instanceof ResourceInfo) {
+            ResourceInfo resourceInfo = (ResourceInfo) message;
+            if (Resource.Status.RUNNING.equals(resourceInfo.status())) {
                 activate();
             } else {
+                log.error("got resource info {}. deactivating actor", resourceInfo);
                 fail();
             }
         }
@@ -63,25 +65,15 @@ public class ResourceActor extends UntypedActorWithStash {
             this.resource = resourceOptional.get();
             // do it async because activate needs a context
             // which is not available after the future completes
-            this.resource.start()
-                    .thenAccept(started -> {
-                        log.info("started");
-                        getSelf().tell(started.status(), sender);
-                    }).exceptionally(exception -> signalFailed(exception, sender));
+            this.resource.start().thenAccept(started -> {
+                sendResourceInfo(sender);
+                sendResourceInfo(getSelf());
+            });
         } else {
-           sendFailed(sender);
+            getSelf().tell(Resource.Status.FAILED, sender);
         }
     }
 
-    private void sendFailed(ActorRef sender) {
-        getSelf().tell(Resource.Status.FAILED, sender);
-    }
-
-    private Void signalFailed(Throwable throwable, ActorRef sender) {
-        sendFailed(sender);
-        log.error(throwable,"Actor failed to start resource");
-        return null;
-    }
 
     private Void fail() {
         log.error("actor failed to interact with resource ");
@@ -96,6 +88,7 @@ public class ResourceActor extends UntypedActorWithStash {
     }
 
     private void activate() {
+        log.info("active");
         sendInfo();
         unstashAll();
         getContext().become(active);
@@ -147,4 +140,5 @@ public class ResourceActor extends UntypedActorWithStash {
                     .orElse(ResourceInfo.failed(resourceProvider.getType()));
         toActor.tell(info, getSelf());
     }
+
 }
