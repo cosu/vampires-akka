@@ -31,7 +31,7 @@ public class LocalResource extends AbstractResource{
         // TODO check somehow that the file exists and then exit
         CommandLine cmd = new CommandLine("/bin/sh");
         cmd.addArgument("-c");
-        cmd.addArgument("nohup " + parameters.command() + " "+ description().id()  + " 2>&1 0</dev/null  & echo $! ", false);
+        cmd.addArgument("nohup " + parameters.command() + " "+ description().id()  + " 2>&1 0</dev/null & echo $! ", false);
 
         LOG.debug("local starting {}", cmd);
         execute(cmd);

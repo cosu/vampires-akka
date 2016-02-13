@@ -23,7 +23,7 @@ public class MockResource extends AbstractResource {
 
     @Override
     public void onStart() throws Exception {
-        LOG.debug("mock start: {}", parameters);
+        LOG.debug("mock start: {} {}", parameters, description().id());
         if (parameters.command().equals("fail")) {
             throw new IllegalStateException("fail");
         }

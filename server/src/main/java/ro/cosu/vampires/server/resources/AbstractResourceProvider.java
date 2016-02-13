@@ -10,9 +10,8 @@ public abstract class AbstractResourceProvider implements ResourceProvider {
 
     @Inject
     public void setConfig(@Named("Config") Config config) {
-        this.config= config;
+        this.config = config;
     }
-
 
     @Override
     public Config getConfig() {
