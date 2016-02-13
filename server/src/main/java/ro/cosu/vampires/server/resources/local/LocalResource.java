@@ -1,7 +1,6 @@
 package ro.cosu.vampires.server.resources.local;
 
 import autovalue.shaded.com.google.common.common.base.Joiner;
-import com.google.inject.Inject;
 import org.apache.commons.exec.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 
 public class LocalResource extends AbstractResource{
@@ -18,11 +18,11 @@ public class LocalResource extends AbstractResource{
     private final LocalResourceParameters parameters;
     private CollectingLogOutputStream collectingLogOutputStream = new CollectingLogOutputStream();
 
-    @Inject
     private Executor executor;
 
-    public LocalResource(LocalResourceParameters parameters) {
+    public LocalResource(LocalResourceParameters parameters, Executor executor) {
         super(parameters);
+        this.executor = executor;
         this.parameters= parameters;
     }
 
@@ -64,7 +64,7 @@ public class LocalResource extends AbstractResource{
             cmd.addArgument("kill " + pid, false);
             execute(cmd);
         }
-        catch (NumberFormatException ex) {
+        catch (NumberFormatException | NoSuchElementException ex) {
             LOG.warn("Failed to get pid value. nohup process exited prematurely");
         }
     }

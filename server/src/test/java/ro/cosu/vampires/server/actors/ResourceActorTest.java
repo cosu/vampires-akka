@@ -16,18 +16,14 @@ public class ResourceActorTest extends AbstractActorTest {
     private ResourceProvider getLocalProvider() {
         Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.load()));
         ResourceManager rm = injector.getInstance(ResourceManager.class);
-
         return rm.getProviders().get(Resource.Type.LOCAL);
-
     }
 
 
     private ResourceControl.Create getCreateResource() {
-        LocalResourceParameters parameters = LocalResourceParameters.builder().command("sleep 5").build();
-
+        LocalResourceParameters parameters = LocalResourceParameters.builder().command("sleep 1").build();
         return new ResourceControl.Create(Resource.Type.LOCAL, parameters);
     }
-
 
     @Test
     public void testResourceActor() throws Exception {

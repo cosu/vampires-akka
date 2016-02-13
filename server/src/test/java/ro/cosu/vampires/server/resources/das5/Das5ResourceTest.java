@@ -26,11 +26,9 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
-/**
- * Created on 11-2-16.
- */
+
 public class Das5ResourceTest {
-    Injector injector;
+    private Injector injector;
 
     @Before
     public void setUp() throws Exception {

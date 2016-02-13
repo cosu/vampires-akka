@@ -18,6 +18,7 @@ import ro.cosu.vampires.server.resources.ResourceManager;
 import ro.cosu.vampires.server.resources.ResourceProvider;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 public class LocalResourceTest {
@@ -57,12 +58,12 @@ public class LocalResourceTest {
         assertThat(resource.status(), equalTo(Resource.Status.SLEEPING));
     }
 
-//    @Test
-//    public void testStartStopLocalResource() throws Exception {
-//        Resource resource = getResource();
-//        assertThat(resource.start().get().status(), is(Resource.Status.RUNNING));
-//        assertThat(resource.stop().get().status(), is(Resource.Status.STOPPED));
-//    }
+    @Test
+    public void testStartStopLocalResource() throws Exception {
+        Resource resource = getResource();
+        assertThat(resource.start().get().status(), is(Resource.Status.RUNNING));
+        assertThat(resource.stop().get().status(), is(Resource.Status.STOPPED));
+    }
 
 
     private Resource getResource() {
