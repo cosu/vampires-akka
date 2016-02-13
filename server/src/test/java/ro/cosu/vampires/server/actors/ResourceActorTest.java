@@ -83,7 +83,7 @@ public class ResourceActorTest extends AbstractActorTest {
         new JavaTestKit(system) {
             {
                 final JavaTestKit resourceProbe = new JavaTestKit(system);
-                ActorRef resourceActor = system.actorOf(ResourceActor.props(getLocalProvider()), "resourceActor");
+                ActorRef resourceActor = system.actorOf(ResourceActor.props(getLocalProvider()), "resourceActor1");
 
                 TestActor.AutoPilot pilot = new TestActor.AutoPilot() {
 
