@@ -19,6 +19,9 @@ import ro.cosu.vampires.server.resources.mock.MockResourceModule;
 import ro.cosu.vampires.server.resources.mock.MockResourceParameters;
 import scala.concurrent.duration.FiniteDuration;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+
 public class ResourceActorTest extends AbstractActorTest {
 
     private ResourceProvider getLocalProvider() {
@@ -38,8 +41,8 @@ public class ResourceActorTest extends AbstractActorTest {
     }
 
 
-    private ResourceControl.Create getCreateResource() {
-        MockResourceParameters parameters = MockResourceParameters.builder().command("foo").build();
+    private ResourceControl.Create getCreateResource(String command) {
+        MockResourceParameters parameters = MockResourceParameters.builder().command(command).build();
         return new ResourceControl.Create(Resource.Type.MOCK, parameters);
     }
 
@@ -66,12 +69,44 @@ public class ResourceActorTest extends AbstractActorTest {
                     }
                 });
 
-                resourceActor.tell(getCreateResource(), resourceProbe.getRef());
+                resourceActor.tell(getCreateResource("foo"), resourceProbe.getRef());
 
 
                 resourceProbe.receiveN(2, FiniteDuration.create(1, "seconds"));
 
+            }
+        };
+    }
 
+    @Test
+    public void testFailureOfResource() throws Exception {
+        new JavaTestKit(system) {
+            {
+                final JavaTestKit resourceProbe = new JavaTestKit(system);
+                ActorRef resourceActor = system.actorOf(ResourceActor.props(getLocalProvider()), "resourceActor");
+
+                TestActor.AutoPilot pilot = new TestActor.AutoPilot() {
+
+                    public TestActor.AutoPilot run(ActorRef sender, Object msg) {
+
+                        if (msg instanceof ResourceInfo) {
+                            ResourceInfo resourceInfo = (ResourceInfo) msg;
+                            if (resourceInfo.status().equals(Resource.Status.FAILED)) {
+                                resourceActor.tell(new ResourceControl.Shutdown(), resourceProbe.getRef());
+                                return noAutoPilot();
+                            }
+                        }
+                        return this;
+                    }
+                };
+
+                resourceProbe.setAutoPilot(pilot);
+
+                resourceActor.tell(getCreateResource("fail"), resourceProbe.getRef());
+
+                ResourceInfo ri = (ResourceInfo) resourceProbe.receiveOne(FiniteDuration.create(1, "seconds"));
+
+                assertThat(ri.status(), is(Resource.Status.FAILED));
             }
         };
 
