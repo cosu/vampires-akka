@@ -1,5 +1,6 @@
 package ro.cosu.vampires.server.util;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -13,13 +14,19 @@ import java.io.InputStreamReader;
 import java.util.Properties;
 
 public class Ssh {
+
     private static final Logger LOG = LoggerFactory.getLogger(Ssh.class);
+    private JSch jsch = new JSch();
+
+    @VisibleForTesting
+    protected void setJsch(JSch jsch){
+        this.jsch = jsch;
+    }
 
     public  String runCommand(String user, String privateKey, String address, String command, int port) throws JSchException,
             IOException {
         LOG.info("SSH: {}@{}:{}({}) command: {}",  user, address , port , privateKey ,command);
 
-        JSch jsch = new JSch();
         jsch.setLogger( new JSCHLogger());
 
         Session session = jsch.getSession(user, address, port);
