@@ -10,14 +10,14 @@ public class ResourceManager {
 
     @Inject
     public ResourceManager(Map<Resource.Type, ResourceProvider> resources) {
-        this.providers= resources;
+        this.providers = resources;
     }
 
     public Map<Resource.Type, ResourceProvider> getProviders() {
         return providers;
     }
 
-    public Optional<ResourceProvider > getProvider(Resource.Type type){
+    public Optional<ResourceProvider> getProvider(Resource.Type type) {
         return Optional.ofNullable(providers.get(type));
     }
 }

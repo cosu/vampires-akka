@@ -1,6 +1,7 @@
 package ro.cosu.vampires.server.resources.local;
 
 import autovalue.shaded.com.google.common.common.base.Joiner;
+import com.google.inject.Inject;
 import org.apache.commons.exec.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,8 @@ public class LocalResource extends AbstractResource{
     private final LocalResourceParameters parameters;
     private CollectingLogOutputStream collectingLogOutputStream = new CollectingLogOutputStream();
 
+    @Inject
+    private Executor executor;
 
     public LocalResource(LocalResourceParameters parameters) {
         super(parameters);
@@ -25,7 +28,6 @@ public class LocalResource extends AbstractResource{
 
     @Override
     public void onStart() throws IOException {
-
         // TODO check somehow that the file exists and then exit
         CommandLine cmd = new CommandLine("/bin/sh");
         cmd.addArgument("-c");
@@ -33,12 +35,9 @@ public class LocalResource extends AbstractResource{
 
         LOG.debug("local starting {}", cmd);
         execute(cmd);
-
-
     }
 
     private void execute(CommandLine cmd) throws IOException {
-        DefaultExecutor executor = new DefaultExecutor();
         executor.setWorkingDirectory(Paths.get("").toAbsolutePath().toFile());
         executor.setStreamHandler(new PumpStreamHandler(collectingLogOutputStream));
         executor.setWatchdog(new ExecuteWatchdog(10000));
@@ -68,7 +67,6 @@ public class LocalResource extends AbstractResource{
         catch (NumberFormatException ex) {
             LOG.warn("Failed to get pid value. nohup process exited prematurely");
         }
-
     }
 
     @Override

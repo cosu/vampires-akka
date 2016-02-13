@@ -33,7 +33,7 @@ public class EC2ResourceTest {
 
     @Before
     public void setUp() throws Exception {
-       injector = Guice.createInjector(new AbstractModule() {
+        injector = Guice.createInjector(new AbstractModule() {
             @Override
             protected void configure() {
                 MapBinder<Resource.Type, ResourceProvider> mapbinder
@@ -41,24 +41,26 @@ public class EC2ResourceTest {
 
                 mapbinder.addBinding(Resource.Type.EC2).to(EC2ResourceProvider.class).asEagerSingleton();
             }
+
             @Provides
             @Named("Config")
-            private Config provideConfig(){
+            private Config provideConfig() {
                 return ConfigFactory.parseString("resources.ec2.local { " +
-                        "command=bar\n"+
-                        "imageId=baz\n"+
+                        "command=bar\n" +
+                        "imageId=baz\n" +
                         "instanceType= foo\n" +
                         "keyName=foo\n" +
-                        "securityGroup=foo\n"+
+                        "securityGroup=foo\n" +
                         "region=eu\n" +
                         "}"
                 );
             }
+
             @Provides
             private Optional<AmazonEC2Client> provideAmazonEc2(@Named("Config") Config config) {
                 AmazonEC2Client ec2Client = Mockito.mock(AmazonEC2Client.class);
                 RunInstancesResult runInstancesResult = Mockito.mock(RunInstancesResult.class, RETURNS_DEEP_STUBS);
-                DescribeInstancesResult describeInstancesResult = mock(DescribeInstancesResult.class,RETURNS_DEEP_STUBS);
+                DescribeInstancesResult describeInstancesResult = mock(DescribeInstancesResult.class, RETURNS_DEEP_STUBS);
                 TerminateInstancesResult terminateInstancesResult = mock(TerminateInstancesResult.class, RETURNS_DEEP_STUBS);
 
                 when(runInstancesResult.getReservation().getInstances().get(0).getInstanceId()).thenReturn("foo");
@@ -70,10 +72,7 @@ public class EC2ResourceTest {
                 return Optional.of(ec2Client);
             }
         });
-
     }
-
-
 
     @Test
     public void createEC2Resource() throws Exception {
@@ -83,12 +82,10 @@ public class EC2ResourceTest {
     }
 
     @Test
-    public void testStartStopEC2Resource () throws Exception {
+    public void testStartStopEC2Resource() throws Exception {
         Resource resource = getResource();
-        assertThat(resource.start().get().status(),  is(Resource.Status.RUNNING));
-        assertThat(resource.stop().get().status(),  is(Resource.Status.STOPPED));
-
-
+        assertThat(resource.start().get().status(), is(Resource.Status.RUNNING));
+        assertThat(resource.stop().get().status(), is(Resource.Status.STOPPED));
     }
 
     private Resource getResource() {
@@ -99,6 +96,4 @@ public class EC2ResourceTest {
 
         return ec2Provider.create(parameters).get();
     }
-
-
 }

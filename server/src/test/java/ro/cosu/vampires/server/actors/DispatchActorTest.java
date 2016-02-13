@@ -24,7 +24,7 @@ public class DispatchActorTest extends AbstractActorTest{
                 // create a test probe
                 final JavaTestKit workProbe = new JavaTestKit(system);
 
-                // create a forwarder, injecting the probe’s testActor
+                // create a forwarder, injecting the probe's testActor
                 final Props props = DispatchActor.props(workProbe.getRef() );
                 final ActorRef forwarder = system.actorOf(props, "dispatch");
 
