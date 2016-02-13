@@ -48,9 +48,7 @@ public class EC2Resource extends AbstractResource {
                 .withSecurityGroups(parameters.securityGroup())
                 .withUserData(Base64.encodeBase64String(cloudInit.getBytes()));
 
-        RunInstancesResult result;
-
-        result = amazonEC2Client.runInstances(request);
+        RunInstancesResult result = amazonEC2Client.runInstances(request);
 
         instanceId = result.getReservation().getInstances().get(0).getInstanceId();
 
@@ -69,18 +67,25 @@ public class EC2Resource extends AbstractResource {
 
         describeRequest.withInstanceIds(instanceId);
 
+        String publicDnsName = getPublicDnsName(describeRequest);
 
+        LOG.info("instance {} : {}", instanceId, publicDnsName);
+    }
+
+    private String getPublicDnsName(DescribeInstancesRequest describeRequest) throws InterruptedException {
         String publicDnsName = "";
         int tries = 0;
         while (Strings.isNullOrEmpty(publicDnsName) && tries < 10){
-
             DescribeInstancesResult describeInstanceResult = amazonEC2Client.describeInstances(describeRequest);
             publicDnsName = describeInstanceResult.getReservations().get(0).getInstances().get(0).getPublicDnsName();
+            if (!Strings.isNullOrEmpty(publicDnsName)) break;
             tries++;
             Thread.sleep(3000);
         }
-        LOG.info("instance {} : {}", instanceId, publicDnsName);
-
+        if (Strings.isNullOrEmpty(publicDnsName)){
+            LOG.error("unable to get publicDNSName for instance {}", describeRequest.getInstanceIds());
+        }
+        return publicDnsName;
     }
 
     @Override
