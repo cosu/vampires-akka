@@ -54,15 +54,10 @@ public class ResultActor extends UntypedActor {
 
     @Override
     public void onReceive(Object message) throws Exception {
-
         if (message instanceof Job) {
-
             Job job = (Job) message;
             if (!Computation.empty().equals(job.computation())) {
                 results.add(job);
-                log.info("got result of {} . received {}/{}", job.computation().command(), results.size(),
-                        numberOfResults);
-                log.debug("result {}", job.result());
                 writers.forEach(r -> r.addResult(job));
             }
 
