@@ -87,7 +87,6 @@ public class ResourceActor extends UntypedActorWithStash {
     }
 
     private void activate() {
-        log.info("active");
         sendInfoToParent();
         unstashAll();
         getContext().become(active);
