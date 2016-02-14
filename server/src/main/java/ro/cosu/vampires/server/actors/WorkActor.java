@@ -34,6 +34,7 @@ public class WorkActor extends UntypedActor {
     @Override
     public void preStart() {
         int jobDeadlineSeconds = settings.getJobDeadline();
+        log.debug("JobDeadline in seconds {}" , jobDeadlineSeconds);
         pendingJobs = CacheBuilder.newBuilder().expireAfterWrite(jobDeadlineSeconds, TimeUnit.SECONDS)
                 .removalListener(notification -> {
                     if (!notification.wasEvicted()) {
