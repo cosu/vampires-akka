@@ -20,7 +20,6 @@ public class MongoWriter implements ResultsWriter {
 
     }
 
-
     private MongoClient getMongoClient() {
         return new MongoClient();
     }

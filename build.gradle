@@ -22,21 +22,6 @@ allprojects {
             options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
         }
     }
-
-    task deleteLocalInstall(type: Delete) {
-        delete System.properties['user.home'] + "/vampires-akka/${project.name}"
-    }
-
-    task copyScripts(dependsOn: deleteLocalInstall, type: Copy){
-        from "scripts"
-        into System.properties['user.home'] + "/vampires-akka/scripts"
-
-    }
-
-    task installLocal(dependsOn: [installDist, copyScripts],type: Sync) {
-        from "${buildDir}/install/${project.name}"
-        into System.properties['user.home'] + "/vampires-akka/${project.name}"
-    }
 }
 
 subprojects {
@@ -56,8 +41,6 @@ subprojects {
         targetCompatibility= 1.8
         sourceCompatibility= 1.8
         options.fork = true
-
-        //enable incremental compilation
         options.incremental = true
     }
 
@@ -78,7 +61,13 @@ subprojects {
     task integrationTest(type: Test) {
         testClassesDir = sourceSets.integrationTest.output.classesDir
         classpath = sourceSets.integrationTest.runtimeClasspath
+    }
 
+    task installLocal(dependsOn:[distZip], type: Copy) {
+        def zipFile = file("${buildDir}/distributions/${project.name}-${project.version}.zip")
+        def outputDir = file(System.properties['user.home'] + "/vampires-akka-dist/")
+        from zipTree(zipFile)
+        into outputDir
     }
 
     jacocoTestReport {
@@ -90,8 +79,6 @@ subprojects {
 
     check.dependsOn jacocoTestReport
 
-
-//    check.dependsOn integrationTest
     integrationTest.dependsOn test
 
     dependencies {
@@ -122,6 +109,12 @@ subprojects {
         integrationTestCompile configurations.testCompile
         integrationTestRuntime configurations.testRuntime
     }
+
+    applicationDistribution.from("scripts/") {
+        into "scripts/"
+        fileMode 0755
+    }
+
 }
 
 project(':client') {
