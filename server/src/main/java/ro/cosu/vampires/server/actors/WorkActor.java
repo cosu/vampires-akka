@@ -74,9 +74,10 @@ public class WorkActor extends UntypedActor {
     private void receiveJob(Job job) {
 
         if (!Computation.backoff().equals(job.computation())) {
-            pendingJobs.invalidate(job.id());
             log.info("Work result from {}. pending {} ", job.metrics().metadata().get("host-hostname"), pendingJobs.size());
+            pendingJobs.invalidate(job.id());
             resultActor.forward(job, getContext());
+            log.info("pending {}", pendingJobs.asMap());
         }
         Job work = getNewWork(Optional.ofNullable(workQueue.poll()));
         getSender().tell(work, getSelf());
