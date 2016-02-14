@@ -25,4 +25,4 @@ cd "`dirname \"$PRG\"`/.." >/dev/null
 APP_HOME="`pwd -P`"
 cd "$SAVED" >/dev/null
 
-${APP_HOME}/client "$@"
+${APP_HOME}/bin/client "$@"
