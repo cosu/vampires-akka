@@ -39,12 +39,4 @@ public class JobTest {
         Job job =  Job.backoff();
         assertThat(job.computation().command(), containsString("sleep 10"));
     }
-
-    @Test
-    public void testWithWaitForever() throws Exception {
-        Job job =  Job.waitForever();
-        assertThat(job.computation().command(), containsString("sleep 666"));
-    }
-
-
 }

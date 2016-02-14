@@ -22,7 +22,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 public class ClientActor extends UntypedActor {
 
     private final String serverPath;
-    private  String clientId ;
+    private String clientId;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private ActorRef server;
     private final ExecutorsExtensionImpl executors = ExecutorsExtension.ExecutorsProvider.get(getContext().system());
@@ -102,10 +102,8 @@ public class ClientActor extends UntypedActor {
     };
 
     private void execute(Job job) {
-        if (!job.equals(Job.waitForever())) {
-            ActorRef executorActor = getContext().actorOf(ExecutorActor.props());
-            executorActor.tell(job, getSelf());
-        }
+        ActorRef executorActor = getContext().actorOf(ExecutorActor.props());
+        executorActor.tell(job, getSelf());
     }
 
     private ClientInfo getClientInfo() throws Exception {

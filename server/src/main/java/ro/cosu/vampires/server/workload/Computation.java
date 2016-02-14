@@ -16,6 +16,12 @@ public abstract class Computation implements Serializable {
         return new AutoValue_Computation.Builder().id(UUID.randomUUID().toString());
     }
 
+    public static Computation backoff() {
+        return new AutoValue_Computation.Builder()
+                .id("BACKOFF")
+                .command("sleep 5")
+                .build();
+    }
 
     public static Computation empty() {
         return new AutoValue_Computation.Builder()
