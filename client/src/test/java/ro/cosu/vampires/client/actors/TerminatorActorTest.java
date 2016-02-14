@@ -8,6 +8,7 @@ import akka.testkit.TestProbe;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,11 +35,11 @@ public class TerminatorActorTest {
     public void testTerminatorActor() throws Exception {
         TestProbe testProbe = new TestProbe(system);
 
-        TestActorRef<TerminatorActor> terminator = TestActorRef.create(system, TerminatorActor.props(testProbe.ref()));
+        TestActorRef.create(system, TerminatorActor.props(testProbe.ref()));
         testProbe.ref().tell(PoisonPill.getInstance(), TestActorRef.noSender());
 
-        system.awaitTermination(Duration.create("1 second"));
-        assertThat(system.isTerminated(), is(true));
+        Await.result(system.whenTerminated(), Duration.create("1 second"));
+        assertThat(system.whenTerminated().value().get().isSuccess(), is(true));
 
     }
 
