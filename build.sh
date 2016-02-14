@@ -14,15 +14,15 @@ done
 SAVED="`pwd`"
 cd "`dirname \"$PRG\"`" >/dev/null
 
-#git fetch --all
-#git reset --hard origin/master
-#./gradlew clean check installLocal
+git fetch --all
+git reset --hard origin/master
+./gradlew clean check installLocal
 
 
 AWS_CREDENTIALS=${HOME}/.aws
 if [[ -f  ${AWS_CREDENTIALS} ]]; then
     source ${AWS_CREDENTIALS}
-    s3cmd put --access_key=${accessKey} --secret_key=${secretKey} -d -P client/build/distributions/*.zip s3://uva-vampires/client/
+    s3cmd put --access_key=${accessKey} --secret_key=${secretKey} -P client/build/distributions/*.zip s3://uva-vampires/client/
 fi
 
 cd "$SAVED" >/dev/null
