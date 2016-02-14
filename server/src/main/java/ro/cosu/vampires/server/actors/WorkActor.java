@@ -78,11 +78,11 @@ public class WorkActor extends UntypedActor {
             log.info("Work result from {}. pending {} ", job.metrics().metadata().get("host-hostname"), pendingJobs.size());
             pendingJobs.invalidate(job.id());
         }
-        Object work = this.getNewWorkload(Optional.ofNullable(workQueue.poll()));
+        Job work = getNewWork(Optional.ofNullable(workQueue.poll()));
         getSender().tell(work, getSelf());
     }
 
-    private Object getNewWorkload(Optional<String> work) {
+    private Job getNewWork(Optional<String> work) {
         Job job = Job.backoff();
         if (work.isPresent()) {
             Computation computation = Computation.builder().command(work.get()).build();
