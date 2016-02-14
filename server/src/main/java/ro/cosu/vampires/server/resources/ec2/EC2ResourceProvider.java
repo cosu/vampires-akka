@@ -48,9 +48,9 @@ public class EC2ResourceProvider extends AbstractResourceProvider {
 
     @Override
     protected Config getSimpleConfigForInstance(String instanceName) {
-//        if (getConfig().hasPath(getInstanceKey(instanceName))) {
-//            return super.getSimpleConfigForInstance(instanceName);
-//        }
+        if (getConfig().hasPath(getInstanceKey(instanceName))) {
+            return super.getSimpleConfigForInstance(instanceName);
+        }
         return parseInstanceType(instanceName);
     }
 
