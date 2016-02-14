@@ -22,7 +22,8 @@ public class ConfigActor extends UntypedActor {
         if (message instanceof ClientInfo) {
             ClientInfo clientInfo = (ClientInfo) message;
             final ClientConfig configFor = getConfigFor(clientInfo);
-            log.info("config for client {}:{}, {}", clientInfo.metrics().metadata().get("host-hostname"), configFor);
+            log.info("config for client {}:{} {}", clientInfo.metrics().metadata().get("host-hostname"),
+                    clientInfo.id(),configFor);
             getSender().tell(configFor, getSelf());
             getContext().actorSelection("/user/resourceManager").forward(clientInfo, getContext());
             getContext().actorSelection("/user/workActor/resultActor").forward(clientInfo, getContext());

@@ -124,8 +124,8 @@ public class ResourceActor extends UntypedActorWithStash {
     private void connectClient(ClientInfo message) {
         ClientInfo clientInfo = message;
         if (clientInfo.id().equals(resource.description().id())){
-            log.info("client {} connected to resource {}" ,clientInfo.id(), resource.info());
             resource.connected();
+            log.info("Connected: {}" , resource.info());
         }
         else {
             log.error("client info and resource info don't match {}, {}", clientInfo, resource.info());
