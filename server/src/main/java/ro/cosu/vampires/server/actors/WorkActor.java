@@ -71,8 +71,8 @@ public class WorkActor extends UntypedActor {
     }
 
     private void receiveJob(Job job) {
-        resultActor.forward(job, getContext());
         if (!Computation.empty().equals(job.computation())) {
+            resultActor.forward(job, getContext());
             log.info("Work result from {}. pending {} ", job.metrics().metadata().get("host-hostname"), pendingJobs.size());
         }
         pendingJobs.invalidate(job.id());
