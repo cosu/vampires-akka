@@ -1,5 +1,6 @@
 package ro.cosu.vampires.server.resources;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 
 import java.util.UUID;
@@ -8,13 +9,15 @@ import java.util.concurrent.CompletionException;
 
 public abstract class AbstractResource implements Resource {
 
-    
+    private final Parameters parameters;
+
     protected abstract Logger getLogger();
 
     private final ResourceDescription description;
     private Resource.Status status;
 
     public AbstractResource(Resource.Parameters parameters) {
+        this.parameters = parameters;
         setStatus(Status.SLEEPING);
         this.description = ResourceDescription.create(generateId(), parameters.type());
         getLogger().debug("resource parameters {}", parameters);
@@ -101,5 +104,10 @@ public abstract class AbstractResource implements Resource {
                 + "description=" + description + ", "
                 + "status=" + status
                 + "}";
+    }
+
+    @VisibleForTesting
+    public Parameters getParameters() {
+        return parameters;
     }
 }

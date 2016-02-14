@@ -17,4 +17,28 @@ public abstract class AbstractResourceProvider implements ResourceProvider {
     public Config getConfig() {
         return config;
     }
+
+    protected Config getConfigForInstance(String instanceName) {
+        Config appDefaults = getConfig().getConfig("resources");
+        Config providerDefaults = getConfig().getConfig("resources." + getType().toString().toLowerCase());
+
+        return  getSimpleConfigForInstance(instanceName)
+                .withFallback(providerDefaults)
+                .withFallback(appDefaults);
+    }
+
+    protected Config getSimpleConfigForInstance(String instanceName){
+        return getConfig().getConfig(getInstanceKey(instanceName));
+    }
+
+    protected String getInstanceKey(String instanceName){
+        return "resources."+ getType().toString().toLowerCase() + "." + instanceName.toLowerCase();
+    }
+
+    @Override
+    public Resource.Parameters getParameters(String instanceName) {
+        return  getBuilder().fromConfig(getConfigForInstance(instanceName)).build();
+    }
+
+
 }

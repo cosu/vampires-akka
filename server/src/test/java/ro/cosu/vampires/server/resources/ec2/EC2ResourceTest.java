@@ -15,6 +15,7 @@ import com.typesafe.config.ConfigFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import ro.cosu.vampires.server.resources.AbstractResource;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceManager;
 import ro.cosu.vampires.server.resources.ResourceProvider;
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.*;
 
 
 public class EC2ResourceTest {
+    private static final String INSTANCE_TYPE = "eu-west-1.t2.micro";
     private Injector injector;
 
     @Before
@@ -45,13 +47,16 @@ public class EC2ResourceTest {
             @Provides
             @Named("Config")
             private Config provideConfig() {
-                return ConfigFactory.parseString("resources.ec2.local { " +
-                        "command=bar\n" +
-                        "imageId=baz\n" +
-                        "instanceType= foo\n" +
-                        "keyName=foo\n" +
-                        "securityGroup=foo\n" +
-                        "region=eu\n" +
+                return ConfigFactory.parseString(
+                        "resources.ec2 { " +
+                            "command=bar\n" +
+                            "imageId=baz\n" +
+                            "keyName=foo\n" +
+                            "securityGroup=foo\n" +
+                            "eu-west1.t2.medium {\n" +
+                                "region=eu-east1\n" +
+                                "instanceType=t2.medium\n" +
+                                "}" +
                         "}"
                 );
             }
@@ -77,23 +82,38 @@ public class EC2ResourceTest {
     @Test
     public void createEC2Resource() throws Exception {
 
-        Resource resource = getResource();
+        Resource resource = getResource(INSTANCE_TYPE);
         assertThat(resource.status(), equalTo(Resource.Status.SLEEPING));
     }
 
     @Test
     public void testStartStopEC2Resource() throws Exception {
-        Resource resource = getResource();
+        Resource resource = getResource(INSTANCE_TYPE);
         assertThat(resource.start().get().status(), is(Resource.Status.RUNNING));
         assertThat(resource.stop().get().status(), is(Resource.Status.STOPPED));
     }
 
-    private Resource getResource() {
+    private Resource getResource(String instanceType) {
         ResourceManager rm = injector.getInstance(ResourceManager.class);
 
         ResourceProvider ec2Provider = rm.getProviders().get(Resource.Type.EC2);
-        Resource.Parameters parameters = ec2Provider.getParameters("local");
+        Resource.Parameters parameters = ec2Provider.getParameters(instanceType);
 
         return ec2Provider.create(parameters).get();
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidInstanceType() throws Exception {
+        getResource("foo");
+    }
+
+    @Test
+    public void testCustomInstanceType() throws Exception {
+        AbstractResource resource = (EC2Resource) getResource("eu-west1.t2.medium");
+        EC2ResourceParameters parameters = (EC2ResourceParameters) resource.getParameters();
+        assertThat(parameters.region(), is("eu-east1"));
+    }
+
+
+    
 }

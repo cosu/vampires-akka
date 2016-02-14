@@ -11,18 +11,8 @@ public interface ResourceProvider {
 
     Config getConfig();
 
-    default Config getConfigForInstance(String instanceName) {
-        Config appDefaults = getConfig().getConfig("resources");
-        Config providerDefaults = getConfig().getConfig("resources." + getType().toString().toLowerCase());
-
-        return getConfig().getConfig("resources."+ getType().toString().toLowerCase() + "." + instanceName.toLowerCase())
-                .withFallback(providerDefaults)
-                .withFallback(appDefaults);
-    }
-
-    default Resource.Parameters getParameters(String instanceName) {
-        return  getBuilder().fromConfig(getConfigForInstance(instanceName)).build();
-    }
+    Resource.Parameters getParameters(String instanceName);
 
     Resource.Parameters.Builder getBuilder();
+
 }
