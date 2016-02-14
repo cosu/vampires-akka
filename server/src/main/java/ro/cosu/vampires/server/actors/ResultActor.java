@@ -7,7 +7,6 @@ import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.settings.Settings;
 import ro.cosu.vampires.server.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.ClientInfo;
-import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.writers.ResultsWriter;
 
@@ -56,10 +55,8 @@ public class ResultActor extends UntypedActor {
     public void onReceive(Object message) throws Exception {
         if (message instanceof Job) {
             Job job = (Job) message;
-            if (!Computation.empty().equals(job.computation())) {
-                results.add(job);
-                writers.forEach(r -> r.addResult(job));
-            }
+            results.add(job);
+            writers.forEach(r -> r.addResult(job));
 
             //this should be a predicate
             if (results.size() == numberOfResults) {

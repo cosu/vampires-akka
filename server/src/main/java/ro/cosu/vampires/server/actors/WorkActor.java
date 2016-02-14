@@ -59,12 +59,7 @@ public class WorkActor extends UntypedActor {
     @Override
     public void onReceive(Object message) throws Exception {
         if (message instanceof Job) {
-            Job job = (Job) message;
-            resultActor.forward(job, getContext());
-            log.info("Work result from {}. pending {} ", job.metrics().metadata().get("host-hostname"), pendingJobs.size());
-            pendingJobs.invalidate(job.id());
-            Object work = this.getNewWorkload(Optional.ofNullable(workQueue.poll()));
-            getSender().tell(work, getSelf());
+            receiveJob((Job) message);
         } else if (message instanceof ResourceControl.Shutdown) {
             log.info("shutting down");
             resultActor.forward(message, getContext());
@@ -73,6 +68,16 @@ public class WorkActor extends UntypedActor {
             log.warning("unhandled message from {}", getSender());
             unhandled(message);
         }
+    }
+
+    private void receiveJob(Job job) {
+        resultActor.forward(job, getContext());
+        if (!Computation.empty().equals(job.computation())) {
+            log.info("Work result from {}. pending {} ", job.metrics().metadata().get("host-hostname"), pendingJobs.size());
+        }
+        pendingJobs.invalidate(job.id());
+        Object work = this.getNewWorkload(Optional.ofNullable(workQueue.poll()));
+        getSender().tell(work, getSelf());
     }
 
     private Object getNewWorkload(Optional<String> work) {
