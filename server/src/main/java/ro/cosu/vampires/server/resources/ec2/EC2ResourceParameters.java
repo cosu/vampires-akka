@@ -1,6 +1,7 @@
 package ro.cosu.vampires.server.resources.ec2;
 
 import com.google.auto.value.AutoValue;
+import com.google.common.base.Preconditions;
 import com.typesafe.config.Config;
 import ro.cosu.vampires.server.resources.Resource;
 
@@ -43,12 +44,14 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
         public abstract Builder type(Resource.Type type);
 
         public Builder fromConfig(Config config) {
+            String region = config.getString("region");
+            Preconditions.checkArgument(region.split("-").length == 3, "Invalid region: " + region);
 
             this.command(config.getString("command"));
             this.instanceType(config.getString("instanceType"));
             this.imageId(config.getString("imageId"));
             this.keyName(config.getString("keyName"));
-            this.region(config.getString("region"));
+            this.region(region);
             this.securityGroup(config.getString("securityGroup"));
             return this;
         }

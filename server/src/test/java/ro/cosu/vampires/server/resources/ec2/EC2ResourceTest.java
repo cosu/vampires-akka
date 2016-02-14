@@ -53,8 +53,8 @@ public class EC2ResourceTest {
                             "imageId=baz\n" +
                             "keyName=foo\n" +
                             "securityGroup=foo\n" +
-                            "eu-west1.t2.medium {\n" +
-                                "region=eu-east1\n" +
+                            "eu-west-1.t2.medium {\n" +
+                                "region=eu-east-1\n" +
                                 "instanceType=t2.medium\n" +
                                 "}" +
                         "}"
@@ -109,9 +109,14 @@ public class EC2ResourceTest {
 
     @Test
     public void testCustomInstanceType() throws Exception {
-        AbstractResource resource = (EC2Resource) getResource("eu-west1.t2.medium");
+        AbstractResource resource = (EC2Resource) getResource("eu-west-1.t2.medium");
         EC2ResourceParameters parameters = (EC2ResourceParameters) resource.getParameters();
-        assertThat(parameters.region(), is("eu-east1"));
+        assertThat(parameters.region(), is("eu-east-1"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidRegion() throws Exception {
+        getResource("eu.t2.micro");
     }
 
 
