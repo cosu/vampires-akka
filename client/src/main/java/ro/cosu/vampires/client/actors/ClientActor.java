@@ -35,7 +35,6 @@ public class ClientActor extends UntypedActor {
         this.serverPath = serverPath;
         this.clientId = clientId;
         sendIdentifyRequest();
-
     }
 
     private void sendIdentifyRequest() {
@@ -59,7 +58,6 @@ public class ClientActor extends UntypedActor {
             } else {
                 getContext().watch(server);
                 server.tell(getClientInfo(), getSelf());
-
                 getContext().become(waitForConfig, true);
             }
         } else if (message instanceof ReceiveTimeout) {
@@ -70,14 +68,10 @@ public class ClientActor extends UntypedActor {
     }
 
     private Procedure<Object> active = message -> {
-
         if (message instanceof Job) {
-
             Job job = (Job) message;
-
             if (JobStatus.COMPLETE.equals(job.status())) {
-                job.from(clientId);
-                server.tell(job, getSelf());
+                server.tell(job.from(clientId), getSelf());
             } else {
                 log.debug("Execute {} -> {} {}", getSelf().path(), job.computation(), getSender());
                 execute(job);
@@ -87,7 +81,6 @@ public class ClientActor extends UntypedActor {
                 log.info("server left. shutting down");
                 getContext().stop(getSelf());
             }
-
         } else {
             log.error("Unhandled: {} -> {} {}", getSelf().path(), message.toString(), getSender());
             unhandled(message);
