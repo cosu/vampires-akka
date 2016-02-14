@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --time=00:15:00
+#SBATCH --time=00:30:00
 #SBATCH --ntasks-per-node=1
 
 . /etc/bashrc
