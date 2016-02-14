@@ -47,7 +47,7 @@ public abstract class Job implements Serializable {
     }
 
     public Job withComputation(Computation computation) {
-        return builder().computation(computation).build();
+        return toBuilder().computation(computation).build();
     }
 
 
