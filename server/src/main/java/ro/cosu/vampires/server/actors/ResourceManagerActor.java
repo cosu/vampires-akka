@@ -113,7 +113,7 @@ public class ResourceManagerActor extends UntypedActor {
     }
 
     private void terminatedResource(ActorRef sender) {
-        log.info("terminated {}", sender);
+        log.debug("terminated {}", sender);
         resourceRegistry.removeResource(sender);
         if (resourceRegistry.getResourceActors().isEmpty())
             getContext().stop(getSelf());
@@ -121,7 +121,7 @@ public class ResourceManagerActor extends UntypedActor {
 
     private void registerClient(ClientInfo clientInfo) {
         getContext().watch(getSender());
-        log.info("watch {}" , getSender());
+        log.debug("watch {}" , getSender());
         resourceRegistry.registerClient(getSender(), clientInfo);
         resourceRegistry.lookupResourceOfClient(clientInfo.id())
                 .ifPresent(resourceActor -> resourceActor.forward(clientInfo, getContext()));
