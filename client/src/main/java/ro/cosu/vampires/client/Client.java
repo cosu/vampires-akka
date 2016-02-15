@@ -1,16 +1,17 @@
 package ro.cosu.vampires.client;
 
+import java.util.logging.LogManager;
+
+import org.slf4j.bridge.SLF4JBridgeHandler;
+
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 import ro.cosu.vampires.client.actors.ClientActor;
 import ro.cosu.vampires.client.actors.MonitoringActor;
 import ro.cosu.vampires.client.actors.TerminatorActor;
 import ro.cosu.vampires.client.monitoring.MonitoringManager;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
-
-import java.util.logging.LogManager;
 
 /**
  * User: Cosmin 'cosu' Dumitru - cosu@cosu.ro
@@ -25,14 +26,22 @@ public class Client {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 1) {
+        String host;
+        String clientId;
+        ActorSystem system = ActorSystem.create("ClientSystem");
+
+        if (args.length == 2){
+            host = args[0];
+            clientId = args[0];
+        }
+        else if (args.length == 1) {
+            clientId = args[0];
+            host = system.settings().config().getString("vampires.server_ip");
+        }
+        else  {
             throw  new IllegalArgumentException("missing client id");
         }
 
-        String clientId = args[0];
-        ActorSystem system = ActorSystem.create("ClientSystem");
-
-        String host = system.settings().config().getString("vampires.server_ip");
         final String serverPath = "akka.tcp://ServerSystem@" + host + ":2552/user/server";
 
         system.actorOf(MonitoringActor.props(MonitoringManager.getMetricRegistry()), "monitor");

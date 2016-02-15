@@ -1,11 +1,12 @@
 package ro.cosu.vampires.server.resources;
 
-import com.google.common.annotations.VisibleForTesting;
-import org.slf4j.Logger;
-
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+
+import org.slf4j.Logger;
+
+import com.google.common.annotations.VisibleForTesting;
 
 public abstract class AbstractResource implements Resource {
 

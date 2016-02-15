@@ -1,5 +1,8 @@
 package ro.cosu.vampires.server.actors;
 
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActorWithStash;
@@ -10,9 +13,6 @@ import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.resources.ResourceProvider;
 import ro.cosu.vampires.server.workload.ClientInfo;
-
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 
 public class ResourceActor extends UntypedActorWithStash {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
@@ -121,8 +121,7 @@ public class ResourceActor extends UntypedActorWithStash {
         }
     };
 
-    private void connectClient(ClientInfo message) {
-        ClientInfo clientInfo = message;
+    private void connectClient(ClientInfo clientInfo) {
         if (clientInfo.id().equals(resource.description().id())){
             resource.connected();
             log.info("Connected: {}" , resource.info());
@@ -134,7 +133,7 @@ public class ResourceActor extends UntypedActorWithStash {
 
     private void sendResourceInfo(ActorRef toActor) {
         ResourceInfo info = Optional.ofNullable(this.resource)
-                    .map(resource -> resource.info())
+                    .map(Resource::info)
                     .orElse(ResourceInfo.failed(resourceProvider.getType()));
         toActor.tell(info, getSelf());
     }

@@ -1,16 +1,5 @@
 package ro.cosu.vampires.server.writers.json;
 
-import autovalue.shaded.com.google.common.common.collect.Maps;
-import com.google.common.base.Preconditions;
-import com.google.gson.*;
-import com.typesafe.config.Config;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.server.WebsocketHandler;
-import ro.cosu.vampires.server.workload.ClientInfo;
-import ro.cosu.vampires.server.workload.Job;
-import ro.cosu.vampires.server.writers.ResultsWriter;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,6 +12,23 @@ import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.typesafe.config.Config;
+
+import autovalue.shaded.com.google.common.common.collect.Maps;
+import ro.cosu.vampires.server.workload.ClientInfo;
+import ro.cosu.vampires.server.workload.Job;
+import ro.cosu.vampires.server.writers.ResultsWriter;
 
 public class JsonResultsWriter implements ResultsWriter {
     private static final Logger LOG = LoggerFactory.getLogger(JsonResultsWriter.class);
@@ -86,7 +92,7 @@ public class JsonResultsWriter implements ResultsWriter {
     }
 
 
-    public class LocalDateTimeSerializer implements JsonSerializer<LocalDateTime> {
+    public static class LocalDateTimeSerializer implements JsonSerializer<LocalDateTime> {
         @Override
         public JsonElement serialize(LocalDateTime localDateTime, Type type, JsonSerializationContext
                 jsonSerializationContext) {
