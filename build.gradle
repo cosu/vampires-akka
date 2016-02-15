@@ -13,7 +13,7 @@ idea{
 }
 
 wrapper {
-    gradleVersion = '2.10'
+    gradleVersion = '2.11'
 }
 
 allprojects {
@@ -137,7 +137,6 @@ project(':server'){
         compile 'com.jcraft:jsch:0.1.53'
         compile 'org.mongodb.morphia:morphia-logging-slf4j:1.1.1'
         compile 'com.amazonaws:aws-java-sdk:1.10.52'
-
         compile ('com.sparkjava:spark-core:2.3') {
             exclude group: 'org.slf4j', module:'slf4j-simple'
         }
@@ -147,9 +146,18 @@ project(':server'){
 project(':data'){
     mainClassName=  mainClassName = "ro.cosu.vampires.server.Server"
     dependencies {
-        compile project(':server')
-        compile ('org.apache.spark:spark-core_2.11:1.6.0'){
+        def sparkVersion = "2.11:1.6.0"
+
+
+        compile (project(':server')){
+            exclude group: 'com.amazonaws', module: 'aws-java-sdk'
+        }
+        compile ("org.apache.spark:spark-core_${sparkVersion}"){
             exclude group: 'org.slf4j',module:'slf4j-log4j12'
         }
+        compile "org.apache.spark:spark-sql_${sparkVersion}" {
+            exclude group: 'org.slf4j',module:'slf4j-log4j12'
+        }
+
     }
 }

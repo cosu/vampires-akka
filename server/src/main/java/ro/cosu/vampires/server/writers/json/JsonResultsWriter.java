@@ -1,10 +1,20 @@
 package ro.cosu.vampires.server.writers.json;
 
+import autovalue.shaded.com.google.common.common.collect.Maps;
+import com.google.common.base.Preconditions;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.typesafe.config.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ro.cosu.vampires.server.workload.ClientInfo;
+import ro.cosu.vampires.server.workload.Job;
+import ro.cosu.vampires.server.writers.ResultsWriter;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -12,23 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.typesafe.config.Config;
-
-import autovalue.shaded.com.google.common.common.collect.Maps;
-import ro.cosu.vampires.server.workload.ClientInfo;
-import ro.cosu.vampires.server.workload.Job;
-import ro.cosu.vampires.server.writers.ResultsWriter;
+import java.util.stream.Collectors;
 
 public class JsonResultsWriter implements ResultsWriter {
     private static final Logger LOG = LoggerFactory.getLogger(JsonResultsWriter.class);
@@ -47,9 +41,9 @@ public class JsonResultsWriter implements ResultsWriter {
 
     }
 
-    private Path getPath() {
+    private Path getPath(String prefix) {
         LocalDateTime date = LocalDateTime.now();
-        return Paths.get(config.getString("writers.json.dir"), "results-" + date.format
+        return Paths.get(config.getString("writers.json.dir"), prefix+"-" + date.format
                 (DateTimeFormatter.ISO_LOCAL_DATE_TIME) + ".json");
 
     }
@@ -72,15 +66,32 @@ public class JsonResultsWriter implements ResultsWriter {
     public void close() {
         //write results to disk
         try {
-            File resultsFile = getPath().toFile();
+            File resultsFile = getPath("results-all").toFile();
             Writer writer = new FileWriter(resultsFile);
 
             Gson gson = new GsonBuilder().setPrettyPrinting()
                     .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
                     .create();
 
+            Gson uglyGson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
+                    .create();
+
             Map<String, Object> res = Maps.newHashMap();
-            res.put("results", results);
+
+            String collect = results.stream().map(uglyGson::toJson).collect(Collectors.joining("\n"));
+
+            FileWriter fileWriter = new FileWriter(getPath("results").toFile());
+            fileWriter.write(collect);
+            fileWriter.close();
+
+            collect = clients.stream().map(uglyGson::toJson).collect(Collectors.joining("\n"));
+            fileWriter = new FileWriter(getPath("clients").toFile());
+            fileWriter.write(collect);
+            fileWriter.close();
+
+
+            res.put("results", this.results);
             res.put("clients", clients);
             gson.toJson(res, writer);
             writer.close();
@@ -92,12 +103,4 @@ public class JsonResultsWriter implements ResultsWriter {
     }
 
 
-    public static class LocalDateTimeSerializer implements JsonSerializer<LocalDateTime> {
-        @Override
-        public JsonElement serialize(LocalDateTime localDateTime, Type type, JsonSerializationContext
-                jsonSerializationContext) {
-
-            return new JsonPrimitive(localDateTime.toString());
-        }
-    }
 }
