@@ -22,7 +22,10 @@ allprojects {
             options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
         }
     }
+
 }
+
+
 
 subprojects {
     apply plugin: 'java'
@@ -144,9 +147,8 @@ project(':server'){
 project(':data'){
     mainClassName=  mainClassName = "ro.cosu.vampires.server.Server"
     dependencies {
-        compile 'org.apache.spark:spark-core_2.11:1.6.0'{
-            exclude group: 'org.slf4j'
-
+        compile ('org.apache.spark:spark-core_2.11:1.6.0'){
+            exclude group: 'org.slf4j',module:'slf4j-log4j12'
         }
     }
 }
