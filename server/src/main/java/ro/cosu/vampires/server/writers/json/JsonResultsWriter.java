@@ -1,6 +1,5 @@
 package ro.cosu.vampires.server.writers.json;
 
-import autovalue.shaded.com.google.common.common.collect.Maps;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,7 +20,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class JsonResultsWriter implements ResultsWriter {
@@ -77,8 +75,8 @@ public class JsonResultsWriter implements ResultsWriter {
                     .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
                     .create();
 
-            Map<String, Object> res = Maps.newHashMap();
 
+            AllResults allResults = AllResults.builder().results(results).clients(clients).build();
             String collect = results.stream().map(uglyGson::toJson).collect(Collectors.joining("\n"));
 
             FileWriter fileWriter = new FileWriter(getPath("results").toFile());
@@ -91,9 +89,7 @@ public class JsonResultsWriter implements ResultsWriter {
             fileWriter.close();
 
 
-            res.put("results", this.results);
-            res.put("clients", clients);
-            gson.toJson(res, writer);
+            gson.toJson(allResults, writer);
             writer.close();
             LOG.info("wrote results to {}", resultsFile.getAbsolutePath());
 

@@ -15,7 +15,7 @@ public class MongoWriterIT {
         MongoWriter writer = new MongoWriter();
         Job job = Job.builder()
                 .computation(Computation.builder().command("test").id("10").build())
-                .metrics(Metrics.empty())
+                .hostMetrics(Metrics.empty())
                 .result(Result.empty())
                 .build();
 

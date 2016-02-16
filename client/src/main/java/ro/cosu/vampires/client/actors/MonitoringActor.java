@@ -70,12 +70,12 @@ public class MonitoringActor extends UntypedActor {
                 log.info("id: {} -> status:{} duration: {}", job.id(), job.status(), job.result().duration());
 
                 ImmutableList<Metric> metricsWindowInterval = metricsWindow.getInterval
-                        (job.result().start(), job.result().stop());
+                        (job.result().trace().start(), job.result().trace().stop());
 
                 ImmutableMap<String, String> hostValues = getHostMetrics();
 
                 Metrics metrics = Metrics.builder().metadata(hostValues).metrics(metricsWindowInterval).build();
-                job = job.withMetrics(metrics);
+                job = job.withHostMetrics(metrics);
                 getSender().tell(job, getSelf());
             } else {
                 log.error("received workload result not present");

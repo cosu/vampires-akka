@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.client.allocation.CpuAllocator;
 import ro.cosu.vampires.client.allocation.CpuSet;
 import ro.cosu.vampires.server.workload.Computation;
-import ro.cosu.vampires.server.workload.ExecInfo;
+import ro.cosu.vampires.server.workload.Trace;
 import ro.cosu.vampires.server.workload.Result;
 
 import java.io.IOException;
@@ -88,9 +88,8 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
         return Result.builder()
                 .duration(duration)
                 .exitCode(exitCode)
-                .execInfo(getExecInfo())
-                .start(start)
-                .stop(stop)
+                .trace(getTrace(start, stop))
+
                 .output(collectingLogOutputStream.getLines())
                 .build();
 
@@ -111,21 +110,21 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
         return Type.FORK;
     }
 
-    private ExecInfo getExecInfo() {
-        final ExecInfo.Builder builder = ExecInfo
+    private Trace getTrace(LocalDateTime start, LocalDateTime stop) {
+        final Trace.Builder builder = Trace
                 .withNoMetrics()
                 .executor(getType().toString())
-                .start(LocalDateTime.now())
-                .stop(LocalDateTime.now())
+                .start(start)
+                .stop(stop)
                 .totalCpuCount(cpuAllocator.totalCpuCount());
 
         if (cpuSet.isPresent()) {
             builder.cpuSet(cpuSet.get().getCpuSet());
         }
-        final ExecInfo execInfo = builder.build();
+        final Trace trace = builder.build();
 
-        LOG.debug("{}", execInfo);
-        return  execInfo;
+        LOG.debug("{}", trace);
+        return trace;
     }
 
     @Override

@@ -3,11 +3,14 @@ package ro.cosu.vampires.server.workload;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import ro.cosu.vampires.server.util.gson.AutoGson;
 
 import java.io.Serializable;
 import java.util.UUID;
 
 @AutoValue
+@AutoGson
+
 public abstract class Metrics implements Serializable{
 
     public abstract ImmutableList<Metric> metrics();

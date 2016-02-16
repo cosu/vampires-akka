@@ -23,7 +23,7 @@ public class WorkActorTest extends AbstractActorTest{
 
                 Job job = Job.builder()
                         .computation(Computation.builder().command("1").build())
-                        .metrics(Metrics.empty())
+                        .hostMetrics(Metrics.empty())
                         .result(Result.empty())
                         .build();
 

@@ -2,14 +2,17 @@ package ro.cosu.vampires.server.workload;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableMap;
+import ro.cosu.vampires.server.util.gson.AutoGson;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @AutoValue
+@AutoGson
 public abstract class Metric implements Serializable{
 
     public abstract ImmutableMap<String, Double> values();
+
     public abstract LocalDateTime time();
 
 

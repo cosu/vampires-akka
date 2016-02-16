@@ -51,12 +51,12 @@ public class MonitoringActorTest {
         Computation computation = Computation.builder().command("test").id("test").build();
         Result result = Result.builder().duration(10).exitCode(0).output(new LinkedList<>())
                 .stop(LocalDateTime.now())
-                .execInfo(ExecInfo.empty())
+                .trace(Trace.empty())
                 .start(LocalDateTime.now().minus(seconds, ChronoUnit.SECONDS))
                 .build();
 
         Job jobWithoutMetrics = Job.builder().computation(computation).result(result)
-                .metrics(Metrics.empty())
+                .hostMetrics(Metrics.empty())
                 .status(JobStatus.EXECUTED)
                 .build();
 
@@ -65,11 +65,11 @@ public class MonitoringActorTest {
 
         Job job = (Job) Await.result(future, Duration.create("2 seconds"));
 
-        ImmutableList<Metric> timedMetrics = job.metrics().metrics();
+        ImmutableList<Metric> timedMetrics = job.hostMetrics().metrics();
 
         assertThat(timedMetrics.size(), not(0));
 
-        assertThat(job.metrics().metadata().keySet().size(), not(0));
+        assertThat(job.hostMetrics().metadata().keySet().size(), not(0));
 
 
     }

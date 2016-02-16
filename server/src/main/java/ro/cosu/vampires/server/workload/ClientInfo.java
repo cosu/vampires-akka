@@ -1,12 +1,15 @@
 package ro.cosu.vampires.server.workload;
 
 import com.google.auto.value.AutoValue;
+import ro.cosu.vampires.server.util.gson.AutoGson;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Map;
 
 @AutoValue
+@AutoGson
+
 public abstract class ClientInfo  implements Serializable {
 
     public abstract  String id();

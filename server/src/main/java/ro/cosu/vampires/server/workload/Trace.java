@@ -2,6 +2,7 @@ package ro.cosu.vampires.server.workload;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.Sets;
+import ro.cosu.vampires.server.util.gson.AutoGson;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -9,13 +10,14 @@ import java.util.Set;
 
 
 @AutoValue
-public abstract class ExecInfo implements Serializable{
+@AutoGson
+public abstract class Trace implements Serializable{
 
     public abstract LocalDateTime start();
 
     public abstract LocalDateTime stop();
 
-    public abstract Metrics metrics();
+    public abstract Metrics executorMetrics();
 
     public abstract Set<Integer> cpuSet();
 
@@ -23,23 +25,23 @@ public abstract class ExecInfo implements Serializable{
 
     public abstract String executor();
 
-    public static ExecInfo empty() {
+    public static Trace empty() {
         return builder().cpuSet(Sets.newHashSet())
                 .start(LocalDateTime.parse("2000-01-01T00:00:00"))
                 .stop(LocalDateTime.parse("2000-01-01T00:00:00"))
                 .totalCpuCount(0)
-                .metrics(Metrics.empty())
+                .executorMetrics(Metrics.empty())
                 .executor("unknown")
                 .build();
     }
 
     public static Builder withNoMetrics() {
         return builder()
-                .metrics(Metrics.empty());
+                .executorMetrics(Metrics.empty());
     }
 
     public static Builder builder() {
-        return new AutoValue_ExecInfo.Builder();
+        return new AutoValue_Trace.Builder();
     }
 
     @AutoValue.Builder
@@ -47,7 +49,7 @@ public abstract class ExecInfo implements Serializable{
 
         public abstract Builder executor(String executor);
 
-        public abstract Builder metrics(Metrics metrics);
+        public abstract Builder executorMetrics(Metrics metrics);
 
         public abstract Builder cpuSet(Set<Integer> cpuSet);
 
@@ -57,7 +59,7 @@ public abstract class ExecInfo implements Serializable{
 
         public abstract Builder totalCpuCount(int totalCpuCount);
 
-        public abstract ExecInfo build();
+        public abstract Trace build();
     }
 
 

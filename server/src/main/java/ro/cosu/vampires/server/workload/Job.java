@@ -1,28 +1,31 @@
 package ro.cosu.vampires.server.workload;
 
 import com.google.auto.value.AutoValue;
+import ro.cosu.vampires.server.util.gson.AutoGson;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @AutoValue
+@AutoGson
 public abstract class Job implements Serializable {
 
-
-    public abstract Computation computation();
-
-    public abstract LocalDateTime created();
-
-    public abstract Result result();
-
-    public abstract JobStatus status();
-
-    public abstract Metrics metrics();
 
     public abstract String id();
 
     public abstract String from();
+
+    public abstract LocalDateTime created();
+
+    public abstract JobStatus status();
+
+    public abstract Computation computation();
+
+    public abstract Result result();
+
+    public abstract Metrics hostMetrics();
+
 
 
     public abstract Builder toBuilder();
@@ -34,8 +37,8 @@ public abstract class Job implements Serializable {
     }
 
 
-    public Job withMetrics(Metrics metrics) {
-        return toBuilder().metrics(metrics)
+    public Job withHostMetrics(Metrics metrics) {
+        return toBuilder().hostMetrics(metrics)
                 .status(JobStatus.COMPLETE)
                 .build();
     }
@@ -53,12 +56,12 @@ public abstract class Job implements Serializable {
 
     public static Job empty() {
         return builder().computation(Computation.empty())
-                .metrics(Metrics.empty())
+                .hostMetrics(Metrics.empty())
                 .result(Result.empty()).build();
     }
     public static Job backoff() {
         return builder().computation(Computation.backoff())
-                .metrics(Metrics.empty())
+                .hostMetrics(Metrics.empty())
                 .result(Result.empty()).build();
     }
 
@@ -76,7 +79,7 @@ public abstract class Job implements Serializable {
 
         public abstract Builder result(Result result);
 
-        public abstract Builder metrics(Metrics metrics);
+        public abstract Builder hostMetrics(Metrics metrics);
 
         public abstract Builder created(LocalDateTime created);
 

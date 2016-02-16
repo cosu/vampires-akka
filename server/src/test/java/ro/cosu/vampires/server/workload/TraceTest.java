@@ -8,18 +8,18 @@ import java.time.LocalDateTime;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public class ExecInfoTest {
+public class TraceTest {
 
     @Test
     public void testWithNoMetrics() {
-        ExecInfo execInfo = ExecInfo.withNoMetrics()
+        Trace trace = Trace.withNoMetrics()
                 .start(LocalDateTime.now())
                 .stop(LocalDateTime.now())
                 .cpuSet(Sets.newSet(1))
                 .totalCpuCount(1)
                 .executor("foo")
                 .build();
-        assertThat(execInfo.metrics(), is(Metrics.empty()));
+        assertThat(trace.executorMetrics(), is(Metrics.empty()));
     }
 
 }

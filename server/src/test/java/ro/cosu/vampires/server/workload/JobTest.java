@@ -17,7 +17,7 @@ public class JobTest {
     private Job getJob() {
         return Job.builder()
                     .computation(Computation.builder().command("test").id("10").build())
-                    .metrics(Metrics.empty())
+                    .hostMetrics(Metrics.empty())
                     .result(Result.empty())
                     .build();
     }
@@ -30,7 +30,7 @@ public class JobTest {
 
     @Test
     public void testWithMetrics() throws Exception {
-        Job job = getJob().withMetrics(Metrics.empty());
+        Job job = getJob().withHostMetrics(Metrics.empty());
         assertThat(job.status(), is(JobStatus.COMPLETE));
     }
 

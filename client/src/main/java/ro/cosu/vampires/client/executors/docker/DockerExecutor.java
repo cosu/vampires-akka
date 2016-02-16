@@ -18,7 +18,7 @@ import ro.cosu.vampires.client.allocation.CpuSet;
 import ro.cosu.vampires.client.executors.Executor;
 import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
 import ro.cosu.vampires.server.workload.Computation;
-import ro.cosu.vampires.server.workload.ExecInfo;
+import ro.cosu.vampires.server.workload.Trace;
 import ro.cosu.vampires.server.workload.Result;
 
 import javax.ws.rs.ProcessingException;
@@ -104,9 +104,7 @@ public class DockerExecutor implements Executor {
 
         return Result.builder()
                 .exitCode(exitCode)
-                .start(start)
-                .stop(stop)
-                .execInfo(getExecInfo())
+                .trace(getTrace(start, stop))
                 .duration(duration)
                 .output(Collections.singletonList(output))
                 .build();
@@ -122,21 +120,21 @@ public class DockerExecutor implements Executor {
                 .toString();
     }
 
-    private ExecInfo getExecInfo() {
-        final ExecInfo.Builder builder = ExecInfo.builder()
-                .metrics(executorMetricsCollector.getMetrics())
+    private Trace getTrace(LocalDateTime start, LocalDateTime stop) {
+        final Trace.Builder builder = Trace.builder()
+                .executorMetrics(executorMetricsCollector.getMetrics())
                 .executor(getType().toString())
-                .start(LocalDateTime.now())
-                .stop(LocalDateTime.now())
+                .start(start)
+                .stop(stop)
                 .totalCpuCount(cpuAllocator.totalCpuCount());
 
         if (cpuSet.isPresent()) {
             builder.cpuSet(cpuSet.get().getCpuSet());
         }
-        final ExecInfo execInfo = builder.build();
+        final Trace trace = builder.build();
 
-        LOG.debug("ExecInfo: {}", execInfo);
-        return  execInfo;
+        LOG.debug("Trace: {}", trace);
+        return trace;
     }
 
     public int getNCpu() {
