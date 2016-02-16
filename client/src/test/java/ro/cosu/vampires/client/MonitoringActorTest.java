@@ -14,8 +14,6 @@ import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
 
 import static org.hamcrest.core.IsNot.not;
@@ -50,9 +48,7 @@ public class MonitoringActorTest {
 
         Computation computation = Computation.builder().command("test").id("test").build();
         Result result = Result.builder().duration(10).exitCode(0).output(new LinkedList<>())
-                .stop(LocalDateTime.now())
                 .trace(Trace.empty())
-                .start(LocalDateTime.now().minus(seconds, ChronoUnit.SECONDS))
                 .build();
 
         Job jobWithoutMetrics = Job.builder().computation(computation).result(result)
