@@ -27,6 +27,7 @@ public class DataTest {
     private static final Logger LOG = LoggerFactory.getLogger(DataTest.class);
 
     @Test
+    @Ignore
     public void testName() throws Exception {
 
         String homeDir = System.getProperty("user.home");
