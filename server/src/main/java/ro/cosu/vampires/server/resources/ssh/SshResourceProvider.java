@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.resources.AbstractResourceProvider;
 import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.util.Ssh;
+import ro.cosu.vampires.server.util.SshClient;
 
 import java.util.Optional;
 
@@ -14,13 +14,13 @@ public class SshResourceProvider extends AbstractResourceProvider {
     private static final Logger LOG = LoggerFactory.getLogger(SshResourceProvider.class);
 
     @Inject
-    @Named("Ssh")
-    private Ssh ssh;
+    @Named("SshClient")
+    private SshClient sshClient;
 
     @Override
     public Optional<Resource> create(Resource.Parameters parameters) {
         if (parameters instanceof SshResourceParameters)
-            return Optional.of(new SshResource((SshResourceParameters) parameters, ssh));
+            return Optional.of(new SshResource((SshResourceParameters) parameters, sshClient));
         else {
 
             LOG.error("invalid parameter type. expected " + SshResourceParameters.class + " but got " + parameters

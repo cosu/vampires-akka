@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.resources.AbstractResourceProvider;
 import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.util.Ssh;
+import ro.cosu.vampires.server.util.SshClient;
 
 import java.util.Optional;
 
@@ -14,13 +14,13 @@ public class Das5ResourceProvider extends AbstractResourceProvider{
     private static final Logger LOG = LoggerFactory.getLogger(Das5ResourceProvider.class);
 
     @Inject @Named("DASSSH")
-    private Ssh ssh;
+    private SshClient sshClient;
 
     @Override
     public Optional<Resource> create(Resource.Parameters parameters) {
 
         if (parameters instanceof Das5ResourceParameters)
-                return Optional.of(new Das5Resource((Das5ResourceParameters) parameters, ssh));
+                return Optional.of(new Das5Resource((Das5ResourceParameters) parameters, sshClient));
             else {
                 LOG.error("invalid parameter type. expected " + Das5ResourceParameters.class);
                 return Optional.empty();

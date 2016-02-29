@@ -10,7 +10,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import ro.cosu.vampires.server.resources.das5.Das5ResourceParameters;
-import ro.cosu.vampires.server.util.Ssh;
+import ro.cosu.vampires.server.util.SshClient;
 
 import java.util.concurrent.TimeUnit;
 
@@ -67,16 +67,16 @@ public class ResourceManagerIT {
     @Ignore
     public void testCreateDAS5Resource() throws  Exception  {
 
-        Ssh sshMock = mock(Ssh.class);
+        SshClient sshClientMock = mock(SshClient.class);
 
-        Mockito.when(sshMock.runCommand(Mockito.anyString(),Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyInt()))
+        Mockito.when(sshClientMock.runCommand(Mockito.anyString(),Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyInt()))
                 .thenReturn("10 10 10 10");
 
         class TestModule extends AbstractModule {
 
             @Override
             protected void configure() {
-                bind(Ssh.class).toInstance(sshMock);
+                bind(SshClient.class).toInstance(sshClientMock);
             }
         }
 

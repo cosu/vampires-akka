@@ -59,8 +59,8 @@ public abstract class Job implements Serializable {
                 .hostMetrics(Metrics.empty())
                 .result(Result.empty()).build();
     }
-    public static Job backoff() {
-        return builder().computation(Computation.backoff())
+    public static Job backoff( int backoffInterval) {
+        return builder().computation(Computation.backoff(backoffInterval))
                 .hostMetrics(Metrics.empty())
                 .result(Result.empty()).build();
     }

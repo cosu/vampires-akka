@@ -15,7 +15,7 @@ import org.mockito.Mockito;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceManager;
 import ro.cosu.vampires.server.resources.ResourceProvider;
-import ro.cosu.vampires.server.util.Ssh;
+import ro.cosu.vampires.server.util.SshClient;
 
 import java.io.IOException;
 
@@ -52,11 +52,11 @@ public class Das5ResourceTest {
             }
 
             @Provides @Named("DASSSH")
-            Ssh provideSsh () throws IOException, JSchException {
-                Ssh sshMock = Mockito.mock(Ssh.class);
-                when(sshMock.runCommand(anyString(), anyString(), anyString(), anyString(), anyInt()))
+            SshClient provideSsh () throws IOException, JSchException {
+                SshClient sshClientMock = Mockito.mock(SshClient.class);
+                when(sshClientMock.runCommand(anyString(), anyString(), anyString(), anyString(), anyInt()))
                         .thenReturn("10 10 10 10 ");
-                return sshMock;
+                return sshClientMock;
             }
         });
 

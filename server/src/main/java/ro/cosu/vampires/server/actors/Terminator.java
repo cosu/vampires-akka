@@ -24,14 +24,12 @@ public class Terminator extends UntypedActor {
         if (msg instanceof ResourceControl.Shutdown) {
             refs.forEach(r -> r.tell(PoisonPill.getInstance(), getSelf()));
         } else if (msg instanceof ResourceControl.Up) {
-            log.debug("new watch {}", sender);
             refs.add(sender);
             getContext().watch(sender);
         } else if (msg instanceof Terminated) {
-            boolean remove = refs.remove(sender);
-            log.debug("removed {} {}", remove, sender);
+            refs.remove(sender);
             if (refs.isEmpty()) {
-                log.debug("shutting down system");
+                log.info("shutting down system");
                 getContext().system().terminate();
             } else {
                 log.info("waiting for {} more", refs.size());

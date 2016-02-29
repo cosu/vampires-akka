@@ -36,7 +36,7 @@ public class JobTest {
 
     @Test
     public void testWithBackoff() throws Exception {
-        Job job =  Job.backoff();
+        Job job =  Job.backoff(5);
         assertThat(job.computation().command(), containsString("sleep 5"));
     }
 }

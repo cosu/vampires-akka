@@ -13,13 +13,13 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 
 
-public class SshTest {
+public class SshClientTest {
 
     @Test
     public void testRunCommand() throws Exception {
-        Ssh ssh = new Ssh();
+        SshClient sshClient = new SshClient();
         JSch jschMock = Mockito.mock(JSch.class);
-        ssh.setJsch(jschMock);
+        sshClient.setJsch(jschMock);
 
         Session session = Mockito.mock(Session.class);
         ChannelExec channelExec = Mockito.mock(ChannelExec.class);
@@ -28,7 +28,7 @@ public class SshTest {
         when(session.openChannel("exec")).thenReturn(channelExec);
         when(channelExec.getInputStream()).thenReturn(new ByteArrayInputStream( "result".getBytes() ));
 
-        String result = ssh.runCommand("user", "privateKey", "address", "cmd", 1);
+        String result = sshClient.runCommand("user", "privateKey", "address", "cmd", 1);
 
         assertThat(result, is("result"));
 

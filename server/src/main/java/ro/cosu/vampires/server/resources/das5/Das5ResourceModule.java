@@ -6,7 +6,7 @@ import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Named;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceProvider;
-import ro.cosu.vampires.server.util.Ssh;
+import ro.cosu.vampires.server.util.SshClient;
 
 public class Das5ResourceModule extends AbstractModule{
 
@@ -19,7 +19,7 @@ public class Das5ResourceModule extends AbstractModule{
     }
 
     @Provides @Named("DASSSH")
-    private Ssh provideSsh (){
-        return new Ssh();
+    private SshClient provideSshClient(){
+        return new SshClient();
     }
 }

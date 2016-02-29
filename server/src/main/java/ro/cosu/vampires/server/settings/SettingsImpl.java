@@ -20,6 +20,7 @@ public class SettingsImpl implements Extension {
     private static final Logger LOG = LoggerFactory.getLogger(Settings.class);
 
     private final static int MAX_JOB_DEADLINE = 60;
+    private int DEFAULT_BACK_OFF_INTERVAl  = 20;
 
     public SettingsImpl(Config config) {
         vampires = config.getConfig("vampires");
@@ -65,6 +66,17 @@ public class SettingsImpl implements Extension {
             LOG.error("missing executors config value");
             throw new IllegalArgumentException("missing executors config value");
         }
+
+    }
+
+    public int getBackoffInterval() {
+        if (vampires.hasPath("backoffInterval")){
+            return vampires.getInt("backoffInterval");
+        }
+        else {
+            LOG.error("missing backoffInterval. Using default value: {}", DEFAULT_BACK_OFF_INTERVAl);
+        }
+        return DEFAULT_BACK_OFF_INTERVAl;
 
     }
 

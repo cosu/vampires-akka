@@ -43,7 +43,8 @@ public class WorkActor extends UntypedActor {
                     if (notification.getKey() != null && notification.getValue() != null
                             && notification.getKey() instanceof String) {
                         Job job = (Job) notification.getValue();
-                        log.warning("Job {}: {} failed to return. Re adding to queue", job.id(), job.computation().command());
+                        log.warning("Job {}: {} failed to return after {} . Re adding to queue",
+                                job.id(), job.computation().command(), jobDeadlineSeconds);
                         workQueue.add(job.computation().command());
                     }
                 }).build();
@@ -53,7 +54,6 @@ public class WorkActor extends UntypedActor {
     }
 
     private void initq() {
-        log.info("adding work init");
         settings.getWorkload().stream().forEach(workQueue::add);
     }
 
@@ -61,10 +61,6 @@ public class WorkActor extends UntypedActor {
     public void onReceive(Object message) throws Exception {
         if (message instanceof Job) {
             receiveJob((Job) message);
-        } else if (message instanceof ResourceControl.Shutdown) {
-            log.info("shutting down");
-            resultActor.forward(message, getContext());
-            getContext().stop(getSelf());
         } else {
             log.warning("unhandled message from {}", getSender());
             unhandled(message);
@@ -72,9 +68,10 @@ public class WorkActor extends UntypedActor {
     }
 
     private void receiveJob(Job job) {
-        if (!Computation.backoff().equals(job.computation()) &&
+        if (!Computation.backoff(settings.getBackoffInterval()).equals(job.computation()) &&
                 !Computation.empty().equals(job.computation())) {
-            log.info("Work result from {}. pending {} ", job.hostMetrics().metadata().get("host-hostname"), pendingJobs.size());
+            log.debug("Work result from {}. pending {} remaining {}", job.hostMetrics().metadata().get("host-hostname"),
+                    pendingJobs.size(), workQueue.size());
             pendingJobs.invalidate(job.id());
             resultActor.forward(job, getContext());
 
@@ -84,13 +81,17 @@ public class WorkActor extends UntypedActor {
     }
 
     private Job getNewWork(Optional<String> work) {
-        Job job = Job.backoff();
+        Job job = Job.backoff(settings.getBackoffInterval());
         if (work.isPresent()) {
             Computation computation = Computation.builder().command(work.get()).build();
             job = Job.empty().withComputation(computation);
             pendingJobs.put(job.id(), job);
         } else {
             log.debug("Backoff: {} ", getSender());
+        }
+        if (pendingJobs.size() == 0)  {
+            resultActor.tell(new ResourceControl.Shutdown(), getSelf());
+            getContext().stop(getSelf());
         }
         return job;
     }

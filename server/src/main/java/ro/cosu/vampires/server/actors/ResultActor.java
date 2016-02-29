@@ -57,12 +57,6 @@ public class ResultActor extends UntypedActor {
             Job job = (Job) message;
             results.add(job);
             writers.forEach(r -> r.addResult(job));
-
-            //this should be a predicate
-            if (results.size() == numberOfResults) {
-                log.info("DONE!");
-                shutdown();
-            }
         }
         else if (message instanceof ClientInfo) {
             ClientInfo clientInfo = (ClientInfo) message;

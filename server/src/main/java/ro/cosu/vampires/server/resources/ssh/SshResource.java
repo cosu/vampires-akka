@@ -4,7 +4,7 @@ import com.jcraft.jsch.JSchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.resources.AbstractResource;
-import ro.cosu.vampires.server.util.Ssh;
+import ro.cosu.vampires.server.util.SshClient;
 
 import java.io.IOException;
 
@@ -13,14 +13,14 @@ public class SshResource extends AbstractResource {
     private static final Logger LOG = LoggerFactory.getLogger(SshResource.class);
 
     private final SshResourceParameters parameters;
-    private final Ssh ssh;
+    private final SshClient sshClient;
     private String commandOutput;
 
 
-    public SshResource(SshResourceParameters parameters, Ssh ssh) {
+    public SshResource(SshResourceParameters parameters, SshClient sshClient) {
         super(parameters);
         this.parameters = parameters;
-        this.ssh = ssh;
+        this.sshClient = sshClient;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class SshResource extends AbstractResource {
 
     private String exec(String command) throws IOException, JSchException {
         LOG.debug("ssh command: " + command);
-        return ssh.runCommand(parameters.user(), parameters.privateKey(), parameters.address(), command, parameters
+        return sshClient.runCommand(parameters.user(), parameters.privateKey(), parameters.address(), command, parameters
                 .port());
     }
 

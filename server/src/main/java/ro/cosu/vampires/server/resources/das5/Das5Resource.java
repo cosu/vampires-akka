@@ -4,7 +4,7 @@ import com.jcraft.jsch.JSchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.resources.AbstractResource;
-import ro.cosu.vampires.server.util.Ssh;
+import ro.cosu.vampires.server.util.SshClient;
 
 import java.io.IOException;
 
@@ -14,13 +14,13 @@ public class Das5Resource extends AbstractResource {
     private final Das5ResourceParameters parameters;
     private String commandOutput;
 
-    private final Ssh ssh;
+    private final SshClient sshClient;
 
 
-    public Das5Resource(Das5ResourceParameters parameters, Ssh ssh) {
+    public Das5Resource(Das5ResourceParameters parameters, SshClient sshClient) {
         super(parameters);
         this.parameters = parameters;
-        this.ssh = ssh;
+        this.sshClient = sshClient;
     }
 
 
@@ -47,7 +47,7 @@ public class Das5Resource extends AbstractResource {
     }
 
     private String exec(String command) throws IOException, JSchException {
-        return ssh.runCommand(parameters.user(), parameters.privateKey(), parameters.address(), command, parameters.port());
+        return sshClient.runCommand(parameters.user(), parameters.privateKey(), parameters.address(), command, parameters.port());
     }
 
     @Override

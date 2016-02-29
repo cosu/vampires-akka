@@ -15,7 +15,7 @@ import org.mockito.Mockito;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceManager;
 import ro.cosu.vampires.server.resources.ResourceProvider;
-import ro.cosu.vampires.server.util.Ssh;
+import ro.cosu.vampires.server.util.SshClient;
 
 import java.io.IOException;
 
@@ -27,7 +27,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 
-public class SshResourceTest {
+public class SshClientResourceTest {
     private Injector injector;
 
     @Before
@@ -50,12 +50,12 @@ public class SshResourceTest {
                         "command = foo}");
             }
 
-            @Provides @Named("Ssh")
-            Ssh provideSsh () throws IOException, JSchException {
-                Ssh sshMock = Mockito.mock(Ssh.class);
-                when(sshMock.runCommand(anyString(), anyString(), anyString(), anyString(), anyInt()))
+            @Provides @Named("SshClient")
+            SshClient provideSsh () throws IOException, JSchException {
+                SshClient sshClientMock = Mockito.mock(SshClient.class);
+                when(sshClientMock.runCommand(anyString(), anyString(), anyString(), anyString(), anyInt()))
                         .thenReturn("42");
-                return sshMock;
+                return sshClientMock;
             }
         });
     }
