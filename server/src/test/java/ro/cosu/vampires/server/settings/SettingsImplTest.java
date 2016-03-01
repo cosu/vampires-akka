@@ -49,7 +49,7 @@ public class SettingsImplTest {
         assertThat(settings.getCpuSetSize(), is(1));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNoExecutors(){
         Config config = ConfigFactory.parseString("vampires.executors = null").withFallback(ConfigFactory.load());
         SettingsImpl settings = new SettingsImpl(config);
