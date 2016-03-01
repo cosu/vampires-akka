@@ -19,13 +19,11 @@ public class JobUtilTest {
     @Test
     public void testBag() throws Exception {
 
-        Config config = ConfigFactory.load();
+        Config config = ConfigFactory.load().getConfig("vampires.workload");
 
-        List<? extends Config> configList = config.getConfigList("vampires.bags");
-        List<Job> jobs = JobUtil.fromConfig(configList.get(0));
+        List<Job> jobs = JobUtil.fromConfig(config);
 
         assertThat(jobs.size(), not(0));
-        System.out.println(jobs);
 
     }
 

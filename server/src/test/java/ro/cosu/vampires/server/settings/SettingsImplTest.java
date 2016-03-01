@@ -54,11 +54,7 @@ public class SettingsImplTest {
         Config config = ConfigFactory.parseString("vampires.executors = null").withFallback(ConfigFactory.load());
         SettingsImpl settings = new SettingsImpl(config);
 
-        assertThat(settings.getExecutors().size(), is(0));
+        assertThat(settings.getExecutors().size(), is(1));
     }
 
-    @Test
-    public void getBag() throws Exception {
-        ConfigFactory.parseString("");
-    }
 }
