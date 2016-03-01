@@ -32,7 +32,7 @@ public class Server {
 
         final ActorSystem system = ActorSystem.create("ServerSystem");
         LoggingAdapter log = Logging.getLogger(system, Server.class);
-        system.actorOf(Terminator.props(), "terminator");
+        ActorRef terminator = system.actorOf(Terminator.props(), "terminator");
         ActorRef workActor = system.actorOf(WorkActor.props(), "workActor");
         system.actorOf(ResourceManagerActor.props(), "resourceManager");
         system.actorOf(DispatchActor.props(workActor), "server");
@@ -40,11 +40,10 @@ public class Server {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                workActor.tell(new ResourceControl.Shutdown(), ActorRef.noSender());
+                terminator.tell(new ResourceControl.Shutdown(), ActorRef.noSender());
                 try {
                     log.info("waiting 15 seconds for shutdown");
                     Await.result(system.whenTerminated(), Duration.create("15 seconds"));
-
                 } catch (Exception e) {
                     log.error("error during shutdown hook {}", e);
                 }

@@ -25,12 +25,17 @@ public abstract class Computation implements Serializable {
                 .build();
     }
 
+    public static Computation withCommand(String command) {
+        return builder().command(command).build();
+    }
+
     public static Computation empty() {
         return new AutoValue_Computation.Builder()
                 .id("EMPTY")
                 .command("true")
                 .build();
     }
+
 
     @AutoValue.Builder
     public abstract static class Builder {

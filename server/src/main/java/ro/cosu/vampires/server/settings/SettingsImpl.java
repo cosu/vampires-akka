@@ -4,14 +4,16 @@ import akka.actor.Extension;
 import com.typesafe.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ro.cosu.vampires.server.workload.Job;
+import ro.cosu.vampires.server.workload.JobUtil;
 import ro.cosu.vampires.server.writers.ResultsWriter;
 import ro.cosu.vampires.server.writers.json.JsonResultsWriter;
 import ro.cosu.vampires.server.writers.mongo.MongoWriter;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class SettingsImpl implements Extension {
 
@@ -19,8 +21,9 @@ public class SettingsImpl implements Extension {
     public final Config vampires;
     private static final Logger LOG = LoggerFactory.getLogger(Settings.class);
 
-    private final static int MAX_JOB_DEADLINE = 60;
-    private int DEFAULT_BACK_OFF_INTERVAl  = 20;
+    private final static int DEFAULT_MAX_JOB_DEADLINE = 60;
+    private final static int DEFAULT_BACK_OFF_INTERVAl  = 20;
+    private final static String DEFAULT_EXECUTOR = "FORK";
 
     public SettingsImpl(Config config) {
         vampires = config.getConfig("vampires");
@@ -40,31 +43,22 @@ public class SettingsImpl implements Extension {
         if (writers.isEmpty()) {
             LOG.info("no writers configured. using default writer: json");
             writers.add(new JsonResultsWriter(vampires));
-
         }
 
         return writers;
 
     }
 
-    public List<String> getWorkload() {
-        Config config = vampires.getConfig("workload");
-        String task = config.getString("task");
-        int startCount = config.getInt("start");
-        int stopCount = config.getInt("stop");
-
-
-        return IntStream.rangeClosed(startCount, stopCount).mapToObj(i -> String.format(task, i))
-                .collect(Collectors.toList());
-
+    public List<Job> getWorkload() {
+        return JobUtil.fromConfig(vampires.getConfig("workload"));
     }
 
     public List<String> getExecutors() {
         if (vampires.hasPath("executors")) {
             return vampires.getStringList("executors").stream().map(String::toUpperCase).collect(Collectors.toList());
         } else {
-            LOG.error("missing executors config value");
-            throw new IllegalArgumentException("missing executors config value");
+            LOG.warn("Missing executors config value. using default {}", DEFAULT_EXECUTOR);
+            return Collections.singletonList(DEFAULT_EXECUTOR);
         }
 
     }
@@ -74,7 +68,7 @@ public class SettingsImpl implements Extension {
             return vampires.getInt("backoffInterval");
         }
         else {
-            LOG.error("missing backoffInterval. Using default value: {}", DEFAULT_BACK_OFF_INTERVAl);
+            LOG.warn("missing backoffInterval. Using default value: {}", DEFAULT_BACK_OFF_INTERVAl);
         }
         return DEFAULT_BACK_OFF_INTERVAl;
 
@@ -84,18 +78,18 @@ public class SettingsImpl implements Extension {
         if (vampires.hasPath("cpuSetSize")) {
             return vampires.getInt("cpuSetSize");
         } else {
-            LOG.error("missing executor cpuSetSize. Using default value: {}", DEFAULT_CPU_SET_SIZE);
+            LOG.warn("missing executor cpuSetSize. Using default value: {}", DEFAULT_CPU_SET_SIZE);
         }
         return DEFAULT_CPU_SET_SIZE;
     }
 
     public int getJobDeadline() {
 
-        int maxJobSeconds = MAX_JOB_DEADLINE;
+        int maxJobSeconds = DEFAULT_MAX_JOB_DEADLINE;
         if (vampires.hasPath("jobDeadlineSeconds")){
             maxJobSeconds = vampires.getInt("jobDeadlineSeconds");
         } else {
-            LOG.warn("maxJobSeconds not provided. Using default value of {}", MAX_JOB_DEADLINE);
+            LOG.warn("maxJobSeconds not provided. Using default value of {}", DEFAULT_MAX_JOB_DEADLINE);
         }
         return maxJobSeconds;
     }

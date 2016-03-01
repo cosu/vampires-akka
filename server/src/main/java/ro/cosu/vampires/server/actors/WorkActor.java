@@ -20,7 +20,7 @@ public class WorkActor extends UntypedActor {
 
     private final SettingsImpl settings = Settings.SettingsProvider.get(getContext().system());
 
-    private final ConcurrentLinkedQueue<String> workQueue = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<Job> workQueue = new ConcurrentLinkedQueue<>();
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private ActorRef resultActor;
@@ -45,7 +45,7 @@ public class WorkActor extends UntypedActor {
                         Job job = (Job) notification.getValue();
                         log.warning("Job {}: {} failed to return after {} . Re adding to queue",
                                 job.id(), job.computation().command(), jobDeadlineSeconds);
-                        workQueue.add(job.computation().command());
+                        workQueue.add(job);
                     }
                 }).build();
         initq();
@@ -54,7 +54,7 @@ public class WorkActor extends UntypedActor {
     }
 
     private void initq() {
-        settings.getWorkload().stream().forEach(workQueue::add);
+        workQueue.addAll(settings.getWorkload());
     }
 
     @Override
@@ -80,11 +80,10 @@ public class WorkActor extends UntypedActor {
         getSender().tell(work, getSelf());
     }
 
-    private Job getNewWork(Optional<String> work) {
+    private Job getNewWork(Optional<Job> work) {
         Job job = Job.backoff(settings.getBackoffInterval());
         if (work.isPresent()) {
-            Computation computation = Computation.builder().command(work.get()).build();
-            job = Job.empty().withComputation(computation);
+            job = work.get();
             pendingJobs.put(job.id(), job);
         } else {
             log.debug("Backoff: {} ", getSender());

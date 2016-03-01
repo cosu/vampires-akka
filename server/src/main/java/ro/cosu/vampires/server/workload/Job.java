@@ -30,6 +30,10 @@ public abstract class Job implements Serializable {
 
     public abstract Builder toBuilder();
 
+    public Job withCommand(String command) {
+        return toBuilder().computation(Computation.withCommand(command)).build();
+    }
+
     public Job from(String from) {
         return toBuilder()
                 .from(from)

@@ -56,4 +56,9 @@ public class SettingsImplTest {
 
         assertThat(settings.getExecutors().size(), is(0));
     }
+
+    @Test
+    public void getBag() throws Exception {
+        ConfigFactory.parseString("");
+    }
 }
