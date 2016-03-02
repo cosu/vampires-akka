@@ -17,21 +17,11 @@ public class Server {
 
     private static final Logger LOG = LoggerFactory.getLogger(Server.class);
 
-    private static void runSpark(){
-        port(8080);
-        webSocket("/",WebsocketHandler.class);
-        staticFileLocation("/public");
-        LOG.info("starting spark server");
-        init();
-
-    }
-
     public static void main(String[] args) throws Exception {
-
-//        runSpark();
 
         final ActorSystem system = ActorSystem.create("ServerSystem");
         LoggingAdapter log = Logging.getLogger(system, Server.class);
+
         ActorRef terminator = system.actorOf(Terminator.props(), "terminator");
         ActorRef workActor = system.actorOf(WorkActor.props(), "workActor");
         system.actorOf(ResourceManagerActor.props(), "resourceManager");
