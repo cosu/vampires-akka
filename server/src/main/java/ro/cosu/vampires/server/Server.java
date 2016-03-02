@@ -11,7 +11,6 @@ import ro.cosu.vampires.server.actors.Terminator;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 
-import static spark.Spark.*;
 
 public class Server {
 
@@ -41,6 +40,5 @@ public class Server {
         });
 
         Await.result(system.whenTerminated(), Duration.Inf());
-        stop();
     }
 }
