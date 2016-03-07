@@ -11,6 +11,9 @@ import java.util.UUID;
 @AutoGson
 public abstract class Computation implements Serializable {
 
+    public static final String BACKOFF = "BACKOFF";
+    public static final String EMPTY = "EMPTY";
+
     public abstract  String id();
     public abstract  String command();
 
@@ -20,7 +23,7 @@ public abstract class Computation implements Serializable {
 
     public static Computation backoff(int backoffInterval) {
         return new AutoValue_Computation.Builder()
-                .id("BACKOFF")
+                .id(BACKOFF)
                 .command("sleep " + backoffInterval)
                 .build();
     }
@@ -31,7 +34,7 @@ public abstract class Computation implements Serializable {
 
     public static Computation empty() {
         return new AutoValue_Computation.Builder()
-                .id("EMPTY")
+                .id(EMPTY)
                 .command("true")
                 .build();
     }
