@@ -22,7 +22,7 @@ public class SettingsImpl implements Extension {
     private static final Logger LOG = LoggerFactory.getLogger(Settings.class);
 
     private final static int DEFAULT_MAX_JOB_DEADLINE = 60;
-    private final static int DEFAULT_BACK_OFF_INTERVAl  = 20;
+    private final static int DEFAULT_BACK_OFF_INTERVAL = 20;
     private final static String DEFAULT_EXECUTOR = "FORK";
 
     public SettingsImpl(Config config) {
@@ -68,9 +68,9 @@ public class SettingsImpl implements Extension {
             return vampires.getInt("backoffInterval");
         }
         else {
-            LOG.warn("missing backoffInterval. Using default value: {}", DEFAULT_BACK_OFF_INTERVAl);
+            LOG.warn("missing backoffInterval. Using default value: {}", DEFAULT_BACK_OFF_INTERVAL);
         }
-        return DEFAULT_BACK_OFF_INTERVAl;
+        return DEFAULT_BACK_OFF_INTERVAL;
 
     }
 

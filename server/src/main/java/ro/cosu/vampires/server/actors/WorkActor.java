@@ -5,57 +5,37 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import ro.cosu.vampires.server.settings.Settings;
 import ro.cosu.vampires.server.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Job;
+import ro.cosu.vampires.server.workload.Scheduler;
+import ro.cosu.vampires.server.workload.SimpleScheduler;
 
-import java.util.Optional;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
 public class WorkActor extends UntypedActor {
 
     private final SettingsImpl settings = Settings.SettingsProvider.get(getContext().system());
 
-    private final ConcurrentLinkedQueue<Job> workQueue = new ConcurrentLinkedQueue<>();
-
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private ActorRef resultActor;
-
-    private Cache<String, Job> pendingJobs;
 
     public static Props props() {
         return Props.create(WorkActor.class);
     }
 
+    private Scheduler scheduler;
+
     @Override
     public void preStart() {
         int jobDeadlineSeconds = settings.getJobDeadline();
         log.debug("JobDeadline in seconds {}" , jobDeadlineSeconds);
-        pendingJobs = CacheBuilder.newBuilder().expireAfterWrite(jobDeadlineSeconds, TimeUnit.SECONDS)
-                .removalListener(notification -> {
-                    if (!notification.wasEvicted()) {
-                        return;
-                    }
-                    if (notification.getKey() != null && notification.getValue() != null
-                            && notification.getKey() instanceof String) {
-                        Job job = (Job) notification.getValue();
-                        log.warning("Job {}: {} failed to return after {} . Re adding to queue",
-                                job.id(), job.computation().command(), jobDeadlineSeconds);
-                        workQueue.add(job);
-                    }
-                }).build();
-        initq();
-        resultActor = getContext().actorOf(ResultActor.props(workQueue.size()), "resultActor");
-
+        List<Job> workload = settings.getWorkload();
+        scheduler = new SimpleScheduler(workload, jobDeadlineSeconds,settings.getBackoffInterval());
+        resultActor = getContext().actorOf(ResultActor.props(workload.size()), "resultActor");
     }
 
-    private void initq() {
-        workQueue.addAll(settings.getWorkload());
-    }
 
     @Override
     public void onReceive(Object message) throws Exception {
@@ -67,30 +47,23 @@ public class WorkActor extends UntypedActor {
         }
     }
 
-    private void receiveJob(Job job) {
-        if (!job.computation().id().equals(Computation.BACKOFF) && !job.computation().id().equals(Computation.EMPTY)) {
-            log.debug("Work result from {}. pending {} remaining {}", job.hostMetrics().metadata().get("host-hostname"),
-                    pendingJobs.size(), workQueue.size());
-            pendingJobs.invalidate(job.id());
-            resultActor.forward(job, getContext());
+    private void receiveJob(Job receivedJob) {
+        if (!receivedJob.computation().id().equals(Computation.BACKOFF)
+                && !receivedJob.computation().id().equals(Computation.EMPTY)) {
+            scheduler.markDone(receivedJob);
+            resultActor.forward(receivedJob, getContext());
         }
-        Job work = getNewWork(Optional.ofNullable(workQueue.poll()));
+
+        Job work = scheduler.getJob(receivedJob.from());
         getSender().tell(work, getSelf());
+
+        if (scheduler.isDone()) {
+            stop();
+        }
     }
 
-    private Job getNewWork(Optional<Job> work) {
-        Job job = Job.backoff(settings.getBackoffInterval());
-        if (work.isPresent()) {
-            job = work.get();
-            pendingJobs.put(job.id(), job);
-        } else {
-            log.debug("Backoff: {} ", getSender());
-        }
-        if (pendingJobs.size() == 0)  {
-            resultActor.tell(new ResourceControl.Shutdown(), getSelf());
-            getContext().stop(getSelf());
-        }
-        return job;
+    private void stop() {
+        resultActor.tell(new ResourceControl.Shutdown(), getSelf());
+        getContext().stop(getSelf());
     }
-
 }
