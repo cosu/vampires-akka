@@ -19,7 +19,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 
 public class ResultActor extends UntypedActor {
-    private final int numberOfResults;
+    private final long numberOfResults;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     private List<Job> results = new LinkedList<>();
@@ -30,12 +30,12 @@ public class ResultActor extends UntypedActor {
 
     private final LocalDateTime startTime = LocalDateTime.now();
 
-    public static Props props(int numberOfResults) {
+    public static Props props(long numberOfResults) {
         return Props.create(ResultActor.class, numberOfResults);
     }
 
 
-    ResultActor(int numberOfResults) {
+    ResultActor(long numberOfResults) {
         this.numberOfResults = numberOfResults;
         writers = settings.getWriters();
     }

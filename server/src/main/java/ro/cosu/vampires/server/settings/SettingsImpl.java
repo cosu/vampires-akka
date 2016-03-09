@@ -6,6 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.workload.JobUtil;
+import ro.cosu.vampires.server.workload.schedulers.SamplingScheduler;
+import ro.cosu.vampires.server.workload.schedulers.Scheduler;
+import ro.cosu.vampires.server.workload.schedulers.SimpleScheduler;
 import ro.cosu.vampires.server.writers.ResultsWriter;
 import ro.cosu.vampires.server.writers.json.JsonResultsWriter;
 import ro.cosu.vampires.server.writers.mongo.MongoWriter;
@@ -24,6 +27,9 @@ public class SettingsImpl implements Extension {
     private final static int DEFAULT_MAX_JOB_DEADLINE = 60;
     private final static int DEFAULT_BACK_OFF_INTERVAL = 20;
     private final static String DEFAULT_EXECUTOR = "FORK";
+    private static final String EXEC_MODE = "exec";
+    public static final String SAMPLING_MODE = "sampling";
+
 
     public SettingsImpl(Config config) {
         vampires = config.getConfig("vampires");
@@ -51,6 +57,16 @@ public class SettingsImpl implements Extension {
 
     public List<Job> getWorkload() {
         return JobUtil.fromConfig(vampires.getConfig("workload"));
+    }
+
+    public Scheduler getScheduler() {
+        List<Job> workload = getWorkload();
+        if (getMode().equals(SAMPLING_MODE)){
+            LOG.info("running in sampling mode : sampling from {} jobs", workload.size() );
+            return new SamplingScheduler(workload, getJobDeadline(), getBackoffInterval());
+        }
+        else
+            return  new SimpleScheduler(workload, getJobDeadline(), getBackoffInterval());
     }
 
     public List<String> getExecutors() {
@@ -92,6 +108,16 @@ public class SettingsImpl implements Extension {
             LOG.warn("maxJobSeconds not provided. Using default value of {}", DEFAULT_MAX_JOB_DEADLINE);
         }
         return maxJobSeconds;
+    }
+
+    public String getMode() {
+
+        if (vampires.hasPath("mode") && vampires.getString("mode").toLowerCase().equals(SAMPLING_MODE)) {
+            return SAMPLING_MODE;
+        }
+        else {
+            return EXEC_MODE;
+        }
     }
 }
 

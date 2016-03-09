@@ -1,9 +1,10 @@
-package ro.cosu.vampires.server.workload;
+package ro.cosu.vampires.server.workload.schedulers;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ro.cosu.vampires.server.workload.Job;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,12 +15,14 @@ public class SimpleScheduler implements Scheduler {
 
     private static final Logger LOG = LoggerFactory.getLogger(SimpleScheduler.class);
 
-    private final ConcurrentLinkedQueue<Job> workQueue = new ConcurrentLinkedQueue<>();
+    protected final ConcurrentLinkedQueue<Job> workQueue = new ConcurrentLinkedQueue<>();
 
     private Cache<String, Job> pendingJobs;
+    private List<Job> jobList;
     private final int backOffInterval;
 
     public SimpleScheduler(List<Job> jobList, long jobDeadline, int backOffInterval) {
+        this.jobList = jobList;
         this.backOffInterval = backOffInterval;
         workQueue.addAll(jobList);
         pendingJobs = CacheBuilder.newBuilder().expireAfterWrite(jobDeadline, TimeUnit.SECONDS)
@@ -60,6 +63,11 @@ public class SimpleScheduler implements Scheduler {
     @Override
     public boolean isDone() {
         return pendingJobs.asMap().isEmpty() && workQueue.isEmpty();
+    }
+
+    @Override
+    public long getJobCount() {
+        return jobList.size();
     }
 
 

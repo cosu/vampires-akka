@@ -2,8 +2,10 @@ package ro.cosu.vampires.server.workload;
 
 import org.junit.Before;
 import org.junit.Test;
+import ro.cosu.vampires.server.workload.schedulers.Scheduler;
+import ro.cosu.vampires.server.workload.schedulers.SimpleScheduler;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -16,9 +18,8 @@ public class SimpleSchedulerTest {
     private Scheduler scheduler;
     @Before
     public void setUp() throws Exception {
-        List<Job> jobs = Arrays.asList(Job.empty());
-        scheduler = new SimpleScheduler(jobs, 10, 10);
-
+        List<Job> jobs = Collections.singletonList(Job.empty());
+        scheduler = new SimpleScheduler(jobs, 1, 1);
     }
 
     @Test

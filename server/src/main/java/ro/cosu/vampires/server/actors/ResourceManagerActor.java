@@ -44,6 +44,8 @@ public class ResourceManagerActor extends UntypedActor {
         {
             String type = config.getString("type");
             int count = config.getInt("count");
+            if (settings.getMode().equals(SettingsImpl.SAMPLING_MODE))
+                count = 1;
             final Resource.Type provider = Resource.Type.valueOf(config.getString("provider").toUpperCase());
             log.info("starting {} x {} from type {}", count, type, provider);
 

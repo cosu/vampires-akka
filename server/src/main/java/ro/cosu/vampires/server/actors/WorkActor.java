@@ -9,10 +9,7 @@ import ro.cosu.vampires.server.settings.Settings;
 import ro.cosu.vampires.server.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Job;
-import ro.cosu.vampires.server.workload.Scheduler;
-import ro.cosu.vampires.server.workload.SimpleScheduler;
-
-import java.util.List;
+import ro.cosu.vampires.server.workload.schedulers.Scheduler;
 
 public class WorkActor extends UntypedActor {
 
@@ -31,9 +28,9 @@ public class WorkActor extends UntypedActor {
     public void preStart() {
         int jobDeadlineSeconds = settings.getJobDeadline();
         log.debug("JobDeadline in seconds {}" , jobDeadlineSeconds);
-        List<Job> workload = settings.getWorkload();
-        scheduler = new SimpleScheduler(workload, jobDeadlineSeconds,settings.getBackoffInterval());
-        resultActor = getContext().actorOf(ResultActor.props(workload.size()), "resultActor");
+        scheduler = settings.getScheduler();
+
+        resultActor = getContext().actorOf(ResultActor.props(scheduler.getJobCount()), "resultActor");
     }
 
 
