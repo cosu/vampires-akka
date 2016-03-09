@@ -27,8 +27,10 @@ public class SettingsImpl implements Extension {
     private final static int DEFAULT_MAX_JOB_DEADLINE = 60;
     private final static int DEFAULT_BACK_OFF_INTERVAL = 20;
     private final static String DEFAULT_EXECUTOR = "FORK";
-    private static final String EXEC_MODE = "exec";
+    public static final String EXEC_MODE = "exec";
     public static final String SAMPLING_MODE = "sampling";
+    private static final int JOBS_TO_SAMPLE = 30;
+
 
 
     public SettingsImpl(Config config) {
@@ -63,10 +65,19 @@ public class SettingsImpl implements Extension {
         List<Job> workload = getWorkload();
         if (getMode().equals(SAMPLING_MODE)){
             LOG.info("running in sampling mode : sampling from {} jobs", workload.size() );
-            return new SamplingScheduler(workload, getJobDeadline(), getBackoffInterval());
+            return new SamplingScheduler(workload, getJobDeadline(), getBackoffInterval(), getNumberOfJobsToSample());
         }
         else
             return  new SimpleScheduler(workload, getJobDeadline(), getBackoffInterval());
+    }
+
+    private int getNumberOfJobsToSample() {
+        if (vampires.hasPath("sampleSize")) {
+            return vampires.getInt("sampleSize");
+        } else {
+            LOG.warn("Missing sampleSize config value. using default {}", JOBS_TO_SAMPLE);
+            return JOBS_TO_SAMPLE;
+        }
     }
 
     public List<String> getExecutors() {

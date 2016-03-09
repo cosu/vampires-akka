@@ -1,17 +1,16 @@
 package ro.cosu.vampires.client;
 
-import java.util.logging.LogManager;
-
-import org.slf4j.bridge.SLF4JBridgeHandler;
-
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 import ro.cosu.vampires.client.actors.ClientActor;
 import ro.cosu.vampires.client.actors.MonitoringActor;
 import ro.cosu.vampires.client.actors.TerminatorActor;
 import ro.cosu.vampires.client.monitoring.MonitoringManager;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
+
+import java.util.logging.LogManager;
 
 /**
  * User: Cosmin 'cosu' Dumitru - cosu@cosu.ro
@@ -32,7 +31,7 @@ public class Client {
 
         if (args.length == 2){
             host = args[0];
-            clientId = args[0];
+            clientId = args[1];
         }
         else if (args.length == 1) {
             clientId = args[0];

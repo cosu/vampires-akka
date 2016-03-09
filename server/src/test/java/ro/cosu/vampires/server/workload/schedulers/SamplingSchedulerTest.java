@@ -17,7 +17,7 @@ public class SamplingSchedulerTest {
     @Before
     public void setUp() throws Exception {
         List<Job> jobs = Arrays.asList(Job.empty().withCommand("foo"), Job.empty().withCommand("bar"));
-        scheduler = new SamplingScheduler(jobs, 1, 1);
+        scheduler = new SamplingScheduler(jobs, 1, 1,  10);
     }
 
     @Test
@@ -30,11 +30,4 @@ public class SamplingSchedulerTest {
         jobsClient2.stream().map(job -> job.from("client2")).forEach(scheduler::markDone);
         assertThat(scheduler.isDone(), is(true));
     }
-
-    @Test
-    public void testMarkJob() throws Exception {
-        scheduler.markDone(Job.empty());
-    }
-
-
 }

@@ -11,21 +11,19 @@ public class SamplingScheduler implements Scheduler{
 
     private static final Logger LOG = LoggerFactory.getLogger(SamplingScheduler.class);
 
-    private final List<Job> jobList;
+    private List<Job> jobList;
     private final long jobDeadline;
     private final int backOffInterval;
     private Random random = new Random(1111111111L);
 
-    private static final int JOBS_TO_SAMPLE = 30;
 
     private Map<String, Scheduler> schedulerMap = new HashMap<>();
 
-    public SamplingScheduler(List<Job> jobList, long jobDeadline, int backOffInterval) {
-        jobList = new ArrayList<>(jobList);
+    public SamplingScheduler(List<Job> jobs, long jobDeadline, int backOffInterval, int numberOfJobsToSample) {
+        jobList = new ArrayList<>(jobs);
         Collections.shuffle(jobList , random);
-        jobList = jobList.subList(0, Math.min(JOBS_TO_SAMPLE, jobList.size()));
+        jobList = jobList.subList(0, Math.min(numberOfJobsToSample, jobs.size()));
 
-        this.jobList = jobList;
         this.jobDeadline = jobDeadline;
         this.backOffInterval = backOffInterval;
     }
@@ -55,7 +53,7 @@ public class SamplingScheduler implements Scheduler{
 
     @Override
     public long getJobCount() {
-        return Math.min(JOBS_TO_SAMPLE, jobList.size());
+        return jobList.size();
     }
 
 }
