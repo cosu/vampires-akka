@@ -2,11 +2,12 @@
 
 IP=$(ip -f inet addr show ib0 |grep inet |awk '{print $2}'|cut -f1 -d/)
 
-export SERVER_OPTS="-Dconfig.file=$1"
+export SERVER_OPTS="$SERVER_OPTS -Dconfig.file=$1"
 export BIND_HOST="0.0.0.0"
 export HOST=${IP}
 shift
 echo "Vampires-Akka server: Binding to IP:${BIND_HOST} . Public host: ${HOST}"
+echo "Server Opts: ${SERVER_OPTS}"
 
 # Attempt to set APP_HOME
 # Resolve links: $0 may be a link

@@ -34,7 +34,6 @@ public class MonitoringManager {
     public static Sigar getSigar() throws Exception {
         SigarProvisioner.provision();
         return  new Sigar();
-
     }
 
     public static MetricRegistry getMetricRegistry() throws Exception{

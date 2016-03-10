@@ -12,11 +12,6 @@ import scala.concurrent.duration.Duration;
 
 import java.util.logging.LogManager;
 
-/**
- * User: Cosmin 'cosu' Dumitru - cosu@cosu.ro
- * Date: 9/13/15
- * Time: 11:46 PM
- */
 public class Client {
 
     static {
@@ -32,12 +27,7 @@ public class Client {
         if (args.length == 2){
             host = args[0];
             clientId = args[1];
-        }
-        else if (args.length == 1) {
-            clientId = args[0];
-            host = system.settings().config().getString("vampires.server_ip");
-        }
-        else  {
+        } else {
             throw  new IllegalArgumentException("missing client id");
         }
 

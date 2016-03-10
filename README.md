@@ -21,4 +21,4 @@ Interesting features:
 - Configurable CPU allocation policy for tasks
 
 
-Configuration examples can be found `/resources/*.conf`
+Configuration examples can be found `/conf/*.conf`
