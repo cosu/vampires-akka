@@ -18,10 +18,11 @@ import ro.cosu.vampires.client.allocation.CpuSet;
 import ro.cosu.vampires.client.executors.Executor;
 import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
 import ro.cosu.vampires.server.workload.Computation;
-import ro.cosu.vampires.server.workload.Trace;
 import ro.cosu.vampires.server.workload.Result;
+import ro.cosu.vampires.server.workload.Trace;
 
 import javax.ws.rs.ProcessingException;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -50,7 +51,7 @@ public class DockerExecutor implements Executor {
     private Optional<CpuSet> cpuSet;
 
     private void createContainer(String[] command) {
-        final String containerName = "vampires-" + Math.abs(new SecureRandom().nextInt());
+        final String containerName = "vampires-" + new SecureRandom().nextInt(Integer.MAX_VALUE);
 
         final String containerImage = config.getString("docker.image");
 
@@ -176,7 +177,7 @@ public class DockerExecutor implements Executor {
 
         @Override
         public void onNext(Frame frame) {
-            log.append(new String(frame.getPayload()));
+            log.append(new String(frame.getPayload() , StandardCharsets.UTF_8));
             super.onNext(frame);
         }
 

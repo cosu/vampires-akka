@@ -50,7 +50,7 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
         return Metrics.builder().id(id).metadata(ImmutableMap.of("docker", id)).metrics(statisticsList).build();
     }
 
-    private class StatsCallback extends ResultCallbackTemplate<StatsCallback, Statistics> {
+    private static class StatsCallback extends ResultCallbackTemplate<StatsCallback, Statistics> {
         private  List<Metric> statisticsList = new LinkedList<>();
 
         @Override
@@ -71,7 +71,9 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
         // future versions of the api will hopefully fix this
         Map<String, Double> data = new HashMap<>();
 
-        data.putAll(flattenMap("network", stat.getNetworks()));
+        Optional.ofNullable(stat.getNetworks()).ifPresent(stats -> {
+            data.putAll(flattenMap("network", stats));
+        });
         data.putAll(flattenMap("memory", stat.getMemoryStats()));
 //        data.putAll(flattenMap("io", stat.getBlkioStats()));
         data.putAll(flattenMap("cpu", stat.getCpuStats()));

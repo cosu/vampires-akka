@@ -38,6 +38,7 @@ public class SshClient {
             sb.append(msg);
         }
 
+        in.close();
         channel.disconnect();
         session.disconnect();
         return sb.toString();

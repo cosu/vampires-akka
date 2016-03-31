@@ -1,26 +1,26 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDateTime;
-
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import ro.cosu.vampires.server.util.gson.AutoValueAdapterFactory;
 import ro.cosu.vampires.server.util.gson.ImmutableListTypeAdapterFactory;
 import ro.cosu.vampires.server.util.gson.ImmutableMapTypeAdapterFactory;
 import ro.cosu.vampires.server.writers.json.AllResults;
 import ro.cosu.vampires.server.writers.json.LocalDateTimeDeserializer;
 import ro.cosu.vampires.server.writers.json.LocalDateTimeSerializer;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 
 
 public class DataTest {
@@ -54,7 +54,9 @@ public class DataTest {
                                      .registerTypeAdapterFactory(new ImmutableListTypeAdapterFactory())
                                      .create();
 
-        AllResults response = gson.fromJson(new FileReader(jsonFile), AllResults.class);
+        InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(jsonFile), StandardCharsets.UTF_8);
+
+        AllResults response = gson.fromJson(inputStreamReader, AllResults.class);
 
         response.results().stream().forEach(job -> {
 
