@@ -10,7 +10,7 @@ The wrapper will download gradle and will allow you to build, compile and instal
 ## Compile and run tests
 
 * clone this repo to vampires-akka.src
-    * `git clone $REPO_URL vampies-akka.src`
+    * `git clone $REPO_URL vampires-akka.src`
 *  Build using gradle.
     * `./gradlew build`
 * Run the unit tests using gradle
