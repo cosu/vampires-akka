@@ -19,8 +19,11 @@ The wrapper will download gradle and will allow you to build, compile and instal
 If everything works you can now use vampires to run bags-of-tasks.
 
 ## Installation
-* Install the binaries to your home directory. The `installLocal` task will compile and package the server and client components and the it will install them in a directory called `vampires-akka-dist` in your homedir.
+* . The `installLocal` gradle task will compile and package the server and client components and the it will install them in a directory called `vampires-akka-dist` in your homedir.
     * `./gradlew installLocal`
+
+## TL;DR Build
+Clone the repo , cd to it and run `./build.sh`
 
 ## Local execution
 * Run a set of tasks using the local machine as a worker. Logs and results are saved in the home dir. Inspect the `conf/local.conf` file and `src/main/java/resources/application.conf` files to get more details.
@@ -83,3 +86,5 @@ vampires-akka-dist/server-1.0-SNAPSHOT/scripts/vampires_das5_.sh vampires-akka.s
 :TODO 
 
 
+## Configuration 101
+:TODO
