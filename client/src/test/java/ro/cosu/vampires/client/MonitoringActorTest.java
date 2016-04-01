@@ -83,6 +83,8 @@ public class MonitoringActorTest {
         TestActorRef<MonitoringActor> ref = TestActorRef.create(system, MonitoringActor
                 .props(TestUtil.getMetricRegistryMock()));
 
+        Thread.sleep(100);
+
         final Future<Object> future = akka.pattern.Patterns.ask(ref, Metrics.empty(), 500);
 
         Metrics metrics = (Metrics) Await.result(future, Duration.create("500 milliseconds"));
@@ -90,8 +92,6 @@ public class MonitoringActorTest {
 
         ImmutableList<Metric> timedMetrics = metrics.metrics();
         assertThat(timedMetrics.size(), not(0));
-
-        System.out.println(metrics);
 
     }
 }
