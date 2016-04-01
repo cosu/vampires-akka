@@ -68,9 +68,9 @@ public class MonitoringActorTest {
                 .status(JobStatus.EXECUTED)
                 .build();
 
-        final Future<Object> future = akka.pattern.Patterns.ask(ref, jobWithoutMetrics, 50);
+        final Future<Object> future = akka.pattern.Patterns.ask(ref, jobWithoutMetrics, 100);
 
-        Job job = (Job) Await.result(future, Duration.create("50 milliseconds"));
+        Job job = (Job) Await.result(future, Duration.create("100 milliseconds"));
 
         ImmutableList<Metric> timedMetrics = job.hostMetrics().metrics();
 
@@ -83,9 +83,9 @@ public class MonitoringActorTest {
         TestActorRef<MonitoringActor> ref = TestActorRef.create(system, MonitoringActor
                 .props(TestUtil.getMetricRegistryMock()));
 
-        final Future<Object> future = akka.pattern.Patterns.ask(ref, Metrics.empty(), 50);
+        final Future<Object> future = akka.pattern.Patterns.ask(ref, Metrics.empty(), 100);
 
-        Metrics metrics = (Metrics) Await.result(future, Duration.create("50 milliseconds"));
+        Metrics metrics = (Metrics) Await.result(future, Duration.create("500 milliseconds"));
         assertThat(metrics.metadata().keySet().size(), not(0));
 
         ImmutableList<Metric> timedMetrics = metrics.metrics();
