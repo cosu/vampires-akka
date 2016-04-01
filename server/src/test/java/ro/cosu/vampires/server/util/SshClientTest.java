@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -26,7 +27,7 @@ public class SshClientTest {
 
         when(jschMock.getSession("user", "address", 1)).thenReturn(session);
         when(session.openChannel("exec")).thenReturn(channelExec);
-        when(channelExec.getInputStream()).thenReturn(new ByteArrayInputStream( "result".getBytes() ));
+        when(channelExec.getInputStream()).thenReturn(new ByteArrayInputStream("result".getBytes(StandardCharsets.UTF_8)));
 
         String result = sshClient.runCommand("user", "privateKey", "address", "cmd", 1);
 

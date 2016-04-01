@@ -1,6 +1,8 @@
 package ro.cosu.vampires.server.writers.json;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
+import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.typesafe.config.Config;
@@ -60,12 +62,10 @@ public class JsonResultsWriter implements ResultsWriter {
     public void addClient(ClientInfo clientInfo) {
         clients.add(clientInfo);
     }
-
+    Writer fileWriter;
     public void close() {
         //write results to disk
         try {
-            File resultsFile = getPath("results-all").toFile();
-            Writer writer = new FileWriter(resultsFile);
 
             Gson gson = new GsonBuilder().setPrettyPrinting()
                     .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
@@ -75,26 +75,32 @@ public class JsonResultsWriter implements ResultsWriter {
                     .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
                     .create();
 
-
             AllResults allResults = AllResults.builder().results(results).clients(clients).build();
             String collect = results.stream().map(uglyGson::toJson).collect(Collectors.joining("\n"));
 
-            FileWriter fileWriter = new FileWriter(getPath("results").toFile());
+            fileWriter = Files.newWriter(getPath("results").toFile(), Charsets.UTF_8);
             fileWriter.write(collect);
             fileWriter.close();
 
             collect = clients.stream().map(uglyGson::toJson).collect(Collectors.joining("\n"));
-            fileWriter = new FileWriter(getPath("clients").toFile());
+            fileWriter = Files.newWriter(getPath("clients").toFile(), Charsets.UTF_8);;
             fileWriter.write(collect);
             fileWriter.close();
 
-
-            gson.toJson(allResults, writer);
-            writer.close();
-            LOG.info("wrote results to {}", resultsFile.getAbsolutePath());
+            fileWriter = Files.newWriter(getPath("results-all").toFile(), Charsets.UTF_8);
+            gson.toJson(allResults, fileWriter);
+            fileWriter.close();
+            LOG.info("wrote results to {}", getPath("results-all").toAbsolutePath());
 
         } catch (IOException e) {
             LOG.error("Error writing results to file", e);
+        }
+        finally {
+            try {
+                fileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

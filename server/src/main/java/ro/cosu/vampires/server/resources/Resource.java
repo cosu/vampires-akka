@@ -2,13 +2,14 @@ package ro.cosu.vampires.server.resources;
 
 import com.typesafe.config.Config;
 
+import java.io.Serializable;
 import java.util.concurrent.CompletableFuture;
 
 public interface Resource {
 
     void connected();
 
-    interface  Parameters{
+    interface  Parameters extends Serializable{
         Type type();
         String command();
         interface Builder {

@@ -47,6 +47,7 @@ public class LocalResource extends AbstractResource{
             LOG.debug("execute {}", cmd.toString());
             exitCode = executor.execute(cmd);
             LOG.debug("Output {}", collectingLogOutputStream.getLines());
+            if (exitCode != 0) throw new IOException("Non zero exit code");
         } catch (IOException e) {
             LOG.debug("{} has failed with error {}: {}", this, exitCode, e);
             LOG.debug("{}", Joiner.on("\n").join(collectingLogOutputStream.getLines()));

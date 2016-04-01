@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.resources.AbstractResource;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class EC2Resource extends AbstractResource {
 
@@ -46,7 +47,7 @@ public class EC2Resource extends AbstractResource {
                 .withMaxCount(1)
                 .withKeyName(parameters.keyName())
                 .withSecurityGroups(parameters.securityGroup())
-                .withUserData(Base64.encodeBase64String(cloudInit.getBytes()));
+                .withUserData(Base64.encodeBase64String(cloudInit.getBytes(Charsets.UTF_8)));
 
         RunInstancesResult result = amazonEC2Client.runInstances(request);
 

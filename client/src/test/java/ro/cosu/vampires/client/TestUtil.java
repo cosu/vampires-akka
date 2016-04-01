@@ -22,9 +22,9 @@ public class TestUtil {
         results.put("host", gauge);
         results.put("network", gauge);
         results.put("cpu", gauge);
-        Collections.unmodifiableSortedMap(results);
 
-        when(mock.getGauges(anyObject())).thenReturn(results);
+        when(mock.getGauges(anyObject()))
+                .thenReturn(Collections.unmodifiableSortedMap(results));
 
         return mock;
     }

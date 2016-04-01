@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 public class SshClient {
@@ -30,7 +31,7 @@ public class SshClient {
         Session session = getSession(user, privateKey, address, port);
 
         ChannelExec channel = getChannelExec(session, command);
-        BufferedReader in = new BufferedReader(new InputStreamReader(channel.getInputStream()));
+        BufferedReader in = new BufferedReader(new InputStreamReader(channel.getInputStream() , StandardCharsets.UTF_8));
 
         String msg;
         StringBuilder sb = new StringBuilder();

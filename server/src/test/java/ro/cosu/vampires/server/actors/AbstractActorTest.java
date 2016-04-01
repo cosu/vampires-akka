@@ -6,7 +6,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 public class AbstractActorTest {
-    protected  static ActorSystem system;
+    static ActorSystem system;
 
     @BeforeClass
     public static void setup() {
