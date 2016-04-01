@@ -3,11 +3,13 @@ package ro.cosu.vampires.client;
 import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
 import akka.testkit.TestActorRef;
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 import ro.cosu.vampires.client.actors.MonitoringActor;
 import ro.cosu.vampires.client.monitoring.MonitoringManager;
 import ro.cosu.vampires.server.workload.*;
@@ -37,7 +39,12 @@ public class MonitoringActorTest {
     }
 
 
+    private MetricRegistry getMetricRegistryMock() {
 
+        MetricRegistry mock = Mockito.mock(MetricRegistry.class);
+
+        return mock;
+    }
 
     @Test
     public void testMetrics() throws Exception {
@@ -66,9 +73,6 @@ public class MonitoringActorTest {
 
 
         final Future<Object> future = akka.pattern.Patterns.ask(ref, jobWithoutMetrics, 3000);
-
-
-
 
         Job job = (Job) Await.result(future, Duration.create("2 seconds"));
 
