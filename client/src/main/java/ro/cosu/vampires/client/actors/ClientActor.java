@@ -41,10 +41,9 @@ public class ClientActor extends UntypedActor {
 
         log.info("connecting to {}", serverPath);
         getContext().actorSelection(serverPath).tell(new Identify(serverPath), getSelf());
-        getContext()
-                .system()
-                .scheduler()
-                .scheduleOnce(Duration.create(3, SECONDS), getSelf(),
+        getContext().system().scheduler()
+                .scheduleOnce(
+                        Duration.create(3, SECONDS), getSelf(),
                         ReceiveTimeout.getInstance(), getContext().dispatcher(), getSelf());
     }
 
@@ -111,9 +110,9 @@ public class ClientActor extends UntypedActor {
 
         final ActorSelection monitorActor = getContext().actorSelection("/user/monitor");
 
+        // ugly but this is done only when the client boots
         final Future<Object> metricsFuture = Patterns.ask(monitorActor, Metrics.empty(), Timeout.apply(1, SECONDS));
-        Metrics metrics = (Metrics) Await.result(metricsFuture, Duration.create("5 seconds"));
-
+        Metrics metrics = (Metrics) Await.result(metricsFuture, Duration.create("2 seconds"));
 
         return ClientInfo.builder().id(clientId).executors(executorInfo).metrics(metrics).build();
     }

@@ -30,22 +30,24 @@ public class MetricsWindow {
             }).build();
 
     public void add(LocalDateTime time, SortedMap<String, Gauge> metrics) {
-
         metricWindow.put(time, convertGaugesToDouble(metrics));
         cache.put(time, time);
     }
 
     public ImmutableList<Metric> getInterval(LocalDateTime start, LocalDateTime stop) {
-        List<Metric> metricList = metricWindow.subMap(start, stop).entrySet().stream().map(entry -> Metric.builder()
-                .time(entry.getKey()).values(entry.getValue()).build())
+        List<Metric> metricList = metricWindow.subMap(start, stop).entrySet().stream().map(
+                entry -> Metric.builder()
+                        .time(entry.getKey())
+                        .values(entry.getValue())
+                        .build())
                 .collect(Collectors.toList());
 
         return ImmutableList.copyOf(metricList);
     }
 
 
-    public static ImmutableMap<String, Double> convertGaugesToDouble(SortedMap<String, Gauge> gauges) {
-        ImmutableMap.Builder<String, Double> builder = ImmutableMap.<String, Double>builder();
+    private static ImmutableMap<String, Double> convertGaugesToDouble(SortedMap<String, Gauge> gauges) {
+        ImmutableMap.Builder<String, Double> builder = ImmutableMap.builder();
 
         gauges.entrySet().stream().forEach(entry -> {
             String gaugeName = entry.getKey();

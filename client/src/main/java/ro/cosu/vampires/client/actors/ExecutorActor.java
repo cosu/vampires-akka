@@ -1,5 +1,6 @@
 package ro.cosu.vampires.client.actors;
 
+import akka.actor.ActorSelection;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
@@ -20,16 +21,20 @@ public class ExecutorActor extends UntypedActor {
         return Props.create(ExecutorActor.class);
     }
 
+    private final ActorSelection monitorActor;
+
+    public ExecutorActor() {
+        monitorActor = getContext().actorSelection("/user/monitor");
+    }
+
     @Override
     public void onReceive(Object message) throws Exception {
         if (message instanceof Job) {
             Job job = (Job) message;
             Executor executor = executors.getExecutor();
-
             Result result = executor.execute(job.computation());
-
-            log.debug("done executing job", job.id());
-            getContext().actorSelection("/user/monitor").tell(job.withResult(result), getSender());
+            log.debug("done executing job {}", job.id());
+            monitorActor.tell(job.withResult(result), getSender());
         }
 
         getContext().stop(getSelf());
