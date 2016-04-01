@@ -83,7 +83,7 @@ public class MonitoringActorTest {
         TestActorRef<MonitoringActor> ref = TestActorRef.create(system, MonitoringActor
                 .props(TestUtil.getMetricRegistryMock()));
 
-        final Future<Object> future = akka.pattern.Patterns.ask(ref, Metrics.empty(), 100);
+        final Future<Object> future = akka.pattern.Patterns.ask(ref, Metrics.empty(), 500);
 
         Metrics metrics = (Metrics) Await.result(future, Duration.create("500 milliseconds"));
         assertThat(metrics.metadata().keySet().size(), not(0));
