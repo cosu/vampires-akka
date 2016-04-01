@@ -53,14 +53,16 @@ public class MonitoringActorTest {
         Computation computation = Computation.builder().command("test").id("test").build();
         LocalDateTime now = LocalDateTime.now();
 
-        Result result = Result.builder().duration(10).exitCode(0).output(new LinkedList<>())
+        Result result = Result.builder()
+                .duration(1)
+                .exitCode(0)
+                .output(new LinkedList<>())
                 .trace(Trace.builder()
                         .start(now.minusSeconds(1))
                         .stop(now)
                         .cpuSet(Sets.newHashSet(1)).executor("foo").totalCpuCount(1)
                         .executorMetrics(Metrics.empty())
-                    .build()
-                )
+                    .build())
                 .build();
 
         Job jobWithoutMetrics = Job.builder().computation(computation).result(result)
@@ -68,9 +70,9 @@ public class MonitoringActorTest {
                 .status(JobStatus.EXECUTED)
                 .build();
 
-        final Future<Object> future = akka.pattern.Patterns.ask(ref, jobWithoutMetrics, 100);
+        final Future<Object> future = akka.pattern.Patterns.ask(ref, jobWithoutMetrics, 1000);
 
-        Job job = (Job) Await.result(future, Duration.create("100 milliseconds"));
+        Job job = (Job) Await.result(future, Duration.create("1 seconds"));
 
         ImmutableList<Metric> timedMetrics = job.hostMetrics().metrics();
 
@@ -83,11 +85,10 @@ public class MonitoringActorTest {
         TestActorRef<MonitoringActor> ref = TestActorRef.create(system, MonitoringActor
                 .props(TestUtil.getMetricRegistryMock()));
 
-        Thread.sleep(100);
+        final Future<Object> future = akka.pattern.Patterns.ask(ref, Metrics.empty(), 1000);
 
-        final Future<Object> future = akka.pattern.Patterns.ask(ref, Metrics.empty(), 500);
+        Metrics metrics = (Metrics) Await.result(future, Duration.create("1 seconds"));
 
-        Metrics metrics = (Metrics) Await.result(future, Duration.create("500 milliseconds"));
         assertThat(metrics.metadata().keySet().size(), not(0));
 
         ImmutableList<Metric> timedMetrics = metrics.metrics();
