@@ -3,31 +3,22 @@ package ro.cosu.vampires.client;
 import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
 import akka.testkit.TestActorRef;
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.MetricRegistry;
+import autovalue.shaded.com.google.common.common.collect.Lists;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
 import ro.cosu.vampires.client.actors.MonitoringActor;
-import ro.cosu.vampires.client.monitoring.MonitoringManager;
 import ro.cosu.vampires.server.workload.*;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.TreeMap;
 
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.when;
 
 public class MonitoringActorTest {
 
@@ -56,10 +47,10 @@ public class MonitoringActorTest {
         Result result = Result.builder()
                 .duration(1)
                 .exitCode(0)
-                .output(new LinkedList<>())
+                .output(Lists.newLinkedList())
                 .trace(Trace.builder()
                         .start(now.minusSeconds(1))
-                        .stop(now)
+                        .stop(now.plusSeconds(1))
                         .cpuSet(Sets.newHashSet(1)).executor("foo").totalCpuCount(1)
                         .executorMetrics(Metrics.empty())
                     .build())
@@ -70,7 +61,7 @@ public class MonitoringActorTest {
                 .status(JobStatus.EXECUTED)
                 .build();
 
-        final Future<Object> future = akka.pattern.Patterns.ask(ref, jobWithoutMetrics, 1000);
+        Future<Object> future = akka.pattern.Patterns.ask(ref, jobWithoutMetrics, 1000);
 
         Job job = (Job) Await.result(future, Duration.create("1 seconds"));
 
@@ -85,14 +76,11 @@ public class MonitoringActorTest {
         TestActorRef<MonitoringActor> ref = TestActorRef.create(system, MonitoringActor
                 .props(TestUtil.getMetricRegistryMock()));
 
-        final Future<Object> future = akka.pattern.Patterns.ask(ref, Metrics.empty(), 1000);
+        Future<Object> future = akka.pattern.Patterns.ask(ref, Metrics.empty(), 1000);
 
         Metrics metrics = (Metrics) Await.result(future, Duration.create("1 seconds"));
 
         assertThat(metrics.metadata().keySet().size(), not(0));
-
-        ImmutableList<Metric> timedMetrics = metrics.metrics();
-        assertThat(timedMetrics.size(), not(0));
 
     }
 }

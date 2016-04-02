@@ -18,10 +18,11 @@ import java.util.stream.Collectors;
 public class MetricsWindow {
 
     private int MAX_JOB_LENGTH = 5;
-    private ConcurrentSkipListMap<LocalDateTime, ImmutableMap<String, Double>> metricWindow = new ConcurrentSkipListMap
-            <>();
+    private ConcurrentSkipListMap<LocalDateTime, ImmutableMap<String, Double>> metricWindow =
+            new ConcurrentSkipListMap<>();
 
-    private Cache<LocalDateTime, Object> cache = CacheBuilder.newBuilder().expireAfterWrite(MAX_JOB_LENGTH, TimeUnit.MINUTES)
+    private Cache<LocalDateTime, Object> cache = CacheBuilder.newBuilder()
+            .expireAfterWrite(MAX_JOB_LENGTH, TimeUnit.MINUTES)
             .removalListener(notification -> {
                 if (notification.getKey() != null && notification.getKey() instanceof LocalDateTime) {
                     LocalDateTime key = (LocalDateTime) notification.getKey();

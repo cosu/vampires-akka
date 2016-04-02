@@ -25,12 +25,13 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 public class MonitoringActor extends UntypedActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
-    private static final int MONITORING_INTERVAL_MILIS = 1000;
+    private static final int MONITORING_INTERVAL_MILLIS = 1000;
 
     private final MetricRegistry metricRegistry;
 
     private final MetricsWindow metricsWindow = new MetricsWindow();
 
+    SortedMap<String, Gauge> gauges;
 
     public static Props props(MetricRegistry registry) {
 
@@ -39,6 +40,10 @@ public class MonitoringActor extends UntypedActor {
 
     MonitoringActor(MetricRegistry metricRegistry) {
         this.metricRegistry = metricRegistry;
+
+        // getting the gauges early
+        gauges = metricRegistry.getGauges((name, metric) -> name.startsWith("cpu") || name.startsWith("network"));
+
         recordMetrics();
     }
 
@@ -46,14 +51,13 @@ public class MonitoringActor extends UntypedActor {
     @Override
     public void preStart() {
         getContext().system().scheduler().schedule(Duration.Zero(),
-                Duration.create(MONITORING_INTERVAL_MILIS, MILLISECONDS), this::recordMetrics,
+                Duration.create(MONITORING_INTERVAL_MILLIS, MILLISECONDS),
+                (Runnable) this::recordMetrics,
                 getContext().system().dispatcher());
     }
 
     private void recordMetrics() {
         LocalDateTime now = LocalDateTime.now();
-        SortedMap<String, Gauge> gauges = metricRegistry
-                .getGauges((name, metric) -> name.startsWith("cpu") || name.startsWith("network"));
         metricsWindow.add(now, gauges);
     }
 
@@ -73,9 +77,9 @@ public class MonitoringActor extends UntypedActor {
         } else if (message instanceof Metrics) {
             // the client will ask for metrics to send to the server at boot time
             log.debug("got metrics request ");
-            final ImmutableList<Metric> interval = metricsWindow.getInterval(
-                    LocalDateTime.now().minus(MONITORING_INTERVAL_MILIS, ChronoUnit.MILLIS), LocalDateTime.now());
-            final Metrics metrics = Metrics.builder().metadata(getHostMetrics()).metrics(interval).build();
+            ImmutableList<Metric> interval = metricsWindow.getInterval(
+                    LocalDateTime.now().minus(MONITORING_INTERVAL_MILLIS, ChronoUnit.MILLIS), LocalDateTime.now());
+            Metrics metrics = Metrics.builder().metadata(getHostMetrics()).metrics(interval).build();
             getSender().tell(metrics, getSelf());
         } else {
             log.error("received unknown type of message");
