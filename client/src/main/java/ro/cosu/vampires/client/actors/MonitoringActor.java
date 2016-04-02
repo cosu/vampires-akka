@@ -31,7 +31,7 @@ public class MonitoringActor extends UntypedActor {
 
     private final MetricsWindow metricsWindow = new MetricsWindow();
 
-    SortedMap<String, Gauge> gauges;
+    private SortedMap<String, Gauge> gauges;
 
     public static Props props(MetricRegistry registry) {
 

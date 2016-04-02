@@ -61,8 +61,8 @@ public class JobUtil {
                     .collect(Collectors.toList());
 
         } catch (IOException e) {
-            LOG.error("failed to read tasks from frile", e);
-            throw new RuntimeException(e);
+            LOG.error("failed to read tasks from file", e);
+            throw new IllegalArgumentException("failed to read tasks from file ", e);
         }
         LOG.debug(String.format("bag-id: %1s, read %2s jobs from %3s", id, jobs.size(), file.getName()));
         return jobs;
