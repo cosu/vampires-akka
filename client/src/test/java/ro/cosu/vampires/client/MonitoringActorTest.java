@@ -4,7 +4,6 @@ import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
 import akka.testkit.TestActorRef;
 import autovalue.shaded.com.google.common.common.collect.Lists;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -65,10 +64,7 @@ public class MonitoringActorTest {
 
         Job job = (Job) Await.result(future, Duration.create("1 seconds"));
 
-        ImmutableList<Metric> timedMetrics = job.hostMetrics().metrics();
-
         assertThat(job.hostMetrics().metadata().keySet().size(), not(0));
-        assertThat(timedMetrics.size(), not(0));
     }
 
     @Test
