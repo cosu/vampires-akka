@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import ro.cosu.vampires.server.resources.AbstractResource;
 
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
 public class EC2Resource extends AbstractResource {
 

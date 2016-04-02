@@ -12,8 +12,6 @@ import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.writers.ResultsWriter;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Path;
@@ -62,8 +60,9 @@ public class JsonResultsWriter implements ResultsWriter {
     public void addClient(ClientInfo clientInfo) {
         clients.add(clientInfo);
     }
-    Writer fileWriter;
+
     public void close() {
+        Writer fileWriter = null;
         //write results to disk
         try {
 
@@ -83,7 +82,7 @@ public class JsonResultsWriter implements ResultsWriter {
             fileWriter.close();
 
             collect = clients.stream().map(uglyGson::toJson).collect(Collectors.joining("\n"));
-            fileWriter = Files.newWriter(getPath("clients").toFile(), Charsets.UTF_8);;
+            fileWriter = Files.newWriter(getPath("clients").toFile(), Charsets.UTF_8);
             fileWriter.write(collect);
             fileWriter.close();
 

@@ -14,7 +14,6 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import ro.cosu.vampires.server.resources.AbstractResource;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceManager;
@@ -63,8 +62,8 @@ public class EC2ResourceTest {
 
             @Provides
             private Optional<AmazonEC2Client> provideAmazonEc2(@Named("Config") Config config) {
-                AmazonEC2Client ec2Client = Mockito.mock(AmazonEC2Client.class);
-                RunInstancesResult runInstancesResult = Mockito.mock(RunInstancesResult.class, RETURNS_DEEP_STUBS);
+                AmazonEC2Client ec2Client = mock(AmazonEC2Client.class);
+                RunInstancesResult runInstancesResult = mock(RunInstancesResult.class, RETURNS_DEEP_STUBS);
                 DescribeInstancesResult describeInstancesResult = mock(DescribeInstancesResult.class, RETURNS_DEEP_STUBS);
                 TerminateInstancesResult terminateInstancesResult = mock(TerminateInstancesResult.class, RETURNS_DEEP_STUBS);
 

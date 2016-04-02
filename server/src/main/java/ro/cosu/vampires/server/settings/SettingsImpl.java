@@ -123,7 +123,7 @@ public class SettingsImpl implements Extension {
 
     public String getMode() {
 
-        if (vampires.hasPath("mode") && vampires.getString("mode").toLowerCase().equals(SAMPLING_MODE)) {
+        if (vampires.hasPath("mode") && vampires.getString("mode").equalsIgnoreCase(SAMPLING_MODE)) {
             return SAMPLING_MODE;
         }
         else {

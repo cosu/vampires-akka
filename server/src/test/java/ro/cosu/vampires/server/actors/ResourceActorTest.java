@@ -71,7 +71,6 @@ public class ResourceActorTest extends AbstractActorTest {
 
                 resourceActor.tell(getCreateResource("foo"), resourceProbe.getRef());
 
-
                 resourceProbe.receiveN(2, FiniteDuration.create(1, "seconds"));
 
             }
