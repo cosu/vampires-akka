@@ -1,5 +1,6 @@
 package ro.cosu.vampires.client.allocation;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 
 import org.slf4j.Logger;
@@ -12,7 +13,6 @@ import java.util.concurrent.BlockingDeque;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import autovalue.shaded.com.google.common.common.collect.Lists;
 
 public class FixedCpuSetAllocator implements CpuAllocator {
     /**

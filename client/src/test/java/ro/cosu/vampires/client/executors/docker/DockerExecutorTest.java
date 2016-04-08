@@ -1,5 +1,6 @@
 package ro.cosu.vampires.client.executors.docker;
 
+import com.google.common.collect.Maps;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -17,7 +18,6 @@ import org.mockito.Mockito;
 
 import java.util.Map;
 
-import autovalue.shaded.com.google.common.common.collect.Maps;
 import ro.cosu.vampires.client.allocation.CpuAllocator;
 import ro.cosu.vampires.client.allocation.FixedCpuSetAllocator;
 import ro.cosu.vampires.client.executors.Executor;

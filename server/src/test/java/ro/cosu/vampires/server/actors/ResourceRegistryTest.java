@@ -2,9 +2,10 @@ package ro.cosu.vampires.server.actors;
 
 import org.junit.Test;
 
+import java.util.HashMap;
+
 import akka.actor.ActorRef;
 import akka.testkit.TestProbe;
-import autovalue.shaded.com.google.common.common.collect.Maps;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceDescription;
 import ro.cosu.vampires.server.resources.ResourceInfo;
@@ -36,7 +37,7 @@ public class ResourceRegistryTest extends AbstractActorTest {
         final ActorRef actorRef = createActorRef();
         resourceRegistry.addResourceActor(actorRef);
 
-        resourceRegistry.registerClient(actorRef, ClientInfo.builder().executors(Maps.newHashMap()).id
+        resourceRegistry.registerClient(actorRef, ClientInfo.builder().executors(new HashMap<>()).id
                 ("foo").metrics(Metrics.empty()).build());
         assertThat(resourceRegistry.getRegisteredClients().size(), is(1));
 
@@ -52,7 +53,7 @@ public class ResourceRegistryTest extends AbstractActorTest {
         final ResourceInfo resourceInfo = ResourceInfo.create(ResourceDescription.create("foo", Resource.Type.MOCK),
                 Resource.Status.RUNNING);
         resourceRegistry.registerResource(actorRef, resourceInfo);
-        final ClientInfo clientInfo = ClientInfo.builder().executors(Maps.newHashMap()).id
+        final ClientInfo clientInfo = ClientInfo.builder().executors(new HashMap<>()).id
                 ("foo").metrics(Metrics.empty()).build();
         resourceRegistry.registerClient(actorRef, clientInfo);
 

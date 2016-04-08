@@ -1,5 +1,6 @@
 package ro.cosu.vampires.client;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import org.junit.AfterClass;
@@ -11,7 +12,6 @@ import java.time.LocalDateTime;
 import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
 import akka.testkit.TestActorRef;
-import autovalue.shaded.com.google.common.common.collect.Lists;
 import ro.cosu.vampires.client.actors.MonitoringActor;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Job;
