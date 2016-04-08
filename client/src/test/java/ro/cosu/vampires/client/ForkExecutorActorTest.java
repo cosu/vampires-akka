@@ -1,10 +1,11 @@
 package ro.cosu.vampires.client;
 
-import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import akka.actor.ActorSystem;
+import akka.testkit.JavaTestKit;
 
 public class ForkExecutorActorTest {
     private static ActorSystem system;

@@ -3,9 +3,10 @@ package ro.cosu.vampires.server.writers.mongo;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
+
 import ro.cosu.vampires.server.workload.Job;
 
-@Entity(noClassnameStored=true)
+@Entity(noClassnameStored = true)
 public class MongoResult {
 
     @Id

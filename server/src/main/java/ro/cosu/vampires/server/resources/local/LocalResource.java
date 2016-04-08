@@ -1,19 +1,25 @@
 package ro.cosu.vampires.server.resources.local;
 
-import autovalue.shaded.com.google.common.common.base.Joiner;
-import org.apache.commons.exec.*;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.Executor;
+import org.apache.commons.exec.LogOutputStream;
+import org.apache.commons.exec.PumpStreamHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.server.resources.AbstractResource;
 
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import autovalue.shaded.com.google.common.common.base.Joiner;
+import ro.cosu.vampires.server.resources.AbstractResource;
 
 
-public class LocalResource extends AbstractResource{
+public class LocalResource extends AbstractResource {
     private static final Logger LOG = LoggerFactory.getLogger(LocalResource.class);
     private final LocalResourceParameters parameters;
     private CollectingLogOutputStream collectingLogOutputStream = new CollectingLogOutputStream();
@@ -23,7 +29,7 @@ public class LocalResource extends AbstractResource{
     public LocalResource(LocalResourceParameters parameters, Executor executor) {
         super(parameters);
         this.executor = executor;
-        this.parameters= parameters;
+        this.parameters = parameters;
     }
 
     @Override
@@ -31,7 +37,7 @@ public class LocalResource extends AbstractResource{
         // TODO check somehow that the file exists and then exit
         CommandLine cmd = new CommandLine("/bin/sh");
         cmd.addArgument("-c");
-        cmd.addArgument("nohup " + parameters.command() + " "+ description().id()  + " 2>&1 0</dev/null & echo $! ", false);
+        cmd.addArgument("nohup " + parameters.command() + " " + description().id() + " 2>&1 0</dev/null & echo $! ", false);
 
         LOG.debug("local starting {}", cmd);
         execute(cmd);
@@ -59,13 +65,15 @@ public class LocalResource extends AbstractResource{
     public void onStop() throws IOException {
         LOG.debug("local stopping");
         try {
-            Integer pid = collectingLogOutputStream.getLines().stream().map(Integer::parseInt).findFirst().get();
-            CommandLine cmd = new CommandLine("/bin/sh");
-            cmd.addArgument("-c");
-            cmd.addArgument("kill " + pid, false);
-            execute(cmd);
-        }
-        catch (NumberFormatException | NoSuchElementException ex) {
+            Optional<Integer> firstInt = collectingLogOutputStream.getLines().stream().map(Integer::parseInt).findFirst();
+            if (firstInt.isPresent()) {
+                int pid = firstInt.get();
+                CommandLine cmd = new CommandLine("/bin/sh");
+                cmd.addArgument("-c");
+                cmd.addArgument("kill " + pid, false);
+                execute(cmd);
+            }
+        } catch (NumberFormatException | NoSuchElementException ex) {
             LOG.warn("Failed to get pid value. nohup process exited prematurely");
         }
     }
@@ -82,9 +90,12 @@ public class LocalResource extends AbstractResource{
 
     private static class CollectingLogOutputStream extends LogOutputStream {
         private final List<String> lines = new LinkedList<>();
-        @Override protected void processLine(String line, int level) {
+
+        @Override
+        protected void processLine(String line, int level) {
             lines.add(line);
         }
+
         public List<String> getLines() {
             return lines;
         }

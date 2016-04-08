@@ -15,20 +15,33 @@ import ro.cosu.vampires.server.resources.ResourceProvider;
 import ro.cosu.vampires.server.workload.ClientInfo;
 
 public class ResourceActor extends UntypedActorWithStash {
-    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
-
-
     private final ResourceProvider resourceProvider;
+    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private Resource resource;
+    private Procedure<Object> active = message -> {
+        ActorRef sender = getSender();
 
-    public static Props props(ResourceProvider resourceProvider) {
-        return Props.create(ResourceActor.class, resourceProvider);
-    }
+        if (message instanceof ResourceControl.Query) {
+            sendResourceInfo(sender);
+        } else if (message instanceof ClientInfo) {
+            connectClient((ClientInfo) message);
+        } else if (message instanceof ResourceControl.Shutdown) {
+            log.debug("shutdown " + message);
+            Resource stoppedResource = resource.stop().get();
+            sender.tell(stoppedResource.info(), getSelf());
+        } else {
+            log.error("unhandled {}", message);
+            unhandled(message);
+        }
+    };
 
     ResourceActor(ResourceProvider resourceProvider) {
         this.resourceProvider = resourceProvider;
     }
 
+    public static Props props(ResourceProvider resourceProvider) {
+        return Props.create(ResourceActor.class, resourceProvider);
+    }
 
     @Override
     public void onReceive(Object message) throws Exception {
@@ -46,8 +59,7 @@ public class ResourceActor extends UntypedActorWithStash {
                 log.error("got resource info {}. deactivating actor", resourceInfo);
                 fail();
             }
-        }
-        else {
+        } else {
             log.debug("stash {}", message);
             stash();
         }
@@ -74,7 +86,6 @@ public class ResourceActor extends UntypedActorWithStash {
         }
     }
 
-
     private Void fail() {
         log.error("actor failed to interact with resource ");
         sendInfoToParent();
@@ -82,7 +93,7 @@ public class ResourceActor extends UntypedActorWithStash {
         return null;
     }
 
-    private void sendInfoToParent(){
+    private void sendInfoToParent() {
         sendResourceInfo(getContext().parent());
     }
 
@@ -102,39 +113,19 @@ public class ResourceActor extends UntypedActorWithStash {
             }
     }
 
-    private Procedure<Object> active = message -> {
-        ActorRef sender = getSender();
-
-        if (message instanceof ResourceControl.Query) {
-            sendResourceInfo(sender);
-        }
-        else if  (message instanceof ClientInfo) {
-            connectClient((ClientInfo) message);
-        }
-        else if (message instanceof ResourceControl.Shutdown) {
-            log.debug("shutdown " + message);
-            Resource stoppedResource = resource.stop().get();
-            sender.tell(stoppedResource.info(), getSelf());
-        } else {
-            log.error("unhandled {}", message);
-            unhandled(message);
-        }
-    };
-
     private void connectClient(ClientInfo clientInfo) {
-        if (clientInfo.id().equals(resource.description().id())){
+        if (clientInfo.id().equals(resource.description().id())) {
             resource.connected();
-            log.info("Connected: {}" , resource.info());
-        }
-        else {
+            log.info("Connected: {}", resource.info());
+        } else {
             log.error("client info and resource info don't match {}, {}", clientInfo, resource.info());
         }
     }
 
     private void sendResourceInfo(ActorRef toActor) {
         ResourceInfo info = Optional.ofNullable(this.resource)
-                    .map(Resource::info)
-                    .orElse(ResourceInfo.failed(resourceProvider.getType()));
+                .map(Resource::info)
+                .orElse(ResourceInfo.failed(resourceProvider.getType()));
         toActor.tell(info, getSelf());
     }
 

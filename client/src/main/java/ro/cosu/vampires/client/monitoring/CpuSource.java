@@ -1,8 +1,10 @@
 package ro.cosu.vampires.client.monitoring;
 
+import com.google.inject.Inject;
+
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
-import com.google.inject.Inject;
+
 import org.hyperic.sigar.CpuPerc;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
@@ -22,6 +24,10 @@ public class CpuSource implements Source {
     @Inject
     private MetricRegistry metricRegistry;
 
+    private static double round(double d) {
+        return (((double) Math.round(d * 1000)) / 1000D);
+    }
+
     public void register() {
         metricRegistry.register(name(getName(), "cpu-total-usage"), this.cpuTotalUsageGague());
         metricRegistry.register(name(getName(), "cpu-wait-usage"), this.cpuWaitUsageGague());
@@ -39,7 +45,6 @@ public class CpuSource implements Source {
     public String getName() {
         return NAME;
     }
-
 
     private Gauge<Double> cpuUserUsageGague() {
         return () -> {
@@ -77,7 +82,6 @@ public class CpuSource implements Source {
         };
     }
 
-
     private Gauge<Double> oneMinLoadGague() {
         return () -> {
             try {
@@ -113,11 +117,6 @@ public class CpuSource implements Source {
             }
             return null;
         };
-    }
-
-
-    private static double round(double d) {
-        return (((double) Math.round(d * 1000)) / 1000D);
     }
 
 }

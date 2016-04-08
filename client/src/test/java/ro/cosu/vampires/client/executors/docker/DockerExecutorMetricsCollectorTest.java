@@ -1,20 +1,23 @@
 package ro.cosu.vampires.client.executors.docker;
 
-import autovalue.shaded.com.google.common.common.collect.Maps;
-import com.github.dockerjava.api.DockerClient;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
+
+import com.github.dockerjava.api.DockerClient;
+
 import org.junit.Test;
 import org.mockito.Mockito;
-import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
-import ro.cosu.vampires.server.workload.Metrics;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import autovalue.shaded.com.google.common.common.collect.Maps;
+import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
+import ro.cosu.vampires.server.workload.Metrics;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,15 +37,13 @@ public class DockerExecutorMetricsCollectorTest {
 
                     @Provides
                     private DockerClient provideDockerClient() throws InterruptedException {
-                        DockerClient mock = Mockito.mock(DockerClient.class, RETURNS_DEEP_STUBS);
-
-                        return mock;
+                        return Mockito.mock(DockerClient.class, RETURNS_DEEP_STUBS);
                     }
 
                 }
         );
 
-        ExecutorMetricsCollector  executorMetricsCollector = injector.getInstance(ExecutorMetricsCollector.class);
+        ExecutorMetricsCollector executorMetricsCollector = injector.getInstance(ExecutorMetricsCollector.class);
 
         executorMetricsCollector.startMonitoring("foo");
         executorMetricsCollector.stopMonitoring();
@@ -52,7 +53,7 @@ public class DockerExecutorMetricsCollectorTest {
     }
 
     @Test
-    public void testFlatenmap()  {
+    public void testFlatenmap() {
         List<Integer> integers = Arrays.asList(1, 2, 3);
         HashMap<String, Object> map = Maps.newHashMap();
         HashMap<String, Object> subMap = Maps.newHashMap();

@@ -16,9 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ImmutableListTypeAdapterFactory implements TypeAdapterFactory{
+public class ImmutableListTypeAdapterFactory implements TypeAdapterFactory {
     @SuppressWarnings("unchecked")
-    @Override public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
         Type type = typeToken.getType();
         if (typeToken.getRawType() != ImmutableList.class
                 || !(type instanceof ParameterizedType)) {
@@ -33,12 +34,14 @@ public class ImmutableListTypeAdapterFactory implements TypeAdapterFactory{
                         TypeToken.get(betterToken.getSupertype(List.class).getSubtype(ArrayList.class)
                                 .getType()));
         return new TypeAdapter<T>() {
-            @Override public void write(JsonWriter out, T value) throws IOException {
+            @Override
+            public void write(JsonWriter out, T value) throws IOException {
                 ArrayList<?> arrayList = Lists.newArrayList((List<?>) value);
                 arrayListAdapter.write(out, arrayList);
             }
 
-            @Override public T read(JsonReader in) throws IOException {
+            @Override
+            public T read(JsonReader in) throws IOException {
                 ArrayList<?> arrayList = arrayListAdapter.read(in);
                 return (T) ImmutableList.copyOf(arrayList);
             }

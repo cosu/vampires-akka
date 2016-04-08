@@ -1,12 +1,18 @@
 package ro.cosu.vampires.server.resources.das5;
 
 import com.google.auto.value.AutoValue;
+
 import com.typesafe.config.Config;
+
 import ro.cosu.vampires.server.resources.Resource;
 
 @AutoValue
 
 public abstract class Das5ResourceParameters implements Resource.Parameters {
+
+    public static Builder builder() {
+        return new AutoValue_Das5ResourceParameters.Builder().port(22).type(Resource.Type.DAS5);
+    }
 
     public abstract String command();
 
@@ -19,11 +25,6 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
     public abstract int port();
 
     public abstract Resource.Type type();
-
-
-    public static Builder builder() {
-        return new AutoValue_Das5ResourceParameters.Builder().port(22).type(Resource.Type.DAS5);
-    }
 
     @AutoValue.Builder
     public abstract static class Builder implements Resource.Parameters.Builder {

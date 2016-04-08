@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Named;
+
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceProvider;
 import ro.cosu.vampires.server.util.SshClient;
@@ -17,8 +18,10 @@ public class SshResourceModule extends AbstractModule {
 
         mapbinder.addBinding(Resource.Type.SSH).to(SshResourceProvider.class).asEagerSingleton();
     }
-    @Provides @Named("SshClient")
-    protected SshClient provideSsh (){
+
+    @Provides
+    @Named("SshClient")
+    protected SshClient provideSsh() {
         return new SshClient();
     }
 }

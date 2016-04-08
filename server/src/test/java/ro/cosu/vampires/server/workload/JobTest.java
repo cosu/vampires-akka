@@ -16,10 +16,10 @@ public class JobTest {
 
     private Job getJob() {
         return Job.builder()
-                    .computation(Computation.builder().command("test").id("10").build())
-                    .hostMetrics(Metrics.empty())
-                    .result(Result.empty())
-                    .build();
+                .computation(Computation.builder().command("test").id("10").build())
+                .hostMetrics(Metrics.empty())
+                .result(Result.empty())
+                .build();
     }
 
     @Test
@@ -36,7 +36,7 @@ public class JobTest {
 
     @Test
     public void testWithBackoff() throws Exception {
-        Job job =  Job.backoff(5);
+        Job job = Job.backoff(5);
         assertThat(job.computation().command(), containsString("sleep 5"));
     }
 }

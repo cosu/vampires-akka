@@ -2,28 +2,17 @@ package ro.cosu.vampires.server.workload;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.Sets;
-import ro.cosu.vampires.server.util.gson.AutoGson;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+import ro.cosu.vampires.server.util.gson.AutoGson;
+
 
 @AutoValue
 @AutoGson
-public abstract class Trace implements Serializable{
-
-    public abstract LocalDateTime start();
-
-    public abstract LocalDateTime stop();
-
-    public abstract Metrics executorMetrics();
-
-    public abstract Set<Integer> cpuSet();
-
-    public abstract int totalCpuCount();
-
-    public abstract String executor();
+public abstract class Trace implements Serializable {
 
     public static Trace empty() {
         return builder().cpuSet(Sets.newHashSet())
@@ -43,6 +32,18 @@ public abstract class Trace implements Serializable{
     public static Builder builder() {
         return new AutoValue_Trace.Builder();
     }
+
+    public abstract LocalDateTime start();
+
+    public abstract LocalDateTime stop();
+
+    public abstract Metrics executorMetrics();
+
+    public abstract Set<Integer> cpuSet();
+
+    public abstract int totalCpuCount();
+
+    public abstract String executor();
 
     @AutoValue.Builder
     public abstract static class Builder {

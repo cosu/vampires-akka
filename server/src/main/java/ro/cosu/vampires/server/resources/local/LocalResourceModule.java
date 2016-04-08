@@ -3,12 +3,14 @@ package ro.cosu.vampires.server.resources.local;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.MapBinder;
+
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.Executor;
+
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceProvider;
 
-public class LocalResourceModule extends AbstractModule{
+public class LocalResourceModule extends AbstractModule {
 
     @Override
     protected void configure() {

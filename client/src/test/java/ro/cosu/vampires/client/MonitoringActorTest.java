@@ -1,27 +1,34 @@
 package ro.cosu.vampires.client;
 
+import com.google.common.collect.Sets;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.time.LocalDateTime;
+
 import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
 import akka.testkit.TestActorRef;
 import autovalue.shaded.com.google.common.common.collect.Lists;
-import com.google.common.collect.Sets;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import ro.cosu.vampires.client.actors.MonitoringActor;
-import ro.cosu.vampires.server.workload.*;
+import ro.cosu.vampires.server.workload.Computation;
+import ro.cosu.vampires.server.workload.Job;
+import ro.cosu.vampires.server.workload.JobStatus;
+import ro.cosu.vampires.server.workload.Metrics;
+import ro.cosu.vampires.server.workload.Result;
+import ro.cosu.vampires.server.workload.Trace;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
-
-import java.time.LocalDateTime;
 
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
 public class MonitoringActorTest {
 
-    private  static ActorSystem system;
+    private static ActorSystem system;
 
     @BeforeClass
     public static void setUp() {
@@ -52,7 +59,7 @@ public class MonitoringActorTest {
                         .stop(now.plusSeconds(1))
                         .cpuSet(Sets.newHashSet(1)).executor("foo").totalCpuCount(1)
                         .executorMetrics(Metrics.empty())
-                    .build())
+                        .build())
                 .build();
 
         Job jobWithoutMetrics = Job.builder().computation(computation).result(result)

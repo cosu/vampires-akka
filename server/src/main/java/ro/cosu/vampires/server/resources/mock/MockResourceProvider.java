@@ -2,13 +2,15 @@ package ro.cosu.vampires.server.resources.mock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.server.resources.AbstractResourceProvider;
-import ro.cosu.vampires.server.resources.Resource;
 
 import java.util.Optional;
 
-public class MockResourceProvider extends AbstractResourceProvider{
+import ro.cosu.vampires.server.resources.AbstractResourceProvider;
+import ro.cosu.vampires.server.resources.Resource;
+
+public class MockResourceProvider extends AbstractResourceProvider {
     private static final Logger LOG = LoggerFactory.getLogger(MockResourceProvider.class);
+
     @Override
     public Optional<Resource> create(Resource.Parameters parameters) {
 
@@ -28,7 +30,7 @@ public class MockResourceProvider extends AbstractResourceProvider{
 
     @Override
     public Resource.Parameters.Builder getBuilder() {
-        return  MockResourceParameters.builder();
+        return MockResourceParameters.builder();
     }
 
 }

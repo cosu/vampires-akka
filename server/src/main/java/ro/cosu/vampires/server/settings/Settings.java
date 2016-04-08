@@ -9,7 +9,8 @@ public class Settings extends AbstractExtensionId<SettingsImpl>
         implements ExtensionIdProvider {
     public final static Settings SettingsProvider = new Settings();
 
-    private Settings() {}
+    private Settings() {
+    }
 
     public Settings lookup() {
         return Settings.SettingsProvider;

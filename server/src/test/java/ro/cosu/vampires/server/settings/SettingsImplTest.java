@@ -2,7 +2,9 @@ package ro.cosu.vampires.server.settings;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import org.junit.Test;
+
 import ro.cosu.vampires.server.writers.ResultsWriter;
 import ro.cosu.vampires.server.writers.mongo.MongoWriter;
 
@@ -42,7 +44,7 @@ public class SettingsImplTest {
     }
 
     @Test
-    public void testNoCpuSetSize(){
+    public void testNoCpuSetSize() {
         Config config = ConfigFactory.parseString("vampires.cpuSetSize = null").withFallback(ConfigFactory.load());
         SettingsImpl settings = new SettingsImpl(config);
 
@@ -50,7 +52,7 @@ public class SettingsImplTest {
     }
 
     @Test
-    public void testNoExecutors(){
+    public void testNoExecutors() {
         Config config = ConfigFactory.parseString("vampires.executors = null").withFallback(ConfigFactory.load());
         SettingsImpl settings = new SettingsImpl(config);
 

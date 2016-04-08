@@ -1,16 +1,19 @@
 package ro.cosu.vampires.server.actors;
 
-import akka.actor.ActorRef;
-import akka.testkit.JavaTestKit;
-import akka.testkit.TestActor;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
+
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import org.junit.Test;
+
+import akka.actor.ActorRef;
+import akka.testkit.JavaTestKit;
+import akka.testkit.TestActor;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.resources.ResourceManager;
@@ -30,9 +33,10 @@ public class ResourceActorTest extends AbstractActorTest {
             protected void configure() {
                 install(new MockResourceModule());
             }
+
             @Provides
             @Named("Config")
-            private Config provideConfig(){
+            private Config provideConfig() {
                 return ConfigFactory.load();
             }
         });

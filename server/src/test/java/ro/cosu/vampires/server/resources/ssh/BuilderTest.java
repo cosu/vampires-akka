@@ -2,6 +2,7 @@ package ro.cosu.vampires.server.resources.ssh;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;

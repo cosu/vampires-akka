@@ -1,20 +1,23 @@
 package ro.cosu.vampires.client.executors.docker;
 
-import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.model.Info;
-import com.github.dockerjava.core.DockerClientBuilder;
-import com.github.dockerjava.core.DockerClientConfig;
 import com.google.common.base.Preconditions;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
+
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.model.Info;
+import com.github.dockerjava.core.DockerClientBuilder;
+import com.github.dockerjava.core.DockerClientConfig;
 import com.typesafe.config.Config;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.client.executors.Executor;
-import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
 
 import javax.ws.rs.ProcessingException;
+
+import ro.cosu.vampires.client.executors.Executor;
+import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
 
 public class DockerModule extends AbstractModule {
     private static final Logger LOG = LoggerFactory.getLogger(DockerModule.class);
@@ -25,7 +28,8 @@ public class DockerModule extends AbstractModule {
         bind(ExecutorMetricsCollector.class).to(DockerExecutorMetricsCollector.class);
     }
 
-    @Provides @Named("cpuCount")
+    @Provides
+    @Named("cpuCount")
     private int provideCpuCount(DockerClient dockerClient) {
         int cpuCount = 0;
         try {

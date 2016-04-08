@@ -1,14 +1,23 @@
 package ro.cosu.vampires.client.executors.docker;
 
-import autovalue.shaded.com.google.common.common.collect.Maps;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
+import com.google.inject.name.Named;
+
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.LogContainerCmd;
-import com.google.inject.*;
-import com.google.inject.name.Named;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.util.Map;
+
+import autovalue.shaded.com.google.common.common.collect.Maps;
 import ro.cosu.vampires.client.allocation.CpuAllocator;
 import ro.cosu.vampires.client.allocation.FixedCpuSetAllocator;
 import ro.cosu.vampires.client.executors.Executor;
@@ -16,8 +25,6 @@ import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Metrics;
 import ro.cosu.vampires.server.workload.Result;
-
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNot.not;
@@ -44,6 +51,7 @@ public class DockerExecutorTest {
                     private int provideCpuCount() {
                         return 1;
                     }
+
                     @Provides
                     @Named("Config")
                     private Config provideConfig() {
@@ -76,11 +84,12 @@ public class DockerExecutorTest {
 
                         return mock;
                     }
+
                     @Provides
-                    private ExecutorMetricsCollector provideExecutorMetricsCollector(){
+                    private ExecutorMetricsCollector provideExecutorMetricsCollector() {
                         ExecutorMetricsCollector mock = Mockito.mock(ExecutorMetricsCollector.class);
                         when(mock.getMetrics()).thenReturn(Metrics.empty());
-                        return  mock;
+                        return mock;
                     }
                 }
         );

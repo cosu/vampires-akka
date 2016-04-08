@@ -2,11 +2,12 @@ package ro.cosu.vampires.server.workload;
 
 import org.junit.Before;
 import org.junit.Test;
-import ro.cosu.vampires.server.workload.schedulers.Scheduler;
-import ro.cosu.vampires.server.workload.schedulers.SimpleScheduler;
 
 import java.util.Collections;
 import java.util.List;
+
+import ro.cosu.vampires.server.workload.schedulers.Scheduler;
+import ro.cosu.vampires.server.workload.schedulers.SimpleScheduler;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -16,6 +17,7 @@ import static org.hamcrest.Matchers.notNullValue;
 public class SimpleSchedulerTest {
 
     private Scheduler scheduler;
+
     @Before
     public void setUp() throws Exception {
         List<Job> jobs = Collections.singletonList(Job.empty());
@@ -36,7 +38,7 @@ public class SimpleSchedulerTest {
     }
 
     @Test
-    public void testGetBackoff() throws  Exception {
+    public void testGetBackoff() throws Exception {
         scheduler.getJob("foo");
         Job foo = scheduler.getJob("foo");
         assertThat(foo.computation().id(), is(Computation.BACKOFF));

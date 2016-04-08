@@ -1,10 +1,12 @@
 package ro.cosu.vampires.server.util;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,18 +22,18 @@ public class SshClient {
     private JSch jsch = new JSch();
 
     @VisibleForTesting
-    protected void setJsch(JSch jsch){
+    protected void setJsch(JSch jsch) {
         this.jsch = jsch;
     }
 
     public String runCommand(String user, String privateKey, String address, String command, int port) throws JSchException,
             IOException {
-        LOG.debug("SSH: {}@{}:{}({}) command: {}",  user, address , port , privateKey ,command);
+        LOG.debug("SSH: {}@{}:{}({}) command: {}", user, address, port, privateKey, command);
 
         Session session = getSession(user, privateKey, address, port);
 
         ChannelExec channel = getChannelExec(session, command);
-        BufferedReader in = new BufferedReader(new InputStreamReader(channel.getInputStream() , StandardCharsets.UTF_8));
+        BufferedReader in = new BufferedReader(new InputStreamReader(channel.getInputStream(), StandardCharsets.UTF_8));
 
         String msg;
         StringBuilder sb = new StringBuilder();
@@ -54,7 +56,7 @@ public class SshClient {
     }
 
     private Session getSession(String user, String privateKey, String address, int port) throws JSchException {
-        jsch.setLogger( new JSCHLogger());
+        JSch.setLogger(new JSCHLogger());
         Session session = jsch.getSession(user, address, port);
         jsch.addIdentity(privateKey);
 
@@ -65,13 +67,11 @@ public class SshClient {
         return session;
     }
 
-    private static class JSCHLogger implements com.jcraft.jsch.Logger
-    {
+    private static class JSCHLogger implements com.jcraft.jsch.Logger {
 
-        public static java.util.Hashtable<Integer,String> name = new java.util.Hashtable<>();
+        public static java.util.Hashtable<Integer, String> name = new java.util.Hashtable<>();
 
-        static
-        {
+        static {
             name.put(DEBUG, "DEBUG: ");
             name.put(INFO, "INFO: ");
             name.put(WARN, "WARN: ");
@@ -79,32 +79,22 @@ public class SshClient {
             name.put(FATAL, "FATAL: ");
         }
 
-        public boolean isEnabled(int level)
-        {
+        public boolean isEnabled(int level) {
             return true;
         }
 
-        public void log(int level, String message)
-        {
-            if(level == DEBUG)
-            {
+        public void log(int level, String message) {
+            if (level == DEBUG) {
                 LOG.debug(message);
-            }
-            else if(level == INFO)
-            {
+            } else if (level == INFO) {
                 LOG.info(message);
-            }
-            else if(level == WARN)
-            {
+            } else if (level == WARN) {
                 LOG.warn(message);
-            }
-            else if(level == ERROR)
-            {
+            } else if (level == ERROR) {
                 LOG.error(message);
-            }
-            else if(level == FATAL)
-            {
+            } else if (level == FATAL) {
                 LOG.error(message);
             }
         }
-    } }
+    }
+}

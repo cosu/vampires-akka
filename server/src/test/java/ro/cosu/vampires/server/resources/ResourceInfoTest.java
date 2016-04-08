@@ -8,7 +8,7 @@ import static org.hamcrest.core.Is.is;
 
 public class ResourceInfoTest {
     @Test
-    public  void testUnknown(){
+    public void testUnknown() {
         ResourceInfo unknown = ResourceInfo.unknown(Resource.Type.MOCK);
         assertThat(unknown.status(), is(Resource.Status.UNKNOWN));
     }

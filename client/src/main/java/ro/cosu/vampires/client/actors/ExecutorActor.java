@@ -13,18 +13,16 @@ import ro.cosu.vampires.server.workload.Result;
 
 public class ExecutorActor extends UntypedActor {
 
-    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
-
     private final ExecutorsExtensionImpl executors = ExecutorsExtension.ExecutorsProvider.get(getContext().system());
-
-    public static Props props() {
-        return Props.create(ExecutorActor.class);
-    }
-
     private final ActorSelection monitorActor;
+    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     public ExecutorActor() {
         monitorActor = getContext().actorSelection("/user/monitor");
+    }
+
+    public static Props props() {
+        return Props.create(ExecutorActor.class);
     }
 
     @Override

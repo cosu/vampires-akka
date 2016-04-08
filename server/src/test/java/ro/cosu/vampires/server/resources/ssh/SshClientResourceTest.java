@@ -6,18 +6,21 @@ import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Named;
+
 import com.jcraft.jsch.JSchException;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.io.IOException;
+
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceManager;
 import ro.cosu.vampires.server.resources.ResourceProvider;
 import ro.cosu.vampires.server.util.SshClient;
-
-import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -40,9 +43,10 @@ public class SshClientResourceTest {
 
                 mapbinder.addBinding(Resource.Type.SSH).to(SshResourceProvider.class).asEagerSingleton();
             }
+
             @Provides
             @Named("Config")
-            private Config provideConfig(){
+            private Config provideConfig() {
                 return ConfigFactory.parseString("resources.ssh.local { " +
                         "user= foo\n" +
                         "address=bar\n" +
@@ -50,8 +54,9 @@ public class SshClientResourceTest {
                         "command = foo}");
             }
 
-            @Provides @Named("SshClient")
-            SshClient provideSsh () throws IOException, JSchException {
+            @Provides
+            @Named("SshClient")
+            SshClient provideSsh() throws IOException, JSchException {
                 SshClient sshClientMock = Mockito.mock(SshClient.class);
                 when(sshClientMock.runCommand(anyString(), anyString(), anyString(), anyString(), anyInt()))
                         .thenReturn("42");
@@ -61,10 +66,10 @@ public class SshClientResourceTest {
     }
 
     @Test
-    public void testStartStopSShResource () throws Exception {
+    public void testStartStopSShResource() throws Exception {
         Resource resource = getResource();
-        assertThat(resource.start().get().status(),  is(Resource.Status.RUNNING));
-        assertThat(resource.stop().get().status(),  is(Resource.Status.STOPPED));
+        assertThat(resource.start().get().status(), is(Resource.Status.RUNNING));
+        assertThat(resource.stop().get().status(), is(Resource.Status.STOPPED));
     }
 
     @Test

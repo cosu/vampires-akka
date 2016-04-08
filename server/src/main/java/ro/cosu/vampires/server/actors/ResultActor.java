@@ -1,5 +1,10 @@
 package ro.cosu.vampires.server.actors;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.List;
+
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
@@ -10,34 +15,36 @@ import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.writers.ResultsWriter;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.LinkedList;
-import java.util.List;
-
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 
 public class ResultActor extends UntypedActor {
     private final long numberOfResults;
+    private final SettingsImpl settings =
+            Settings.SettingsProvider.get(getContext().system());
+    private final LocalDateTime startTime = LocalDateTime.now();
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
-
     private List<Job> results = new LinkedList<>();
     private List<ResultsWriter> writers;
 
-    private final SettingsImpl settings =
-            Settings.SettingsProvider.get(getContext().system());
-
-    private final LocalDateTime startTime = LocalDateTime.now();
+    ResultActor(long numberOfResults) {
+        this.numberOfResults = numberOfResults;
+        writers = settings.getWriters();
+    }
 
     public static Props props(long numberOfResults) {
         return Props.create(ResultActor.class, numberOfResults);
     }
 
-
-    ResultActor(long numberOfResults) {
-        this.numberOfResults = numberOfResults;
-        writers = settings.getWriters();
+    public static String formatDuration(Duration duration) {
+        long seconds = duration.getSeconds();
+        long absSeconds = Math.abs(seconds);
+        String positive = String.format(
+                "%d:%02d:%02d",
+                absSeconds / 3600,
+                (absSeconds % 3600) / 60,
+                absSeconds % 60);
+        return seconds < 0 ? "-" + positive : positive;
     }
 
     @Override
@@ -45,11 +52,10 @@ public class ResultActor extends UntypedActor {
         getContext().actorSelection("/user/terminator").tell(new ResourceControl.Up(), getSelf());
 
         getContext().system().scheduler().schedule(scala.concurrent.duration.Duration.Zero(),
-                scala.concurrent.duration.Duration.create(30 , SECONDS), () -> {
+                scala.concurrent.duration.Duration.create(30, SECONDS), () -> {
                     log.info("results so far: {}/{}", results.size(), numberOfResults);
                 }, getContext().system().dispatcher());
     }
-
 
     @Override
     public void onReceive(Object message) throws Exception {
@@ -57,12 +63,10 @@ public class ResultActor extends UntypedActor {
             Job job = (Job) message;
             results.add(job);
             writers.forEach(r -> r.addResult(job));
-        }
-        else if (message instanceof ClientInfo) {
+        } else if (message instanceof ClientInfo) {
             ClientInfo clientInfo = (ClientInfo) message;
             writers.forEach(r -> r.addClient(clientInfo));
-        }
-        else if (message instanceof ResourceControl.Shutdown) {
+        } else if (message instanceof ResourceControl.Shutdown) {
             shutdown();
         } else {
             unhandled(message);
@@ -77,16 +81,5 @@ public class ResultActor extends UntypedActor {
 
         getContext().actorSelection("/user/terminator").tell(new ResourceControl.Shutdown(), getSelf());
         getContext().stop(getSelf());
-    }
-
-    public static String formatDuration(Duration duration) {
-        long seconds = duration.getSeconds();
-        long absSeconds = Math.abs(seconds);
-        String positive = String.format(
-                "%d:%02d:%02d",
-                absSeconds / 3600,
-                (absSeconds % 3600) / 60,
-                absSeconds % 60);
-        return seconds < 0 ? "-" + positive : positive;
     }
 }

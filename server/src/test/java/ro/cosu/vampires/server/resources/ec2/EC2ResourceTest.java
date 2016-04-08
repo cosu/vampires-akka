@@ -1,31 +1,34 @@
 package ro.cosu.vampires.server.resources.ec2;
 
-import com.amazonaws.services.ec2.AmazonEC2Client;
-import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.model.RunInstancesResult;
-import com.amazonaws.services.ec2.model.TerminateInstancesResult;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Named;
+
+import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.ec2.model.DescribeInstancesResult;
+import com.amazonaws.services.ec2.model.RunInstancesResult;
+import com.amazonaws.services.ec2.model.TerminateInstancesResult;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import ro.cosu.vampires.server.resources.AbstractResource;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceManager;
 import ro.cosu.vampires.server.resources.ResourceProvider;
 
-import java.util.Optional;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 public class EC2ResourceTest {
@@ -48,20 +51,20 @@ public class EC2ResourceTest {
             private Config provideConfig() {
                 return ConfigFactory.parseString(
                         "resources.ec2 { " +
-                            "command=bar\n" +
-                            "imageId=baz\n" +
-                            "keyName=foo\n" +
-                            "securityGroup=foo\n" +
-                            "eu-west-1.t2.medium {\n" +
+                                "command=bar\n" +
+                                "imageId=baz\n" +
+                                "keyName=foo\n" +
+                                "securityGroup=foo\n" +
+                                "eu-west-1.t2.medium {\n" +
                                 "region=eu-east-1\n" +
                                 "instanceType=t2.medium\n" +
                                 "}" +
-                        "}"
+                                "}"
                 );
             }
 
             @Provides
-            private Optional<AmazonEC2Client> provideAmazonEc2(@Named("Config") Config config) {
+            private AmazonEC2Client provideAmazonEc2(@Named("Config") Config config) {
                 AmazonEC2Client ec2Client = mock(AmazonEC2Client.class);
                 RunInstancesResult runInstancesResult = mock(RunInstancesResult.class, RETURNS_DEEP_STUBS);
                 DescribeInstancesResult describeInstancesResult = mock(DescribeInstancesResult.class, RETURNS_DEEP_STUBS);
@@ -73,7 +76,7 @@ public class EC2ResourceTest {
                 when(describeInstancesResult.getReservations().get(0).getInstances().get(0).getPublicDnsName())
                         .thenReturn("bar");
                 when(ec2Client.terminateInstances(anyObject())).thenReturn(terminateInstancesResult);
-                return Optional.of(ec2Client);
+                return ec2Client;
             }
         });
     }
@@ -119,5 +122,4 @@ public class EC2ResourceTest {
     }
 
 
-    
 }

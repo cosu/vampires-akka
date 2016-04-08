@@ -12,7 +12,7 @@ public class FixedCpuSetAllocatorTest {
 
     @Test
     public void testAcquireCpuSets() throws Exception {
-        final FixedCpuSetAllocator fixedCpuSetAllocator = FixedCpuSetAllocator.builder().cpuSetSize (4).totalCpuCount
+        final FixedCpuSetAllocator fixedCpuSetAllocator = FixedCpuSetAllocator.builder().cpuSetSize(4).totalCpuCount
                 (8).build();
 
         final CpuSet cpuSet = fixedCpuSetAllocator.acquireCpuSet().get();
@@ -25,7 +25,7 @@ public class FixedCpuSetAllocatorTest {
 
     @Test
     public void testTakeAfterRelease() throws Exception {
-        final FixedCpuSetAllocator fixedCpuSetAllocator = FixedCpuSetAllocator.builder().cpuSetSize (4).totalCpuCount
+        final FixedCpuSetAllocator fixedCpuSetAllocator = FixedCpuSetAllocator.builder().cpuSetSize(4).totalCpuCount
                 (8).build();
 
         IntStream.iterate(0, i -> i + 1)

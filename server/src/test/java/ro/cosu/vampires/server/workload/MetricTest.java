@@ -11,6 +11,6 @@ public class MetricTest {
     @Test
     public void testBuilder() throws Exception {
         Metric empty = Metric.empty();
-        assertThat(empty.values().size()  ,is(0));
+        assertThat(empty.values().size(), is(0));
     }
 }

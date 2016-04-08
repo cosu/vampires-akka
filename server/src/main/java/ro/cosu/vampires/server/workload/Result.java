@@ -1,23 +1,16 @@
 package ro.cosu.vampires.server.workload;
 
 import com.google.auto.value.AutoValue;
-import ro.cosu.vampires.server.util.gson.AutoGson;
 
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import ro.cosu.vampires.server.util.gson.AutoGson;
+
 @AutoValue
 @AutoGson
 public abstract class Result implements Serializable {
-
-    public abstract List<String> output();
-
-    public abstract int exitCode();
-
-    public abstract long duration();
-
-    public abstract Trace trace();
 
     public static Builder builder() {
         return new AutoValue_Result.Builder();
@@ -31,6 +24,14 @@ public abstract class Result implements Serializable {
                 .duration(0)
                 .build();
     }
+
+    public abstract List<String> output();
+
+    public abstract int exitCode();
+
+    public abstract long duration();
+
+    public abstract Trace trace();
 
     @AutoValue.Builder
     public abstract static class Builder {

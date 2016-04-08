@@ -1,13 +1,17 @@
 package ro.cosu.vampires.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.server.actors.*;
+import ro.cosu.vampires.server.actors.DispatchActor;
+import ro.cosu.vampires.server.actors.ResourceControl;
+import ro.cosu.vampires.server.actors.ResourceManagerActor;
 import ro.cosu.vampires.server.actors.Terminator;
+import ro.cosu.vampires.server.actors.WorkActor;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 

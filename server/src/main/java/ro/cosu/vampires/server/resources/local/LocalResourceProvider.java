@@ -1,15 +1,17 @@
 package ro.cosu.vampires.server.resources.local;
 
 import com.google.inject.Inject;
+
 import org.apache.commons.exec.Executor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.server.resources.AbstractResourceProvider;
-import ro.cosu.vampires.server.resources.Resource;
 
 import java.util.Optional;
 
-public class LocalResourceProvider extends AbstractResourceProvider{
+import ro.cosu.vampires.server.resources.AbstractResourceProvider;
+import ro.cosu.vampires.server.resources.Resource;
+
+public class LocalResourceProvider extends AbstractResourceProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(LocalResourceProvider.class);
 
@@ -28,7 +30,7 @@ public class LocalResourceProvider extends AbstractResourceProvider{
 
 
     @Override
-    public Resource.Parameters.Builder getBuilder(){
+    public Resource.Parameters.Builder getBuilder() {
         return LocalResourceParameters.builder();
     }
 

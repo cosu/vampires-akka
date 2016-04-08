@@ -1,27 +1,33 @@
 package ro.cosu.vampires.server.actors;
 
-import akka.pattern.Patterns;
-import akka.testkit.TestActorRef;
-import akka.testkit.TestProbe;
 import com.google.common.collect.Maps;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
+
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ro.cosu.vampires.server.resources.*;
+
+import java.util.concurrent.TimeUnit;
+
+import akka.pattern.Patterns;
+import akka.testkit.TestActorRef;
+import akka.testkit.TestProbe;
+import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.resources.ResourceInfo;
+import ro.cosu.vampires.server.resources.ResourceManager;
+import ro.cosu.vampires.server.resources.ResourceProvider;
 import ro.cosu.vampires.server.resources.mock.MockResourceModule;
 import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Metrics;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
-
-import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -37,6 +43,23 @@ public class ResourceManagerActorTest extends AbstractActorTest {
         AbstractModule mockModule = getMockModule();
         Injector injector = Guice.createInjector(mockModule);
         rm = injector.getInstance(ResourceManager.class);
+    }
+
+    private static AbstractModule getMockModule() {
+        return new AbstractModule() {
+
+            @Override
+            protected void configure() {
+                install(new MockResourceModule());
+            }
+
+            @Provides
+            @Named("Config")
+            Config provideConfig() {
+                return ConfigFactory.parseString("mock.foo={}");
+            }
+
+        };
     }
 
     @Test
@@ -76,6 +99,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
         assertThat(resourceInfo.status(), is(Resource.Status.RUNNING));
 
     }
+
     @Test
     public void testStartStopResource() throws Exception {
 
@@ -112,7 +136,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         resourceInfo = (ResourceInfo) Await.result(infoFuture, Duration.create("1 seconds"));
 
-        assertThat(resourceInfo.status() , is(Resource.Status.CONNECTED));
+        assertThat(resourceInfo.status(), is(Resource.Status.CONNECTED));
 
         Future<Object> destroyFuture = Patterns.ask(resourceManagerActor, new ResourceControl.Shutdown(), 1000);
 
@@ -121,7 +145,6 @@ public class ResourceManagerActorTest extends AbstractActorTest {
         assertThat(di.status(), is(equalTo(Resource.Status.STOPPED)));
 
     }
-
 
     @Test
     public void testBootstrap() throws Exception {
@@ -136,24 +159,6 @@ public class ResourceManagerActorTest extends AbstractActorTest {
         assertThat(ri.description().provider(), equalTo(Resource.Type.MOCK));
 
     }
-
-    private static AbstractModule getMockModule() {
-        return new AbstractModule() {
-
-            @Override
-            protected void configure() {
-                install(new MockResourceModule());
-            }
-
-            @Provides
-            @Named("Config")
-            Config provideConfig() {
-                return ConfigFactory.parseString("mock.foo={}");
-            }
-
-        };
-    }
-
 
     private ResourceControl.Create getCreateResource(String command) {
 

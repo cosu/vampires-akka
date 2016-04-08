@@ -2,18 +2,23 @@ package ro.cosu.vampires.server.workload.schedulers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 import ro.cosu.vampires.server.workload.Job;
 
-import java.util.*;
 
-
-public class SamplingScheduler implements Scheduler{
+public class SamplingScheduler implements Scheduler {
 
     private static final Logger LOG = LoggerFactory.getLogger(SamplingScheduler.class);
-
-    private List<Job> jobList;
     private final long jobDeadline;
     private final int backOffInterval;
+    private List<Job> jobList;
     private Random random = new Random(1111111111L);
 
 
@@ -21,7 +26,7 @@ public class SamplingScheduler implements Scheduler{
 
     public SamplingScheduler(List<Job> jobs, long jobDeadline, int backOffInterval, int numberOfJobsToSample) {
         jobList = new ArrayList<>(jobs);
-        Collections.shuffle(jobList , random);
+        Collections.shuffle(jobList, random);
         jobList = jobList.subList(0, Math.min(numberOfJobsToSample, jobs.size()));
 
         this.jobDeadline = jobDeadline;

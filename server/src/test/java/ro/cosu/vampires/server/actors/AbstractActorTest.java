@@ -1,9 +1,10 @@
 package ro.cosu.vampires.server.actors;
 
-import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+
+import akka.actor.ActorSystem;
+import akka.testkit.JavaTestKit;
 
 public class AbstractActorTest {
     static ActorSystem system;

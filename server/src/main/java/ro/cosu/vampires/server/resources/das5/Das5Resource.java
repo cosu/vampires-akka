@@ -1,20 +1,21 @@
 package ro.cosu.vampires.server.resources.das5;
 
 import com.jcraft.jsch.JSchException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.server.resources.AbstractResource;
-import ro.cosu.vampires.server.util.SshClient;
 
 import java.io.IOException;
 
+import ro.cosu.vampires.server.resources.AbstractResource;
+import ro.cosu.vampires.server.util.SshClient;
+
 public class Das5Resource extends AbstractResource {
-    private  static final Logger LOG = LoggerFactory.getLogger(Das5Resource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Das5Resource.class);
 
     private final Das5ResourceParameters parameters;
-    private String commandOutput;
-
     private final SshClient sshClient;
+    private String commandOutput;
 
 
     public Das5Resource(Das5ResourceParameters parameters, SshClient sshClient) {
@@ -27,7 +28,7 @@ public class Das5Resource extends AbstractResource {
     @Override
     public void onStart() throws Exception {
         String command = "sbatch -N 1 " + parameters.command() + " " + description().id();
-        getLogger().debug("command: {}" , command);
+        getLogger().debug("command: {}", command);
         this.commandOutput = exec(command);
     }
 

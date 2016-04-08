@@ -3,8 +3,10 @@ package ro.cosu.vampires.server.workload;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import org.junit.Test;
 
 import java.io.File;

@@ -1,16 +1,26 @@
 package ro.cosu.vampires.server.resources.ec2;
 
-import com.amazonaws.services.ec2.AmazonEC2Client;
-import com.amazonaws.services.ec2.model.*;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.io.Resources;
+
+import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.ec2.model.CreateTagsRequest;
+import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
+import com.amazonaws.services.ec2.model.DescribeInstancesResult;
+import com.amazonaws.services.ec2.model.RunInstancesRequest;
+import com.amazonaws.services.ec2.model.RunInstancesResult;
+import com.amazonaws.services.ec2.model.Tag;
+import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
+import com.amazonaws.services.ec2.model.TerminateInstancesResult;
+
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.server.resources.AbstractResource;
 
 import java.net.URL;
+
+import ro.cosu.vampires.server.resources.AbstractResource;
 
 public class EC2Resource extends AbstractResource {
 
@@ -75,14 +85,14 @@ public class EC2Resource extends AbstractResource {
     private String getPublicDnsName(DescribeInstancesRequest describeRequest) throws InterruptedException {
         String publicDnsName = "";
         int tries = 0;
-        while (Strings.isNullOrEmpty(publicDnsName) && tries < 10){
+        while (Strings.isNullOrEmpty(publicDnsName) && tries < 10) {
             DescribeInstancesResult describeInstanceResult = amazonEC2Client.describeInstances(describeRequest);
             publicDnsName = describeInstanceResult.getReservations().get(0).getInstances().get(0).getPublicDnsName();
             if (!Strings.isNullOrEmpty(publicDnsName)) break;
             tries++;
             Thread.sleep(3000);
         }
-        if (Strings.isNullOrEmpty(publicDnsName)){
+        if (Strings.isNullOrEmpty(publicDnsName)) {
             LOG.error("unable to get publicDNSName for instance {}", describeRequest.getInstanceIds());
         }
         return publicDnsName;

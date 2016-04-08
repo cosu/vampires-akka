@@ -9,7 +9,8 @@ public class ExecutorsExtension extends AbstractExtensionId<ExecutorsExtensionIm
         implements ExtensionIdProvider {
     public final static ExecutorsExtension ExecutorsProvider = new ExecutorsExtension();
 
-    private ExecutorsExtension() {}
+    private ExecutorsExtension() {
+    }
 
     public ExecutorsExtension lookup() {
         return ExecutorsExtension.ExecutorsProvider;

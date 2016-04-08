@@ -5,12 +5,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import com.typesafe.config.Config;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.server.workload.ClientInfo;
-import ro.cosu.vampires.server.workload.Job;
-import ro.cosu.vampires.server.writers.ResultsWriter;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -21,6 +20,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import ro.cosu.vampires.server.workload.ClientInfo;
+import ro.cosu.vampires.server.workload.Job;
+import ro.cosu.vampires.server.writers.ResultsWriter;
 
 public class JsonResultsWriter implements ResultsWriter {
     private static final Logger LOG = LoggerFactory.getLogger(JsonResultsWriter.class);
@@ -41,7 +44,7 @@ public class JsonResultsWriter implements ResultsWriter {
 
     private Path getPath(String prefix) {
         LocalDateTime date = LocalDateTime.now();
-        return Paths.get(config.getString("writers.json.dir"), prefix+"-" + date.format
+        return Paths.get(config.getString("writers.json.dir"), prefix + "-" + date.format
                 (DateTimeFormatter.ISO_LOCAL_DATE_TIME) + ".json");
 
     }
@@ -93,8 +96,7 @@ public class JsonResultsWriter implements ResultsWriter {
 
         } catch (IOException e) {
             LOG.error("Error writing results to file", e);
-        }
-        finally {
+        } finally {
             try {
                 if (fileWriter != null)
                     fileWriter.close();

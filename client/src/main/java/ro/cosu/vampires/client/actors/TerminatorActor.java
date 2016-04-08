@@ -14,13 +14,13 @@ public class TerminatorActor extends UntypedActor {
     private final ActorRef ref;
 
 
-    public static Props props(ActorRef ref) {
-        return Props.create(TerminatorActor.class, ref);
-    }
-
     public TerminatorActor(ActorRef ref) {
         this.ref = ref;
         getContext().watch(ref);
+    }
+
+    public static Props props(ActorRef ref) {
+        return Props.create(TerminatorActor.class, ref);
     }
 
     @Override

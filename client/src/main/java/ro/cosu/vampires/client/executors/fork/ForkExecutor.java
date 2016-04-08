@@ -2,14 +2,15 @@ package ro.cosu.vampires.client.executors.fork;
 
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
-import org.apache.commons.exec.*;
+
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecuteResultHandler;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.Executor;
+import org.apache.commons.exec.LogOutputStream;
+import org.apache.commons.exec.PumpStreamHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.client.allocation.CpuAllocator;
-import ro.cosu.vampires.client.allocation.CpuSet;
-import ro.cosu.vampires.server.workload.Computation;
-import ro.cosu.vampires.server.workload.Trace;
-import ro.cosu.vampires.server.workload.Result;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -19,12 +20,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import ro.cosu.vampires.client.allocation.CpuAllocator;
+import ro.cosu.vampires.client.allocation.CpuSet;
+import ro.cosu.vampires.server.workload.Computation;
+import ro.cosu.vampires.server.workload.Result;
+import ro.cosu.vampires.server.workload.Trace;
+
 
 public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ForkExecutor.class);
     public static final int TIMEOUT_IN_MILIS = 600000;
-
+    private static final Logger LOG = LoggerFactory.getLogger(ForkExecutor.class);
     @Inject
     private CpuAllocator cpuAllocator;
 
@@ -33,7 +39,7 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
 
     private Optional<CpuSet> cpuSet;
 
-    private CommandLine getCommandLine(String command){
+    private CommandLine getCommandLine(String command) {
 
         LOG.debug("cpuset {}", cpuSet);
         String newCommand = command;
@@ -43,7 +49,7 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
         }
 
         LOG.info("executing {} with timeout {} minutes", newCommand, TIMEOUT_IN_MILIS / 1000 / 60);
-        return  CommandLine.parse(newCommand);
+        return CommandLine.parse(newCommand);
     }
 
     @Override
@@ -75,7 +81,7 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
             LOG.error("failed to exec", resultHandler.getException());
         }
 
-        exitCode = resultHandler.hasResult()? resultHandler.getExitValue(): -1;
+        exitCode = resultHandler.hasResult() ? resultHandler.getExitValue() : -1;
 
         //TODO take different action for failed commands so we can collect the output (stderr or java exception)
 
@@ -133,6 +139,18 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
         return Runtime.getRuntime().availableProcessors();
     }
 
+    private boolean isNumaEnabled() {
+        int exitCode;
+        try {
+            executor.setStreamHandler(new PumpStreamHandler(new CollectingLogOutputStream()));
+            exitCode = executor.execute(CommandLine.parse("numactl --hardware"));
+
+        } catch (IOException e) {
+            exitCode = -1;
+        }
+        return (exitCode == 0);
+
+    }
 
     private static class CollectingLogOutputStream extends LogOutputStream {
         private final List<String> lines = new LinkedList<>();
@@ -145,18 +163,5 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
         public List<String> getLines() {
             return lines;
         }
-    }
-
-    private boolean isNumaEnabled() {
-        int exitCode;
-        try {
-            executor.setStreamHandler(new PumpStreamHandler(new CollectingLogOutputStream()));
-            exitCode = executor.execute(CommandLine.parse("numactl --hardware"));
-
-        } catch (IOException e) {
-            exitCode = -1;
-        }
-        return (exitCode == 0);
-
     }
 }

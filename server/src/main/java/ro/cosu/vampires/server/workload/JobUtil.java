@@ -4,7 +4,9 @@ package ro.cosu.vampires.server.workload;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
+
 import com.typesafe.config.Config;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,12 +22,12 @@ public class JobUtil {
 
     public static List<Job> fromConfig(Config config) {
         String format = "";
-        if (config.hasPath("format")){
+        if (config.hasPath("format")) {
             format = config.getString("format");
         }
 
         String url = "";
-        if (config.hasPath("url")){
+        if (config.hasPath("url")) {
             url = config.getString("url");
         }
 
@@ -36,7 +38,7 @@ public class JobUtil {
 
         final String finalUrl = url;
         final String finalFormat = format;
-        List<Job> jobs  = IntStream.rangeClosed(sequenceStart, sequenceStop).mapToObj(i -> String.format(finalFormat, i))
+        List<Job> jobs = IntStream.rangeClosed(sequenceStart, sequenceStop).mapToObj(i -> String.format(finalFormat, i))
                 .map(f -> String.format("%s %s%s", task, finalUrl, f).trim())
                 .map(command -> Job.empty().withCommand(command))
                 .collect(Collectors.toList());

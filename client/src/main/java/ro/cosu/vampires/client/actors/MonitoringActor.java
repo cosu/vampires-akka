@@ -1,13 +1,19 @@
 package ro.cosu.vampires.client.actors;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.SortedMap;
+
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import ro.cosu.vampires.client.monitoring.MetricsWindow;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.workload.JobStatus;
@@ -15,28 +21,15 @@ import ro.cosu.vampires.server.workload.Metric;
 import ro.cosu.vampires.server.workload.Metrics;
 import scala.concurrent.duration.Duration;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.SortedMap;
-
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 
 public class MonitoringActor extends UntypedActor {
-    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
-
     private static final int MONITORING_INTERVAL_MILLIS = 1000;
-
     private final MetricRegistry metricRegistry;
-
     private final MetricsWindow metricsWindow = new MetricsWindow();
-
+    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private SortedMap<String, Gauge> gauges;
-
-    public static Props props(MetricRegistry registry) {
-
-        return Props.create(MonitoringActor.class, registry);
-    }
 
     MonitoringActor(MetricRegistry metricRegistry) {
         this.metricRegistry = metricRegistry;
@@ -47,12 +40,16 @@ public class MonitoringActor extends UntypedActor {
         recordMetrics();
     }
 
+    public static Props props(MetricRegistry registry) {
+
+        return Props.create(MonitoringActor.class, registry);
+    }
 
     @Override
     public void preStart() {
         getContext().system().scheduler().schedule(Duration.Zero(),
                 Duration.create(MONITORING_INTERVAL_MILLIS, MILLISECONDS),
-                (Runnable) this::recordMetrics,
+                this::recordMetrics,
                 getContext().system().dispatcher());
     }
 

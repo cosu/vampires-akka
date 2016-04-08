@@ -1,22 +1,26 @@
 package ro.cosu.vampires.server.resources.ec2;
 
-import com.amazonaws.auth.PropertiesCredentials;
-import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Named;
+
+import com.amazonaws.auth.PropertiesCredentials;
+import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.typesafe.config.Config;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.resources.ResourceProvider;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Optional;
+
+import javax.annotation.Nullable;
+
+import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.resources.ResourceProvider;
 
 public class EC2ResourceModule extends AbstractModule {
     private static final Logger LOG = LoggerFactory.getLogger(EC2ResourceModule.class);
@@ -29,8 +33,8 @@ public class EC2ResourceModule extends AbstractModule {
     }
 
     @Provides
-    private Optional<AmazonEC2Client> provideAmazonEc2(@Named("Config") Config config) {
-
+    @Nullable
+    private AmazonEC2Client provideAmazonEc2(@Named("Config") Config config) {
 
         AmazonEC2Client amazonEC2Client = null;
 
@@ -40,15 +44,13 @@ public class EC2ResourceModule extends AbstractModule {
             try {
                 PropertiesCredentials credentials = new PropertiesCredentials(new FileInputStream(credentialsFile));
                 amazonEC2Client = new AmazonEC2Client(credentials);
-            }
-            catch (FileNotFoundException e){
+            } catch (FileNotFoundException e) {
                 LOG.error("could not find ec2 credentials file: " + credentialsFile);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 LOG.error("failed to create amazon client", e);
             }
         }
 
-        return Optional.ofNullable(amazonEC2Client);
+        return amazonEC2Client;
     }
 }

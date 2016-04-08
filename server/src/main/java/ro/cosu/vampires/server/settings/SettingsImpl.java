@@ -1,9 +1,16 @@
 package ro.cosu.vampires.server.settings;
 
-import akka.actor.Extension;
 import com.typesafe.config.Config;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import akka.actor.Extension;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.workload.JobUtil;
 import ro.cosu.vampires.server.workload.schedulers.SamplingScheduler;
@@ -13,24 +20,17 @@ import ro.cosu.vampires.server.writers.ResultsWriter;
 import ro.cosu.vampires.server.writers.json.JsonResultsWriter;
 import ro.cosu.vampires.server.writers.mongo.MongoWriter;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class SettingsImpl implements Extension {
 
+    public static final String EXEC_MODE = "exec";
+    public static final String SAMPLING_MODE = "sampling";
     private static final int DEFAULT_CPU_SET_SIZE = 1;
-    public final Config vampires;
     private static final Logger LOG = LoggerFactory.getLogger(Settings.class);
-
     private final static int DEFAULT_MAX_JOB_DEADLINE = 60;
     private final static int DEFAULT_BACK_OFF_INTERVAL = 20;
     private final static String DEFAULT_EXECUTOR = "FORK";
-    public static final String EXEC_MODE = "exec";
-    public static final String SAMPLING_MODE = "sampling";
     private static final int JOBS_TO_SAMPLE = 30;
-
+    public final Config vampires;
 
 
     public SettingsImpl(Config config) {
@@ -63,12 +63,11 @@ public class SettingsImpl implements Extension {
 
     public Scheduler getScheduler() {
         List<Job> workload = getWorkload();
-        if (getMode().equals(SAMPLING_MODE)){
-            LOG.info("running in sampling mode : sampling from {} jobs", workload.size() );
+        if (getMode().equals(SAMPLING_MODE)) {
+            LOG.info("running in sampling mode : sampling from {} jobs", workload.size());
             return new SamplingScheduler(workload, getJobDeadline(), getBackoffInterval(), getNumberOfJobsToSample());
-        }
-        else
-            return  new SimpleScheduler(workload, getJobDeadline(), getBackoffInterval());
+        } else
+            return new SimpleScheduler(workload, getJobDeadline(), getBackoffInterval());
     }
 
     private int getNumberOfJobsToSample() {
@@ -91,10 +90,9 @@ public class SettingsImpl implements Extension {
     }
 
     public int getBackoffInterval() {
-        if (vampires.hasPath("backoffInterval")){
+        if (vampires.hasPath("backoffInterval")) {
             return vampires.getInt("backoffInterval");
-        }
-        else {
+        } else {
             LOG.warn("missing backoffInterval. Using default value: {}", DEFAULT_BACK_OFF_INTERVAL);
         }
         return DEFAULT_BACK_OFF_INTERVAL;
@@ -113,7 +111,7 @@ public class SettingsImpl implements Extension {
     public int getJobDeadline() {
 
         int maxJobSeconds = DEFAULT_MAX_JOB_DEADLINE;
-        if (vampires.hasPath("jobDeadlineSeconds")){
+        if (vampires.hasPath("jobDeadlineSeconds")) {
             maxJobSeconds = vampires.getInt("jobDeadlineSeconds");
         } else {
             LOG.warn("maxJobSeconds not provided. Using default value of {}", DEFAULT_MAX_JOB_DEADLINE);
@@ -125,8 +123,7 @@ public class SettingsImpl implements Extension {
 
         if (vampires.hasPath("mode") && vampires.getString("mode").equalsIgnoreCase(SAMPLING_MODE)) {
             return SAMPLING_MODE;
-        }
-        else {
+        } else {
             return EXEC_MODE;
         }
     }

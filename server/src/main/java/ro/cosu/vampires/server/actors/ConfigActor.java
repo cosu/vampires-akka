@@ -1,5 +1,7 @@
 package ro.cosu.vampires.server.actors;
 
+import java.util.Optional;
+
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
@@ -9,13 +11,14 @@ import ro.cosu.vampires.server.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.ClientConfig;
 import ro.cosu.vampires.server.workload.ClientInfo;
 
-import java.util.Optional;
-
 public class ConfigActor extends UntypedActor {
-    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
-
     private final SettingsImpl settings =
             Settings.SettingsProvider.get(getContext().system());
+    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+
+    public static Props props() {
+        return Props.create(ConfigActor.class);
+    }
 
     @Override
     public void onReceive(Object message) throws Exception {
@@ -23,7 +26,7 @@ public class ConfigActor extends UntypedActor {
             ClientInfo clientInfo = (ClientInfo) message;
             final ClientConfig configFor = getConfigFor(clientInfo);
             log.info("config for client {}:{} {}", clientInfo.metrics().metadata().get("host-hostname"),
-                    clientInfo.id(),configFor);
+                    clientInfo.id(), configFor);
             getSender().tell(configFor, getSelf());
             getContext().actorSelection("/user/resourceManager").forward(clientInfo, getContext());
             getContext().actorSelection("/user/workActor/resultActor").forward(clientInfo, getContext());
@@ -56,16 +59,12 @@ public class ConfigActor extends UntypedActor {
             log.warning("Client reported less cpus ({}) than CPU_SET_SIZE ({})", executorCpuCount,
                     settings.getCpuSetSize());
         }
-        int numberOfExecutors = executorCpuCount/ cpuSetSize;
+        int numberOfExecutors = executorCpuCount / cpuSetSize;
 
         return ClientConfig.builder()
                 .cpuSetSize(cpuSetSize)
                 .executor(executor)
                 .numberOfExecutors(numberOfExecutors)
                 .build();
-    }
-
-    public static Props props() {
-        return Props.create(ConfigActor.class);
     }
 }

@@ -1,7 +1,7 @@
 package ro.cosu.vampires.client.allocation;
 
-import autovalue.shaded.com.google.common.common.collect.Lists;
 import com.google.common.collect.Queues;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,10 +12,12 @@ import java.util.concurrent.BlockingDeque;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import autovalue.shaded.com.google.common.common.collect.Lists;
+
 public class FixedCpuSetAllocator implements CpuAllocator {
     /**
-     * Emits CPUSets to be used by numactl or docker cpusets This uses a round robin strategy w.r.t to releasing and
-     * acquiring
+     * Emits CPUSets to be used by numactl or docker cpusets This uses a round robin strategy w.r.t
+     * to releasing and acquiring
      */
     private static final Logger LOG = LoggerFactory.getLogger(FixedCpuSetAllocator.class);
     private final int totalCpuCount;
@@ -36,7 +38,7 @@ public class FixedCpuSetAllocator implements CpuAllocator {
 
     }
 
-    public  static Builder builder(){
+    public static Builder builder() {
         return new Builder();
     }
 
@@ -79,7 +81,7 @@ public class FixedCpuSetAllocator implements CpuAllocator {
             return this;
         }
 
-        public  FixedCpuSetAllocator build() {
+        public FixedCpuSetAllocator build() {
             return new FixedCpuSetAllocator(this);
         }
 

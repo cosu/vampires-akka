@@ -1,8 +1,10 @@
 package ro.cosu.vampires.client.monitoring;
 
+import com.google.inject.Inject;
+
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
-import com.google.inject.Inject;
+
 import org.hyperic.sigar.NetInterfaceStat;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;

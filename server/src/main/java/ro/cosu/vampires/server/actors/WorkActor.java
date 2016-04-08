@@ -17,17 +17,16 @@ public class WorkActor extends UntypedActor {
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private ActorRef resultActor;
+    private Scheduler scheduler;
 
     public static Props props() {
         return Props.create(WorkActor.class);
     }
 
-    private Scheduler scheduler;
-
     @Override
     public void preStart() {
         int jobDeadlineSeconds = settings.getJobDeadline();
-        log.debug("JobDeadline in seconds {}" , jobDeadlineSeconds);
+        log.debug("JobDeadline in seconds {}", jobDeadlineSeconds);
         scheduler = settings.getScheduler();
 
         resultActor = getContext().actorOf(ResultActor.props(scheduler.getJobCount()), "resultActor");

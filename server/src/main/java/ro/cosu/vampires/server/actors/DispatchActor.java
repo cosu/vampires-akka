@@ -15,12 +15,12 @@ public class DispatchActor extends UntypedActor {
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
-    public static Props props(ActorRef workActor){
-        return Props.create(DispatchActor.class, workActor);
+    public DispatchActor(ActorRef workActor) {
+        this.workActor = workActor;
     }
 
-    public DispatchActor(ActorRef workActor) {
-        this.workActor= workActor;
+    public static Props props(ActorRef workActor) {
+        return Props.create(DispatchActor.class, workActor);
     }
 
     @Override
@@ -28,14 +28,12 @@ public class DispatchActor extends UntypedActor {
 
         if (message instanceof Job) {
             workActor.forward(message, getContext());
-        }
-        else if (message instanceof ClientInfo){
+        } else if (message instanceof ClientInfo) {
             ActorRef configActor = getContext().actorOf(ConfigActor.props());
             log.debug("got client info {}", message);
             configActor.forward(message, getContext());
-        }
-        else {
-            log.error("Unhandled  request from {} , {}",  getSender().toString(),message);
+        } else {
+            log.error("Unhandled  request from {} , {}", getSender().toString(), message);
             unhandled(message);
         }
 

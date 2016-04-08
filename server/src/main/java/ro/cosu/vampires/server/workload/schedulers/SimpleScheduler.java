@@ -2,24 +2,25 @@ package ro.cosu.vampires.server.workload.schedulers;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.server.workload.Job;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
+import ro.cosu.vampires.server.workload.Job;
+
 public class SimpleScheduler implements Scheduler {
 
     private static final Logger LOG = LoggerFactory.getLogger(SimpleScheduler.class);
 
     protected final ConcurrentLinkedQueue<Job> workQueue = new ConcurrentLinkedQueue<>();
-
+    private final int backOffInterval;
     private Cache<String, Job> pendingJobs;
     private List<Job> jobList;
-    private final int backOffInterval;
 
     public SimpleScheduler(List<Job> jobList, long jobDeadline, int backOffInterval) {
         this.jobList = jobList;
@@ -56,7 +57,7 @@ public class SimpleScheduler implements Scheduler {
     @Override
     public void markDone(Job receivedJob) {
         LOG.debug("Work result from {}. pending {} remaining {}",
-                receivedJob.hostMetrics().metadata().get("host-hostname"),pendingJobs.size(), workQueue.size());
+                receivedJob.hostMetrics().metadata().get("host-hostname"), pendingJobs.size(), workQueue.size());
         pendingJobs.invalidate(receivedJob.id());
     }
 

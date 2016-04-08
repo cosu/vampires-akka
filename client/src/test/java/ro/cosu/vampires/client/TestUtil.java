@@ -1,8 +1,10 @@
 package ro.cosu.vampires.client;
 
+import com.google.common.collect.Maps;
+
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.Maps;
+
 import org.mockito.Mockito;
 
 import java.util.Collections;

@@ -1,8 +1,10 @@
 package ro.cosu.vampires.client.monitoring;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.Multibinder;
+
+import com.codahale.metrics.MetricRegistry;
+
 import org.hyperic.sigar.Sigar;
 
 public class MonitoringModule extends AbstractModule {

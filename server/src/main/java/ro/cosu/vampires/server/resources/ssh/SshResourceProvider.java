@@ -2,13 +2,15 @@ package ro.cosu.vampires.server.resources.ssh;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
+
 import ro.cosu.vampires.server.resources.AbstractResourceProvider;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.util.SshClient;
-
-import java.util.Optional;
 
 public class SshResourceProvider extends AbstractResourceProvider {
     private static final Logger LOG = LoggerFactory.getLogger(SshResourceProvider.class);

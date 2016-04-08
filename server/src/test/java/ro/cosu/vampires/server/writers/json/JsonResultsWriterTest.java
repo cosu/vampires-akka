@@ -1,11 +1,14 @@
 package ro.cosu.vampires.server.writers.json;
 
 import com.google.common.io.Files;
+
 import com.typesafe.config.ConfigFactory;
+
 import org.junit.Test;
-import ro.cosu.vampires.server.workload.Job;
 
 import java.io.File;
+
+import ro.cosu.vampires.server.workload.Job;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNot.not;

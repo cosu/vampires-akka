@@ -1,37 +1,46 @@
 package ro.cosu.vampires.server.actors;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
+import java.util.Optional;
+import java.util.stream.IntStream;
+
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.Terminated;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import ro.cosu.vampires.server.resources.*;
+import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.resources.ResourceInfo;
+import ro.cosu.vampires.server.resources.ResourceManager;
+import ro.cosu.vampires.server.resources.ResourceModule;
+import ro.cosu.vampires.server.resources.ResourceProvider;
 import ro.cosu.vampires.server.settings.Settings;
 import ro.cosu.vampires.server.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.ClientInfo;
 
-import java.util.Optional;
-import java.util.stream.IntStream;
-
-import static ro.cosu.vampires.server.actors.ResourceControl.*;
+import static ro.cosu.vampires.server.actors.ResourceControl.Bootstrap;
+import static ro.cosu.vampires.server.actors.ResourceControl.Create;
+import static ro.cosu.vampires.server.actors.ResourceControl.Query;
 import static ro.cosu.vampires.server.actors.ResourceControl.Shutdown;
+import static ro.cosu.vampires.server.actors.ResourceControl.Up;
 
 public class ResourceManagerActor extends UntypedActor {
     private final SettingsImpl settings =
             Settings.SettingsProvider.get(getContext().system());
-
-    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
-
-    private ResourceManager rm;
-
     protected ResourceRegistry resourceRegistry = new ResourceRegistry();
+    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+    private ResourceManager rm;
 
     public ResourceManagerActor() {
         Injector injector = Guice.createInjector(new ResourceModule(settings.vampires));
         rm = injector.getInstance(ResourceManager.class);
+    }
+
+    public static Props props() {
+        return Props.create(ResourceManagerActor.class);
     }
 
     private void startResources() {
@@ -123,7 +132,7 @@ public class ResourceManagerActor extends UntypedActor {
 
     private void registerClient(ClientInfo clientInfo) {
         getContext().watch(getSender());
-        log.debug("watch {}" , getSender());
+        log.debug("watch {}", getSender());
         resourceRegistry.registerClient(getSender(), clientInfo);
         resourceRegistry.lookupResourceOfClient(clientInfo.id())
                 .ifPresent(resourceActor -> resourceActor.forward(clientInfo, getContext()));
@@ -146,19 +155,13 @@ public class ResourceManagerActor extends UntypedActor {
         if (resourceOfClient.isPresent()) {
             ActorRef resourceActor = resourceOfClient.get();
             resourceActor.tell(query, sender);
-        }
-        else {
-            log.warning("Query: {} does not match any existing resource" , query);
+        } else {
+            log.warning("Query: {} does not match any existing resource", query);
         }
     }
 
     private void shutdownResources() {
         resourceRegistry.getResourceActors().forEach(r -> r.forward(new Shutdown(), getContext()));
-    }
-
-
-    public static Props props() {
-        return Props.create(ResourceManagerActor.class);
     }
 
 

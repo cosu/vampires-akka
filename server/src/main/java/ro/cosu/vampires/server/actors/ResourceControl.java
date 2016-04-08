@@ -1,8 +1,8 @@
 package ro.cosu.vampires.server.actors;
 
-import ro.cosu.vampires.server.resources.Resource;
-
 import java.io.Serializable;
+
+import ro.cosu.vampires.server.resources.Resource;
 
 public class ResourceControl {
 
@@ -28,8 +28,8 @@ public class ResourceControl {
     }
 
     public static class Create implements Serializable {
-        public  final Resource.Type type;
-        public  final Resource.Parameters parameters;
+        public final Resource.Type type;
+        public final Resource.Parameters parameters;
 
         public Create(Resource.Type type, Resource.Parameters parameters) {
             this.type = type;

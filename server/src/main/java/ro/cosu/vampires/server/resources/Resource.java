@@ -9,13 +9,22 @@ public interface Resource {
 
     void connected();
 
-    interface  Parameters extends Serializable{
-        Type type();
-        String command();
-        interface Builder {
-            Builder fromConfig(Config config);
-            Resource.Parameters build();
-        }
+    CompletableFuture<Resource> start();
+
+    CompletableFuture<Resource> stop();
+
+    void onStart() throws Exception;
+
+    void onStop() throws Exception;
+
+    void onFail() throws Exception;
+
+    ResourceDescription description();
+
+    Status status();
+
+    default ResourceInfo info() {
+        return ResourceInfo.create(description(), status());
     }
 
     enum Status {
@@ -36,16 +45,16 @@ public interface Resource {
         MOCK
     }
 
-    CompletableFuture<Resource> start();
-    CompletableFuture<Resource> stop();
+    interface Parameters extends Serializable {
+        Type type();
 
-    void onStart() throws  Exception;
-    void onStop() throws Exception;
-    void onFail() throws Exception;
+        String command();
 
-    ResourceDescription description();
-    Status status();
+        interface Builder {
+            Builder fromConfig(Config config);
 
-    default ResourceInfo info() { return ResourceInfo.create(description(), status());}
+            Resource.Parameters build();
+        }
+    }
 
 }

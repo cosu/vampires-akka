@@ -6,13 +6,16 @@ import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Named;
+
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.Executor;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceManager;
 import ro.cosu.vampires.server.resources.ResourceProvider;
@@ -37,8 +40,7 @@ public class LocalResourceTest {
 
             @Provides
             private Executor provideExecutor() {
-                DefaultExecutor executorMock = Mockito.mock(DefaultExecutor.class);
-                return executorMock;
+                return Mockito.mock(DefaultExecutor.class);
             }
 
             @Provides

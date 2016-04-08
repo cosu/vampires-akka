@@ -7,7 +7,8 @@ import com.google.gson.reflect.TypeToken;
 
 public final class AutoValueAdapterFactory implements TypeAdapterFactory {
     @SuppressWarnings("unchecked")
-    @Override public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
         Class<? super T> rawType = type.getRawType();
         if (!rawType.isAnnotationPresent(AutoGson.class)) {
             return null;

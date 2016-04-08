@@ -1,17 +1,19 @@
 package ro.cosu.vampires.server.writers.mongo;
 
 import com.mongodb.MongoClient;
+
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
+
 import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.writers.ResultsWriter;
 
 public class MongoWriter implements ResultsWriter {
-    private Morphia morphia = new Morphia();
     private final Datastore datastore;
+    private Morphia morphia = new Morphia();
 
-    public MongoWriter(){
+    public MongoWriter() {
         morphia.mapPackage("ro.cosu.vampires.server.writers.mongo");
         morphia.getMapper().getConverters().addConverter(LocalDateTimeConverter.class);
 
@@ -31,7 +33,7 @@ public class MongoWriter implements ResultsWriter {
 
     @Override
     public void addClient(ClientInfo clientInfo) {
-     datastore.save(clientInfo);
+        datastore.save(clientInfo);
     }
 
     @Override

@@ -1,13 +1,14 @@
 package ro.cosu.vampires.client.actors;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import akka.actor.ActorSystem;
 import akka.actor.PoisonPill;
 import akka.testkit.JavaTestKit;
 import akka.testkit.TestActorRef;
 import akka.testkit.TestProbe;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 

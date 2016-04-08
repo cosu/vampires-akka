@@ -1,6 +1,16 @@
 package ro.cosu.vampires.client.actors;
 
-import akka.actor.*;
+import java.util.Map;
+import java.util.stream.IntStream;
+
+import akka.actor.ActorIdentity;
+import akka.actor.ActorRef;
+import akka.actor.ActorSelection;
+import akka.actor.Identify;
+import akka.actor.Props;
+import akka.actor.ReceiveTimeout;
+import akka.actor.Terminated;
+import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.japi.Procedure;
@@ -8,13 +18,14 @@ import akka.pattern.Patterns;
 import akka.util.Timeout;
 import ro.cosu.vampires.client.extension.ExecutorsExtension;
 import ro.cosu.vampires.client.extension.ExecutorsExtensionImpl;
-import ro.cosu.vampires.server.workload.*;
+import ro.cosu.vampires.server.workload.ClientConfig;
+import ro.cosu.vampires.server.workload.ClientInfo;
+import ro.cosu.vampires.server.workload.Job;
+import ro.cosu.vampires.server.workload.JobStatus;
+import ro.cosu.vampires.server.workload.Metrics;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
-
-import java.util.Map;
-import java.util.stream.IntStream;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -22,19 +33,51 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 public class ClientActor extends UntypedActor {
 
     private final String serverPath;
+    private final ExecutorsExtensionImpl executors = ExecutorsExtension.ExecutorsProvider.get(getContext().system());
     private String clientId;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private ActorRef server;
-    private final ExecutorsExtensionImpl executors = ExecutorsExtension.ExecutorsProvider.get(getContext().system());
+    private Procedure<Object> active = message -> {
+        if (message instanceof Job) {
+            Job job = (Job) message;
+            if (JobStatus.COMPLETE.equals(job.status())) {
+                server.tell(job.from(clientId), getSelf());
+            } else {
+                log.debug("Execute {} -> {} {}", getSelf().path(), job.computation(), getSender());
+                execute(job);
+            }
+        } else if (message instanceof Terminated) {
+            if (getSender().equals(server)) {
+                log.info("server left. shutting down");
+                getContext().stop(getSelf());
+            }
+        } else {
+            log.error("Unhandled: {} -> {} {}", getSelf().path(), message.toString(), getSender());
+            unhandled(message);
+        }
+    };
+    private Procedure<Object> waitForConfig = messsage -> {
+        if (messsage instanceof ClientConfig) {
+            ClientConfig config = (ClientConfig) messsage;
+            executors.configure(config);
+            log.info("starting {} workers", config.numberOfExecutors());
+            //bootstrapping via an empty job
+            IntStream.range(0, config.numberOfExecutors()).forEach(i -> execute(Job.empty()));
 
-    public static Props props(String path, String clientId) {
-        return Props.create(ClientActor.class, path, clientId);
-    }
+            getContext().become(active, true);
+        } else {
+            unhandled(messsage);
+        }
+    };
 
     public ClientActor(String serverPath, String clientId) {
         this.serverPath = serverPath;
         this.clientId = clientId;
         sendIdentifyRequest();
+    }
+
+    public static Props props(String path, String clientId) {
+        return Props.create(ClientActor.class, path, clientId);
     }
 
     private void sendIdentifyRequest() {
@@ -65,40 +108,6 @@ public class ClientActor extends UntypedActor {
             log.info("Not ready yet");
         }
     }
-
-    private Procedure<Object> active = message -> {
-        if (message instanceof Job) {
-            Job job = (Job) message;
-            if (JobStatus.COMPLETE.equals(job.status())) {
-                server.tell(job.from(clientId), getSelf());
-            } else {
-                log.debug("Execute {} -> {} {}", getSelf().path(), job.computation(), getSender());
-                execute(job);
-            }
-        } else if (message instanceof Terminated) {
-            if (getSender().equals(server)) {
-                log.info("server left. shutting down");
-                getContext().stop(getSelf());
-            }
-        } else {
-            log.error("Unhandled: {} -> {} {}", getSelf().path(), message.toString(), getSender());
-            unhandled(message);
-        }
-    };
-
-    private Procedure<Object> waitForConfig = messsage -> {
-        if (messsage instanceof ClientConfig) {
-            ClientConfig config = (ClientConfig) messsage;
-            executors.configure(config);
-            log.info("starting {} workers", config.numberOfExecutors());
-            //bootstrapping via an empty job
-            IntStream.range(0, config.numberOfExecutors()).forEach(i -> execute(Job.empty()));
-
-            getContext().become(active, true);
-        } else {
-            unhandled(messsage);
-        }
-    };
 
     private void execute(Job job) {
         ActorRef executorActor = getContext().actorOf(ExecutorActor.props());

@@ -1,14 +1,15 @@
 package ro.cosu.vampires.client;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import akka.actor.ActorIdentity;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.japi.Option;
 import akka.testkit.JavaTestKit;
 import akka.testkit.TestActorRef;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import ro.cosu.vampires.client.actors.ClientActor;
 import ro.cosu.vampires.client.actors.MonitoringActor;
 import ro.cosu.vampires.server.workload.ClientConfig;
@@ -23,7 +24,7 @@ import static org.hamcrest.core.Is.is;
 
 public class ClientActorTest {
 
-    private  static ActorSystem system;
+    private static ActorSystem system;
 
     @BeforeClass
     public static void setUp() {
@@ -54,7 +55,7 @@ public class ClientActorTest {
         ClientConfig clientConfig = ClientConfig.withDefaults().numberOfExecutors(1).build();
         client.tell(clientConfig, remoteProbe.getRef());
         Job job = (Job) remoteProbe.receiveOne(Duration.create("500 milliseconds"));
-        assertThat(job.computation() ,is(Computation.empty()));
+        assertThat(job.computation(), is(Computation.empty()));
 
     }
 }

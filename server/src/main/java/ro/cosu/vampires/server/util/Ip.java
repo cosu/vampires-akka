@@ -16,7 +16,7 @@ import java.io.IOException;
  */
 public class Ip {
     private static final Logger LOG = LoggerFactory.getLogger(Ip.class);
-    private static String HOST="http://ip.cosu.ro/?ip";
+    private static String HOST = "http://ip.cosu.ro/?ip";
 
     public static String getPublicIp() throws IOException {
         HttpClient client = HttpClientBuilder.create().build();
@@ -24,7 +24,7 @@ public class Ip {
         HttpEntity entity = client.execute(request).getEntity();
         String ip = EntityUtils.toString(entity);
         LOG.info("got ip {}", ip);
-        return  ip;
+        return ip;
 
     }
 }

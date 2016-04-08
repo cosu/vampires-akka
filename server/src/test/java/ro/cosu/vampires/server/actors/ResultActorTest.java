@@ -1,15 +1,16 @@
 package ro.cosu.vampires.server.actors;
 
+import org.junit.Test;
+
+import java.util.concurrent.TimeUnit;
+
 import akka.actor.ActorRef;
 import akka.actor.Terminated;
 import akka.testkit.TestActorRef;
 import akka.testkit.TestProbe;
-import org.junit.Test;
 import scala.concurrent.duration.Duration;
 
-import java.util.concurrent.TimeUnit;
-
-public class ResultActorTest extends AbstractActorTest{
+public class ResultActorTest extends AbstractActorTest {
 
     @Test
     public void testShutdown() throws Exception {

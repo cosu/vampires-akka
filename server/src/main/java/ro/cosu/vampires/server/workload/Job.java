@@ -1,16 +1,37 @@
 package ro.cosu.vampires.server.workload;
 
 import com.google.auto.value.AutoValue;
-import ro.cosu.vampires.server.util.gson.AutoGson;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import ro.cosu.vampires.server.util.gson.AutoGson;
+
 @AutoValue
 @AutoGson
 public abstract class Job implements Serializable {
 
+
+    public static Job empty() {
+        return builder().computation(Computation.empty())
+                .hostMetrics(Metrics.empty())
+                .result(Result.empty()).build();
+    }
+
+    public static Job backoff(int backoffInterval) {
+        return builder().computation(Computation.backoff(backoffInterval))
+                .hostMetrics(Metrics.empty())
+                .result(Result.empty()).build();
+    }
+
+    public static Builder builder() {
+        return new AutoValue_Job.Builder()
+                .created(LocalDateTime.now())
+                .id(UUID.randomUUID().toString())
+                .from("")
+                .status(JobStatus.NEW);
+    }
 
     public abstract String id();
 
@@ -26,8 +47,6 @@ public abstract class Job implements Serializable {
 
     public abstract Metrics hostMetrics();
 
-
-
     public abstract Builder toBuilder();
 
     public Job withCommand(String command) {
@@ -39,7 +58,6 @@ public abstract class Job implements Serializable {
                 .from(from)
                 .build();
     }
-
 
     public Job withHostMetrics(Metrics metrics) {
         return toBuilder().hostMetrics(metrics)
@@ -55,26 +73,6 @@ public abstract class Job implements Serializable {
 
     public Job withComputation(Computation computation) {
         return toBuilder().computation(computation).build();
-    }
-
-
-    public static Job empty() {
-        return builder().computation(Computation.empty())
-                .hostMetrics(Metrics.empty())
-                .result(Result.empty()).build();
-    }
-    public static Job backoff( int backoffInterval) {
-        return builder().computation(Computation.backoff(backoffInterval))
-                .hostMetrics(Metrics.empty())
-                .result(Result.empty()).build();
-    }
-
-    public static Builder builder() {
-        return new AutoValue_Job.Builder()
-                .created(LocalDateTime.now())
-                .id(UUID.randomUUID().toString())
-                .from("")
-                .status(JobStatus.NEW);
     }
 
     @AutoValue.Builder

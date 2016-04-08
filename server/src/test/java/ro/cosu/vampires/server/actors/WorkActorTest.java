@@ -1,17 +1,18 @@
 package ro.cosu.vampires.server.actors;
 
+import org.junit.Test;
+
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.testkit.JavaTestKit;
-import org.junit.Test;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.workload.Metrics;
 import ro.cosu.vampires.server.workload.Result;
 
-public class WorkActorTest extends AbstractActorTest{
+public class WorkActorTest extends AbstractActorTest {
     @Test
-    public void testWork(){
+    public void testWork() {
         new JavaTestKit(system) {
             {
                 // create a test probe

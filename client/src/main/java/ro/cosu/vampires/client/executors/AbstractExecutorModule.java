@@ -10,9 +10,12 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
+
 import com.typesafe.config.Config;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import ro.cosu.vampires.client.allocation.CpuAllocator;
 import ro.cosu.vampires.client.allocation.FixedCpuSetAllocator;
 
@@ -21,21 +24,21 @@ public abstract class AbstractExecutorModule extends AbstractModule {
 
     private final Config config;
 
-    @Provides
-    @Named("Config")
-    private  Config provideConfig() {
-        return this.config;
-    }
-
     public AbstractExecutorModule(Config config) {
         this.config = config;
     }
 
-    protected abstract  void configure();
+    @Provides
+    @Named("Config")
+    private Config provideConfig() {
+        return this.config;
+    }
+
+    protected abstract void configure();
 
     @Provides
     @Singleton
-    private  CpuAllocator provideCpuAllocator(@Named("cpuCount")  int cpuCount) {
+    private CpuAllocator provideCpuAllocator(@Named("cpuCount") int cpuCount) {
         int cpuSetSize = config.getInt("cpuSetSize");
 
         LOG.info(" cpuCount: {} countSetSize: {}", cpuCount, cpuSetSize);

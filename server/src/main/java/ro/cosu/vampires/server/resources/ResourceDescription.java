@@ -6,13 +6,16 @@ import com.google.auto.value.AutoValue;
 @AutoValue
 public abstract class ResourceDescription {
 
-    public abstract String id();
-    public abstract Resource.Type provider();
-    public static ResourceDescription create(String id, Resource.Type type){
+    public static ResourceDescription create(String id, Resource.Type type) {
         return new AutoValue_ResourceDescription(id, type);
     }
+
     public static ResourceDescription empty(Resource.Type type) {
-        return  new AutoValue_ResourceDescription("", type);
+        return new AutoValue_ResourceDescription("", type);
     }
+
+    public abstract String id();
+
+    public abstract Resource.Type provider();
 
 }

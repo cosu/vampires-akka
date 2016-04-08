@@ -1,12 +1,12 @@
 package ro.cosu.vampires.client.monitoring;
 
 
-import com.codahale.metrics.Gauge;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import ro.cosu.vampires.server.workload.Metric;
+
+import com.codahale.metrics.Gauge;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,6 +14,8 @@ import java.util.SortedMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import ro.cosu.vampires.server.workload.Metric;
 
 public class MetricsWindow {
 
@@ -29,23 +31,6 @@ public class MetricsWindow {
                     metricWindow.remove(key);
                 }
             }).build();
-
-    public void add(LocalDateTime time, SortedMap<String, Gauge> metrics) {
-        metricWindow.put(time, convertGaugesToDouble(metrics));
-        cache.put(time, time);
-    }
-
-    public ImmutableList<Metric> getInterval(LocalDateTime start, LocalDateTime stop) {
-        List<Metric> metricList = metricWindow.subMap(start, stop).entrySet().stream().map(
-                entry -> Metric.builder()
-                        .time(entry.getKey())
-                        .values(entry.getValue())
-                        .build())
-                .collect(Collectors.toList());
-
-        return ImmutableList.copyOf(metricList);
-    }
-
 
     private static ImmutableMap<String, Double> convertGaugesToDouble(SortedMap<String, Gauge> gauges) {
         ImmutableMap.Builder<String, Double> builder = ImmutableMap.builder();
@@ -66,7 +51,7 @@ public class MetricsWindow {
     }
 
     public static ImmutableMap<String, String> convertGaugesToString(SortedMap<String, Gauge> gauges) {
-        ImmutableMap.Builder<String, String> builder = ImmutableMap.<String, String>builder();
+        ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
 
         gauges.entrySet().stream().forEach(entry -> {
             String gaugeName = entry.getKey();
@@ -76,6 +61,22 @@ public class MetricsWindow {
         });
 
         return builder.build();
+    }
+
+    public void add(LocalDateTime time, SortedMap<String, Gauge> metrics) {
+        metricWindow.put(time, convertGaugesToDouble(metrics));
+        cache.put(time, time);
+    }
+
+    public ImmutableList<Metric> getInterval(LocalDateTime start, LocalDateTime stop) {
+        List<Metric> metricList = metricWindow.subMap(start, stop).entrySet().stream().map(
+                entry -> Metric.builder()
+                        .time(entry.getKey())
+                        .values(entry.getValue())
+                        .build())
+                .collect(Collectors.toList());
+
+        return ImmutableList.copyOf(metricList);
     }
 
 
