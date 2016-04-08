@@ -1,5 +1,7 @@
 package ro.cosu.vampires.server.resources.local;
 
+import com.google.common.base.Joiner;
+
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.Executor;
@@ -15,7 +17,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import autovalue.shaded.com.google.common.common.base.Joiner;
 import ro.cosu.vampires.server.resources.AbstractResource;
 
 
