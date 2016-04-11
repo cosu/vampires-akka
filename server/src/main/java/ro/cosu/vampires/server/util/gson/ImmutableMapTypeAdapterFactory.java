@@ -9,22 +9,15 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 public class ImmutableMapTypeAdapterFactory implements TypeAdapterFactory {
 
     public static <K, V> InstanceCreator<Map<K, V>> newCreator() {
-        return new InstanceCreator<Map<K, V>>() {
-            @Override
-            public Map<K, V> createInstance(Type type) {
-                return new HashMap<K, V>();
-            }
-        };
+        return type -> new HashMap<>();
     }
 
     @Nullable
