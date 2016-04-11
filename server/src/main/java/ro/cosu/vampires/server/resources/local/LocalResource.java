@@ -1,14 +1,10 @@
 package ro.cosu.vampires.server.resources.local;
 
 import com.google.common.base.Joiner;
-
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.ExecuteWatchdog;
-import org.apache.commons.exec.Executor;
-import org.apache.commons.exec.LogOutputStream;
-import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.exec.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ro.cosu.vampires.server.resources.AbstractResource;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -16,8 +12,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
-import ro.cosu.vampires.server.resources.AbstractResource;
 
 
 public class LocalResource extends AbstractResource {
@@ -66,6 +60,7 @@ public class LocalResource extends AbstractResource {
     public void onStop() throws IOException {
         LOG.debug("local stopping");
         try {
+            // the first line has the pid.
             Optional<Integer> firstInt = collectingLogOutputStream.getLines().stream().map(Integer::parseInt).findFirst();
             if (firstInt.isPresent()) {
                 int pid = firstInt.get();
@@ -73,6 +68,8 @@ public class LocalResource extends AbstractResource {
                 cmd.addArgument("-c");
                 cmd.addArgument("kill " + pid, false);
                 execute(cmd);
+            } else {
+                throw new NumberFormatException();
             }
         } catch (NumberFormatException | NoSuchElementException ex) {
             LOG.warn("Failed to get pid value. nohup process exited prematurely");
