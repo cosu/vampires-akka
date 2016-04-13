@@ -1,30 +1,23 @@
 package ro.cosu.vampires.server.resources.ec2;
 
+import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.ec2.model.*;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.io.Resources;
-
-import com.amazonaws.services.ec2.AmazonEC2Client;
-import com.amazonaws.services.ec2.model.CreateTagsRequest;
-import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
-import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.model.RunInstancesRequest;
-import com.amazonaws.services.ec2.model.RunInstancesResult;
-import com.amazonaws.services.ec2.model.Tag;
-import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
-import com.amazonaws.services.ec2.model.TerminateInstancesResult;
-
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ro.cosu.vampires.server.resources.AbstractResource;
 
 import java.net.URL;
-
-import ro.cosu.vampires.server.resources.AbstractResource;
 
 public class EC2Resource extends AbstractResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(EC2Resource.class);
+    private static final int MAX_TRIES = 20;
+    private static final int TRY_INTERVAL_MILLI = 2000;
+
 
     private final AmazonEC2Client amazonEC2Client;
     private final EC2ResourceParameters parameters;
@@ -47,8 +40,9 @@ public class EC2Resource extends AbstractResource {
         String cloudInit = Resources.toString(cloudInitResource, Charsets.UTF_8);
 
         String command = parameters.command() + " " + description().id();
-        LOG.debug("command {}", command);
+
         cloudInit = cloudInit.replace("$command", command);
+        LOG.debug("EC2command:  {}", command);
 
         RunInstancesRequest request = runInstancesRequest.withImageId(parameters.imageId())
                 .withInstanceType(parameters.instanceType())
@@ -58,18 +52,14 @@ public class EC2Resource extends AbstractResource {
                 .withSecurityGroups(parameters.securityGroup())
                 .withUserData(Base64.encodeBase64String(cloudInit.getBytes(Charsets.UTF_8)));
 
-        RunInstancesResult result = amazonEC2Client.runInstances(request);
-
-        instanceId = result.getReservation().getInstances().get(0).getInstanceId();
+        instanceId = amazonEC2Client.runInstances(request)
+                .getReservation().getInstances().get(0).getInstanceId();
 
         LOG.debug("Started amazon instance {}", instanceId);
 
         CreateTagsRequest createTagsRequest = new CreateTagsRequest();
 
-        createTagsRequest.withResources(instanceId)
-                .withTags(
-                        new Tag("type", "vampires")
-                );
+        createTagsRequest.withResources(instanceId).withTags(new Tag("type", "vampires"));
 
         amazonEC2Client.createTags(createTagsRequest);
 
@@ -85,15 +75,15 @@ public class EC2Resource extends AbstractResource {
     private String getPublicDnsName(DescribeInstancesRequest describeRequest) throws InterruptedException {
         String publicDnsName = "";
         int tries = 0;
-        while (Strings.isNullOrEmpty(publicDnsName) && tries < 10) {
-            DescribeInstancesResult describeInstanceResult = amazonEC2Client.describeInstances(describeRequest);
-            publicDnsName = describeInstanceResult.getReservations().get(0).getInstances().get(0).getPublicDnsName();
+        while (Strings.isNullOrEmpty(publicDnsName) && tries < MAX_TRIES) {
+            publicDnsName = amazonEC2Client.describeInstances(describeRequest)
+                    .getReservations().get(0).getInstances().get(0).getPublicDnsName();
             if (!Strings.isNullOrEmpty(publicDnsName)) break;
             tries++;
-            Thread.sleep(3000);
+            Thread.sleep(TRY_INTERVAL_MILLI);
         }
         if (Strings.isNullOrEmpty(publicDnsName)) {
-            LOG.error("unable to get publicDNSName for instance {}", describeRequest.getInstanceIds());
+            LOG.warn("unable to get publicDNSName for instance {}", describeRequest.getInstanceIds());
         }
         return publicDnsName;
     }

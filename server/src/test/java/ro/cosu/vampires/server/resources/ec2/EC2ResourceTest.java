@@ -1,22 +1,19 @@
 package ro.cosu.vampires.server.resources.ec2;
 
+import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.ec2.model.DescribeInstancesResult;
+import com.amazonaws.services.ec2.model.RunInstancesResult;
+import com.amazonaws.services.ec2.model.TerminateInstancesResult;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Named;
-
-import com.amazonaws.services.ec2.AmazonEC2Client;
-import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.model.RunInstancesResult;
-import com.amazonaws.services.ec2.model.TerminateInstancesResult;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import ro.cosu.vampires.server.resources.AbstractResource;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceManager;
@@ -26,9 +23,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 public class EC2ResourceTest {
@@ -74,7 +69,7 @@ public class EC2ResourceTest {
                 when(ec2Client.runInstances(anyObject())).thenReturn(runInstancesResult);
                 when(ec2Client.describeInstances(anyObject())).thenReturn(describeInstancesResult);
                 when(describeInstancesResult.getReservations().get(0).getInstances().get(0).getPublicDnsName())
-                        .thenReturn("bar");
+                        .thenReturn("").thenReturn("foo");
                 when(ec2Client.terminateInstances(anyObject())).thenReturn(terminateInstancesResult);
                 return ec2Client;
             }
