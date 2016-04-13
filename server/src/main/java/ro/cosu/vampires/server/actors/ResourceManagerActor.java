@@ -1,10 +1,28 @@
+/*
+ * The MIT License (MIT)
+ * Copyright © 2016 Cosmin Dumitru, http://cosu.ro <cosu@cosu.ro>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the “Software”), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
+
 package ro.cosu.vampires.server.actors;
-
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-
-import java.util.Optional;
-import java.util.stream.IntStream;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;
@@ -12,20 +30,18 @@ import akka.actor.Terminated;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.resources.ResourceInfo;
-import ro.cosu.vampires.server.resources.ResourceManager;
-import ro.cosu.vampires.server.resources.ResourceModule;
-import ro.cosu.vampires.server.resources.ResourceProvider;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import ro.cosu.vampires.server.resources.*;
 import ro.cosu.vampires.server.settings.Settings;
 import ro.cosu.vampires.server.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.ClientInfo;
 
-import static ro.cosu.vampires.server.actors.ResourceControl.Bootstrap;
-import static ro.cosu.vampires.server.actors.ResourceControl.Create;
-import static ro.cosu.vampires.server.actors.ResourceControl.Query;
+import java.util.Optional;
+import java.util.stream.IntStream;
+
+import static ro.cosu.vampires.server.actors.ResourceControl.*;
 import static ro.cosu.vampires.server.actors.ResourceControl.Shutdown;
-import static ro.cosu.vampires.server.actors.ResourceControl.Up;
 
 public class ResourceManagerActor extends UntypedActor {
     private final SettingsImpl settings =
