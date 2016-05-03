@@ -22,25 +22,27 @@
  *
  */
 
-package ro.cosu.vampires.server.actors;
+package ro.cosu.vampires.server.rest;
 
-import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
-import com.typesafe.config.ConfigFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import ro.cosu.vampires.server.writers.json.LocalDateTimeSerializer;
+import spark.ResponseTransformer;
 
-public class AbstractActorTest {
-    public  static ActorSystem system;
+import java.time.LocalDateTime;
 
-    @BeforeClass
-    public static void setup() {
-        system = ActorSystem.create("test", ConfigFactory.load("application-dev.conf"));
+/**
+ * Created on 30-4-16.
+ */
+public class JsonTransformer implements ResponseTransformer {
+
+    private Gson gson = new GsonBuilder().setPrettyPrinting()
+                    .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
+                    .create();
+
+    @Override
+    public String render(Object model) {
+        return gson.toJson(model);
     }
 
-    @AfterClass
-    public static void teardown() {
-        JavaTestKit.shutdownActorSystem(system);
-        system = null;
-    }
 }

@@ -22,25 +22,9 @@
  *
  */
 
-package ro.cosu.vampires.server.actors;
+package ro.cosu.vampires.server.rest.controllers;
 
-import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
-import com.typesafe.config.ConfigFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 
-public class AbstractActorTest {
-    public  static ActorSystem system;
-
-    @BeforeClass
-    public static void setup() {
-        system = ActorSystem.create("test", ConfigFactory.load("application-dev.conf"));
-    }
-
-    @AfterClass
-    public static void teardown() {
-        JavaTestKit.shutdownActorSystem(system);
-        system = null;
-    }
+public interface Controller {
+    void loadRoutes();
 }

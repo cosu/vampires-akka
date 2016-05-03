@@ -22,25 +22,44 @@
  *
  */
 
-package ro.cosu.vampires.server.actors;
+package ro.cosu.vampires.server.rest.services;
+
 
 import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
-import com.typesafe.config.ConfigFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.inject.Inject;
 
-public class AbstractActorTest {
-    public  static ActorSystem system;
+import java.util.List;
+import java.util.Map;
 
-    @BeforeClass
-    public static void setup() {
-        system = ActorSystem.create("test", ConfigFactory.load("application-dev.conf"));
+public class ConfigurationsService {
+
+    @Inject
+    private ActorSystem actorSystem;
+
+
+    public List<Map<String, String>> getConfigurations(){
+        return Lists.newLinkedList();
     }
 
-    @AfterClass
-    public static void teardown() {
-        JavaTestKit.shutdownActorSystem(system);
-        system = null;
+
+    public Map<String, String> createConfiguration() {
+        return Maps.newHashMap();
     }
+
+
+    public Map<String, String> updateConfiguration(String id){
+        return Maps.newHashMap();
+
+    }
+
+    public void deleteConfiguration(String id) {
+
+    }
+
+    public Map<String, String> getConfiguration(String id) {
+        return Maps.newHashMap();
+    }
+
 }

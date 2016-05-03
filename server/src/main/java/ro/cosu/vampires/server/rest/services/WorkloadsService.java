@@ -22,25 +22,57 @@
  *
  */
 
-package ro.cosu.vampires.server.actors;
+package ro.cosu.vampires.server.rest.services;
+
 
 import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
-import com.typesafe.config.ConfigFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import com.google.common.collect.Maps;
+import com.google.inject.Inject;
+import com.typesafe.config.Config;
+import ro.cosu.vampires.server.settings.Settings;
+import ro.cosu.vampires.server.settings.SettingsImpl;
 
-public class AbstractActorTest {
-    public  static ActorSystem system;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-    @BeforeClass
-    public static void setup() {
-        system = ActorSystem.create("test", ConfigFactory.load("application-dev.conf"));
+public class WorkloadsService {
+    @Inject
+    private ActorSystem actorSystem;
+
+    Map<String, Config> workloads = new HashMap();
+
+
+    private SettingsImpl getSettings() {
+        SettingsImpl settings = Settings.SettingsProvider.get(actorSystem);
+        return settings;
     }
 
-    @AfterClass
-    public static void teardown() {
-        JavaTestKit.shutdownActorSystem(system);
-        system = null;
+    public List<Config> getWorkloads() {
+        Config workload = getSettings().vampires.getConfig("workload");
+
+        return Collections.singletonList(workload);
     }
+
+    public Map<String, String> createWorkload() {
+
+
+        return Maps.newHashMap();
+    }
+
+
+    public Map<String, String> getWorkload(String id) {
+        return Maps.newHashMap();
+    }
+
+
+    public void delete(String id) {
+
+    }
+
+    public Map<String, String> updateWorkload(String id) {
+        return Maps.newHashMap();
+    }
+
 }

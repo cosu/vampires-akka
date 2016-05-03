@@ -22,25 +22,29 @@
  *
  */
 
-package ro.cosu.vampires.server.actors;
+package ro.cosu.vampires.server.rest;
 
 import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.typesafe.config.ConfigFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.Test;
+import ro.cosu.vampires.server.rest.controllers.Controller;
+import ro.cosu.vampires.server.rest.controllers.ControllersModule;
 
-public class AbstractActorTest {
-    public  static ActorSystem system;
 
-    @BeforeClass
-    public static void setup() {
-        system = ActorSystem.create("test", ConfigFactory.load("application-dev.conf"));
+public class VampiresControllerTest {
+
+    @Test
+    public void testController() throws Exception {
+        ActorSystem system = ActorSystem.create("foo", ConfigFactory.load("application-dev.conf"));
+        ControllersModule controllersModule = new ControllersModule(system);
+
+        Injector injector = Guice.createInjector(controllersModule);
+        Controller vampiresController = injector.getInstance(Controller.class);
+
+        vampiresController.loadRoutes();
+
     }
 
-    @AfterClass
-    public static void teardown() {
-        JavaTestKit.shutdownActorSystem(system);
-        system = null;
-    }
 }
