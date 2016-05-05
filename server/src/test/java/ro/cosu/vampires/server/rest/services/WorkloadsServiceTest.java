@@ -27,36 +27,96 @@ package ro.cosu.vampires.server.rest.services;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.Optional;
+
 import ro.cosu.vampires.server.actors.AbstractActorTest;
+import ro.cosu.vampires.server.workload.Workload;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 
 public class WorkloadsServiceTest extends AbstractActorTest {
 
 
-    private static WorkloadsService workloadsService;
+    private static Injector injector;
+    private WorkloadsService workloadsService;
+
     @BeforeClass
-    public static void setUp() {
+    public static void setUpClass() {
         ServicesModule controllersModule = new ServicesModule(system);
-
-        Injector injector = Guice.createInjector(controllersModule);
-
-        workloadsService = injector.getInstance(WorkloadsService.class);
+        injector = Guice.createInjector(controllersModule);
 
     }
     @AfterClass
     public static void tearDown() {
-        workloadsService = null;
+        injector = null;
+    }
+
+
+    @Before
+    public void setUp() {
+        workloadsService = injector.getInstance(WorkloadsService.class);
     }
 
     @Test
     public void getWorkloads() throws Exception {
+        assertThat(workloadsService.getWorkloads().size(), not(0));
+    }
 
+    @Test
+    public void deleteWorkload() throws Exception {
         assertThat(workloadsService.getWorkloads().size() , not(0));
 
+        Workload workload = workloadsService.getWorkloads().iterator().next();
+
+        String id = workload.id();
+
+        Optional<Workload> deleted = workloadsService.delete(id);
+        assertThat(deleted.isPresent(), is(true));
+
+        assertThat(workloadsService.getWorkloads().size(), is(0));
+
     }
+
+    @Test
+    public void getWorkload() throws Exception {
+
+        Workload workload1 = workloadsService.getWorkloads().iterator().next();
+
+        String id = workload1.id();
+
+        Optional<Workload> workload = workloadsService.getWorkload(id);
+        assertThat(workload.isPresent(), is(true));
+
+    }
+
+    @Test
+    public void getNonWorkload() throws Exception {
+
+        Optional<Workload> workload = workloadsService.getWorkload("unknown");
+        assertThat(workload.isPresent(), is(false));
+
+    }
+
+    @Test
+    public void updateWorkload() throws Exception {
+        Workload original = workloadsService.getWorkloads().iterator().next();
+
+        Workload update = original.update().sequenceStart(50).build();
+
+        Optional<Workload> saved = workloadsService.updateWorkload(update);
+
+        assertThat(update.sequenceStart(), is(saved.get().sequenceStart()));
+
+
+    }
+
+
 }

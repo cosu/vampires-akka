@@ -24,25 +24,34 @@
 
 package ro.cosu.vampires.server.rest;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import ro.cosu.vampires.server.writers.json.LocalDateTimeSerializer;
-import spark.ResponseTransformer;
 
 import java.time.LocalDateTime;
 
-/**
- * Created on 30-4-16.
- */
+import ro.cosu.vampires.server.util.gson.AutoValueAdapterFactory;
+import ro.cosu.vampires.server.writers.json.LocalDateTimeDeserializer;
+import ro.cosu.vampires.server.writers.json.LocalDateTimeSerializer;
+import spark.ResponseTransformer;
+
+
 public class JsonTransformer implements ResponseTransformer {
 
     private Gson gson = new GsonBuilder().setPrettyPrinting()
-                    .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
-                    .create();
+            .registerTypeAdapterFactory(new AutoValueAdapterFactory())
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer())
+            .registerTypeAdapterFactory(new AutoValueAdapterFactory())
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .create();
 
     @Override
     public String render(Object model) {
         return gson.toJson(model);
     }
 
+    public Gson getGson() {
+        return gson;
+    }
 }

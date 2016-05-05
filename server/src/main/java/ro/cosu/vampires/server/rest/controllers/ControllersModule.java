@@ -24,9 +24,9 @@
 
 package ro.cosu.vampires.server.rest.controllers;
 
-import akka.actor.ActorSystem;
 import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
+
+import akka.actor.ActorSystem;
 import ro.cosu.vampires.server.rest.services.ServicesModule;
 
 /**
@@ -46,12 +46,8 @@ public class ControllersModule extends AbstractModule{
         install(new ServicesModule(actorSystem));
         bind(ProvidersController.class);
         bind(WorkloadsController.class);
-        bind(ConfigurationsController.class);
+//        bind(ConfigurationsController.class);
     }
 
-    @Provides
-    private ActorSystem provideActorSystem() {
-        return this.actorSystem;
-    }
 
 }

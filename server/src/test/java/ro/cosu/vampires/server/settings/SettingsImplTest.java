@@ -26,7 +26,9 @@ package ro.cosu.vampires.server.settings;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import org.junit.Test;
+
 import ro.cosu.vampires.server.writers.ResultsWriter;
 import ro.cosu.vampires.server.writers.mongo.MongoWriter;
 

@@ -25,54 +25,63 @@
 package ro.cosu.vampires.server.rest.services;
 
 
-import akka.actor.ActorSystem;
-import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import com.typesafe.config.Config;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import akka.actor.ActorSystem;
 import ro.cosu.vampires.server.settings.Settings;
 import ro.cosu.vampires.server.settings.SettingsImpl;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import ro.cosu.vampires.server.workload.Workload;
 
 public class WorkloadsService {
-    @Inject
+    Map<String, Workload> workloads = new HashMap<>();
     private ActorSystem actorSystem;
 
-    Map<String, Config> workloads = new HashMap();
-
+    @Inject
+    WorkloadsService(ActorSystem actorSystem) {
+        this.actorSystem = actorSystem;
+        Workload workload = Workload.fromConfig(getSettings().vampires.getConfig("workload"));
+        workloads.put(workload.id(), workload);
+    }
 
     private SettingsImpl getSettings() {
         SettingsImpl settings = Settings.SettingsProvider.get(actorSystem);
         return settings;
     }
 
-    public List<Config> getWorkloads() {
-        Config workload = getSettings().vampires.getConfig("workload");
-
-        return Collections.singletonList(workload);
+    public Collection<Workload> getWorkloads() {
+        return workloads.values();
     }
 
-    public Map<String, String> createWorkload() {
+    public Workload createWorkload(Workload workload) {
 
+        workloads.put(workload.id(), workload);
 
-        return Maps.newHashMap();
-    }
-
-
-    public Map<String, String> getWorkload(String id) {
-        return Maps.newHashMap();
+        return workload;
     }
 
 
-    public void delete(String id) {
-
+    public Optional<Workload> getWorkload(String id) {
+        return Optional.ofNullable(workloads.get(id));
     }
 
-    public Map<String, String> updateWorkload(String id) {
-        return Maps.newHashMap();
+
+    public Optional<Workload> delete(String id) {
+        return Optional.ofNullable(workloads.remove(id));
     }
 
+    public Optional<Workload> updateWorkload(Workload workload) {
+
+        if (workloads.containsKey(workload.id())) {
+            Workload updated = workloads.get(workload.id()).withUpdate(workload);
+            workloads.put(updated.id(), updated);
+            return Optional.of(updated);
+        } else {
+            return Optional.empty();
+        }
+    }
 }

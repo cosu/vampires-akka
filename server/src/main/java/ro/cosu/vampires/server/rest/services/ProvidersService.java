@@ -24,19 +24,21 @@
 
 package ro.cosu.vampires.server.rest.services;
 
-import akka.actor.ActorSystem;
 import com.google.inject.Inject;
+
 import com.typesafe.config.Config;
-import ro.cosu.vampires.server.settings.Settings;
-import ro.cosu.vampires.server.settings.SettingsImpl;
 
 import java.util.List;
+
+import akka.actor.ActorSystem;
+import ro.cosu.vampires.server.settings.Settings;
+import ro.cosu.vampires.server.settings.SettingsImpl;
 
 
 public class ProvidersService {
 
     @Inject
-    ActorSystem actorSystem;
+    private ActorSystem actorSystem;
 
     public List<String> getAllProviders() {
         SettingsImpl settings = Settings.SettingsProvider.get(actorSystem);

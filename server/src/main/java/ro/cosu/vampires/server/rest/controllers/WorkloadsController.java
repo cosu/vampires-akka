@@ -24,14 +24,32 @@
 
 package ro.cosu.vampires.server.rest.controllers;
 
+import com.google.gson.JsonSyntaxException;
 import com.google.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
+
 import ro.cosu.vampires.server.rest.JsonTransformer;
 import ro.cosu.vampires.server.rest.services.WorkloadsService;
+import ro.cosu.vampires.server.workload.Workload;
 
-import static spark.Spark.*;
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
+import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
+import static java.net.HttpURLConnection.HTTP_OK;
+import static spark.Spark.after;
+import static spark.Spark.delete;
+import static spark.Spark.get;
+import static spark.Spark.post;
 
 
 public class WorkloadsController implements Controller {
+
+    private static final Logger LOG = LoggerFactory.getLogger(WorkloadsController.class);
 
     @Inject
     private WorkloadsService workloadsService;
@@ -40,7 +58,24 @@ public class WorkloadsController implements Controller {
     public void loadRoutes() {
 
         post("/workloads", (request, response) ->{
-            return workloadsService.createWorkload();
+            String body = request.body();
+            try {
+                JsonTransformer jsonTransformer = new JsonTransformer();
+                Workload workload = jsonTransformer.getGson().fromJson(body, Workload.class);
+                if (workload == null) {
+                    response.status(HTTP_BAD_REQUEST);
+                    return "";
+                } else {
+                    Workload created = workloadsService.createWorkload(workload);
+                    response.status(HTTP_CREATED);
+                    return created;
+                }
+            } catch (JsonSyntaxException jse) {
+                LOG.error("Bad request", jse);
+                response.status(HTTP_BAD_REQUEST);
+                return "";
+            }
+
         }, new JsonTransformer());
 
         get("/workloads", (request, response) ->{
@@ -49,18 +84,56 @@ public class WorkloadsController implements Controller {
 
         get("/workloads/:id", (request, response) ->{
             String id = request.params(":id");
-            return workloadsService.getWorkload(id);
+            Optional<Workload> workload = workloadsService.getWorkload(id);
+            if (workload.isPresent()) {
+                response.status(HTTP_OK);
+                return workload.get();
+            } else {
+                response.status(HTTP_NOT_FOUND);
+                return "";
+            }
+
         }, new JsonTransformer());
 
         delete("/workloads/:id", (request, response) ->{
             String id = request.params(":id");
-            workloadsService.delete(id);
+            Optional<Workload> delete = workloadsService.delete(id);
+            if (delete.isPresent()) {
+                response.status(HTTP_NO_CONTENT);
+            } else {
+                response.status(HTTP_BAD_REQUEST);
+            }
             return  null;
         }, new JsonTransformer());
 
         post("/workloads/:id", (request, response) ->{
-            String id = request.params(":id");
-            return workloadsService.updateWorkload(id);
+
+            try {
+                JsonTransformer jsonTransformer = new JsonTransformer();
+
+                Workload workload = jsonTransformer.getGson().fromJson(request.body(), Workload.class);
+
+                Optional<Workload> updateWorkload = workloadsService.updateWorkload(workload);
+
+                if (updateWorkload.isPresent()) {
+                    response.status(HTTP_CREATED);
+                    return updateWorkload.get();
+                } else {
+                    response.status(HTTP_BAD_REQUEST);
+                    return "Update failed";
+                }
+
+            } catch (JsonSyntaxException jse) {
+                LOG.error("Bad request", jse);
+                response.status(HTTP_BAD_REQUEST);
+                return "";
+            }
+
+
         }, new JsonTransformer());
+
+        after((req, res) -> {
+            res.type("application/json");
+        });
     }
 }
