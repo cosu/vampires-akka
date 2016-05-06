@@ -24,15 +24,20 @@
 
 package ro.cosu.vampires.server.actors;
 
-import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
 import com.typesafe.config.ConfigFactory;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-public class AbstractActorTest {
-    public  static ActorSystem system;
+import akka.actor.ActorSystem;
+import akka.testkit.JavaTestKit;
 
+public class AbstractActorTest {
+    static ActorSystem system;
+
+    public static ActorSystem getActorSystem() {
+        return system;
+    }
     @BeforeClass
     public static void setup() {
         system = ActorSystem.create("test", ConfigFactory.load("application-dev.conf"));

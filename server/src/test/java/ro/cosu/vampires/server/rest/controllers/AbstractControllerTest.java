@@ -17,16 +17,16 @@ import spark.utils.IOUtils;
 
 
 public class AbstractControllerTest extends AbstractActorTest {
-    protected static Injector injector;
-
+    static Injector injector;
 
     @BeforeClass
     public static void setup() {
+
         AbstractActorTest.setup();
         Spark.init();
         Spark.awaitInitialization();
 
-        ControllersModule controllersModule = new ControllersModule(system);
+        ControllersModule controllersModule = new ControllersModule(getActorSystem());
         injector = Guice.createInjector(controllersModule);
     }
 

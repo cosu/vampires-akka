@@ -50,7 +50,7 @@ public class WorkloadsServiceTest extends AbstractActorTest {
 
     @BeforeClass
     public static void setUpClass() {
-        ServicesModule controllersModule = new ServicesModule(system);
+        ServicesModule controllersModule = new ServicesModule(getActorSystem());
         injector = Guice.createInjector(controllersModule);
 
     }

@@ -26,7 +26,9 @@ package ro.cosu.vampires.server.rest.services;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+
 import org.junit.Test;
+
 import ro.cosu.vampires.server.actors.AbstractActorTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,7 +40,7 @@ public class ProvidersServiceTest extends AbstractActorTest{
     @Test
     public void getAllProviders() throws Exception {
 
-        ServicesModule controllersModule = new ServicesModule(system);
+        ServicesModule controllersModule = new ServicesModule(getActorSystem());
 
         Injector injector = Guice.createInjector(controllersModule);
         ProvidersService providersService = injector.getInstance(ProvidersService.class);
