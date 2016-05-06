@@ -22,30 +22,32 @@
  *
  */
 
-package ro.cosu.vampires.server.actors;
+package ro.cosu.vampires.server.rest.services;
 
-import com.typesafe.config.ConfigFactory;
+import com.google.inject.Inject;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import com.typesafe.config.Config;
+
+import java.util.List;
 
 import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
+import ro.cosu.vampires.server.settings.Settings;
+import ro.cosu.vampires.server.settings.SettingsImpl;
 
-public class AbstractActorTest {
-    static ActorSystem system;
 
-    public static ActorSystem getActorSystem() {
-        return system;
-    }
-    @BeforeClass
-    public static void setup() {
-        system = ActorSystem.create("test", ConfigFactory.load("application-dev.conf"));
+public class ProvidersService {
+
+    @Inject
+    private ActorSystem actorSystem;
+
+    public List<String> getAllProviders() {
+        SettingsImpl settings = Settings.SettingsProvider.get(actorSystem);
+
+        Config config = settings.vampires;
+
+        List<String> providers = config.getStringList("resources.providers");
+
+        return providers;
     }
 
-    @AfterClass
-    public static void teardown() {
-        JavaTestKit.shutdownActorSystem(system);
-        system = null;
-    }
 }

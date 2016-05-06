@@ -22,30 +22,32 @@
  *
  */
 
-package ro.cosu.vampires.server.actors;
+package ro.cosu.vampires.server.rest.controllers;
 
-import com.typesafe.config.ConfigFactory;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import com.google.inject.AbstractModule;
 
 import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
+import ro.cosu.vampires.server.rest.services.ServicesModule;
 
-public class AbstractActorTest {
-    static ActorSystem system;
+/**
+ * Created on 1-5-16.
+ */
+public class ControllersModule extends AbstractModule{
 
-    public static ActorSystem getActorSystem() {
-        return system;
-    }
-    @BeforeClass
-    public static void setup() {
-        system = ActorSystem.create("test", ConfigFactory.load("application-dev.conf"));
+
+    private final ActorSystem actorSystem;
+
+    public ControllersModule(ActorSystem actorSystem) {
+        this.actorSystem = actorSystem;
     }
 
-    @AfterClass
-    public static void teardown() {
-        JavaTestKit.shutdownActorSystem(system);
-        system = null;
+    @Override
+    protected void configure() {
+        install(new ServicesModule(actorSystem));
+        bind(ProvidersController.class);
+        bind(WorkloadsController.class);
+//        bind(ConfigurationsController.class);
     }
+
+
 }

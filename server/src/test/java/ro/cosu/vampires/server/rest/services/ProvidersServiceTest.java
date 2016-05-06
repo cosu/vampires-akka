@@ -22,30 +22,33 @@
  *
  */
 
-package ro.cosu.vampires.server.actors;
+package ro.cosu.vampires.server.rest.services;
 
-import com.typesafe.config.ConfigFactory;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.Test;
 
-import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
+import ro.cosu.vampires.server.actors.AbstractActorTest;
 
-public class AbstractActorTest {
-    static ActorSystem system;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsNot.not;
 
-    public static ActorSystem getActorSystem() {
-        return system;
+
+public class ProvidersServiceTest extends AbstractActorTest{
+
+    @Test
+    public void getAllProviders() throws Exception {
+
+        ServicesModule controllersModule = new ServicesModule(getActorSystem());
+
+        Injector injector = Guice.createInjector(controllersModule);
+        ProvidersService providersService = injector.getInstance(ProvidersService.class);
+
+        assertThat(providersService.getAllProviders().size() , not(0));
+
     }
-    @BeforeClass
-    public static void setup() {
-        system = ActorSystem.create("test", ConfigFactory.load("application-dev.conf"));
-    }
 
-    @AfterClass
-    public static void teardown() {
-        JavaTestKit.shutdownActorSystem(system);
-        system = null;
-    }
+
+
 }

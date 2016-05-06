@@ -22,30 +22,13 @@
  *
  */
 
-package ro.cosu.vampires.server.actors;
+package ro.cosu.vampires.server.rest;
 
-import com.typesafe.config.ConfigFactory;
+/**
+ * Created on 1-5-16.
+ */
+public class Webserver {
+    public static void main(String[] args) {
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-
-import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
-
-public class AbstractActorTest {
-    static ActorSystem system;
-
-    public static ActorSystem getActorSystem() {
-        return system;
-    }
-    @BeforeClass
-    public static void setup() {
-        system = ActorSystem.create("test", ConfigFactory.load("application-dev.conf"));
-    }
-
-    @AfterClass
-    public static void teardown() {
-        JavaTestKit.shutdownActorSystem(system);
-        system = null;
     }
 }
