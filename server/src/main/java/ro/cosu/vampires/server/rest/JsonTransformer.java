@@ -31,6 +31,7 @@ import com.google.gson.GsonBuilder;
 import java.time.LocalDateTime;
 
 import ro.cosu.vampires.server.util.gson.AutoValueAdapterFactory;
+import ro.cosu.vampires.server.util.gson.ImmutableListTypeAdapterFactory;
 import ro.cosu.vampires.server.writers.json.LocalDateTimeDeserializer;
 import ro.cosu.vampires.server.writers.json.LocalDateTimeSerializer;
 import spark.ResponseTransformer;
@@ -42,6 +43,7 @@ public class JsonTransformer implements ResponseTransformer {
             .registerTypeAdapterFactory(new AutoValueAdapterFactory())
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer())
+            .registerTypeAdapterFactory(new ImmutableListTypeAdapterFactory())
             .registerTypeAdapterFactory(new AutoValueAdapterFactory())
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();

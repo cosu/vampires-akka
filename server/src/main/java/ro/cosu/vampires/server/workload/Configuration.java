@@ -45,6 +45,10 @@ public abstract class Configuration {
                 .updatedAt(LocalDateTime.now());
     }
 
+    public Configuration touch() {
+        return toBuilder().updatedAt(LocalDateTime.now()).build();
+    }
+
     public abstract String id();
 
     @Nullable
@@ -60,9 +64,16 @@ public abstract class Configuration {
 
     public abstract Builder toBuilder();
 
-    public Builder update() {
+
+    public Configuration withResources(ImmutableList<Resource> resources) {
+        return toBuilder().resources(resources).build();
+    }
+
+    public Configuration create() {
         return toBuilder()
-                .updatedAt(LocalDateTime.now());
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
     }
 
 

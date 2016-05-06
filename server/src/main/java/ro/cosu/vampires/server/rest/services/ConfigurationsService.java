@@ -25,41 +25,53 @@
 package ro.cosu.vampires.server.rest.services;
 
 
-import akka.actor.ActorSystem;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
+
+import akka.actor.ActorSystem;
+import ro.cosu.vampires.server.workload.Configuration;
 
 public class ConfigurationsService {
+
+    Map<String, Configuration> configurations = Maps.newHashMap();
 
     @Inject
     private ActorSystem actorSystem;
 
 
-    public List<Map<String, String>> getConfigurations(){
-        return Lists.newLinkedList();
+    public Collection<Configuration> getConfigurations() {
+        return configurations.values();
     }
 
 
-    public Map<String, String> createConfiguration() {
-        return Maps.newHashMap();
+    public Configuration createConfiguration(Configuration configuration) {
+        Configuration created = configuration.create();
+        configurations.put(created.id(), created);
+        return created;
     }
 
+    public Optional<Configuration> updateConfiguration(Configuration configuration) {
 
-    public Map<String, String> updateConfiguration(String id){
-        return Maps.newHashMap();
+        if (configurations.containsKey(configuration.id())) {
+            configuration.touch();
+            configurations.put(configuration.id(), configuration);
+            return Optional.of(configuration);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Configuration> deleteConfiguration(String id) {
+        return Optional.ofNullable(configurations.remove(id));
 
     }
 
-    public void deleteConfiguration(String id) {
-
-    }
-
-    public Map<String, String> getConfiguration(String id) {
-        return Maps.newHashMap();
+    public Optional<Configuration> getConfiguration(String id) {
+        return Optional.ofNullable(configurations.get(id));
     }
 
 }

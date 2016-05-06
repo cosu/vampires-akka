@@ -14,8 +14,12 @@ public class ConfigurationTest {
     public void builder() throws Exception {
         Configuration foo = Configuration.builder().description("foo")
                 .resources(ImmutableList.of(
+                        Resource.builder().count(1).provider("foo").type("bar").build()
                 )).build();
         assertThat(foo.id(), not(isEmptyOrNullString()));
+
+        assertThat(foo.resources().size(), not(0));
+        assertThat(foo.resources().get(0).provider(), not(isEmptyOrNullString()));
 
     }
 

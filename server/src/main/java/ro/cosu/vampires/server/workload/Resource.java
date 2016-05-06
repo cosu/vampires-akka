@@ -15,12 +15,21 @@ public abstract class Resource {
 //        }
 
 
-    public abstract String description();
+    public static Builder builder() {
+        return new AutoValue_Resource.Builder();
+    }
+
+    public abstract String provider();
 
     public abstract String type();
 
     public abstract int count();
 
+    public abstract Builder toBuilder();
+
+    public Resource withCount(int i) {
+        return toBuilder().count(i).build();
+    }
 
     @AutoValue.Builder
     public abstract static class Builder {
@@ -29,7 +38,7 @@ public abstract class Resource {
 
         public abstract Builder type(String type);
 
-        public abstract Builder description(String description);
+        public abstract Builder provider(String provider);
 
         public abstract Resource build();
     }
