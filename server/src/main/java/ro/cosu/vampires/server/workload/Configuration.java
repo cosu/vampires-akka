@@ -1,13 +1,19 @@
 package ro.cosu.vampires.server.workload;
 
 import com.google.auto.value.AutoValue;
+import com.google.common.base.Enums;
 import com.google.common.collect.ImmutableList;
 
+import com.typesafe.config.Config;
+
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
+import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.util.gson.AutoGson;
 
 @AutoValue
@@ -24,12 +30,12 @@ public abstract class Configuration {
 //        [
 //        {
 //        "provider": "ec2",
-//        "type": "eu-west1.t2.micro",
+//        "providerType": "eu-west1.t2.micro",
 //        "count": "5"
 //        },
 //        {
 //        "provider": "ec2",
-//        "type": "eu-west1.t2.nano",
+//        "providerType": "eu-west1.t2.nano",
 //        "count": "5"
 //        }
 //        ],
@@ -43,6 +49,29 @@ public abstract class Configuration {
         return new AutoValue_Configuration.Builder().id(UUID.randomUUID().toString())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now());
+    }
+
+    public static Configuration fromConfig(Config config) {
+
+        String description = config.hasPath("description") ? config.getString("description") : "";
+
+        List<ResourceDemand> resourceDemandsList = config.getConfigList("start")
+                .stream().map(demandConfig -> {
+                    String type = demandConfig.getString("type");
+                    int count = demandConfig.getInt("count");
+
+                    Resource.ProviderType providerType = Enums.stringConverter
+                            (Resource.ProviderType.class).convert(demandConfig.getString("provider").toUpperCase());
+                    return ResourceDemand.builder().count(count).type(type)
+                            .provider(providerType).build();
+                }).collect(Collectors.toList());
+
+        ImmutableList<ResourceDemand> resourceDemands = ImmutableList.copyOf(resourceDemandsList);
+
+        return builder().createdAt(LocalDateTime.now()).updatedAt(LocalDateTime.now())
+                .resources(resourceDemands)
+                .description(description)
+                .build();
     }
 
     public Configuration touch() {
@@ -60,12 +89,11 @@ public abstract class Configuration {
     @Nullable
     public abstract String description();
 
-    public abstract ImmutableList<Resource> resources();
+    public abstract ImmutableList<ResourceDemand> resources();
 
     public abstract Builder toBuilder();
 
-
-    public Configuration withResources(ImmutableList<Resource> resources) {
+    public Configuration withResources(ImmutableList<ResourceDemand> resources) {
         return toBuilder().resources(resources).build();
     }
 
@@ -76,13 +104,21 @@ public abstract class Configuration {
                 .build();
     }
 
+    public Configuration withMode(ExecutionMode mode) {
+        if (mode.equals(ExecutionMode.SAMPLE))
+            return toBuilder().resources(
+                    ImmutableList.copyOf(
+                            resources().stream().map(r -> r.withCount(1)
+                            ).collect(Collectors.toList()))).build();
+        else return this;
+    }
 
     @AutoValue.Builder
     public abstract static class Builder {
 
         public abstract Builder id(String id);
 
-        public abstract Builder resources(ImmutableList<Resource> resources);
+        public abstract Builder resources(ImmutableList<ResourceDemand> resources);
 
         public abstract Builder description(String format);
 

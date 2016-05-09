@@ -24,19 +24,21 @@
 
 package ro.cosu.vampires.server.actors;
 
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActorWithStash;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.japi.Procedure;
+import ro.cosu.vampires.server.actors.messages.CreateResource;
+import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.resources.ResourceProvider;
 import ro.cosu.vampires.server.workload.ClientInfo;
-
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 
 public class ResourceActor extends UntypedActorWithStash {
     private final ResourceProvider resourceProvider;
@@ -45,7 +47,7 @@ public class ResourceActor extends UntypedActorWithStash {
     private Procedure<Object> active = message -> {
         ActorRef sender = getSender();
 
-        if (message instanceof ResourceControl.Query) {
+        if (message instanceof QueryResource) {
             sendResourceInfo(sender);
         } else if (message instanceof ClientInfo) {
             connectClient((ClientInfo) message);
@@ -70,10 +72,10 @@ public class ResourceActor extends UntypedActorWithStash {
     @Override
     public void onReceive(Object message) throws Exception {
         ActorRef sender = getSender();
-        if (message instanceof ResourceControl.Create) {
-            ResourceControl.Create create = (ResourceControl.Create) message;
+        if (message instanceof CreateResource) {
+            CreateResource create = (CreateResource) message;
             createResource(create, sender);
-        } else if (message instanceof ResourceControl.Query) {
+        } else if (message instanceof QueryResource) {
             sendResourceInfo(sender);
         } else if (message instanceof ResourceInfo) {
             ResourceInfo resourceInfo = (ResourceInfo) message;
@@ -89,13 +91,13 @@ public class ResourceActor extends UntypedActorWithStash {
         }
     }
 
-    private void createResource(ResourceControl.Create create, ActorRef sender) {
+    private void createResource(CreateResource create, ActorRef sender) {
         if (resource != null && !resource.status().equals(Resource.Status.SLEEPING)) {
             log.warning("Attempting to start an already started resource. doing nothing");
             return;
         }
 
-        Optional<Resource> resourceOptional = resourceProvider.create(create.parameters);
+        Optional<Resource> resourceOptional = resourceProvider.create(create.parameters());
 
         if (resourceOptional.isPresent()) {
             this.resource = resourceOptional.get();
@@ -149,7 +151,8 @@ public class ResourceActor extends UntypedActorWithStash {
     private void sendResourceInfo(ActorRef toActor) {
         ResourceInfo info = Optional.ofNullable(this.resource)
                 .map(Resource::info)
-                .orElse(ResourceInfo.failed(resourceProvider.getType()));
+                .orElse(ResourceInfo.failed(resourceProvider.getProviderType()));
+        log.info("to actor {}", toActor);
         toActor.tell(info, getSelf());
     }
 

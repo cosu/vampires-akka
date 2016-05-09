@@ -29,14 +29,17 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.util.Modules;
+
 import com.typesafe.config.ConfigFactory;
+
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
-import ro.cosu.vampires.server.resources.das5.Das5ResourceParameters;
-import ro.cosu.vampires.server.util.SshClient;
 
 import java.util.concurrent.TimeUnit;
+
+import ro.cosu.vampires.server.resources.das5.Das5ResourceParameters;
+import ro.cosu.vampires.server.util.SshClient;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -63,7 +66,7 @@ public class ResourceManagerIT {
         Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.load().getConfig("vampires")));
 
         ResourceManager rm = injector.getInstance(ResourceManager.class);
-        ResourceProvider localProvider = rm.getProviders().get(Resource.Type.LOCAL);
+        ResourceProvider localProvider = rm.getProviders().get(Resource.ProviderType.LOCAL);
         Resource.Parameters parameters = localProvider.getParameters("local");
         Resource resource = localProvider.create(parameters).get();
 
@@ -77,7 +80,7 @@ public class ResourceManagerIT {
     public void testCreateSSHResource() throws  Exception  {
         Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.load().getConfig("vampires")));
         ResourceManager rm = injector.getInstance(ResourceManager.class);
-        ResourceProvider sshProvider = rm.getProviders().get(Resource.Type.SSH);
+        ResourceProvider sshProvider = rm.getProviders().get(Resource.ProviderType.SSH);
         Resource.Parameters parameters = sshProvider.getParameters("local");
 
         Resource resource = sshProvider.create(parameters).get();
@@ -107,7 +110,7 @@ public class ResourceManagerIT {
         Module override = Modules.override(new ResourceModule(ConfigFactory.empty())).with(new TestModule());
         Injector injector = Guice.createInjector(override );
         ResourceManager rm = injector.getInstance(ResourceManager.class);
-        ResourceProvider localProvider = rm.getProviders().get(Resource.Type.DAS5);
+        ResourceProvider localProvider = rm.getProviders().get(Resource.ProviderType.DAS5);
         Resource resource = localProvider.create(getDasConfig()).get();
 
         assertThat(resource.start().get(2, TimeUnit.SECONDS).status(), is(Resource.Status.RUNNING));

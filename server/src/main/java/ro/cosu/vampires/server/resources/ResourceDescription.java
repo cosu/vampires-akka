@@ -30,16 +30,16 @@ import com.google.auto.value.AutoValue;
 @AutoValue
 public abstract class ResourceDescription {
 
-    public static ResourceDescription create(String id, Resource.Type type) {
-        return new AutoValue_ResourceDescription(id, type);
+    public static ResourceDescription create(String id, Resource.ProviderType providerType) {
+        return new AutoValue_ResourceDescription(id, providerType);
     }
 
-    public static ResourceDescription empty(Resource.Type type) {
-        return new AutoValue_ResourceDescription("", type);
+    public static ResourceDescription empty(Resource.ProviderType providerType) {
+        return new AutoValue_ResourceDescription("", providerType);
     }
 
     public abstract String id();
 
-    public abstract Resource.Type provider();
+    public abstract Resource.ProviderType provider();
 
 }

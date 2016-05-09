@@ -26,13 +26,15 @@ package ro.cosu.vampires.server.resources.ssh;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
+
 import ro.cosu.vampires.server.resources.AbstractResourceProvider;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.util.SshClient;
-
-import java.util.Optional;
 
 public class SshResourceProvider extends AbstractResourceProvider {
     private static final Logger LOG = LoggerFactory.getLogger(SshResourceProvider.class);
@@ -47,15 +49,15 @@ public class SshResourceProvider extends AbstractResourceProvider {
             return Optional.of(new SshResource((SshResourceParameters) parameters, sshClient));
         else {
 
-            LOG.error("invalid parameter type. expected " + SshResourceParameters.class + " but got " + parameters
+            LOG.error("invalid parameter providerType. expected " + SshResourceParameters.class + " but got " + parameters
                     .getClass().getName());
             return Optional.empty();
         }
     }
 
     @Override
-    public Resource.Type getType() {
-        return Resource.Type.SSH;
+    public Resource.ProviderType getProviderType() {
+        return Resource.ProviderType.SSH;
     }
 
     @Override

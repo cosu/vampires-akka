@@ -24,20 +24,23 @@
 
 package ro.cosu.vampires.server.resources.ec2;
 
-import com.amazonaws.services.ec2.AmazonEC2Client;
-import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.model.RunInstancesResult;
-import com.amazonaws.services.ec2.model.TerminateInstancesResult;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Named;
+
+import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.ec2.model.DescribeInstancesResult;
+import com.amazonaws.services.ec2.model.RunInstancesResult;
+import com.amazonaws.services.ec2.model.TerminateInstancesResult;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import ro.cosu.vampires.server.resources.AbstractResource;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceManager;
@@ -47,7 +50,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 public class EC2ResourceTest {
@@ -59,10 +64,10 @@ public class EC2ResourceTest {
         injector = Guice.createInjector(new AbstractModule() {
             @Override
             protected void configure() {
-                MapBinder<Resource.Type, ResourceProvider> mapbinder
-                        = MapBinder.newMapBinder(binder(), Resource.Type.class, ResourceProvider.class);
+                MapBinder<Resource.ProviderType, ResourceProvider> mapbinder
+                        = MapBinder.newMapBinder(binder(), Resource.ProviderType.class, ResourceProvider.class);
 
-                mapbinder.addBinding(Resource.Type.EC2).to(EC2ResourceProvider.class).asEagerSingleton();
+                mapbinder.addBinding(Resource.ProviderType.EC2).to(EC2ResourceProvider.class).asEagerSingleton();
             }
 
             @Provides
@@ -117,7 +122,7 @@ public class EC2ResourceTest {
     private Resource getResource(String instanceType) {
         ResourceManager rm = injector.getInstance(ResourceManager.class);
 
-        ResourceProvider ec2Provider = rm.getProviders().get(Resource.Type.EC2);
+        ResourceProvider ec2Provider = rm.getProviders().get(Resource.ProviderType.EC2);
         Resource.Parameters parameters = ec2Provider.getParameters(instanceType);
 
         return ec2Provider.create(parameters).get();

@@ -25,6 +25,7 @@
 package ro.cosu.vampires.server.resources;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import org.slf4j.Logger;
 
 import java.util.UUID;
@@ -39,7 +40,7 @@ public abstract class AbstractResource implements Resource {
     public AbstractResource(Resource.Parameters parameters) {
         this.parameters = parameters;
         setStatus(Status.SLEEPING);
-        this.description = ResourceDescription.create(generateId(), parameters.type());
+        this.description = ResourceDescription.create(generateId(), parameters.providerType());
         getLogger().debug("resource parameters {}", parameters);
         getLogger().debug("creating resource with description {}", description);
     }

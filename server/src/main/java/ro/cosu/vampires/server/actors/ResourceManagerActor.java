@@ -24,24 +24,31 @@
 
 package ro.cosu.vampires.server.actors;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
+import java.util.Optional;
+
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.Terminated;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import ro.cosu.vampires.server.resources.*;
+import ro.cosu.vampires.server.actors.messages.BootstrapResource;
+import ro.cosu.vampires.server.actors.messages.CreateResource;
+import ro.cosu.vampires.server.actors.messages.QueryResource;
+import ro.cosu.vampires.server.resources.ResourceInfo;
+import ro.cosu.vampires.server.resources.ResourceManager;
+import ro.cosu.vampires.server.resources.ResourceModule;
+import ro.cosu.vampires.server.resources.ResourceProvider;
 import ro.cosu.vampires.server.settings.Settings;
 import ro.cosu.vampires.server.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.ClientInfo;
+import ro.cosu.vampires.server.workload.Execution;
 
-import java.util.Optional;
-import java.util.stream.IntStream;
-
-import static ro.cosu.vampires.server.actors.ResourceControl.*;
 import static ro.cosu.vampires.server.actors.ResourceControl.Shutdown;
+import static ro.cosu.vampires.server.actors.ResourceControl.Up;
 
 public class ResourceManagerActor extends UntypedActor {
     private final SettingsImpl settings =
@@ -59,50 +66,28 @@ public class ResourceManagerActor extends UntypedActor {
         return Props.create(ResourceManagerActor.class);
     }
 
-    private void startResources() {
-        if (!settings.vampires.hasPath("start")) {
-            log.error("no start config found. exiting");
-            getContext().actorSelection("/user/terminator").tell(new Shutdown(), getSelf());
-            return;
-        }
-        settings.vampires.getConfigList("start").stream().forEach(config ->
-        {
-            String type = config.getString("type");
-            int count = config.getInt("count");
-            if (settings.getMode().equals(SettingsImpl.SAMPLING_MODE))
-                count = 1;
-            final Resource.Type provider = Resource.Type.valueOf(config.getString("provider").toUpperCase());
-            log.info("starting {} x {} from type {}", count, type, provider);
-
-            IntStream.rangeClosed(1, count).forEach(i ->
-                    getSelf().tell(new Bootstrap(provider, type), getSelf()));
-        });
-    }
-
     @Override
     public void preStart() {
         getContext().actorSelection("/user/terminator").tell(new Up(), getSelf());
-        startResources();
     }
 
-    private void createResource(Create create) {
-        log.debug("create resource {}", create.type);
+    private void createResource(CreateResource create) {
+        log.debug("create resource {}", create.type());
 
-        final Optional<ResourceProvider> provider = rm.getProvider(create.type);
+        final Optional<ResourceProvider> provider = rm.getProvider(create.type());
         if (provider.isPresent()) {
             ActorRef resourceActor = getContext().actorOf(ResourceActor.props(provider.get()));
             getContext().watch(resourceActor);
             resourceRegistry.addResourceActor(resourceActor);
             resourceActor.forward(create, getContext());
         } else {
-            log.error("Error getting {} type resource provider.", create.type);
+            log.error("Error getting {} providerType resource provider.", create.type());
         }
     }
 
-    private void bootstrapResource(ResourceProvider resourceProvider, Bootstrap bootstrap) {
-        Create create = new Create(
-                bootstrap.type, resourceProvider.getParameters(bootstrap.name));
-
+    private void bootstrapResource(ResourceProvider resourceProvider, BootstrapResource bootstrap) {
+        CreateResource create = CreateResource
+                .create(bootstrap.type(), resourceProvider.getParameters(bootstrap.name()));
         createResource(create);
     }
 
@@ -110,14 +95,17 @@ public class ResourceManagerActor extends UntypedActor {
     public void onReceive(Object message) throws Exception {
 
         ActorRef sender = getSender();
-        if (message instanceof Bootstrap) {
-            final Bootstrap bootstrap = (Bootstrap) message;
+        if (message instanceof Execution) {
+            final Execution execution = (Execution) message;
+            startExecution(execution);
+        } else if (message instanceof BootstrapResource) {
+            final BootstrapResource bootstrap = (BootstrapResource) message;
             bootstrapResource(bootstrap);
-        } else if (message instanceof Create) {
-            final Create create = (Create) message;
+        } else if (message instanceof CreateResource) {
+            final CreateResource create = (CreateResource) message;
             createResource(create);
-        } else if (message instanceof Query) {
-            final Query query = (Query) message;
+        } else if (message instanceof QueryResource) {
+            final QueryResource query = (QueryResource) message;
             queryResource(query, sender);
         } else if (message instanceof Shutdown) {
             shutdownResources();
@@ -135,8 +123,17 @@ public class ResourceManagerActor extends UntypedActor {
         }
     }
 
-    private void bootstrapResource(Bootstrap bootstrap) {
-        rm.getProvider(bootstrap.type).ifPresent(rp -> bootstrapResource(rp, bootstrap));
+    private void startExecution(Execution execution) {
+        execution
+                .configuration().withMode(execution.type())
+                .resources()
+                .stream()
+                .map(resourceDemand -> BootstrapResource.create(resourceDemand.provider(), resourceDemand.type()))
+                .forEach(bootstrapResource -> getSelf().tell(bootstrapResource, getSender()));
+    }
+
+    private void bootstrapResource(BootstrapResource bootstrap) {
+        rm.getProvider(bootstrap.type()).ifPresent(rp -> bootstrapResource(rp, bootstrap));
     }
 
     private void terminatedResource(ActorRef sender) {
@@ -165,8 +162,8 @@ public class ResourceManagerActor extends UntypedActor {
         resourceRegistry.registerResource(sender, resourceInfo);
     }
 
-    private void queryResource(Query query, ActorRef sender) {
-        Optional<ActorRef> resourceOfClient = resourceRegistry.lookupResourceOfClient(query.resourceId);
+    private void queryResource(QueryResource query, ActorRef sender) {
+        Optional<ActorRef> resourceOfClient = resourceRegistry.lookupResourceOfClient(query.resourceId());
 
         if (resourceOfClient.isPresent()) {
             ActorRef resourceActor = resourceOfClient.get();

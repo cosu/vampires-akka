@@ -25,6 +25,7 @@
 package ro.cosu.vampires.server.rest.controllers;
 
 import com.google.inject.Inject;
+
 import ro.cosu.vampires.server.rest.JsonTransformer;
 import ro.cosu.vampires.server.rest.services.ProvidersService;
 import spark.Spark;
@@ -34,6 +35,10 @@ public class ProvidersController implements Controller {
 
     @Inject
     private ProvidersService providersService;
+
+    ProvidersController() {
+        loadRoutes();
+    }
 
     @Override
     public void loadRoutes() {

@@ -61,7 +61,7 @@ public interface Resource {
         UNKNOWN, CONNECTED,
     }
 
-    enum Type {
+    enum ProviderType {
         SSH,
         LOCAL,
         DAS5,
@@ -70,7 +70,7 @@ public interface Resource {
     }
 
     interface Parameters extends Serializable {
-        Type type();
+        ProviderType providerType();
 
         String command();
 

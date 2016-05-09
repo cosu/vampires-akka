@@ -46,7 +46,7 @@ public class AbstractControllerTest extends AbstractActorTest {
             connection.setDoInput(true);
 
             if (payload.length() > 0) {
-                connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                connection.setRequestProperty("Content-ProviderType", "application/json; charset=UTF-8");
                 connection.setDoOutput(true);
                 connection.setDoInput(true);
                 OutputStream os = connection.getOutputStream();

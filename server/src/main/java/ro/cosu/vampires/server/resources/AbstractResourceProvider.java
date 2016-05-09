@@ -26,6 +26,7 @@ package ro.cosu.vampires.server.resources;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+
 import com.typesafe.config.Config;
 
 public abstract class AbstractResourceProvider implements ResourceProvider {
@@ -44,7 +45,7 @@ public abstract class AbstractResourceProvider implements ResourceProvider {
 
     protected Config getConfigForInstance(String instanceName) {
         Config appDefaults = getConfig().getConfig("resources");
-        Config providerDefaults = getConfig().getConfig("resources." + getType().toString().toLowerCase());
+        Config providerDefaults = getConfig().getConfig("resources." + getProviderType().toString().toLowerCase());
 
         return getSimpleConfigForInstance(instanceName)
                 .withFallback(providerDefaults)
@@ -56,7 +57,7 @@ public abstract class AbstractResourceProvider implements ResourceProvider {
     }
 
     protected String getInstanceKey(String instanceName) {
-        return "resources." + getType().toString().toLowerCase() + "." + instanceName.toLowerCase();
+        return "resources." + getProviderType().toString().toLowerCase() + "." + instanceName.toLowerCase();
     }
 
     @Override

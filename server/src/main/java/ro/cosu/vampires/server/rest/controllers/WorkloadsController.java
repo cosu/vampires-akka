@@ -54,6 +54,10 @@ public class WorkloadsController implements Controller {
     @Inject
     private WorkloadsService workloadsService;
 
+    WorkloadsController() {
+        loadRoutes();
+    }
+
     @Override
     public void loadRoutes() {
 

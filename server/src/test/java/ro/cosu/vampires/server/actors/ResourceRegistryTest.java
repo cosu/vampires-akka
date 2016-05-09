@@ -24,16 +24,17 @@
 
 package ro.cosu.vampires.server.actors;
 
+import org.junit.Test;
+
+import java.util.HashMap;
+
 import akka.actor.ActorRef;
 import akka.testkit.TestProbe;
-import org.junit.Test;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceDescription;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Metrics;
-
-import java.util.HashMap;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -73,7 +74,7 @@ public class ResourceRegistryTest extends AbstractActorTest {
         final ActorRef actorRef = createActorRef();
         resourceRegistry.addResourceActor(actorRef);
 
-        final ResourceInfo resourceInfo = ResourceInfo.create(ResourceDescription.create("foo", Resource.Type.MOCK),
+        final ResourceInfo resourceInfo = ResourceInfo.create(ResourceDescription.create("foo", Resource.ProviderType.MOCK),
                 Resource.Status.RUNNING);
         resourceRegistry.registerResource(actorRef, resourceInfo);
         final ClientInfo clientInfo = ClientInfo.builder().executors(new HashMap<>()).id
@@ -91,7 +92,7 @@ public class ResourceRegistryTest extends AbstractActorTest {
         final ActorRef actorRef = createActorRef();
         resourceRegistry.addResourceActor(actorRef);
 
-        final ResourceInfo resourceInfo = ResourceInfo.create(ResourceDescription.create("foo", Resource.Type.MOCK),
+        final ResourceInfo resourceInfo = ResourceInfo.create(ResourceDescription.create("foo", Resource.ProviderType.MOCK),
                 Resource.Status.RUNNING);
         resourceRegistry.registerResource(actorRef, resourceInfo);
         final ActorRef foo = resourceRegistry.lookupResourceOfClient("foo").get();

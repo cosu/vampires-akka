@@ -26,14 +26,16 @@ package ro.cosu.vampires.server.resources.ec2;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Preconditions;
+
 import com.typesafe.config.Config;
+
 import ro.cosu.vampires.server.resources.Resource;
 
 @AutoValue
 public abstract class EC2ResourceParameters implements Resource.Parameters {
 
     public static Builder builder() {
-        return new AutoValue_EC2ResourceParameters.Builder().type(Resource.Type.EC2);
+        return new AutoValue_EC2ResourceParameters.Builder().providerType(Resource.ProviderType.EC2);
     }
 
     public abstract String command();
@@ -48,7 +50,7 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
 
     public abstract String securityGroup();
 
-    public abstract Resource.Type type();
+    public abstract Resource.ProviderType providerType();
 
     @AutoValue.Builder
     public abstract static class Builder implements Resource.Parameters.Builder {
@@ -65,7 +67,7 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
 
         public abstract Builder securityGroup(String s);
 
-        public abstract Builder type(Resource.Type type);
+        public abstract Builder providerType(Resource.ProviderType providerType);
 
         public Builder fromConfig(Config config) {
             String region = config.getString("region");

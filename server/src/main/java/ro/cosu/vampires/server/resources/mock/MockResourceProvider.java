@@ -26,10 +26,11 @@ package ro.cosu.vampires.server.resources.mock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.server.resources.AbstractResourceProvider;
-import ro.cosu.vampires.server.resources.Resource;
 
 import java.util.Optional;
+
+import ro.cosu.vampires.server.resources.AbstractResourceProvider;
+import ro.cosu.vampires.server.resources.Resource;
 
 public class MockResourceProvider extends AbstractResourceProvider {
     private static final Logger LOG = LoggerFactory.getLogger(MockResourceProvider.class);
@@ -40,15 +41,15 @@ public class MockResourceProvider extends AbstractResourceProvider {
         if (parameters instanceof MockResourceParameters)
             return Optional.of(new MockResource(parameters));
         else {
-            LOG.error("invalid parameter type. expected " + MockResourceProvider.class);
+            LOG.error("invalid parameter providerType. expected " + MockResourceProvider.class);
             return Optional.empty();
         }
 
     }
 
     @Override
-    public Resource.Type getType() {
-        return Resource.Type.MOCK;
+    public Resource.ProviderType getProviderType() {
+        return Resource.ProviderType.MOCK;
     }
 
     @Override

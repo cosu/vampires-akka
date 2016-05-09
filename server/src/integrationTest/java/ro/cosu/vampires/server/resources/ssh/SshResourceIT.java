@@ -26,8 +26,11 @@ package ro.cosu.vampires.server.resources.ssh;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+
 import com.typesafe.config.ConfigFactory;
+
 import org.junit.Test;
+
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceManager;
 import ro.cosu.vampires.server.resources.ResourceModule;
@@ -44,7 +47,7 @@ public class SshResourceIT {
 
         ResourceManager rm = injector.getInstance(ResourceManager.class);
 
-        ResourceProvider sshProvider = rm.getProviders().get(Resource.Type.SSH);
+        ResourceProvider sshProvider = rm.getProviders().get(Resource.ProviderType.SSH);
         Resource.Parameters parameters = sshProvider.getParameters("local");
 
         Resource resource = sshProvider.create(parameters).get();

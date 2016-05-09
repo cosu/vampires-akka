@@ -25,10 +25,10 @@
 package ro.cosu.vampires.server.rest.services;
 
 
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -38,7 +38,7 @@ import ro.cosu.vampires.server.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.Workload;
 
 public class WorkloadsService {
-    Map<String, Workload> workloads = new HashMap<>();
+    Map<String, Workload> workloads = Maps.newConcurrentMap();
     private ActorSystem actorSystem;
 
     @Inject

@@ -24,10 +24,20 @@
 
 package ro.cosu.vampires.server.settings;
 
-import akka.actor.Extension;
+import com.google.common.base.Enums;
+
 import com.typesafe.config.Config;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import akka.actor.Extension;
+import ro.cosu.vampires.server.workload.ExecutionMode;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.workload.JobUtil;
 import ro.cosu.vampires.server.workload.schedulers.SamplingScheduler;
@@ -37,14 +47,8 @@ import ro.cosu.vampires.server.writers.ResultsWriter;
 import ro.cosu.vampires.server.writers.json.JsonResultsWriter;
 import ro.cosu.vampires.server.writers.mongo.MongoWriter;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class SettingsImpl implements Extension {
 
-    public static final String EXEC_MODE = "exec";
     public static final String SAMPLING_MODE = "sampling";
     private static final int DEFAULT_CPU_SET_SIZE = 1;
     private static final Logger LOG = LoggerFactory.getLogger(Settings.class);
@@ -92,7 +96,7 @@ public class SettingsImpl implements Extension {
             return new SimpleScheduler(workload, getJobDeadline(), getBackoffInterval());
     }
 
-    private int getNumberOfJobsToSample() {
+    public int getNumberOfJobsToSample() {
         if (vampires.hasPath("sampleSize")) {
             return vampires.getInt("sampleSize");
         } else {
@@ -141,13 +145,13 @@ public class SettingsImpl implements Extension {
         return maxJobSeconds;
     }
 
-    public String getMode() {
-
-        if (vampires.hasPath("mode") && vampires.getString("mode").equalsIgnoreCase(SAMPLING_MODE)) {
-            return SAMPLING_MODE;
-        } else {
-            return EXEC_MODE;
+    public ExecutionMode getMode() {
+        ExecutionMode executionMode = ExecutionMode.FULL;
+        if (vampires.hasPath("mode")) {
+            executionMode = Enums.getIfPresent(ExecutionMode.class, vampires.getString("mode").
+                    toUpperCase()).or(ExecutionMode.FULL);
         }
+        return executionMode;
     }
 }
 

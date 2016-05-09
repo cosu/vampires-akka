@@ -30,18 +30,21 @@ import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Named;
+
 import com.jcraft.jsch.JSchException;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.io.IOException;
+
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceManager;
 import ro.cosu.vampires.server.resources.ResourceProvider;
 import ro.cosu.vampires.server.util.SshClient;
-
-import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -59,10 +62,10 @@ public class SshClientResourceTest {
         injector = Guice.createInjector(new AbstractModule() {
             @Override
             protected void configure() {
-                MapBinder<Resource.Type, ResourceProvider> mapbinder
-                        = MapBinder.newMapBinder(binder(), Resource.Type.class, ResourceProvider.class);
+                MapBinder<Resource.ProviderType, ResourceProvider> mapbinder
+                        = MapBinder.newMapBinder(binder(), Resource.ProviderType.class, ResourceProvider.class);
 
-                mapbinder.addBinding(Resource.Type.SSH).to(SshResourceProvider.class).asEagerSingleton();
+                mapbinder.addBinding(Resource.ProviderType.SSH).to(SshResourceProvider.class).asEagerSingleton();
             }
 
             @Provides
@@ -104,7 +107,7 @@ public class SshClientResourceTest {
     private Resource getResource() {
         ResourceManager rm = injector.getInstance(ResourceManager.class);
 
-        ResourceProvider sshProvider = rm.getProviders().get(Resource.Type.SSH);
+        ResourceProvider sshProvider = rm.getProviders().get(Resource.ProviderType.SSH);
 
         Resource.Parameters parameters = sshProvider.getParameters("local");
 

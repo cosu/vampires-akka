@@ -32,12 +32,12 @@ public abstract class ResourceInfo {
         return new AutoValue_ResourceInfo(description, status);
     }
 
-    public static ResourceInfo unknown(Resource.Type type) {
-        return new AutoValue_ResourceInfo(ResourceDescription.empty(type), Resource.Status.UNKNOWN);
+    public static ResourceInfo unknown(Resource.ProviderType providerType) {
+        return new AutoValue_ResourceInfo(ResourceDescription.empty(providerType), Resource.Status.UNKNOWN);
     }
 
-    public static ResourceInfo failed(Resource.Type type) {
-        return new AutoValue_ResourceInfo(ResourceDescription.empty(type), Resource.Status.FAILED);
+    public static ResourceInfo failed(Resource.ProviderType providerType) {
+        return new AutoValue_ResourceInfo(ResourceDescription.empty(providerType), Resource.Status.FAILED);
     }
 
     public abstract ResourceDescription description();

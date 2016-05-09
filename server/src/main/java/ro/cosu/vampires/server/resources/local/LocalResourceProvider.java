@@ -25,13 +25,15 @@
 package ro.cosu.vampires.server.resources.local;
 
 import com.google.inject.Inject;
+
 import org.apache.commons.exec.Executor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.server.resources.AbstractResourceProvider;
-import ro.cosu.vampires.server.resources.Resource;
 
 import java.util.Optional;
+
+import ro.cosu.vampires.server.resources.AbstractResourceProvider;
+import ro.cosu.vampires.server.resources.Resource;
 
 public class LocalResourceProvider extends AbstractResourceProvider {
 
@@ -45,7 +47,7 @@ public class LocalResourceProvider extends AbstractResourceProvider {
         if (parameters instanceof LocalResourceParameters)
             return Optional.of(new LocalResource((LocalResourceParameters) parameters, executor));
         else {
-            LOG.error("invalid parameter type. expected " + LocalResourceProvider.class);
+            LOG.error("invalid parameter providerType. expected " + LocalResourceProvider.class);
             return Optional.empty();
         }
     }
@@ -57,7 +59,7 @@ public class LocalResourceProvider extends AbstractResourceProvider {
     }
 
     @Override
-    public Resource.Type getType() {
-        return Resource.Type.LOCAL;
+    public Resource.ProviderType getProviderType() {
+        return Resource.ProviderType.LOCAL;
     }
 }

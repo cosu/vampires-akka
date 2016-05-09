@@ -25,7 +25,9 @@
 package ro.cosu.vampires.server.resources.ssh;
 
 import com.google.auto.value.AutoValue;
+
 import com.typesafe.config.Config;
+
 import ro.cosu.vampires.server.resources.Resource;
 
 @AutoValue
@@ -33,7 +35,7 @@ import ro.cosu.vampires.server.resources.Resource;
 public abstract class SshResourceParameters implements Resource.Parameters {
 
     public static Builder builder() {
-        return new AutoValue_SshResourceParameters.Builder().port(22).type(Resource.Type.SSH);
+        return new AutoValue_SshResourceParameters.Builder().port(22).providerType(Resource.ProviderType.SSH);
     }
 
     public abstract String command();
@@ -46,7 +48,7 @@ public abstract class SshResourceParameters implements Resource.Parameters {
 
     public abstract int port();
 
-    public abstract Resource.Type type();
+    public abstract Resource.ProviderType providerType();
 
     @AutoValue.Builder
     public abstract static class Builder implements Resource.Parameters.Builder {
@@ -63,7 +65,7 @@ public abstract class SshResourceParameters implements Resource.Parameters {
         }
 
 
-        public abstract Builder type(Resource.Type type);
+        public abstract Builder providerType(Resource.ProviderType providerType);
 
         public abstract Builder command(String s);
 

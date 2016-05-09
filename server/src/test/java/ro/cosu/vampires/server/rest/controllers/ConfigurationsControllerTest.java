@@ -9,9 +9,10 @@ import org.junit.Test;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.rest.JsonTransformer;
 import ro.cosu.vampires.server.workload.Configuration;
-import ro.cosu.vampires.server.workload.Resource;
+import ro.cosu.vampires.server.workload.ResourceDemand;
 
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.core.Is.is;
@@ -25,7 +26,6 @@ public class ConfigurationsControllerTest extends AbstractControllerTest {
     @Before
     public void setUp() {
         configurationsController = injector.getInstance(ConfigurationsController.class);
-        configurationsController.loadRoutes();
     }
 
     @Test
@@ -41,7 +41,7 @@ public class ConfigurationsControllerTest extends AbstractControllerTest {
         Gson gson = new JsonTransformer().getGson();
         Configuration configuration = Configuration.builder().description("foo")
                 .resources(ImmutableList.of(
-                        Resource.builder().count(1).provider("foo").type("bar").build()
+                        ResourceDemand.builder().count(1).provider(Resource.ProviderType.MOCK).type("bar").build()
                 )).build();
 
         String toJson = gson.toJson(configuration);
@@ -66,7 +66,7 @@ public class ConfigurationsControllerTest extends AbstractControllerTest {
 
         Configuration fromJson = gson.fromJson(res.body, Configuration.class);
 
-        List<Resource> resourceList = fromJson.resources().stream().map(r -> r.withCount(42)).collect(Collectors.toList());
+        List<ResourceDemand> resourceList = fromJson.resources().stream().map(r -> r.withCount(42)).collect(Collectors.toList());
 
         Configuration updatedConfiguration = fromJson.withResources(ImmutableList.copyOf(resourceList));
 
@@ -76,7 +76,6 @@ public class ConfigurationsControllerTest extends AbstractControllerTest {
         assertThat(res.status, is(201));
         fromJson = gson.fromJson(res.body, Configuration.class);
 
-        System.out.println(fromJson);
         assertThat(fromJson.resources().stream()
                 .allMatch(r -> r.count() == 42), is(true));
     }

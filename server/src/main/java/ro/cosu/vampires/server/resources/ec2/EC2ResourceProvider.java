@@ -24,21 +24,25 @@
 
 package ro.cosu.vampires.server.resources.ec2;
 
-import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+
+import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.server.resources.AbstractResourceProvider;
-import ro.cosu.vampires.server.resources.Resource;
 
-import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Optional;
+
+import javax.annotation.Nullable;
+
+import ro.cosu.vampires.server.resources.AbstractResourceProvider;
+import ro.cosu.vampires.server.resources.Resource;
 
 public class EC2ResourceProvider extends AbstractResourceProvider {
     private static final Logger LOG = LoggerFactory.getLogger(EC2ResourceProvider.class);
@@ -55,15 +59,15 @@ public class EC2ResourceProvider extends AbstractResourceProvider {
         if (parameters instanceof EC2ResourceParameters)
             return Optional.of(new EC2Resource((EC2ResourceParameters) parameters, amazonEC2Client));
         else {
-            LOG.error("invalid parameter type. expected " + EC2ResourceParameters.class);
+            LOG.error("invalid parameter providerType. expected " + EC2ResourceParameters.class);
         }
         LOG.error("Failed to create amazon ec2 resource");
         return Optional.empty();
     }
 
     @Override
-    public Resource.Type getType() {
-        return Resource.Type.EC2;
+    public Resource.ProviderType getProviderType() {
+        return Resource.ProviderType.EC2;
     }
 
     @Override

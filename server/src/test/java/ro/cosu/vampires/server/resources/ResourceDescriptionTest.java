@@ -36,8 +36,8 @@ import static org.junit.Assert.assertThat;
 public class ResourceDescriptionTest {
     @Test
     public void testCreateResourceDescription() throws Exception {
-        ResourceDescription test = ResourceDescription.create("test", Resource.Type.LOCAL);
+        ResourceDescription test = ResourceDescription.create("test", Resource.ProviderType.LOCAL);
         assertThat(test.id(), is(equalTo("test")));
-        assertThat(test.provider(), is(equalTo(Resource.Type.LOCAL)));
+        assertThat(test.provider(), is(equalTo(Resource.ProviderType.LOCAL)));
     }
 }

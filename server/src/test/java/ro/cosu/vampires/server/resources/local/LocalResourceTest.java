@@ -30,17 +30,20 @@ import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Named;
+
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.Executor;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.io.IOException;
+
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceManager;
 import ro.cosu.vampires.server.resources.ResourceProvider;
-
-import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -83,7 +86,7 @@ public class LocalResourceTest {
 
         ResourceManager rm = injector.getInstance(ResourceManager.class);
 
-        ResourceProvider localProvider = rm.getProviders().get(Resource.Type.LOCAL);
+        ResourceProvider localProvider = rm.getProviders().get(Resource.ProviderType.LOCAL);
         Resource.Parameters parameters = localProvider.getParameters("local");
 
         return localProvider.create(parameters).get();
@@ -99,10 +102,10 @@ public class LocalResourceTest {
 
         @Override
         protected void configure() {
-            MapBinder<Resource.Type, ResourceProvider> mapBinder
-                    = MapBinder.newMapBinder(binder(), Resource.Type.class, ResourceProvider.class);
+            MapBinder<Resource.ProviderType, ResourceProvider> mapBinder
+                    = MapBinder.newMapBinder(binder(), Resource.ProviderType.class, ResourceProvider.class);
 
-            mapBinder.addBinding(Resource.Type.LOCAL).to(LocalResourceProvider.class).asEagerSingleton();
+            mapBinder.addBinding(Resource.ProviderType.LOCAL).to(LocalResourceProvider.class).asEagerSingleton();
         }
 
         @Provides

@@ -24,9 +24,10 @@
 
 package ro.cosu.vampires.server.rest.services;
 
-import akka.actor.ActorSystem;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+
+import akka.actor.ActorSystem;
 
 
 public class ServicesModule extends AbstractModule{
@@ -40,6 +41,7 @@ public class ServicesModule extends AbstractModule{
     protected void configure() {
         bind(ProvidersService.class);
         bind(ConfigurationsService.class);
+        bind(WorkloadsService.class);
     }
 
     @Provides

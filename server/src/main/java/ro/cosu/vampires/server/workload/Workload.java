@@ -13,8 +13,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.annotation.Nullable;
 
@@ -84,6 +87,16 @@ public abstract class Workload {
     public Builder update() {
         return toBuilder()
                 .updatedAt(LocalDateTime.now());
+    }
+
+    public List<Job> getJobs() {
+        final String finalUrl = url();
+        final String finalFormat = format();
+        return IntStream.rangeClosed(sequenceStart(), sequenceStop()).mapToObj(i -> String.format(finalFormat, i))
+                .map(f -> String.format("%s %s%s", task(), finalUrl, f).trim())
+                .map(command -> Job.empty().withCommand(command))
+                .collect(Collectors.toList());
+
     }
 
     public Workload withUpdate(Workload workloadUpdate) {

@@ -31,7 +31,7 @@ import java.util.Optional;
 public interface ResourceProvider {
     Optional<Resource> create(Resource.Parameters parameters);
 
-    Resource.Type getType();
+    Resource.ProviderType getProviderType();
 
     Config getConfig();
 

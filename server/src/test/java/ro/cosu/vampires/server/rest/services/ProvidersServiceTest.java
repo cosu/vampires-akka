@@ -35,7 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNot.not;
 
 
-public class ProvidersServiceTest extends AbstractActorTest{
+public class ProvidersServiceTest extends AbstractActorTest {
 
     @Test
     public void getAllProviders() throws Exception {

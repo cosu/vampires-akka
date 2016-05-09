@@ -24,14 +24,17 @@
 
 package ro.cosu.vampires.server.actors;
 
+import org.junit.Test;
+
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.testkit.JavaTestKit;
-import org.junit.Test;
 import ro.cosu.vampires.server.workload.Computation;
+import ro.cosu.vampires.server.workload.ExecutionMode;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.workload.Metrics;
 import ro.cosu.vampires.server.workload.Result;
+import ro.cosu.vampires.server.workload.Workload;
 
 public class WorkActorTest extends AbstractActorTest {
     @Test
@@ -41,8 +44,12 @@ public class WorkActorTest extends AbstractActorTest {
                 // create a test probe
                 final JavaTestKit workProbe = new JavaTestKit(system);
 
+                Workload workload = Workload.builder().sequenceStart(1).sequenceStop(2)
+                        .url("")
+                        .format("")
+                        .task("1").build();
                 // create a work actor
-                final Props props = WorkActor.props();
+                final Props props = WorkActor.props(workload, ExecutionMode.FULL);
                 final ActorRef forwarder = system.actorOf(props, "workactor");
 
                 Job job = Job.builder()

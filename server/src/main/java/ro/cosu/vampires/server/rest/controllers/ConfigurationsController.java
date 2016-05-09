@@ -54,6 +54,9 @@ public class ConfigurationsController implements Controller {
     @Inject
     private ConfigurationsService configurationsService;
 
+    ConfigurationsController() {
+        loadRoutes();
+    }
 
     @Override
     public void loadRoutes() {

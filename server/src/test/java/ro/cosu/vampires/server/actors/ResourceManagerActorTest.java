@@ -24,19 +24,27 @@
 
 package ro.cosu.vampires.server.actors;
 
-import akka.pattern.Patterns;
-import akka.testkit.TestActorRef;
-import akka.testkit.TestProbe;
 import com.google.common.collect.Maps;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
+
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.concurrent.TimeUnit;
+
+import akka.pattern.Patterns;
+import akka.testkit.TestActorRef;
+import akka.testkit.TestProbe;
+import ro.cosu.vampires.server.actors.messages.BootstrapResource;
+import ro.cosu.vampires.server.actors.messages.CreateResource;
+import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.resources.ResourceManager;
@@ -48,15 +56,13 @@ import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
-import java.util.concurrent.TimeUnit;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
 public class ResourceManagerActorTest extends AbstractActorTest {
 
-    private static final Resource.Type RESOURCE_TYPE = Resource.Type.MOCK;
+    private static final Resource.ProviderType RESOURCE_PROVIDER_TYPE = Resource.ProviderType.MOCK;
     private static ResourceManager rm;
 
     @BeforeClass
@@ -87,7 +93,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
     public void testStartResourceFail() throws Exception {
         final TestProbe testProbe = new TestProbe(system);
 
-        ResourceControl.Create createResourceWhichFails = getCreateResource("fail");
+        CreateResource createResourceWhichFails = getCreateResource("fail");
         TestActorRef<ResourceManagerActor> resourceManagerActor = TestActorRef.create(system,
                 ResourceManagerActor.props());
 
@@ -105,7 +111,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
     public void testStartResource() throws Exception {
         final TestProbe testProbe = new TestProbe(system);
 
-        ResourceControl.Create createResourceWhichFails = getCreateResource("foo");
+        CreateResource createResourceWhichFails = getCreateResource("foo");
         TestActorRef<ResourceManagerActor> resourceManagerActor = TestActorRef.create(system,
                 ResourceManagerActor.props());
 
@@ -126,7 +132,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         final TestProbe testProbe = new TestProbe(system);
 
-        ResourceControl.Create createResource = getCreateResource("foo");
+        CreateResource createResource = getCreateResource("foo");
 
         TestActorRef<ResourceManagerActor> resourceManagerActor = TestActorRef.create(system, ResourceManagerActor
                 .props());
@@ -151,7 +157,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         resourceManagerActor.tell(clientInfo, testProbe.ref());
 
-        ResourceControl.Query resourceQuery = new ResourceControl.Query(id);
+        QueryResource resourceQuery = QueryResource.create(id);
 
         final Future<Object> infoFuture = Patterns.ask(resourceManagerActor, resourceQuery, 1000);
 
@@ -173,21 +179,21 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         TestActorRef<ResourceManagerActor> resourceManagerActor = TestActorRef.create(system,
                 ResourceManagerActor.props());
-        ResourceControl.Bootstrap bs = new ResourceControl.Bootstrap(RESOURCE_TYPE, "foo");
+        BootstrapResource bs = BootstrapResource.create(RESOURCE_PROVIDER_TYPE, "foo");
         resourceManagerActor.tell(bs, testProbe.ref());
         ResourceInfo ri = (ResourceInfo) testProbe.receiveOne(Duration.create("50 milliseconds"));
         assertThat(ri.status(), equalTo(Resource.Status.RUNNING));
-        assertThat(ri.description().provider(), equalTo(Resource.Type.MOCK));
+        assertThat(ri.description().provider(), equalTo(Resource.ProviderType.MOCK));
 
     }
 
-    private ResourceControl.Create getCreateResource(String command) {
+    private CreateResource getCreateResource(String command) {
 
-        ResourceProvider resourceProvider = rm.getProviders().get(RESOURCE_TYPE);
+        ResourceProvider resourceProvider = rm.getProviders().get(RESOURCE_PROVIDER_TYPE);
 
         Resource.Parameters parameters = resourceProvider.getBuilder().fromConfig(ConfigFactory.parseString
                 ("command=" + command)).build();
 
-        return new ResourceControl.Create(RESOURCE_TYPE, parameters);
+        return CreateResource.create(RESOURCE_PROVIDER_TYPE, parameters);
     }
 }

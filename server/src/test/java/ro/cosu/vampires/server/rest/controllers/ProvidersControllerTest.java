@@ -19,7 +19,6 @@ public class ProvidersControllerTest extends AbstractControllerTest {
     @Before
     public void setUp() {
         providersController = injector.getInstance(ProvidersController.class);
-        providersController.loadRoutes();
     }
 
     @Test

@@ -29,9 +29,7 @@ import com.google.inject.AbstractModule;
 import akka.actor.ActorSystem;
 import ro.cosu.vampires.server.rest.services.ServicesModule;
 
-/**
- * Created on 1-5-16.
- */
+
 public class ControllersModule extends AbstractModule{
 
 
@@ -44,9 +42,9 @@ public class ControllersModule extends AbstractModule{
     @Override
     protected void configure() {
         install(new ServicesModule(actorSystem));
-        bind(ProvidersController.class);
-        bind(WorkloadsController.class);
-//        bind(ConfigurationsController.class);
+        bind(ProvidersController.class).asEagerSingleton();
+        bind(WorkloadsController.class).asEagerSingleton();
+        bind(ConfigurationsController.class).asEagerSingleton();
     }
 
 

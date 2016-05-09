@@ -26,13 +26,15 @@ package ro.cosu.vampires.server.resources.das5;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
+
 import ro.cosu.vampires.server.resources.AbstractResourceProvider;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.util.SshClient;
-
-import java.util.Optional;
 
 public class Das5ResourceProvider extends AbstractResourceProvider {
     private static final Logger LOG = LoggerFactory.getLogger(Das5ResourceProvider.class);
@@ -47,14 +49,14 @@ public class Das5ResourceProvider extends AbstractResourceProvider {
         if (parameters instanceof Das5ResourceParameters)
             return Optional.of(new Das5Resource((Das5ResourceParameters) parameters, sshClient));
         else {
-            LOG.error("invalid parameter type. expected " + Das5ResourceParameters.class);
+            LOG.error("invalid parameter providerType. expected " + Das5ResourceParameters.class);
             return Optional.empty();
         }
     }
 
     @Override
-    public Resource.Type getType() {
-        return Resource.Type.DAS5;
+    public Resource.ProviderType getProviderType() {
+        return Resource.ProviderType.DAS5;
     }
 
     @Override

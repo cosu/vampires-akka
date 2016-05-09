@@ -21,7 +21,6 @@ public class WorkloadsControllerTest extends AbstractControllerTest {
     @Before
     public void setUp() {
         workloadsController = injector.getInstance(WorkloadsController.class);
-        workloadsController.loadRoutes();
     }
 
     @Test

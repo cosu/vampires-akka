@@ -46,7 +46,7 @@ public final class AutoValueAdapterFactory implements TypeAdapterFactory {
             Class<?> autoValueType = Class.forName(autoValueName);
             return (TypeAdapter<T>) gson.getAdapter(autoValueType);
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Could not load AutoValue type " + autoValueName, e);
+            throw new RuntimeException("Could not load AutoValue providerType " + autoValueName, e);
         }
     }
 }

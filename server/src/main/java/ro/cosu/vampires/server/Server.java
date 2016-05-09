@@ -24,13 +24,15 @@
 
 package ro.cosu.vampires.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.server.actors.*;
+import ro.cosu.vampires.server.actors.BootstrapActor;
+import ro.cosu.vampires.server.actors.ResourceControl;
 import ro.cosu.vampires.server.actors.Terminator;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
@@ -46,9 +48,7 @@ public class Server {
         LoggingAdapter log = Logging.getLogger(system, Server.class);
 
         ActorRef terminator = system.actorOf(Terminator.props(), "terminator");
-        ActorRef workActor = system.actorOf(WorkActor.props(), "workActor");
-        system.actorOf(ResourceManagerActor.props(), "resourceManager");
-        system.actorOf(DispatchActor.props(workActor), "server");
+        system.actorOf(BootstrapActor.props(terminator), "bootstrap");
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override

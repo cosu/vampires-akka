@@ -25,7 +25,9 @@
 package ro.cosu.vampires.server.resources.local;
 
 import com.google.auto.value.AutoValue;
+
 import com.typesafe.config.Config;
+
 import ro.cosu.vampires.server.resources.Resource;
 
 @AutoValue
@@ -33,12 +35,12 @@ public abstract class LocalResourceParameters implements Resource.Parameters {
 
 
     public static Builder builder() {
-        return new AutoValue_LocalResourceParameters.Builder().type(Resource.Type.LOCAL);
+        return new AutoValue_LocalResourceParameters.Builder().providerType(Resource.ProviderType.LOCAL);
     }
 
     public abstract String command();
 
-    public abstract Resource.Type type();
+    public abstract Resource.ProviderType providerType();
 
     @AutoValue.Builder
     public abstract static class Builder implements Resource.Parameters.Builder {
@@ -47,7 +49,7 @@ public abstract class LocalResourceParameters implements Resource.Parameters {
             return this;
         }
 
-        public abstract Builder type(Resource.Type type);
+        public abstract Builder providerType(Resource.ProviderType providerType);
 
 
         public abstract Builder command(String command);

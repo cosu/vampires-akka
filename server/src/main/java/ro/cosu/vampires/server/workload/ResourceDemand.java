@@ -3,11 +3,12 @@ package ro.cosu.vampires.server.workload;
 
 import com.google.auto.value.AutoValue;
 
+import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.util.gson.AutoGson;
 
 @AutoValue
 @AutoGson
-public abstract class Resource {
+public abstract class ResourceDemand {
 
     //        "provider": "ec2",
     //        "type": "eu-west1.t2.nano",
@@ -16,10 +17,10 @@ public abstract class Resource {
 
 
     public static Builder builder() {
-        return new AutoValue_Resource.Builder();
+        return new AutoValue_ResourceDemand.Builder();
     }
 
-    public abstract String provider();
+    public abstract Resource.ProviderType provider();
 
     public abstract String type();
 
@@ -27,7 +28,7 @@ public abstract class Resource {
 
     public abstract Builder toBuilder();
 
-    public Resource withCount(int i) {
+    public ResourceDemand withCount(int i) {
         return toBuilder().count(i).build();
     }
 
@@ -36,10 +37,10 @@ public abstract class Resource {
 
         public abstract Builder count(int count);
 
+        public abstract Builder provider(Resource.ProviderType type);
+
         public abstract Builder type(String type);
 
-        public abstract Builder provider(String provider);
-
-        public abstract Resource build();
+        public abstract ResourceDemand build();
     }
 }

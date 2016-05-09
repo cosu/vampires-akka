@@ -24,6 +24,8 @@
 
 package ro.cosu.vampires.server.actors;
 
+import java.util.List;
+
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
@@ -32,8 +34,12 @@ import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.settings.Settings;
 import ro.cosu.vampires.server.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.Computation;
+import ro.cosu.vampires.server.workload.ExecutionMode;
 import ro.cosu.vampires.server.workload.Job;
+import ro.cosu.vampires.server.workload.Workload;
+import ro.cosu.vampires.server.workload.schedulers.SamplingScheduler;
 import ro.cosu.vampires.server.workload.schedulers.Scheduler;
+import ro.cosu.vampires.server.workload.schedulers.SimpleScheduler;
 
 public class WorkActor extends UntypedActor {
 
@@ -43,8 +49,18 @@ public class WorkActor extends UntypedActor {
     private ActorRef resultActor;
     private Scheduler scheduler;
 
-    public static Props props() {
-        return Props.create(WorkActor.class);
+    // maybe we could inject a precooked scheduler here
+    WorkActor(Workload workload, ExecutionMode mode) {
+        List<Job> jobs = workload.getJobs();
+        if (mode.equals(ExecutionMode.SAMPLE)) {
+            log.info("running in sampling mode : sampling from {} jobs", jobs.size());
+            scheduler = new SamplingScheduler(jobs, settings.getJobDeadline(), settings.getBackoffInterval(), settings.getNumberOfJobsToSample());
+        } else
+            scheduler = new SimpleScheduler(jobs, settings.getJobDeadline(), settings.getBackoffInterval());
+    }
+
+    public static Props props(Workload workload, ExecutionMode mode) {
+        return Props.create(WorkActor.class, workload, mode);
     }
 
     @Override
