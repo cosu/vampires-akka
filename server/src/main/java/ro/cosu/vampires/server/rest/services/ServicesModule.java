@@ -42,6 +42,7 @@ public class ServicesModule extends AbstractModule{
         bind(ProvidersService.class).asEagerSingleton();
         bind(ConfigurationsService.class).asEagerSingleton();
         bind(WorkloadsService.class).asEagerSingleton();
+        bind(ExecutionsService.class).asEagerSingleton();
     }
 
     @Provides

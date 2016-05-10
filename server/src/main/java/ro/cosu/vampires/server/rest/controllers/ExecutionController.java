@@ -31,6 +31,7 @@ public class ExecutionController extends AbstractController {
     @Override
     public void loadRoutes() {
         get("/executions", (request, response) -> {
+            LOG.info("{}", executionsService.getExecutions());
             return executionsService.getExecutions();
         }, new JsonTransformer());
 
@@ -56,9 +57,15 @@ public class ExecutionController extends AbstractController {
                     response.status(HTTP_BAD_REQUEST);
                     return "";
                 } else {
-                    Execution created = executionsService.create(executionPayload);
-                    response.status(HTTP_CREATED);
-                    return created;
+                    Optional<Execution> created = executionsService.create(executionPayload);
+                    if (created.isPresent()) {
+                        response.status(HTTP_CREATED);
+                        return created.get();
+                    } else {
+                        LOG.error("could not create execution");
+                        response.status(HTTP_BAD_REQUEST);
+                        return null;
+                    }
                 }
             } catch (JsonSyntaxException jse) {
                 LOG.error("Bad request", jse);

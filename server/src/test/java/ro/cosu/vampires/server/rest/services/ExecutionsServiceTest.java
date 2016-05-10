@@ -88,8 +88,9 @@ public class ExecutionsServiceTest extends AbstractActorTest {
 
         ExecutionPayload payload = ExecutionPayload.builder().configuration(configuration.id())
                 .type(ExecutionMode.FULL.name()).workload(workload.id()).build();
-        Execution execution = executionsService.create(payload);
-        assertThat(execution.status(), is("created"));
+        Optional<Execution> execution = executionsService.create(payload);
+        assertThat(execution.isPresent(), is(true));
+        assertThat(execution.get().status(), is("created"));
     }
 
     @Test

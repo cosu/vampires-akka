@@ -2,6 +2,8 @@ package ro.cosu.vampires.server.actors;
 
 
 import com.google.common.collect.Maps;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 import java.util.Map;
 
@@ -11,12 +13,17 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.resources.ResourceInfo;
+import ro.cosu.vampires.server.rest.controllers.ControllersModule;
+import ro.cosu.vampires.server.rest.services.ConfigurationsService;
+import ro.cosu.vampires.server.rest.services.ExecutionsService;
+import ro.cosu.vampires.server.rest.services.WorkloadsService;
 import ro.cosu.vampires.server.settings.Settings;
 import ro.cosu.vampires.server.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.Configuration;
 import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.ExecutionMode;
 import ro.cosu.vampires.server.workload.Workload;
+import spark.Spark;
 
 public class BootstrapActor extends UntypedActor {
 
@@ -26,6 +33,10 @@ public class BootstrapActor extends UntypedActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private ActorRef resourceManagerActor;
     private Map<String, Execution> executionMap = Maps.newHashMap();
+
+    private ControllersModule controllersModule = new ControllersModule(getContext().system());
+    private Injector injector;
+
 
     BootstrapActor(ActorRef terminator) {
         this.terminator = terminator;
@@ -38,39 +49,58 @@ public class BootstrapActor extends UntypedActor {
     @Override
     public void preStart() {
         terminator.tell(new ResourceControl.Up(), getSelf());
-        startConfiguration();
+        startWebserver();
+        startFromConfig();
     }
 
-    private void startConfiguration() {
-        log.info("{}", settings.vampires);
+    private void startWebserver() {
+        Spark.port(settings.vampires.getInt("rest-port"));
+        Spark.init();
+        Spark.awaitInitialization();
+        injector = Guice.createInjector(controllersModule);
+    }
+
+    private void startFromConfig() {
         if (settings.vampires.hasPath("start")) {
-            log.info("foo");
-            Configuration configuration = Configuration.fromConfig(settings.vampires);
 
             ExecutionMode mode = settings.getMode();
 
+            log.info("starting from config");
+            // post to config service
             Workload workload = Workload.fromConfig(settings.vampires.getConfig("workload"));
+            WorkloadsService workloadsService = injector.getInstance(WorkloadsService.class);
+            workload = workloadsService.createWorkload(workload);
 
-            Execution execution = Execution.builder()
-                    .configuration(configuration)
-                    .workload(workload)
-                    .type(mode).build();
+            // post to conf service
+            Configuration configuration = Configuration.fromConfig(settings.vampires);
+            ConfigurationsService configurationsService = injector.getInstance(ConfigurationsService.class);
+            configuration = configurationsService.createConfiguration(configuration);
 
-            ActorRef workActor = getContext().actorOf(WorkActor.props(workload, mode), "workActor");
-            resourceManagerActor = getContext().actorOf(ResourceManagerActor.props(), "resourceManager");
-            getContext().system().actorOf(DispatchActor.props(workActor), "server");
+            ExecutionsService executionsService = injector.getInstance(ExecutionsService.class);
+            Execution execution = Execution.builder().type(mode).configuration(configuration).workload(workload).build();
+            executionsService.startExecution(execution);
 
-            getSelf().tell(execution, getSelf());
         }
+    }
+
+    private void startExecution(Execution execution) {
+        ActorRef workActor = getContext().actorOf(WorkActor.props(execution.workload(), execution.type()), "workActor");
+        resourceManagerActor = getContext().actorOf(ResourceManagerActor.props(), "resourceManager");
+        getContext().system().actorOf(DispatchActor.props(workActor), "server");
+        executionMap.put(execution.id(), execution);
+        resourceManagerActor.tell(execution, getSelf());
+    }
+
+    @Override
+    public void postStop() {
+        Spark.stop();
     }
 
     @Override
     public void onReceive(Object message) throws Exception {
         if (message instanceof Execution) {
             Execution execution = (Execution) message;
-            executionMap.put(execution.id(), execution);
-            resourceManagerActor.tell(execution, getSelf());
-            log.info("sending {} to {}", execution, resourceManagerActor);
+            startExecution(execution);
         } else if (message instanceof ResourceInfo) {
             //
         } else {
