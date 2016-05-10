@@ -21,6 +21,7 @@ import ro.cosu.vampires.server.workload.ResourceDemand;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 
 
 public class ConfigurationsServiceTest extends AbstractActorTest {
@@ -52,7 +53,7 @@ public class ConfigurationsServiceTest extends AbstractActorTest {
     public void getConfigurations() throws Exception {
         createConfiguration();
         Collection<Configuration> configurations = configurationsService.getConfigurations();
-        assertThat(configurations.size(), is(1));
+        assertThat(configurations.size(), not(0));
     }
 
     @Test
@@ -67,7 +68,7 @@ public class ConfigurationsServiceTest extends AbstractActorTest {
 
         Collection<Configuration> configurations = configurationsService.getConfigurations();
 
-        assertThat(configurations.size(), is(1));
+        assertThat(configurations.size(), not(0));
     }
 
     @Test
@@ -76,7 +77,7 @@ public class ConfigurationsServiceTest extends AbstractActorTest {
 
         Collection<Configuration> configurations = configurationsService.getConfigurations();
 
-        assertThat(configurations.size(), is(1));
+        assertThat(configurations.size(), not(0));
 
         Configuration configuration = configurations.iterator().next();
 
@@ -97,7 +98,7 @@ public class ConfigurationsServiceTest extends AbstractActorTest {
 
         Collection<Configuration> configurations = configurationsService.getConfigurations();
 
-        assertThat(configurations.size(), is(1));
+        assertThat(configurations.size(), not(0));
 
         Configuration configuration = configurations.iterator().next();
 
@@ -115,7 +116,7 @@ public class ConfigurationsServiceTest extends AbstractActorTest {
 
         Collection<Configuration> configurations = configurationsService.getConfigurations();
 
-        assertThat(configurations.size(), is(1));
+        assertThat(configurations.size(), not(0));
 
     }
 

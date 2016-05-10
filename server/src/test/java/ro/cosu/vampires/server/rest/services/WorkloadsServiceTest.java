@@ -36,6 +36,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import ro.cosu.vampires.server.actors.AbstractActorTest;
 import ro.cosu.vampires.server.workload.Workload;
@@ -68,23 +69,27 @@ public class WorkloadsServiceTest extends AbstractActorTest {
 
     @Test
     public void getWorkloads() throws Exception {
+        createWorkload();
         assertThat(workloadsService.getWorkloads().size(), not(0));
     }
 
     @Test
     public void deleteWorkload() throws Exception {
-        assertThat(workloadsService.getWorkloads().size() , not(0));
+        createWorkload();
 
         Workload workload = workloadsService.getWorkloads().iterator().next();
         String id = workload.id();
 
         Optional<Workload> deleted = workloadsService.delete(id);
         assertThat(deleted.isPresent(), is(true));
-        assertThat(workloadsService.getWorkloads().size(), is(0));
+
+        assertThat(workloadsService.getWorkloads().stream().map(Workload::id)
+                .collect(Collectors.toList()).contains(deleted.get().id()), is(false));
     }
 
     @Test
     public void getWorkload() throws Exception {
+        createWorkload();
         Workload workload1 = workloadsService.getWorkloads().iterator().next();
         String id = workload1.id();
         Optional<Workload> workload = workloadsService.getWorkload(id);
@@ -99,6 +104,7 @@ public class WorkloadsServiceTest extends AbstractActorTest {
 
     @Test
     public void updateWorkload() throws Exception {
+        createWorkload();
         Workload original = workloadsService.getWorkloads().iterator().next();
         Workload update = original.update().sequenceStart(50).build();
         Optional<Workload> saved = workloadsService.updateWorkload(update);
@@ -108,7 +114,7 @@ public class WorkloadsServiceTest extends AbstractActorTest {
 
     @Test
     public void createWorkload() throws Exception {
-        String workloadConfig = "workload {\n" +
+        String workloadConfig = "{\n" +
                 "    format = %08d.tif\n" +
                 "    sequenceStart = 0\n" +
                 "    sequenceStop = 10\n" +
@@ -118,6 +124,9 @@ public class WorkloadsServiceTest extends AbstractActorTest {
         Workload workload = Workload.fromConfig(ConfigFactory.parseString(workloadConfig));
         assertThat(workload.task(), is("echo"));
 
+        Workload workload1 = workloadsService.createWorkload(workload);
+        assertThat(workload1.task(), is("echo"));
+        assertThat(workload1.getJobs().size(), not(0));
     }
 
 
