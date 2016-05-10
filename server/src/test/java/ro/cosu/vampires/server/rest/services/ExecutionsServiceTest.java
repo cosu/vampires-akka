@@ -21,6 +21,7 @@ import ro.cosu.vampires.server.workload.ExecutionPayload;
 import ro.cosu.vampires.server.workload.Workload;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
 
@@ -96,7 +97,7 @@ public class ExecutionsServiceTest extends AbstractActorTest {
     @Test
     public void getExecutions() throws Exception {
         create();
-        assertThat(executionsService.getExecutions().size(), is(1));
+        assertThat(executionsService.getExecutions().size(), not(0));
     }
 
     @Test
