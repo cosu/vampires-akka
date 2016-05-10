@@ -37,7 +37,7 @@ import ro.cosu.vampires.server.workload.Configuration;
 
 public class ConfigurationsService {
 
-    Map<String, Configuration> configurations = Maps.newConcurrentMap();
+    private Map<String, Configuration> configurations = Maps.newConcurrentMap();
 
     @Inject
     private ActorSystem actorSystem;

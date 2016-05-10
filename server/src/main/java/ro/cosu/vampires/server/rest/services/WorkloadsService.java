@@ -38,7 +38,7 @@ import ro.cosu.vampires.server.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.Workload;
 
 public class WorkloadsService {
-    Map<String, Workload> workloads = Maps.newConcurrentMap();
+    private Map<String, Workload> workloads = Maps.newConcurrentMap();
     private ActorSystem actorSystem;
 
     @Inject

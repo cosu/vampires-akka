@@ -10,8 +10,8 @@ import ro.cosu.vampires.server.rest.controllers.ControllersModule;
 
 public class WebserverActor extends UntypedActor {
 
-    ControllersModule controllersModule = new ControllersModule(getContext().system());
-    Injector injector = Guice.createInjector(controllersModule);
+    private ControllersModule controllersModule = new ControllersModule(getContext().system());
+    private Injector injector = Guice.createInjector(controllersModule);
 
 
     public static Props props() {

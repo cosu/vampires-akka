@@ -17,7 +17,7 @@ import spark.utils.IOUtils;
 
 
 public class AbstractControllerTest extends AbstractActorTest {
-    static Injector injector;
+    protected static Injector injector;
 
     @BeforeClass
     public static void setup() {

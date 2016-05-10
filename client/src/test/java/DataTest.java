@@ -25,16 +25,11 @@
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.server.util.gson.AutoValueAdapterFactory;
-import ro.cosu.vampires.server.util.gson.ImmutableListTypeAdapterFactory;
-import ro.cosu.vampires.server.util.gson.ImmutableMapTypeAdapterFactory;
-import ro.cosu.vampires.server.writers.json.AllResults;
-import ro.cosu.vampires.server.writers.json.LocalDateTimeDeserializer;
-import ro.cosu.vampires.server.writers.json.LocalDateTimeSerializer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,6 +40,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+
+import ro.cosu.vampires.server.util.gson.AutoValueAdapterFactory;
+import ro.cosu.vampires.server.util.gson.ImmutableListTypeAdapterFactory;
+import ro.cosu.vampires.server.util.gson.ImmutableMapTypeAdapterFactory;
+import ro.cosu.vampires.server.writers.json.AllResults;
+import ro.cosu.vampires.server.writers.json.LocalDateTimeDeserializer;
+import ro.cosu.vampires.server.writers.json.LocalDateTimeSerializer;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsNot.not;
 
 
 public class DataTest {
@@ -67,7 +72,6 @@ public class DataTest {
 
         response.results().stream().forEach(job -> {
 
-//            System.out.println(job.hostMetrics());
             job.hostMetrics().metrics().stream().forEach(metric -> {
                 LOG.info("time: {}", metric.time());
                 LOG.info("values: {}", metric.values());
@@ -91,7 +95,9 @@ public class DataTest {
                 .filter(file -> file.getName().endsWith(".json")).findFirst().get();
 
         LOG.info("file {}", file1);
-        loadFromJson(file1);
+        AllResults allResults = loadFromJson(file1);
+
+        assertThat(allResults.results().size(), not(0));
 
 
     }

@@ -24,24 +24,26 @@
 
 package ro.cosu.vampires.client.actors;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.SortedMap;
+
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import com.codahale.metrics.Gauge;
-import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import ro.cosu.vampires.client.monitoring.MetricsWindow;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.workload.JobStatus;
 import ro.cosu.vampires.server.workload.Metric;
 import ro.cosu.vampires.server.workload.Metrics;
 import scala.concurrent.duration.Duration;
-
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.SortedMap;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -111,8 +113,8 @@ public class MonitoringActor extends UntypedActor {
                 (job.result().trace().start(), job.result().trace().stop());
         ImmutableMap<String, String> hostValues = getHostMetrics();
         Metrics metrics = Metrics.builder().metadata(hostValues).metrics(metricsWindowInterval).build();
-        job = job.withHostMetrics(metrics);
-        return job;
+        Job withHostMetrics = job.withHostMetrics(metrics);
+        return withHostMetrics;
     }
 
     private ImmutableMap<String, String> getHostMetrics() {
