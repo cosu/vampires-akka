@@ -3,7 +3,6 @@ package ro.cosu.vampires.server.rest.controllers;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
@@ -21,12 +20,7 @@ import static org.junit.Assert.assertThat;
 
 
 public class ConfigurationsControllerTest extends AbstractControllerTest {
-    private ConfigurationsController configurationsController;
 
-    @Before
-    public void setUp() {
-        configurationsController = injector.getInstance(ConfigurationsController.class);
-    }
 
     @Test
     public void getConfigurations() throws Exception {

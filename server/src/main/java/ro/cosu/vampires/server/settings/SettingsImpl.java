@@ -89,7 +89,7 @@ public class SettingsImpl implements Extension {
 
     public Scheduler getScheduler() {
         List<Job> workload = getWorkload();
-        if (getMode().equals(SAMPLING_MODE)) {
+        if (getMode().equals(ExecutionMode.SAMPLE)) {
             LOG.info("running in sampling mode : sampling from {} jobs", workload.size());
             return new SamplingScheduler(workload, getJobDeadline(), getBackoffInterval(), getNumberOfJobsToSample());
         } else

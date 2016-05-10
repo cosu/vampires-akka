@@ -13,8 +13,8 @@ import java.util.Collection;
 import java.util.Optional;
 
 import ro.cosu.vampires.server.actors.AbstractActorTest;
-import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.workload.Execution;
+import ro.cosu.vampires.server.workload.ExecutionMode;
 import ro.cosu.vampires.server.workload.ExecutionPayload;
 
 import static org.hamcrest.core.Is.is;
@@ -24,8 +24,8 @@ import static org.junit.Assert.assertThat;
 public class ExecutionsServiceTest extends AbstractActorTest {
     private static Injector injector;
     private ExecutionsService executionsService;
-    private WorkloadsService workloadsService;
-    private ConfigurationsService configurationsService;
+    //private WorkloadsService workloadsService;
+    //private ConfigurationsService configurationsService;
 
     @BeforeClass
     public static void setUpClass() {
@@ -43,15 +43,15 @@ public class ExecutionsServiceTest extends AbstractActorTest {
     @Before
     public void setUp() {
         executionsService = injector.getInstance(ExecutionsService.class);
-        workloadsService = injector.getInstance(WorkloadsService.class);
-        configurationsService = injector.getInstance(ConfigurationsService.class);
+        //workloadsService = injector.getInstance(WorkloadsService.class);
+        //configurationsService = injector.getInstance(ConfigurationsService.class);
     }
 
     @Test
     @Ignore
     public void create() throws Exception {
         ExecutionPayload payload = ExecutionPayload.builder().configuration("foo")
-                .type(Resource.ProviderType.MOCK.name()).workload("baz").build();
+                .type(ExecutionMode.FULL.name()).workload("baz").build();
         Execution execution = executionsService.create(payload);
         assertThat(execution.status(), is("created"));
     }

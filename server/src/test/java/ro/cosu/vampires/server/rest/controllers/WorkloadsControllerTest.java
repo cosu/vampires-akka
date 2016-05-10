@@ -2,7 +2,6 @@ package ro.cosu.vampires.server.rest.controllers;
 
 import com.google.gson.Gson;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import ro.cosu.vampires.server.rest.JsonTransformer;
@@ -15,13 +14,6 @@ import static org.junit.Assert.assertThat;
 
 
 public class WorkloadsControllerTest extends AbstractControllerTest {
-
-    private WorkloadsController workloadsController;
-
-    @Before
-    public void setUp() {
-        workloadsController = injector.getInstance(WorkloadsController.class);
-    }
 
     @Test
     public void getWorkloads() throws Exception {

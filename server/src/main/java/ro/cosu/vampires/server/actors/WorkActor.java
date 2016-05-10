@@ -65,10 +65,6 @@ public class WorkActor extends UntypedActor {
 
     @Override
     public void preStart() {
-        int jobDeadlineSeconds = settings.getJobDeadline();
-        log.debug("JobDeadline in seconds {}", jobDeadlineSeconds);
-        scheduler = settings.getScheduler();
-
         resultActor = getContext().actorOf(ResultActor.props(scheduler.getJobCount()), "resultActor");
     }
 
