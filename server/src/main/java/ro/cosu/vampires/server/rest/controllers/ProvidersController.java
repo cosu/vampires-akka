@@ -31,14 +31,10 @@ import ro.cosu.vampires.server.rest.services.ProvidersService;
 import spark.Spark;
 
 
-public class ProvidersController implements Controller {
+public class ProvidersController extends AbstractController {
 
     @Inject
     private ProvidersService providersService;
-
-    ProvidersController() {
-        loadRoutes();
-    }
 
     @Override
     public void loadRoutes() {

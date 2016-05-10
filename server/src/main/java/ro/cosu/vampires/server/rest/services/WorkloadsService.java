@@ -75,7 +75,6 @@ public class WorkloadsService {
     }
 
     public Optional<Workload> updateWorkload(Workload workload) {
-
         if (workloads.containsKey(workload.id())) {
             Workload updated = workloads.get(workload.id()).withUpdate(workload);
             workloads.put(updated.id(), updated);

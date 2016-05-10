@@ -24,12 +24,9 @@ import static org.junit.Assert.assertThat;
 public class WorkloadTest {
     @Test
     public void fromConfig() throws Exception {
-
         Config load = ConfigFactory.load("application-dev.conf");
-
         Workload workload = Workload.fromConfig(load.getConfig("vampires.workload"));
         assertThat(workload.id(), not(isEmptyOrNullString()));
-
     }
 
     @Test
@@ -82,6 +79,4 @@ public class WorkloadTest {
         assertThat(updatedWorkload.sequenceStop(), is(12));
 
     }
-
-
 }

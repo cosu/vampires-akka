@@ -47,7 +47,7 @@ import static spark.Spark.get;
 import static spark.Spark.post;
 
 
-public class ConfigurationsController implements Controller {
+public class ConfigurationsController extends AbstractController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationsController.class);
 

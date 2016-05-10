@@ -45,6 +45,7 @@ public class ControllersModule extends AbstractModule{
         bind(ProvidersController.class).asEagerSingleton();
         bind(WorkloadsController.class).asEagerSingleton();
         bind(ConfigurationsController.class).asEagerSingleton();
+        bind(ExecutionController.class).asEagerSingleton();
     }
 
 

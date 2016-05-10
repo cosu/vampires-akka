@@ -47,7 +47,7 @@ import static spark.Spark.get;
 import static spark.Spark.post;
 
 
-public class WorkloadsController implements Controller {
+public class WorkloadsController extends AbstractController {
 
     private static final Logger LOG = LoggerFactory.getLogger(WorkloadsController.class);
 

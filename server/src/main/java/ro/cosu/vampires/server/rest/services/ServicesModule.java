@@ -39,9 +39,9 @@ public class ServicesModule extends AbstractModule{
 
     @Override
     protected void configure() {
-        bind(ProvidersService.class);
-        bind(ConfigurationsService.class);
-        bind(WorkloadsService.class);
+        bind(ProvidersService.class).asEagerSingleton();
+        bind(ConfigurationsService.class).asEagerSingleton();
+        bind(WorkloadsService.class).asEagerSingleton();
     }
 
     @Provides
