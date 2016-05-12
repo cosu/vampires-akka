@@ -32,9 +32,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
+import javax.ws.rs.ClientErrorException;
+
 import ro.cosu.vampires.server.rest.JsonTransformer;
 import ro.cosu.vampires.server.rest.services.ConfigurationsService;
 import ro.cosu.vampires.server.workload.Configuration;
+import ro.cosu.vampires.server.workload.ConfigurationPayload;
 import spark.Spark;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
@@ -43,6 +46,7 @@ import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static spark.Spark.delete;
+import static spark.Spark.exception;
 import static spark.Spark.get;
 import static spark.Spark.post;
 
@@ -67,22 +71,14 @@ public class ConfigurationsController extends AbstractController {
 
         post("/configurations", (request, response) ->{
             String body = request.body();
-            try {
-                JsonTransformer jsonTransformer = new JsonTransformer();
-                Configuration configuration = jsonTransformer.getGson().fromJson(body, Configuration.class);
-                if (configuration == null) {
-                    response.status(HTTP_BAD_REQUEST);
-                    return "";
-                } else {
-                    Configuration created = configurationsService.createConfiguration(configuration);
-                    response.status(HTTP_CREATED);
-                    return created;
-                }
-            } catch (JsonSyntaxException jse) {
-                LOG.error("Bad request", jse);
-                response.status(HTTP_BAD_REQUEST);
-                return "";
-            }
+
+            JsonTransformer jsonTransformer = new JsonTransformer();
+            ConfigurationPayload payload = Optional.of(jsonTransformer.getGson().fromJson(body, ConfigurationPayload.class))
+                    .orElseThrow(() -> new IllegalArgumentException("invalid request"));
+
+            Configuration created = configurationsService.createConfiguration(payload);
+            response.status(HTTP_CREATED);
+            return created;
 
         }, new JsonTransformer());
 
@@ -132,5 +128,18 @@ public class ConfigurationsController extends AbstractController {
                 return "";
             }
         }, new JsonTransformer());
+
+        exception(JsonSyntaxException.class, ((exception, request, response) -> {
+            LOG.error("Bad request", exception);
+            response.status(HTTP_BAD_REQUEST);
+        }));
+
+        exception(ClientErrorException.class, ((exception, request, response) -> {
+            ClientErrorException clientErrorException = (ClientErrorException) exception;
+            LOG.error("Bad request", clientErrorException);
+
+            response.body(JsonTransformer.get().getGson().toJson(exception));
+            response.status(clientErrorException.getResponse().getStatus());
+        }));
     }
 }

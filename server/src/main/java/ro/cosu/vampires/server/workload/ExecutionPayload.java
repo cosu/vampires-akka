@@ -16,7 +16,7 @@ public abstract class ExecutionPayload {
 
     public abstract String workload();
 
-    public abstract String type();
+    public abstract ExecutionMode type();
 
     @AutoValue.Builder
     public abstract static class Builder {
@@ -25,7 +25,7 @@ public abstract class ExecutionPayload {
 
         public abstract Builder workload(String workload);
 
-        public abstract Builder type(String type);
+        public abstract Builder type(ExecutionMode type);
 
         public abstract ExecutionPayload build();
 

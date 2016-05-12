@@ -26,30 +26,25 @@ package ro.cosu.vampires.server.rest.services;
 
 
 import com.google.common.collect.Maps;
-import com.google.inject.Inject;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
-import akka.actor.ActorSystem;
 import ro.cosu.vampires.server.workload.Configuration;
+import ro.cosu.vampires.server.workload.ConfigurationPayload;
 
 public class ConfigurationsService {
 
     private Map<String, Configuration> configurations = Maps.newConcurrentMap();
-
-    @Inject
-    private ActorSystem actorSystem;
 
 
     public Collection<Configuration> getConfigurations() {
         return configurations.values();
     }
 
-
-    public Configuration createConfiguration(Configuration configuration) {
-        Configuration created = configuration.create();
+    public Configuration createConfiguration(ConfigurationPayload payload) {
+        Configuration created = Configuration.fromPayload(payload);
         configurations.put(created.id(), created);
         return created;
     }

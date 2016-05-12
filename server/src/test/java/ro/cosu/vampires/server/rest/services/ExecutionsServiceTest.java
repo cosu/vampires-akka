@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import ro.cosu.vampires.server.actors.AbstractActorTest;
 import ro.cosu.vampires.server.workload.Configuration;
+import ro.cosu.vampires.server.workload.ConfigurationPayload;
 import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.ExecutionMode;
 import ro.cosu.vampires.server.workload.ExecutionPayload;
@@ -35,7 +36,6 @@ public class ExecutionsServiceTest extends AbstractActorTest {
     public static void setUpClass() {
         ServicesModule controllersModule = new ServicesModule(getActorSystem());
         injector = Guice.createInjector(controllersModule);
-
     }
 
     @AfterClass
@@ -65,7 +65,7 @@ public class ExecutionsServiceTest extends AbstractActorTest {
                 "}";
 
         return configurationsService
-                .createConfiguration(Configuration.fromConfig(ConfigFactory.parseString(startConfig)));
+                .createConfiguration(ConfigurationPayload.fromConfig(ConfigFactory.parseString(startConfig)));
 
     }
 
@@ -88,7 +88,7 @@ public class ExecutionsServiceTest extends AbstractActorTest {
         Workload workload = createWorkload();
 
         ExecutionPayload payload = ExecutionPayload.builder().configuration(configuration.id())
-                .type(ExecutionMode.FULL.name()).workload(workload.id()).build();
+                .type(ExecutionMode.FULL).workload(workload.id()).build();
         Optional<Execution> execution = executionsService.create(payload);
         assertThat(execution.isPresent(), is(true));
         assertThat(execution.get().status(), is("created"));

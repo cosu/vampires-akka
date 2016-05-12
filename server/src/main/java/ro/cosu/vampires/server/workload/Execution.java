@@ -10,7 +10,7 @@ import ro.cosu.vampires.server.util.gson.AutoGson;
 
 @AutoValue
 @AutoGson
-public abstract class Execution {
+public abstract class Execution implements Id {
 
     public static Builder builder() {
         return new AutoValue_Execution.Builder()
@@ -34,6 +34,7 @@ public abstract class Execution {
 
     public abstract LocalDateTime updatedAt();
 
+
     @AutoValue.Builder
     public abstract static class Builder {
 
@@ -50,7 +51,6 @@ public abstract class Execution {
         public abstract Builder createdAt(LocalDateTime createdAt);
 
         public abstract Builder updatedAt(LocalDateTime createdAt);
-
 
         public abstract Execution build();
 

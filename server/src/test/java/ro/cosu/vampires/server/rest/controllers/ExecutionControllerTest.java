@@ -57,7 +57,7 @@ public class ExecutionControllerTest extends AbstractControllerTest {
         ExecutionPayload executionPayload = ExecutionPayload.builder()
                 .workload(workload.id())
                 .configuration(configuration.id())
-                .type(ExecutionMode.FULL.name())
+                .type(ExecutionMode.FULL)
                 .build();
 
         Gson gson = new JsonTransformer().getGson();

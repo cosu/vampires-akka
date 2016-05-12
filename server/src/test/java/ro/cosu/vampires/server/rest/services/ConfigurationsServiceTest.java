@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import ro.cosu.vampires.server.actors.AbstractActorTest;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.workload.Configuration;
+import ro.cosu.vampires.server.workload.ConfigurationPayload;
 import ro.cosu.vampires.server.workload.ResourceDemand;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -59,10 +60,11 @@ public class ConfigurationsServiceTest extends AbstractActorTest {
     @Test
     public void createConfiguration() throws Exception {
 
-        Configuration configuration = Configuration.builder().description("foo")
-                .resources(ImmutableList.of(
+        ConfigurationPayload configuration = ConfigurationPayload.create("foo",
+                ImmutableList.of(
                         ResourceDemand.builder().count(1).provider(Resource.ProviderType.MOCK).type("bar").build()
-                )).build();
+                ));
+
 
         configurationsService.createConfiguration(configuration);
 

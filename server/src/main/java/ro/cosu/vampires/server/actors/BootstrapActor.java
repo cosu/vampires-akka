@@ -15,11 +15,10 @@ import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.rest.controllers.ControllersModule;
 import ro.cosu.vampires.server.rest.services.ConfigurationsService;
-import ro.cosu.vampires.server.rest.services.ExecutionsService;
 import ro.cosu.vampires.server.rest.services.WorkloadsService;
 import ro.cosu.vampires.server.settings.Settings;
 import ro.cosu.vampires.server.settings.SettingsImpl;
-import ro.cosu.vampires.server.workload.Configuration;
+import ro.cosu.vampires.server.workload.ConfigurationPayload;
 import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.ExecutionMode;
 import ro.cosu.vampires.server.workload.Workload;
@@ -72,13 +71,13 @@ public class BootstrapActor extends UntypedActor {
             workload = workloadsService.createWorkload(workload);
 
             // post to conf service
-            Configuration configuration = Configuration.fromConfig(settings.vampires);
+            ConfigurationPayload configuration = ConfigurationPayload.fromConfig(settings.vampires);
             ConfigurationsService configurationsService = injector.getInstance(ConfigurationsService.class);
-            configuration = configurationsService.createConfiguration(configuration);
-
-            ExecutionsService executionsService = injector.getInstance(ExecutionsService.class);
-            Execution execution = Execution.builder().type(mode).configuration(configuration).workload(workload).build();
-            executionsService.startExecution(execution);
+//            configuration = configurationsService.createConfiguration(configuration);
+//
+//            ExecutionsService executionsService = injector.getInstance(ExecutionsService.class);
+//            Execution execution = Execution.builder().type(mode).configuration(configuration).workload(workload).build();
+//            executionsService.startExecution(execution);
 
         }
     }

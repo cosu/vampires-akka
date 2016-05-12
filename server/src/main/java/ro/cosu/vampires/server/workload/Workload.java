@@ -26,7 +26,7 @@ import ro.cosu.vampires.server.util.gson.AutoGson;
 @AutoValue
 @AutoGson
 
-public abstract class Workload {
+public abstract class Workload implements Id {
 
     private static final Logger LOG = LoggerFactory.getLogger(Workload.class);
 
@@ -61,6 +61,13 @@ public abstract class Workload {
                 .sequenceStop(0);
     }
 
+
+    public static Workload fromPayload(WorkloadPayload payload) {
+        return new AutoValueUtil<WorkloadPayload, Workload.Builder>() {
+        }
+                .builderFromPayload(payload, builder()).build();
+    }
+
     public abstract String id();
 
     @Nullable
@@ -88,6 +95,11 @@ public abstract class Workload {
         return toBuilder()
                 .updatedAt(LocalDateTime.now());
     }
+
+    public Workload touch() {
+        return toBuilder().updatedAt(LocalDateTime.now()).build();
+    }
+
 
     public List<Job> getJobs() {
         final String finalUrl = url();

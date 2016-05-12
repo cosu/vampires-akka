@@ -1,7 +1,6 @@
 package ro.cosu.vampires.server.rest.services;
 
 
-import com.google.common.base.Enums;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
@@ -16,7 +15,6 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import ro.cosu.vampires.server.workload.Configuration;
 import ro.cosu.vampires.server.workload.Execution;
-import ro.cosu.vampires.server.workload.ExecutionMode;
 import ro.cosu.vampires.server.workload.ExecutionPayload;
 import ro.cosu.vampires.server.workload.Workload;
 
@@ -40,8 +38,8 @@ public class ExecutionsService {
         if (configurationOptional.isPresent() && workloadOptional.isPresent()) {
             Configuration configuration = configurationOptional.get();
             Workload workload = workloadOptional.get();
-            ExecutionMode mode = Enums.stringConverter(ExecutionMode.class).convert(executionPayload.type());
-            execution = Execution.builder().workload(workload).configuration(configuration).type(mode).build();
+
+            execution = Execution.builder().workload(workload).configuration(configuration).type(executionPayload.type()).build();
             startExecution(execution);
         }
 
@@ -51,14 +49,11 @@ public class ExecutionsService {
     public void startExecution(Execution execution) {
         executionMap.put(execution.id(), execution);
 
-        LOG.info("{}", executionMap);
-
         actorSystem.actorFor("/user/bootstrap").tell(execution, ActorRef.noSender());
     }
 
 
     public Collection<Execution> getExecutions() {
-        LOG.info("{}", executionMap);
         return executionMap.values();
     }
 

@@ -11,14 +11,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.util.gson.AutoGson;
 
 @AutoValue
 @AutoGson
-public abstract class Configuration {
+public abstract class Configuration implements Id {
 
     //[
 //        {
@@ -46,7 +44,10 @@ public abstract class Configuration {
 
 
     public static Builder builder() {
-        return new AutoValue_Configuration.Builder().id(UUID.randomUUID().toString())
+        return new AutoValue_Configuration.Builder()
+                .id(UUID.randomUUID().toString())
+                .description("")
+                .cost(0.)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now());
     }
@@ -74,20 +75,24 @@ public abstract class Configuration {
                 .build();
     }
 
+    public static Configuration fromPayload(ConfigurationPayload payload) {
+        return builder().description(payload.description())
+                .resources(payload.resources()).build();
+    }
+
     public Configuration touch() {
         return toBuilder().updatedAt(LocalDateTime.now()).build();
     }
 
     public abstract String id();
 
-    @Nullable
     public abstract LocalDateTime createdAt();
 
-    @Nullable
     public abstract LocalDateTime updatedAt();
 
-    @Nullable
     public abstract String description();
+
+    public abstract Double cost();
 
     public abstract ImmutableList<ResourceDemand> resources();
 
@@ -99,6 +104,7 @@ public abstract class Configuration {
 
     public Configuration create() {
         return toBuilder()
+                .cost(0.)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -125,6 +131,8 @@ public abstract class Configuration {
         public abstract Builder createdAt(LocalDateTime createdAt);
 
         public abstract Builder updatedAt(LocalDateTime createdAt);
+
+        public abstract Builder cost(Double cost);
 
         public abstract Configuration build();
     }
