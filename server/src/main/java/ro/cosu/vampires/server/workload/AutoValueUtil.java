@@ -20,18 +20,16 @@ public class AutoValueUtil<P, B> {
 
         Set<String> forbiddenMethods = Sets.newHashSet("equals", "toString", "hashCode", "$jacocoInit");
 
+        Method[] declaredMethods = typeTokenPayload.getRawType().getDeclaredMethods();
         Arrays.stream(typeTokenPayload.getRawType().getDeclaredMethods())
                 // we filter out the methods that seem to be builders
-                .filter(method -> method.getReturnType().getName().toLowerCase().contains("builder"))
+                .filter(method -> !method.getReturnType().getName().toLowerCase().contains("builder"))
                 // also filter any constructor helpers - they return the same type as the object
-                .filter(method -> method.getReturnType().equals(typeTokenPayload.getRawType()))
+                .filter(method -> !method.getReturnType().equals(typeTokenPayload.getRawType()))
 
                 .filter(method -> !forbiddenMethods.contains(method.getName()))
                 .forEach(payloadMethod -> {
                     try {
-
-                        System.out.println(payloadMethod.getName());
-                        System.out.println(payloadMethod.getReturnType());
                         Method builderMethod = typeTokenBuilder.getRawType()
                                 .getMethod(payloadMethod.getName(), payloadMethod.getReturnType());
 

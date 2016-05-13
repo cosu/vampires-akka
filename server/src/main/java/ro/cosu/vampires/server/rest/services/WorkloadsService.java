@@ -3,6 +3,9 @@ package ro.cosu.vampires.server.rest.services;
 import com.google.common.collect.Maps;
 import com.google.inject.TypeLiteral;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -13,6 +16,8 @@ import ro.cosu.vampires.server.workload.WorkloadPayload;
 
 
 public class WorkloadsService implements Service<Workload, WorkloadPayload> {
+    private static final Logger LOG = LoggerFactory.getLogger(WorkloadsService.class);
+
     private Map<String, Workload> workloads = Collections.synchronizedSortedMap(Maps.newTreeMap());
 
     public static TypeLiteral<Service<Workload, WorkloadPayload>> getTypeTokenService() {
@@ -27,6 +32,7 @@ public class WorkloadsService implements Service<Workload, WorkloadPayload> {
 
     @Override
     public Workload create(WorkloadPayload payload) {
+        LOG.debug("Creating workload {}", payload);
         Workload created = Workload.fromPayload(payload);
         workloads.put(created.id(), created);
         return created;

@@ -46,6 +46,8 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
 
     @Override
     public Execution create(ExecutionPayload executionPayload) {
+
+        LOG.debug("{} {}", configurationsService, wService);
         Configuration configuration = configurationsService.get(executionPayload.configuration()).orElseThrow(() ->
                 new IllegalArgumentException("could not find configuration with id " + executionPayload.configuration()));
 

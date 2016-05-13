@@ -3,6 +3,9 @@ package ro.cosu.vampires.server.rest.services;
 import com.google.common.collect.Maps;
 import com.google.inject.TypeLiteral;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -13,6 +16,8 @@ import ro.cosu.vampires.server.workload.ConfigurationPayload;
 
 
 public class ConfigurationsService implements Service<Configuration, ConfigurationPayload> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationsService.class);
 
     private Map<String, Configuration> configurations = Collections.synchronizedSortedMap(Maps.newTreeMap());
 
@@ -30,6 +35,7 @@ public class ConfigurationsService implements Service<Configuration, Configurati
     public Configuration create(ConfigurationPayload payload) {
         Configuration created = Configuration.fromPayload(payload);
         configurations.put(created.id(), created);
+        LOG.debug("Created from payload {} configuration with id {}", payload, created.id());
         return created;
     }
 

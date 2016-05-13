@@ -13,6 +13,8 @@ public abstract class WorkloadPayload {
 
     public static Builder builder() {
         return new AutoValue_WorkloadPayload.Builder()
+                .format("%s")
+                .url("")
                 .sequenceStart(0)
                 .sequenceStop(0);
 

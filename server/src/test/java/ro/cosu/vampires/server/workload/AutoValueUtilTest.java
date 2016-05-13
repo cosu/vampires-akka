@@ -3,6 +3,7 @@ package ro.cosu.vampires.server.workload;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
@@ -20,6 +21,11 @@ public class AutoValueUtilTest {
                 .builderFromPayload(foo, builder).build();
 
         assertThat(build.id(), not(isEmptyOrNullString()));
+        assertThat(build.format(), is(foo.format()));
+        assertThat(build.sequenceStart(), is(foo.sequenceStart()));
+        assertThat(build.sequenceStop(), is(foo.sequenceStop()));
+        assertThat(build.task(), is(foo.url()));
+
 
     }
 
