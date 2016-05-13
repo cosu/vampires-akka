@@ -2,7 +2,6 @@ package ro.cosu.vampires.server.actors;
 
 
 import com.google.common.collect.Maps;
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 import java.util.Map;
@@ -13,12 +12,8 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.resources.ResourceInfo;
-import ro.cosu.vampires.server.rest.controllers.ControllersModule;
-import ro.cosu.vampires.server.rest.services.ConfigurationsService;
-import ro.cosu.vampires.server.rest.services.WorkloadsService;
 import ro.cosu.vampires.server.settings.Settings;
 import ro.cosu.vampires.server.settings.SettingsImpl;
-import ro.cosu.vampires.server.workload.ConfigurationPayload;
 import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.ExecutionMode;
 import ro.cosu.vampires.server.workload.Workload;
@@ -33,7 +28,7 @@ public class BootstrapActor extends UntypedActor {
     private ActorRef resourceManagerActor;
     private Map<String, Execution> executionMap = Maps.newHashMap();
 
-    private ControllersModule controllersModule = new ControllersModule(getContext().system());
+    //    private ControllersModule controllersModule = new ControllersModule(getContext().system());
     private Injector injector;
 
 
@@ -56,7 +51,7 @@ public class BootstrapActor extends UntypedActor {
         Spark.port(settings.vampires.getInt("rest-port"));
         Spark.init();
         Spark.awaitInitialization();
-        injector = Guice.createInjector(controllersModule);
+//        injector = Guice.createInjector(controllersModule);
     }
 
     private void startFromConfig() {
@@ -67,12 +62,12 @@ public class BootstrapActor extends UntypedActor {
             log.info("starting from config");
             // post to config service
             Workload workload = Workload.fromConfig(settings.vampires.getConfig("workload"));
-            WorkloadsService workloadsService = injector.getInstance(WorkloadsService.class);
-            workload = workloadsService.createWorkload(workload);
+//            WorkloadsService workloadsService = injector.getInstance(WorkloadsService.class);
+//            workload = workloadsService.createWorkload(workload);
 
             // post to conf service
-            ConfigurationPayload configuration = ConfigurationPayload.fromConfig(settings.vampires);
-            ConfigurationsService configurationsService = injector.getInstance(ConfigurationsService.class);
+//            ConfigurationPayload configuration = ConfigurationPayload.fromConfig(settings.vampires);
+//            ConfigurationsService configurationsService = injector.getInstance(ConfigurationsService.class);
 //            configuration = configurationsService.createConfiguration(configuration);
 //
 //            ExecutionsService executionsService = injector.getInstance(ExecutionsService.class);

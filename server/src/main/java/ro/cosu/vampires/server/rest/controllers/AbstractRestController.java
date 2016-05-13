@@ -1,26 +1,48 @@
-package ro.cosu.vampires.server.rest.controllers.di;
+package ro.cosu.vampires.server.rest.controllers;
 
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 
+import java.nio.file.Paths;
+
 import ro.cosu.vampires.server.rest.JsonTransformer;
-import ro.cosu.vampires.server.rest.services.di.Service;
+import ro.cosu.vampires.server.rest.services.Service;
 import ro.cosu.vampires.server.workload.Id;
 import spark.Route;
+import spark.Spark;
 
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 
-public abstract class AbstractRestController<T extends Id, P> implements IController {
+public abstract class AbstractRestController<T extends Id, P> implements Controller {
     private final Class<T> valueType;
     private final Class<P> payloadType;
+    private final String path;
 
     @Inject
     private Service<T, P> service;
 
-    AbstractRestController(Class<T> valueType, Class<P> payloadType) {
+    AbstractRestController(Class<T> valueType, Class<P> payloadType, String path) {
         this.valueType = valueType;
         this.payloadType = payloadType;
+        this.path = Paths.get("/", path).toAbsolutePath().toString();
+        loadRoutes();
+    }
+
+    private void loadRoutes() {
+        String idPath = Paths.get(path, "/:id").toString();
+        Spark.get(path, list(), JsonTransformer.get());
+        Spark.get(idPath, get(), JsonTransformer.get());
+        Spark.delete(idPath, delete(), JsonTransformer.get());
+        Spark.post(path, create(), JsonTransformer.get());
+        Spark.post(idPath, update(), JsonTransformer.get());
+
+        Spark.exception(IllegalArgumentException.class, (exception, request, response) -> {
+            response.status(HTTP_BAD_REQUEST);
+            response.body(exception.getMessage());
+        });
+
     }
 
     public Route list() {

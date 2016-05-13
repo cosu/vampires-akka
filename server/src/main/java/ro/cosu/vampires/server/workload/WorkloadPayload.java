@@ -15,6 +15,7 @@ public abstract class WorkloadPayload {
         return new AutoValue_WorkloadPayload.Builder()
                 .sequenceStart(0)
                 .sequenceStop(0);
+
     }
 
     public static WorkloadPayload fromConfig(Config config) {

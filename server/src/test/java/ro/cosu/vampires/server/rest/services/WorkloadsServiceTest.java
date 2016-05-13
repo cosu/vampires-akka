@@ -1,119 +1,36 @@
-/*
- * The MIT License (MIT)
- * Copyright © 2016 Cosmin Dumitru, http://cosu.ro <cosu@cosu.ro>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the “Software”), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- */
-
 package ro.cosu.vampires.server.rest.services;
 
-
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import com.google.inject.AbstractModule;
+import com.google.inject.TypeLiteral;
 
 import com.typesafe.config.ConfigFactory;
 
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import ro.cosu.vampires.server.actors.AbstractActorTest;
 import ro.cosu.vampires.server.workload.Workload;
+import ro.cosu.vampires.server.workload.WorkloadPayload;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
+public class WorkloadsServiceTest extends AbstractServiceTest<Workload, WorkloadPayload> {
 
-public class WorkloadsServiceTest extends AbstractActorTest {
-
-
-    private static Injector injector;
-    private WorkloadsService workloadsService;
-
-    @BeforeClass
-    public static void setUpClass() {
-        ServicesModule controllersModule = new ServicesModule(getActorSystem());
-        injector = Guice.createInjector(controllersModule);
-    }
-    @AfterClass
-    public static void tearDown() {
-        injector = null;
+    @Override
+    protected AbstractModule getModule() {
+        AbstractModule module = new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(getTypeTokenService()).to(new TypeLiteral<WorkloadsService>() {
+                });
+            }
+        };
+        return module;
     }
 
-
-    @Before
-    public void setUp() {
-        workloadsService = injector.getInstance(WorkloadsService.class);
+    @Override
+    protected TypeLiteral<Service<Workload, WorkloadPayload>> getTypeTokenService() {
+        return new TypeLiteral<Service<Workload, WorkloadPayload>>() {
+        };
     }
 
-    @Test
-    public void getWorkloads() throws Exception {
-        createWorkload();
-        assertThat(workloadsService.getWorkloads().size(), not(0));
-    }
+    @Override
+    protected WorkloadPayload getPayload() {
 
-    @Test
-    public void deleteWorkload() throws Exception {
-        createWorkload();
-
-        Workload workload = workloadsService.getWorkloads().iterator().next();
-        String id = workload.id();
-
-        Optional<Workload> deleted = workloadsService.delete(id);
-        assertThat(deleted.isPresent(), is(true));
-
-        assertThat(workloadsService.getWorkloads().stream().map(Workload::id)
-                .collect(Collectors.toList()).contains(deleted.get().id()), is(false));
-    }
-
-    @Test
-    public void getWorkload() throws Exception {
-        createWorkload();
-        Workload workload1 = workloadsService.getWorkloads().iterator().next();
-        String id = workload1.id();
-        Optional<Workload> workload = workloadsService.getWorkload(id);
-        assertThat(workload.isPresent(), is(true));
-    }
-
-    @Test
-    public void getNonWorkload() throws Exception {
-        Optional<Workload> workload = workloadsService.getWorkload("unknown");
-        assertThat(workload.isPresent(), is(false));
-    }
-
-    @Test
-    public void updateWorkload() throws Exception {
-        createWorkload();
-        Workload original = workloadsService.getWorkloads().iterator().next();
-        Workload update = original.update().sequenceStart(50).build();
-        Optional<Workload> saved = workloadsService.updateWorkload(update);
-
-        assertThat(update.sequenceStart(), is(saved.get().sequenceStart()));
-    }
-
-    @Test
-    public void createWorkload() throws Exception {
         String workloadConfig = "{\n" +
                 "    format = %08d.tif\n" +
                 "    sequenceStart = 0\n" +
@@ -121,13 +38,7 @@ public class WorkloadsServiceTest extends AbstractActorTest {
                 "    task = \"echo\"\n" +
                 "    url = \"\"\n" +
                 "  }";
-        Workload workload = Workload.fromConfig(ConfigFactory.parseString(workloadConfig));
-        assertThat(workload.task(), is("echo"));
 
-        Workload workload1 = workloadsService.createWorkload(workload);
-        assertThat(workload1.task(), is("echo"));
-        assertThat(workload1.getJobs().size(), not(0));
+        return WorkloadPayload.fromConfig(ConfigFactory.parseString(workloadConfig));
     }
-
-
 }

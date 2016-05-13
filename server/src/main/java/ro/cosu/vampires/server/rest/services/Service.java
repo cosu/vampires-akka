@@ -1,4 +1,4 @@
-package ro.cosu.vampires.server.rest.services.di;
+package ro.cosu.vampires.server.rest.services;
 
 
 import java.util.Collection;

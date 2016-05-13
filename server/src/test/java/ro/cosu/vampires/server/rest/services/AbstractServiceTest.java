@@ -1,4 +1,4 @@
-package ro.cosu.vampires.server.rest.services.di;
+package ro.cosu.vampires.server.rest.services;
 
 
 import com.google.inject.AbstractModule;
@@ -18,7 +18,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 
-public abstract class AbstractDiTest<T extends Id, P> {
+public abstract class AbstractServiceTest<T extends Id, P> {
 
     private Service<T, P> instance;
 

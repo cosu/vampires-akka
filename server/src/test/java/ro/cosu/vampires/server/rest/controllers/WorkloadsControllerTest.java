@@ -1,95 +1,42 @@
 package ro.cosu.vampires.server.rest.controllers;
 
-import com.google.gson.Gson;
+import com.google.inject.AbstractModule;
+import com.google.inject.Module;
+import com.google.inject.TypeLiteral;
 
-import org.junit.Test;
-
-import ro.cosu.vampires.server.rest.JsonTransformer;
+import ro.cosu.vampires.server.rest.services.Service;
+import ro.cosu.vampires.server.rest.services.WorkloadsService;
 import ro.cosu.vampires.server.workload.Workload;
-
-import static org.hamcrest.Matchers.isEmptyOrNullString;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertThat;
+import ro.cosu.vampires.server.workload.WorkloadPayload;
 
 
-public class WorkloadsControllerTest extends AbstractControllerTest {
-
-    @Test
-    public void getWorkloads() throws Exception {
-        Response res = request("GET", "/workloads", "");
-        Gson gson = new JsonTransformer().getGson();
-        Workload[] workloads = gson.fromJson(res.body, Workload[].class);
-        assertThat(workloads.length, not(0));
+public class WorkloadsControllerTest extends AbstractControllerTest<Workload, WorkloadPayload> {
+    @Override
+    protected TypeLiteral<Service<Workload, WorkloadPayload>> getTypeTokenService() {
+        return new TypeLiteral<Service<Workload, WorkloadPayload>>() {
+        };
     }
 
-    @Test
-    public void createWorkload() throws Exception {
-        Gson gson = new JsonTransformer().getGson();
-        Workload workload = Workload.builder().sequenceStart(0).sequenceStop(10).task("foo").format("%d").build();
-        String toJson = gson.toJson(workload);
-
-        Response res = request("POST", "/workloads", toJson);
-
-        assertThat(res.status, is(201));
-        Workload fromJson = gson.fromJson(res.body, Workload.class);
-
-        assertThat(fromJson.id(), not(isEmptyOrNullString()));
+    @Override
+    protected Module getModule() {
+        return new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(getTypeTokenService()).to(WorkloadsService.class).asEagerSingleton();
+                bind(WorkloadsController.class).asEagerSingleton();
+            }
+        };
     }
 
-    @Test
-    public void updateWorkload() throws Exception {
-        createWorkload();
-        Gson gson = new JsonTransformer().getGson();
-        Response res = request("GET", "/workloads", "");
-        assertThat(res.status, is(200));
-        Workload[] workloads = gson.fromJson(res.body, Workload[].class);
-
-        res = request("GET", "/workloads/" + workloads[0].id(), "");
-
-        Workload fromJson = gson.fromJson(res.body, Workload.class);
-
-        res = request("POST", "/workloads/" + fromJson.id(),
-                gson.toJson(fromJson.update().sequenceStop(100).build()));
-
-        assertThat(res.status, is(201));
-        fromJson = gson.fromJson(res.body, Workload.class);
-
-        assertThat(fromJson.sequenceStop(), is(100));
+    @Override
+    protected WorkloadPayload getPayload() {
+        return WorkloadPayload.builder().sequenceStart(0)
+                .url("foo")
+                .sequenceStop(10).task("foo").format("%d").build();
     }
 
-
-    @Test
-    public void getWorkload() throws Exception {
-        Response res = request("GET", "/workloads", "");
-        Gson gson = new JsonTransformer().getGson();
-        assertThat(res.status, is(200));
-        Workload[] workloads = gson.fromJson(res.body, Workload[].class);
-        assertThat(workloads.length, not(0));
-
-        res = request("GET", "/workloads/" + workloads[0].id(), "");
-        assertThat(res.status, is(200));
-        Workload workload = gson.fromJson(res.body, Workload.class);
-        assertThat(workload.id(), is(workloads[0].id()));
+    @Override
+    protected String getPath() {
+        return "/workloads";
     }
-
-    @Test
-    public void deleteWorkload() throws Exception {
-        Response res = request("GET", "/workloads", "");
-        Gson gson = new JsonTransformer().getGson();
-        assertThat(res.status, is(200));
-        Workload[] workloads = gson.fromJson(res.body, Workload[].class);
-        assertThat(workloads.length, not(0));
-
-        res = request("DELETE", "/workloads/" + workloads[0].id(), "");
-        assertThat(res.status, is(204));
-        assertThat(res.body, isEmptyOrNullString());
-    }
-
-    @Test
-    public void getWorkload404() throws Exception {
-        Response res = request("GET", "/workloads/foo", "");
-        assertThat(res.status, is(404));
-    }
-
 }

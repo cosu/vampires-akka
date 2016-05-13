@@ -1,116 +1,64 @@
 package ro.cosu.vampires.server.rest.services;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import com.google.inject.AbstractModule;
+import com.google.inject.TypeLiteral;
 
 import com.typesafe.config.ConfigFactory;
 
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.Collection;
-import java.util.Optional;
-
-import ro.cosu.vampires.server.actors.AbstractActorTest;
-import ro.cosu.vampires.server.workload.Configuration;
-import ro.cosu.vampires.server.workload.ConfigurationPayload;
+import akka.actor.ActorSystem;
+import akka.testkit.JavaTestKit;
 import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.ExecutionMode;
 import ro.cosu.vampires.server.workload.ExecutionPayload;
-import ro.cosu.vampires.server.workload.Workload;
-
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertThat;
 
 
-public class ExecutionsServiceTest extends AbstractActorTest {
-    private static Injector injector;
-    private ExecutionsService executionsService;
-    private WorkloadsService workloadsService;
-    private ConfigurationsService configurationsService;
+public class ExecutionsServiceTest extends AbstractServiceTest<Execution, ExecutionPayload> {
+
+    private static ActorSystem system;
+
+    public static ActorSystem getActorSystem() {
+        return system;
+    }
 
     @BeforeClass
-    public static void setUpClass() {
-        ServicesModule controllersModule = new ServicesModule(getActorSystem());
-        injector = Guice.createInjector(controllersModule);
+    public static void setup() {
+        system = ActorSystem.create("test", ConfigFactory.load("application-dev.conf"));
     }
 
     @AfterClass
-    public static void tearDown() {
-        injector = null;
+    public static void teardown() {
+        JavaTestKit.shutdownActorSystem(system);
+        system = null;
     }
 
-
-    @Before
-    public void setUp() {
-        executionsService = injector.getInstance(ExecutionsService.class);
-        workloadsService = injector.getInstance(WorkloadsService.class);
-        configurationsService = injector.getInstance(ConfigurationsService.class);
-
+    @Override
+    protected AbstractModule getModule() {
+        return new ServicesTestModule(system);
     }
 
-    private Configuration createConfiguration() {
-        String startConfig = "{" +
-                "description = foo\n" +
-                "start  = [\n" +
-                "    {\n" +
-                "      provider = local\n" +
-                "      type = local\n" +
-                "      count = 1\n" +
-                "    }\n" +
-                "  ]" +
-                "}";
-
-        return configurationsService
-                .createConfiguration(ConfigurationPayload.fromConfig(ConfigFactory.parseString(startConfig)));
-
+    @Override
+    protected TypeLiteral<Service<Execution, ExecutionPayload>> getTypeTokenService() {
+        return ExecutionsService.getTypeTokenService();
     }
 
-    private Workload createWorkload() {
-        String workloadConfig = "{\n" +
-                "    format = %08d.tif\n" +
-                "    sequenceStart = 0\n" +
-                "    sequenceStop = 10\n" +
-                "    task = \"echo\"\n" +
-                "    url = \"\"\n" +
-                "  }";
-
-        return workloadsService.createWorkload(Workload.fromConfig(ConfigFactory.parseString(workloadConfig)));
+    @Override
+    protected ExecutionPayload getPayload() {
+        return ExecutionPayload.builder().configuration("foo").workload("bar").type(ExecutionMode.FULL).build();
     }
 
-
-    @Test
-    public void create() throws Exception {
-        Configuration configuration = createConfiguration();
-        Workload workload = createWorkload();
-
-        ExecutionPayload payload = ExecutionPayload.builder().configuration(configuration.id())
-                .type(ExecutionMode.FULL).workload(workload.id()).build();
-        Optional<Execution> execution = executionsService.create(payload);
-        assertThat(execution.isPresent(), is(true));
-        assertThat(execution.get().status(), is("created"));
+    @Override
+    @Test(expected = IllegalArgumentException.class)
+    public void delete() throws Exception {
+        super.delete();
     }
 
-    @Test
-    public void getExecutions() throws Exception {
-        create();
-        assertThat(executionsService.getExecutions().size(), not(0));
+    @Override
+    @Test(expected = IllegalArgumentException.class)
+    public void update() throws Exception {
+        super.update();
     }
-
-    @Test
-    public void getExecution() throws Exception {
-        create();
-        Collection<Execution> executions = executionsService.getExecutions();
-        Execution execution = executions.iterator().next();
-
-        Optional<Execution> executionOptional = executionsService.getExecution(execution.id());
-
-        assertThat(executionOptional.isPresent(), is(true));
-
-        assertThat(executionOptional.get().id(), is(execution.id()));
-    }
-
 }
