@@ -24,12 +24,17 @@
 
 package ro.cosu.vampires.server.actors;
 
+import com.google.common.collect.ImmutableList;
+
 import org.junit.Test;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;
+import akka.actor.Terminated;
 import akka.testkit.JavaTestKit;
 import ro.cosu.vampires.server.workload.Computation;
+import ro.cosu.vampires.server.workload.Configuration;
+import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.ExecutionMode;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.workload.Metrics;
@@ -37,30 +42,49 @@ import ro.cosu.vampires.server.workload.Result;
 import ro.cosu.vampires.server.workload.Workload;
 
 public class WorkActorTest extends AbstractActorTest {
+    private Execution getExecution() {
+        Configuration configuration = Configuration.builder().resources(ImmutableList.of()).description("foo").build();
+        Workload workload = Workload.builder().format("foo").sequenceStart(0).sequenceStop(1).task("bar").build();
+
+        return Execution.builder().configuration(configuration).
+                type(ExecutionMode.FULL).workload(workload).build();
+    }
+
     @Test
     public void testWork() {
+
         new JavaTestKit(system) {
             {
                 // create a test probe
                 final JavaTestKit workProbe = new JavaTestKit(system);
 
-                Workload workload = Workload.builder().sequenceStart(1).sequenceStop(2)
-                        .url("")
-                        .format("")
-                        .task("1").build();
                 // create a work actor
-                final Props props = WorkActor.props(workload, ExecutionMode.FULL);
-                final ActorRef forwarder = system.actorOf(props, "workactor");
-
+                final Props props = WorkActor.props(getExecution());
+                final ActorRef workActor = system.actorOf(props, "workactor");
+                workProbe.watch(workActor);
                 Job job = Job.builder()
                         .computation(Computation.builder().command("1").build())
                         .hostMetrics(Metrics.empty())
                         .result(Result.empty())
                         .build();
 
-                forwarder.tell(job, workProbe.getRef());
+                workActor.tell(job, workProbe.getRef());
 
-                workProbe.expectMsgClass(Job.class);
+                Job receivedJob = workProbe.expectMsgClass(Job.class);
+
+                workActor.tell(receivedJob.withResult(Result.empty()).withHostMetrics(Metrics.empty()), workProbe.getRef());
+
+                receivedJob = workProbe.expectMsgClass(Job.class);
+
+                workActor.tell(receivedJob.withResult(Result.empty()).withHostMetrics(Metrics.empty()), workProbe.getRef());
+
+                receivedJob = workProbe.expectMsgClass(Job.class);
+
+                workActor.tell(receivedJob.withResult(Result.empty()).withHostMetrics(Metrics.empty()), workProbe.getRef());
+
+                System.out.println(receivedJob);
+                workProbe.expectMsgClass(Terminated.class);
+
 
             }
         };

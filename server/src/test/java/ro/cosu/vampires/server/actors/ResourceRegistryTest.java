@@ -30,6 +30,7 @@ import java.util.HashMap;
 
 import akka.actor.ActorRef;
 import akka.testkit.TestProbe;
+import ro.cosu.vampires.server.actors.resource.ResourceRegistry;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceDescription;
 import ro.cosu.vampires.server.resources.ResourceInfo;

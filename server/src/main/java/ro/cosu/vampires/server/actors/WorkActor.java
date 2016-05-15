@@ -26,17 +26,16 @@ package ro.cosu.vampires.server.actors;
 
 import java.util.List;
 
-import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import ro.cosu.vampires.server.settings.Settings;
-import ro.cosu.vampires.server.settings.SettingsImpl;
+import ro.cosu.vampires.server.actors.settings.Settings;
+import ro.cosu.vampires.server.actors.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.Computation;
+import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.ExecutionMode;
 import ro.cosu.vampires.server.workload.Job;
-import ro.cosu.vampires.server.workload.Workload;
 import ro.cosu.vampires.server.workload.schedulers.SamplingScheduler;
 import ro.cosu.vampires.server.workload.schedulers.Scheduler;
 import ro.cosu.vampires.server.workload.schedulers.SimpleScheduler;
@@ -46,28 +45,26 @@ public class WorkActor extends UntypedActor {
     private final SettingsImpl settings = Settings.SettingsProvider.get(getContext().system());
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
-    private ActorRef resultActor;
     private Scheduler scheduler;
 
     // maybe we could inject a precooked scheduler here
-    WorkActor(Workload workload, ExecutionMode mode) {
-        List<Job> jobs = workload.getJobs();
-        if (mode.equals(ExecutionMode.SAMPLE)) {
+    WorkActor(Execution execution) {
+        scheduler = getScheduler(execution);
+    }
+
+    public static Props props(Execution execution) {
+        return Props.create(WorkActor.class, execution);
+    }
+
+    private Scheduler getScheduler(Execution execution) {
+        List<Job> jobs = execution.workload().getJobs();
+        if (execution.type().equals(ExecutionMode.SAMPLE)) {
             log.info("running in sampling mode : sampling from {} jobs", jobs.size());
-            scheduler = new SamplingScheduler(jobs, settings.getJobDeadline(), settings.getBackoffInterval(), settings.getNumberOfJobsToSample());
+            return new SamplingScheduler(jobs, settings.getJobDeadline(),
+                    settings.getBackoffInterval(), settings.getNumberOfJobsToSample());
         } else
-            scheduler = new SimpleScheduler(jobs, settings.getJobDeadline(), settings.getBackoffInterval());
+            return new SimpleScheduler(jobs, settings.getJobDeadline(), settings.getBackoffInterval());
     }
-
-    public static Props props(Workload workload, ExecutionMode mode) {
-        return Props.create(WorkActor.class, workload, mode);
-    }
-
-    @Override
-    public void preStart() {
-        resultActor = getContext().actorOf(ResultActor.props(scheduler.getJobCount()), "resultActor");
-    }
-
 
     @Override
     public void onReceive(Object message) throws Exception {
@@ -83,19 +80,14 @@ public class WorkActor extends UntypedActor {
         if (!receivedJob.computation().id().equals(Computation.BACKOFF)
                 && !receivedJob.computation().id().equals(Computation.EMPTY)) {
             scheduler.markDone(receivedJob);
-            resultActor.forward(receivedJob, getContext());
         }
 
         Job work = scheduler.getJob(receivedJob.from());
         getSender().tell(work, getSelf());
 
         if (scheduler.isDone()) {
-            stop();
+            log.debug("work actor exiting");
+            getContext().stop(getSelf());
         }
-    }
-
-    private void stop() {
-        resultActor.tell(new ResourceControl.Shutdown(), getSelf());
-        getContext().stop(getSelf());
     }
 }

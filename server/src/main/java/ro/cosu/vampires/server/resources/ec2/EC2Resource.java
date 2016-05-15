@@ -115,7 +115,7 @@ public class EC2Resource extends AbstractResource {
             Thread.sleep(TRY_INTERVAL_MILLI);
         }
         if (Strings.isNullOrEmpty(publicDnsName)) {
-            LOG.warn("unable to get publicDNSName for instance {}", describeRequest.getInstanceIds());
+            LOG.warn("unable to create publicDNSName for instance {}", describeRequest.getInstanceIds());
         }
         return publicDnsName;
     }

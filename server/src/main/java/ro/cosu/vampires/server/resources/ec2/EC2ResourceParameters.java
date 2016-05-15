@@ -35,7 +35,8 @@ import ro.cosu.vampires.server.resources.Resource;
 public abstract class EC2ResourceParameters implements Resource.Parameters {
 
     public static Builder builder() {
-        return new AutoValue_EC2ResourceParameters.Builder().providerType(Resource.ProviderType.EC2);
+        return new AutoValue_EC2ResourceParameters.Builder().providerType(Resource.ProviderType.EC2)
+                .serverId("");
     }
 
     public abstract String command();
@@ -52,6 +53,14 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
 
     public abstract Resource.ProviderType providerType();
 
+    public abstract String serverId();
+
+    public abstract Builder toBuilder();
+
+    public EC2ResourceParameters withServerId(String serverId) {
+        return toBuilder().serverId(serverId).build();
+    }
+
     @AutoValue.Builder
     public abstract static class Builder implements Resource.Parameters.Builder {
 
@@ -66,6 +75,8 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
         public abstract Builder region(String s);
 
         public abstract Builder securityGroup(String s);
+
+        public abstract Builder serverId(String s);
 
         public abstract Builder providerType(Resource.ProviderType providerType);
 

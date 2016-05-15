@@ -45,6 +45,8 @@ import akka.testkit.TestProbe;
 import ro.cosu.vampires.server.actors.messages.BootstrapResource;
 import ro.cosu.vampires.server.actors.messages.CreateResource;
 import ro.cosu.vampires.server.actors.messages.QueryResource;
+import ro.cosu.vampires.server.actors.resource.ResourceControl;
+import ro.cosu.vampires.server.actors.resource.ResourceManagerActor;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.resources.ResourceManager;
@@ -99,9 +101,9 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         resourceManagerActor.tell(createResourceWhichFails, testProbe.ref());
 
-        testProbe.expectMsgClass(Duration.create(1, TimeUnit.SECONDS), ResourceInfo.class);
+        testProbe.expectMsgClass(Duration.create(2, TimeUnit.SECONDS), ResourceInfo.class);
 
-        final ResourceInfo resourceInfo = (ResourceInfo) testProbe.lastMessage().msg();
+        ResourceInfo resourceInfo = (ResourceInfo) testProbe.lastMessage().msg();
 
         assertThat(resourceInfo.status(), is(Resource.Status.FAILED));
 
@@ -116,8 +118,6 @@ public class ResourceManagerActorTest extends AbstractActorTest {
                 ResourceManagerActor.props());
 
         resourceManagerActor.tell(createResourceWhichFails, testProbe.ref());
-
-        assertThat(resourceManagerActor.underlyingActor().resourceRegistry.getResourceActors().size(), is(1));
 
         testProbe.expectMsgClass(Duration.create(1, TimeUnit.SECONDS), ResourceInfo.class);
 
@@ -179,7 +179,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         TestActorRef<ResourceManagerActor> resourceManagerActor = TestActorRef.create(system,
                 ResourceManagerActor.props());
-        BootstrapResource bs = BootstrapResource.create(RESOURCE_PROVIDER_TYPE, "foo");
+        BootstrapResource bs = BootstrapResource.create(RESOURCE_PROVIDER_TYPE, "foo", "foo");
         resourceManagerActor.tell(bs, testProbe.ref());
         ResourceInfo ri = (ResourceInfo) testProbe.receiveOne(Duration.create("50 milliseconds"));
         assertThat(ri.status(), equalTo(Resource.Status.RUNNING));

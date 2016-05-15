@@ -24,21 +24,24 @@
 
 package ro.cosu.vampires.client.executors.docker;
 
-import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.model.Info;
-import com.github.dockerjava.core.DockerClientBuilder;
-import com.github.dockerjava.core.DockerClientConfig;
 import com.google.common.base.Preconditions;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
+
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.model.Info;
+import com.github.dockerjava.core.DockerClientBuilder;
+import com.github.dockerjava.core.DockerClientConfig;
 import com.typesafe.config.Config;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.client.executors.Executor;
-import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
 
 import javax.ws.rs.ProcessingException;
+
+import ro.cosu.vampires.client.executors.Executor;
+import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
 
 public class DockerModule extends AbstractModule {
     private static final Logger LOG = LoggerFactory.getLogger(DockerModule.class);
@@ -57,7 +60,7 @@ public class DockerModule extends AbstractModule {
             final Info exec = dockerClient.infoCmd().exec();
             cpuCount = exec.getNCPU();
         } catch (ProcessingException e) {
-            LOG.error("failed to get docker cpu count : {}", e.getMessage());
+            LOG.error("failed to create docker cpu count : {}", e.getMessage());
         }
         return cpuCount;
     }
@@ -67,7 +70,7 @@ public class DockerModule extends AbstractModule {
         Preconditions.checkArgument(config.hasPath("docker.uri"), "missing docker uri on config");
         String uri = config.getString("docker.uri");
 
-//        DockerCmdExecFactoryImpl dockerCmdExecFactory = new DockerCmdExecFactoryImpl()
+//        DockerCmdExecFactoryImpl dockerCmdExecFactory = ng DockerCmdExecFactoryImpl()
 //                .withReadTimeout(10000)
 //                .withConnectTimeout(2000)
 //                .withMaxTotalConnections(100)

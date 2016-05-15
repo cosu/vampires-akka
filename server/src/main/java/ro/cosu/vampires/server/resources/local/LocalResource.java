@@ -25,10 +25,14 @@
 package ro.cosu.vampires.server.resources.local;
 
 import com.google.common.base.Joiner;
-import org.apache.commons.exec.*;
+
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.Executor;
+import org.apache.commons.exec.LogOutputStream;
+import org.apache.commons.exec.PumpStreamHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.server.resources.AbstractResource;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -36,6 +40,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
+import ro.cosu.vampires.server.resources.AbstractResource;
 
 
 public class LocalResource extends AbstractResource {
@@ -56,7 +62,7 @@ public class LocalResource extends AbstractResource {
         // TODO check somehow that the file exists and then exit
         CommandLine cmd = new CommandLine("/bin/sh");
         cmd.addArgument("-c");
-        cmd.addArgument("nohup " + parameters.command() + " " + description().id() + " 2>&1 0</dev/null & echo $! ", false);
+        cmd.addArgument("nohup " + parameters.command() + " " + parameters.serverId() + " " + description().id() + " 2>&1 0</dev/null & echo $! ", false);
 
         LOG.debug("local starting {}", cmd);
         execute(cmd);
@@ -96,7 +102,7 @@ public class LocalResource extends AbstractResource {
                 throw new NumberFormatException();
             }
         } catch (NumberFormatException | NoSuchElementException ex) {
-            LOG.warn("Failed to get pid value. nohup process exited prematurely");
+            LOG.warn("Failed to create pid value. nohup process exited prematurely");
         }
     }
 

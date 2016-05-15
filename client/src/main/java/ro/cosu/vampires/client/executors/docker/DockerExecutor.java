@@ -24,6 +24,10 @@
 
 package ro.cosu.vampires.client.executors.docker;
 
+import com.google.common.base.Joiner;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
+
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.DockerException;
 import com.github.dockerjava.api.command.CreateContainerCmd;
@@ -31,12 +35,20 @@ import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.model.Frame;
 import com.github.dockerjava.api.model.Info;
 import com.github.dockerjava.core.command.LogContainerResultCallback;
-import com.google.common.base.Joiner;
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import com.typesafe.config.Config;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Optional;
+
+import javax.ws.rs.ProcessingException;
+
 import ro.cosu.vampires.client.allocation.CpuAllocator;
 import ro.cosu.vampires.client.allocation.CpuSet;
 import ro.cosu.vampires.client.executors.Executor;
@@ -44,14 +56,6 @@ import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Result;
 import ro.cosu.vampires.server.workload.Trace;
-
-import javax.ws.rs.ProcessingException;
-import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Optional;
 
 public class DockerExecutor implements Executor {
 
@@ -114,7 +118,7 @@ public class DockerExecutor implements Executor {
             output = getOutput();
         } catch (InterruptedException e) {
             exitCode = -1;
-            LOG.error("docker get log error {}", e);
+            LOG.error("docker create log error {}", e);
         }
 
         dockerClient.waitContainerCmd(containerId).exec();

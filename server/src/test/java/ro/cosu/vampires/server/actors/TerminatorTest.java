@@ -24,9 +24,11 @@
 
 package ro.cosu.vampires.server.actors;
 
+import org.junit.Test;
+
 import akka.testkit.TestActorRef;
 import akka.testkit.TestProbe;
-import org.junit.Test;
+import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 

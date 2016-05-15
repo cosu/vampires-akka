@@ -20,6 +20,9 @@ public class WorkloadsService implements Service<Workload, WorkloadPayload> {
 
     private Map<String, Workload> workloads = Collections.synchronizedSortedMap(Maps.newTreeMap());
 
+    WorkloadsService() {
+        LOG.debug("init");
+    }
     public static TypeLiteral<Service<Workload, WorkloadPayload>> getTypeTokenService() {
         return new TypeLiteral<Service<Workload, WorkloadPayload>>() {
         };
@@ -32,9 +35,10 @@ public class WorkloadsService implements Service<Workload, WorkloadPayload> {
 
     @Override
     public Workload create(WorkloadPayload payload) {
-        LOG.debug("Creating workload {}", payload);
+
         Workload created = Workload.fromPayload(payload);
         workloads.put(created.id(), created);
+        LOG.debug("Created  {} : {}", created.id(), created);
         return created;
     }
 

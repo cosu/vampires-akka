@@ -24,43 +24,51 @@
 
 package ro.cosu.vampires.server.actors;
 
-import akka.actor.Props;
-import akka.actor.UntypedActor;
-import akka.event.Logging;
-import akka.event.LoggingAdapter;
-import ro.cosu.vampires.server.settings.Settings;
-import ro.cosu.vampires.server.settings.SettingsImpl;
-import ro.cosu.vampires.server.workload.ClientInfo;
-import ro.cosu.vampires.server.workload.Job;
-import ro.cosu.vampires.server.writers.ResultsWriter;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
+import akka.actor.ActorRef;
+import akka.actor.Cancellable;
+import akka.actor.Props;
+import akka.actor.UntypedActor;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
+import ro.cosu.vampires.server.actors.resource.ResourceControl;
+import ro.cosu.vampires.server.actors.settings.Settings;
+import ro.cosu.vampires.server.actors.settings.SettingsImpl;
+import ro.cosu.vampires.server.workload.ClientInfo;
+import ro.cosu.vampires.server.workload.Computation;
+import ro.cosu.vampires.server.workload.Execution;
+import ro.cosu.vampires.server.workload.Job;
+import ro.cosu.vampires.server.writers.ResultsWriter;
+
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 
 public class ResultActor extends UntypedActor {
-    private final long numberOfResults;
     private final SettingsImpl settings =
             Settings.SettingsProvider.get(getContext().system());
     private final LocalDateTime startTime = LocalDateTime.now();
+    private final Execution execution;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private List<Job> results = new LinkedList<>();
     private List<ResultsWriter> writers;
 
-    ResultActor(long numberOfResults) {
-        this.numberOfResults = numberOfResults;
+    private ActorRef workActor;
+    private Cancellable logSchedule;
+
+    ResultActor(Execution execution) {
         writers = settings.getWriters();
+        this.execution = execution;
     }
 
-    public static Props props(long numberOfResults) {
-        return Props.create(ResultActor.class, numberOfResults);
+    public static Props props(Execution execution) {
+        return Props.create(ResultActor.class, execution);
     }
 
-    public static String formatDuration(Duration duration) {
+    private static String formatDuration(Duration duration) {
         long seconds = duration.getSeconds();
         long absSeconds = Math.abs(seconds);
         String positive = String.format(
@@ -73,23 +81,27 @@ public class ResultActor extends UntypedActor {
 
     @Override
     public void preStart() {
-        getContext().actorSelection("/user/terminator").tell(new ResourceControl.Up(), getSelf());
+        workActor = getContext().actorOf(WorkActor.props(execution), "workActor");
 
-        getContext().system().scheduler().schedule(scala.concurrent.duration.Duration.Zero(),
+        logSchedule = getContext().system().scheduler().schedule(scala.concurrent.duration.Duration.Zero(),
                 scala.concurrent.duration.Duration.create(30, SECONDS), () -> {
-                    log.info("results so far: {}/{}", results.size(), numberOfResults);
+                    log.info("results so far: {}/{}", results.size(), execution.workload().getJobs().size());
                 }, getContext().system().dispatcher());
+    }
+
+    @Override
+    public void postStop() {
+        logSchedule.cancel();
     }
 
     @Override
     public void onReceive(Object message) throws Exception {
         if (message instanceof Job) {
             Job job = (Job) message;
-            results.add(job);
-            writers.forEach(r -> r.addResult(job));
+            handleJob(job);
         } else if (message instanceof ClientInfo) {
             ClientInfo clientInfo = (ClientInfo) message;
-            writers.forEach(r -> r.addClient(clientInfo));
+            handleClientInfo(clientInfo);
         } else if (message instanceof ResourceControl.Shutdown) {
             shutdown();
         } else {
@@ -97,13 +109,32 @@ public class ResultActor extends UntypedActor {
         }
     }
 
+    private void handleJob(Job job) {
+        workActor.forward(job, getContext());
+        if (!job.computation().id().equals(Computation.BACKOFF)
+                && !job.computation().id().equals(Computation.EMPTY)) {
+            results.add(job);
+            writers.forEach(r -> r.addResult(job));
+        }
+
+        if (results.size() == execution.workload().getJobs().size()) {
+            log.debug("result actor exiting");
+            getContext().stop(getSelf());
+        }
+    }
+
+    private void handleClientInfo(ClientInfo clientInfo) {
+        ActorRef configActor = getContext().actorOf(ConfigActor.props());
+        log.debug("got client info {}", clientInfo);
+        configActor.forward(clientInfo, getContext());
+        writers.forEach(r -> r.addClient(clientInfo));
+    }
+
     private void shutdown() {
         log.info("Total Duration: {}", formatDuration(Duration.between(startTime, LocalDateTime.now())));
         log.info("shutting down");
         writers.forEach(ResultsWriter::close);
         // init shutdown
-
-        getContext().actorSelection("/user/terminator").tell(new ResourceControl.Shutdown(), getSelf());
         getContext().stop(getSelf());
     }
 }

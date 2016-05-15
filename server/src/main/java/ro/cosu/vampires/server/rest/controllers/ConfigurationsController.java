@@ -1,12 +1,23 @@
 package ro.cosu.vampires.server.rest.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ro.cosu.vampires.server.workload.Configuration;
 import ro.cosu.vampires.server.workload.ConfigurationPayload;
 
 
 public class ConfigurationsController extends AbstractRestController<Configuration, ConfigurationPayload> {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationsController.class);
+
+
     ConfigurationsController() {
         super(Configuration.class, ConfigurationPayload.class, "/configurations");
+    }
+
+    @Override
+    protected Logger getLogger() {
+        return LOG;
     }
 }

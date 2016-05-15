@@ -36,12 +36,22 @@ public abstract class MockResourceParameters implements Resource.Parameters {
 
 
     public static Builder builder() {
-        return new AutoValue_MockResourceParameters.Builder().providerType(Resource.ProviderType.MOCK);
+        return new AutoValue_MockResourceParameters.Builder().providerType(Resource.ProviderType.MOCK)
+                .serverId("");
     }
 
     public abstract String command();
 
     public abstract Resource.ProviderType providerType();
+
+    public abstract String serverId();
+
+    public abstract Builder toBuilder();
+
+    public MockResourceParameters withServerId(String serverId) {
+        return toBuilder().serverId("").build();
+    }
+
 
     @AutoValue.Builder
     public abstract static class Builder implements Resource.Parameters.Builder {
@@ -54,6 +64,9 @@ public abstract class MockResourceParameters implements Resource.Parameters {
         public abstract Builder providerType(Resource.ProviderType providerType);
 
         public abstract Builder command(String command);
+
+        public abstract Builder serverId(String command);
+
 
         public abstract MockResourceParameters build();
 

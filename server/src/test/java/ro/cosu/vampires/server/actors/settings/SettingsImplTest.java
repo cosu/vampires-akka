@@ -22,7 +22,7 @@
  *
  */
 
-package ro.cosu.vampires.server.settings;
+package ro.cosu.vampires.server.actors.settings;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -37,18 +37,19 @@ import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
 public class SettingsImplTest {
+    private String CONF_FILE = "application-dev.conf";
+    private Config devConfig = ConfigFactory.load(CONF_FILE);
     @Test
     public void testSettings() throws Exception {
-        SettingsImpl settings = new SettingsImpl(ConfigFactory.load());
+        SettingsImpl settings = new SettingsImpl(ConfigFactory.load(CONF_FILE));
         assertThat(settings.getWorkload().size(), not(0));
-        assertThat(settings.getWriters().size(), not(0));
 
     }
 
     @Test
     public void testGetMongoWriter() throws Exception {
 
-        Config config = ConfigFactory.parseString("vampires.enabled-writers = [\"mongo\"]").withFallback(ConfigFactory.load());
+        Config config = ConfigFactory.parseString("vampires.enabled-writers = [\"mongo\"]").withFallback(devConfig);
 
         SettingsImpl settings = new SettingsImpl(config);
 
@@ -61,7 +62,7 @@ public class SettingsImplTest {
     @Test
     public void testGetCpuSetSize() throws Exception {
 
-        Config config = ConfigFactory.parseString("vampires.cpuSetSize=4").withFallback(ConfigFactory.load());
+        Config config = ConfigFactory.parseString("vampires.cpuSetSize=4").withFallback(devConfig);
 
         SettingsImpl settings = new SettingsImpl(config);
         assertThat(settings.getCpuSetSize(), is(4));
@@ -69,7 +70,7 @@ public class SettingsImplTest {
 
     @Test
     public void testNoCpuSetSize() {
-        Config config = ConfigFactory.parseString("vampires.cpuSetSize = null").withFallback(ConfigFactory.load());
+        Config config = ConfigFactory.parseString("vampires.cpuSetSize = null").withFallback(devConfig);
         SettingsImpl settings = new SettingsImpl(config);
 
         assertThat(settings.getCpuSetSize(), is(1));
@@ -77,7 +78,7 @@ public class SettingsImplTest {
 
     @Test
     public void testNoExecutors() {
-        Config config = ConfigFactory.parseString("vampires.executors = null").withFallback(ConfigFactory.load());
+        Config config = ConfigFactory.parseString("vampires.executors = null").withFallback(devConfig);
         SettingsImpl settings = new SettingsImpl(config);
 
         assertThat(settings.getExecutors().size(), is(1));

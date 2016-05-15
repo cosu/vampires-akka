@@ -72,7 +72,11 @@ public interface Resource {
     interface Parameters extends Serializable {
         ProviderType providerType();
 
+        String serverId();
+
         String command();
+
+        Parameters withServerId(String serverId);
 
         interface Builder {
             Builder fromConfig(Config config);

@@ -26,14 +26,15 @@ package ro.cosu.vampires.client.executors.fork;
 
 import com.google.common.base.Joiner;
 import com.google.inject.Inject;
-import org.apache.commons.exec.*;
+
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecuteResultHandler;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.Executor;
+import org.apache.commons.exec.LogOutputStream;
+import org.apache.commons.exec.PumpStreamHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.client.allocation.CpuAllocator;
-import ro.cosu.vampires.client.allocation.CpuSet;
-import ro.cosu.vampires.server.workload.Computation;
-import ro.cosu.vampires.server.workload.Result;
-import ro.cosu.vampires.server.workload.Trace;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -42,6 +43,12 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+
+import ro.cosu.vampires.client.allocation.CpuAllocator;
+import ro.cosu.vampires.client.allocation.CpuSet;
+import ro.cosu.vampires.server.workload.Computation;
+import ro.cosu.vampires.server.workload.Result;
+import ro.cosu.vampires.server.workload.Trace;
 
 
 public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor {
@@ -152,7 +159,7 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
 
     @Override
     public int getNCpu() {
-        // this uses jvm info. We could use sigar to get this also but it adds a weird dependency here
+        // this uses jvm info. We could use sigar to create this also but it adds a weird dependency here
         return Runtime.getRuntime().availableProcessors();
     }
 

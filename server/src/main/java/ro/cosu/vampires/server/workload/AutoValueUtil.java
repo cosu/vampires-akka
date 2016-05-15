@@ -26,7 +26,6 @@ public class AutoValueUtil<P, B> {
                 .filter(method -> !method.getReturnType().getName().toLowerCase().contains("builder"))
                 // also filter any constructor helpers - they return the same type as the object
                 .filter(method -> !method.getReturnType().equals(typeTokenPayload.getRawType()))
-
                 .filter(method -> !forbiddenMethods.contains(method.getName()))
                 .forEach(payloadMethod -> {
                     try {

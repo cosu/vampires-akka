@@ -35,7 +35,8 @@ import ro.cosu.vampires.server.resources.Resource;
 public abstract class SshResourceParameters implements Resource.Parameters {
 
     public static Builder builder() {
-        return new AutoValue_SshResourceParameters.Builder().port(22).providerType(Resource.ProviderType.SSH);
+        return new AutoValue_SshResourceParameters.Builder().port(22).providerType(Resource.ProviderType.SSH)
+                .serverId("");
     }
 
     public abstract String command();
@@ -49,6 +50,14 @@ public abstract class SshResourceParameters implements Resource.Parameters {
     public abstract int port();
 
     public abstract Resource.ProviderType providerType();
+
+    public abstract String serverId();
+
+    public abstract Builder toBuilder();
+
+    public SshResourceParameters withServerId(String serverId) {
+        return toBuilder().serverId(serverId).build();
+    }
 
     @AutoValue.Builder
     public abstract static class Builder implements Resource.Parameters.Builder {
@@ -76,6 +85,9 @@ public abstract class SshResourceParameters implements Resource.Parameters {
         public abstract Builder privateKey(String s);
 
         public abstract Builder port(int i);
+
+        public abstract Builder serverId(String s);
+
 
         public abstract SshResourceParameters build();
 

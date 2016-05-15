@@ -22,7 +22,7 @@
  *
  */
 
-package ro.cosu.vampires.server.actors;
+package ro.cosu.vampires.server.actors.resource;
 
 
 import java.io.Serializable;
@@ -30,9 +30,15 @@ import java.io.Serializable;
 public class ResourceControl {
 
     public static class Shutdown implements Serializable {
+        public static Shutdown create() {
+            return new Shutdown();
+        }
     }
 
     public static class Up implements Serializable {
+        public static Up create() {
+            return new Up();
+        }
     }
 
 

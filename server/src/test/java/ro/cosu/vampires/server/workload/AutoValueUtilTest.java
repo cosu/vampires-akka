@@ -24,7 +24,7 @@ public class AutoValueUtilTest {
         assertThat(build.format(), is(foo.format()));
         assertThat(build.sequenceStart(), is(foo.sequenceStart()));
         assertThat(build.sequenceStop(), is(foo.sequenceStop()));
-        assertThat(build.task(), is(foo.url()));
+        assertThat(build.task(), is(foo.task()));
 
 
     }

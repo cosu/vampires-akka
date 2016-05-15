@@ -35,12 +35,21 @@ public abstract class LocalResourceParameters implements Resource.Parameters {
 
 
     public static Builder builder() {
-        return new AutoValue_LocalResourceParameters.Builder().providerType(Resource.ProviderType.LOCAL);
+        return new AutoValue_LocalResourceParameters.Builder().providerType(Resource.ProviderType.LOCAL)
+                .serverId("");
     }
 
     public abstract String command();
 
     public abstract Resource.ProviderType providerType();
+
+    public abstract String serverId();
+
+    public abstract Builder toBuilder();
+
+    public LocalResourceParameters withServerId(String serverId) {
+        return toBuilder().serverId(serverId).build();
+    }
 
     @AutoValue.Builder
     public abstract static class Builder implements Resource.Parameters.Builder {
@@ -53,6 +62,9 @@ public abstract class LocalResourceParameters implements Resource.Parameters {
 
 
         public abstract Builder command(String command);
+
+        public abstract Builder serverId(String command);
+
 
         public abstract LocalResourceParameters build();
 

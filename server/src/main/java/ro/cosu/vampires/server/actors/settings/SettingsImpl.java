@@ -22,7 +22,7 @@
  *
  */
 
-package ro.cosu.vampires.server.settings;
+package ro.cosu.vampires.server.actors.settings;
 
 import com.google.common.base.Enums;
 
@@ -75,8 +75,7 @@ public class SettingsImpl implements Extension {
         }
 
         if (writers.isEmpty()) {
-            LOG.info("no writers configured. using default writer: json");
-            writers.add(new JsonResultsWriter(vampires));
+            LOG.warn("no writers configured!");
         }
 
         return writers;
@@ -143,6 +142,10 @@ public class SettingsImpl implements Extension {
             LOG.warn("maxJobSeconds not provided. Using default value of {}", DEFAULT_MAX_JOB_DEADLINE);
         }
         return maxJobSeconds;
+    }
+
+    public List<String> getProviders() {
+        return vampires.getStringList("enabled-resources");
     }
 
     public ExecutionMode getMode() {

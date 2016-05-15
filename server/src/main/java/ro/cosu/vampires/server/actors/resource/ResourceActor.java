@@ -22,7 +22,7 @@
  *
  */
 
-package ro.cosu.vampires.server.actors;
+package ro.cosu.vampires.server.actors.resource;
 
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;

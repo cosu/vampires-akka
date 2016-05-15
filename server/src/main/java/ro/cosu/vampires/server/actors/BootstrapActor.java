@@ -12,32 +12,27 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import ro.cosu.vampires.server.actors.resource.ResourceControl;
+import ro.cosu.vampires.server.actors.settings.Settings;
+import ro.cosu.vampires.server.actors.settings.SettingsImpl;
 import ro.cosu.vampires.server.resources.ResourceInfo;
-import ro.cosu.vampires.server.rest.controllers.ControllersModule;
+import ro.cosu.vampires.server.rest.RestModule;
 import ro.cosu.vampires.server.rest.services.ConfigurationsService;
-import ro.cosu.vampires.server.rest.services.ExecutionsService;
 import ro.cosu.vampires.server.rest.services.WorkloadsService;
-import ro.cosu.vampires.server.settings.Settings;
-import ro.cosu.vampires.server.settings.SettingsImpl;
-import ro.cosu.vampires.server.workload.Configuration;
 import ro.cosu.vampires.server.workload.ConfigurationPayload;
 import ro.cosu.vampires.server.workload.Execution;
-import ro.cosu.vampires.server.workload.ExecutionMode;
-import ro.cosu.vampires.server.workload.ExecutionPayload;
-import ro.cosu.vampires.server.workload.Workload;
 import ro.cosu.vampires.server.workload.WorkloadPayload;
 import spark.Spark;
 
 public class BootstrapActor extends UntypedActor {
 
     private final ActorRef terminator;
-    private final SettingsImpl settings =
-            Settings.SettingsProvider.get(getContext().system());
+    private final SettingsImpl settings = Settings.SettingsProvider.get(getContext().system());
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
-    private ActorRef resourceManagerActor;
-    private Map<String, Execution> executionMap = Maps.newHashMap();
 
-    private ControllersModule controllersModule = new ControllersModule(getSelf());
+    private Map<String, ActorRef> executionMap = Maps.newHashMap();
+
+    private RestModule restModule = new RestModule(getSelf(), settings.getProviders());
     private Injector injector;
 
 
@@ -45,56 +40,44 @@ public class BootstrapActor extends UntypedActor {
         this.terminator = terminator;
     }
 
-    public static Props props(ActorRef resourceManagerActor) {
-        return Props.create(BootstrapActor.class, resourceManagerActor);
+    public static Props props(ActorRef terminator) {
+        return Props.create(BootstrapActor.class, terminator);
     }
 
     @Override
     public void preStart() {
         terminator.tell(new ResourceControl.Up(), getSelf());
         startWebserver();
-        startFromConfig();
+        loadFromConfig();
     }
 
     private void startWebserver() {
         Spark.port(settings.vampires.getInt("rest-port"));
         Spark.init();
-        injector = Guice.createInjector(controllersModule);
-        Spark.awaitInitialization();
+        injector = Guice.createInjector(restModule);
 
     }
 
-    private void startFromConfig() {
-        if (settings.vampires.hasPath("start")) {
-
-            ExecutionMode mode = settings.getMode();
-
-            log.info("starting from config");
-            // post to config service
-            WorkloadPayload workloadPayload = WorkloadPayload.fromConfig(settings.vampires.getConfig("workload"));
+    private void loadFromConfig() {
+        if (settings.vampires.hasPath("workloads")) {
             WorkloadsService workloadsService = injector.getInstance(WorkloadsService.class);
-            Workload workload = workloadsService.create(workloadPayload);
+            settings.vampires.getConfigList("workloads").stream()
+                    .map(WorkloadPayload::fromConfig)
+                    .forEach(workloadsService::create);
+        }
 
-            // post to conf service
-            ConfigurationPayload configurationPayload = ConfigurationPayload.fromConfig(settings.vampires);
+        if (settings.vampires.hasPath("configurations")) {
             ConfigurationsService configurationsService = injector.getInstance(ConfigurationsService.class);
-            Configuration configuration = configurationsService.create(configurationPayload);
-
-            log.debug("{} {}", configurationsService, workloadsService);
-
-            ExecutionsService executionsService = injector.getInstance(ExecutionsService.class);
-            ExecutionPayload build = ExecutionPayload.builder().type(mode).workload(workload.id()).configuration(configuration.id()).build();
-            executionsService.create(build);
-
+            settings.vampires.getConfigList("configurations").stream()
+                    .map(ConfigurationPayload::fromConfig)
+                    .forEach(configurationsService::create);
         }
     }
 
     private void startExecution(Execution execution) {
-        ActorRef workActor = getContext().actorOf(WorkActor.props(execution.workload(), execution.type()), "workActor");
-        resourceManagerActor = getContext().actorOf(ResourceManagerActor.props(), "resourceManager");
-        getContext().system().actorOf(DispatchActor.props(workActor), "server");
-        executionMap.put(execution.id(), execution);
-        resourceManagerActor.tell(execution, getSelf());
+        ActorRef executionActor = getContext().system().actorOf(ExecutionActor.props(execution), execution.id());
+        executionMap.put(execution.id(), executionActor);
+        executionActor.tell(execution, getSelf());
     }
 
     @Override
@@ -108,7 +91,7 @@ public class BootstrapActor extends UntypedActor {
             Execution execution = (Execution) message;
             startExecution(execution);
         } else if (message instanceof ResourceInfo) {
-            //
+
         } else {
             unhandled(message);
         }

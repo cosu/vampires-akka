@@ -54,7 +54,7 @@ public class EC2ResourceProvider extends AbstractResourceProvider {
     @Override
     public Optional<Resource> create(Resource.Parameters parameters) {
         if (amazonEC2Client == null) {
-            throw new IllegalArgumentException("unable to get ec2client instance");
+            throw new IllegalArgumentException("unable to create ec2client instance");
         }
         if (parameters instanceof EC2ResourceParameters)
             return Optional.of(new EC2Resource((EC2ResourceParameters) parameters, amazonEC2Client));

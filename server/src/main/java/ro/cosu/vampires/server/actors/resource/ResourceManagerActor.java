@@ -22,7 +22,7 @@
  *
  */
 
-package ro.cosu.vampires.server.actors;
+package ro.cosu.vampires.server.actors.resource;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -38,17 +38,15 @@ import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.BootstrapResource;
 import ro.cosu.vampires.server.actors.messages.CreateResource;
 import ro.cosu.vampires.server.actors.messages.QueryResource;
+import ro.cosu.vampires.server.actors.settings.Settings;
+import ro.cosu.vampires.server.actors.settings.SettingsImpl;
+import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.resources.ResourceManager;
 import ro.cosu.vampires.server.resources.ResourceModule;
 import ro.cosu.vampires.server.resources.ResourceProvider;
-import ro.cosu.vampires.server.settings.Settings;
-import ro.cosu.vampires.server.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Execution;
-
-import static ro.cosu.vampires.server.actors.ResourceControl.Shutdown;
-import static ro.cosu.vampires.server.actors.ResourceControl.Up;
 
 public class ResourceManagerActor extends UntypedActor {
     private final SettingsImpl settings =
@@ -66,11 +64,6 @@ public class ResourceManagerActor extends UntypedActor {
         return Props.create(ResourceManagerActor.class);
     }
 
-    @Override
-    public void preStart() {
-        getContext().actorSelection("/user/terminator").tell(new Up(), getSelf());
-    }
-
     private void createResource(CreateResource create) {
         log.debug("create resource {}", create.type());
 
@@ -86,15 +79,18 @@ public class ResourceManagerActor extends UntypedActor {
     }
 
     private void bootstrapResource(ResourceProvider resourceProvider, BootstrapResource bootstrap) {
+        Resource.Parameters parameters = resourceProvider.getParameters(bootstrap.name())
+                .withServerId(bootstrap.serverId());
+
         CreateResource create = CreateResource
-                .create(bootstrap.type(), resourceProvider.getParameters(bootstrap.name()));
+                .create(bootstrap.type(), parameters);
         createResource(create);
     }
 
     @Override
     public void onReceive(Object message) throws Exception {
-
         ActorRef sender = getSender();
+
         if (message instanceof Execution) {
             final Execution execution = (Execution) message;
             startExecution(execution);
@@ -107,7 +103,7 @@ public class ResourceManagerActor extends UntypedActor {
         } else if (message instanceof QueryResource) {
             final QueryResource query = (QueryResource) message;
             queryResource(query, sender);
-        } else if (message instanceof Shutdown) {
+        } else if (message instanceof ResourceControl.Shutdown) {
             shutdownResources();
         } else if (message instanceof ResourceInfo) {
             final ResourceInfo resourceInfo = (ResourceInfo) message;
@@ -124,11 +120,14 @@ public class ResourceManagerActor extends UntypedActor {
     }
 
     private void startExecution(Execution execution) {
+        // if sample then use only 1 instance
         execution
                 .configuration().withMode(execution.type())
                 .resources()
                 .stream()
-                .map(resourceDemand -> BootstrapResource.create(resourceDemand.provider(), resourceDemand.type()))
+                .map(resourceDemand -> BootstrapResource.create(
+                        resourceDemand.provider(), resourceDemand.type(), execution.id())
+                )
                 .forEach(bootstrapResource -> getSelf().tell(bootstrapResource, getSender()));
     }
 
@@ -139,8 +138,10 @@ public class ResourceManagerActor extends UntypedActor {
     private void terminatedResource(ActorRef sender) {
         log.debug("terminated {}", sender);
         resourceRegistry.removeResource(sender);
-        if (resourceRegistry.getResourceActors().isEmpty())
+        if (resourceRegistry.getResourceActors().isEmpty()) {
             getContext().stop(getSelf());
+            log.debug("shutting down resource manager");
+        }
     }
 
     private void registerClient(ClientInfo clientInfo) {
@@ -153,8 +154,8 @@ public class ResourceManagerActor extends UntypedActor {
     }
 
     private void logCurrentClients() {
-        log.info("clients {} / resourceActors {} ", resourceRegistry.getRegisteredClients().size(), resourceRegistry
-                .getResourceActors().size());
+        log.info("clients {} / resourceActors {} ", resourceRegistry.getRegisteredClients().size(),
+                resourceRegistry.getResourceActors().size());
     }
 
     private void registerResource(ResourceInfo resourceInfo, ActorRef sender) {
@@ -174,7 +175,7 @@ public class ResourceManagerActor extends UntypedActor {
     }
 
     private void shutdownResources() {
-        resourceRegistry.getResourceActors().forEach(r -> r.forward(new Shutdown(), getContext()));
+        resourceRegistry.getResourceActors().forEach(r -> r.forward(ResourceControl.Shutdown.create(), getContext()));
     }
 
 

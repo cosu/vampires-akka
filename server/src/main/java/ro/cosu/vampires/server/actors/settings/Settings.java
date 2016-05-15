@@ -22,7 +22,7 @@
  *
  */
 
-package ro.cosu.vampires.server.settings;
+package ro.cosu.vampires.server.actors.settings;
 
 
 import akka.actor.AbstractExtensionId;

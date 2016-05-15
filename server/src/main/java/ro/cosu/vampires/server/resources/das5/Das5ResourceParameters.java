@@ -35,7 +35,9 @@ import ro.cosu.vampires.server.resources.Resource;
 public abstract class Das5ResourceParameters implements Resource.Parameters {
 
     public static Builder builder() {
-        return new AutoValue_Das5ResourceParameters.Builder().port(22).providerType(Resource.ProviderType.DAS5);
+        return new AutoValue_Das5ResourceParameters.Builder()
+                .port(22).providerType(Resource.ProviderType.DAS5)
+                .serverId("");
     }
 
     public abstract String command();
@@ -49,6 +51,14 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
     public abstract int port();
 
     public abstract Resource.ProviderType providerType();
+
+    public abstract String serverId();
+
+    public abstract Builder toBuilder();
+
+    public Das5ResourceParameters withServerId(String serverId) {
+        return toBuilder().serverId(serverId).build();
+    }
 
     @AutoValue.Builder
     public abstract static class Builder implements Resource.Parameters.Builder {
@@ -64,6 +74,8 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
         public abstract Builder port(int i);
 
         public abstract Builder providerType(Resource.ProviderType providerType);
+
+        public abstract Builder serverId(String s);
 
 
         public Builder fromConfig(Config config) {

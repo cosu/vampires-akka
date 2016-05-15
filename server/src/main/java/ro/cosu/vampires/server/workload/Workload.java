@@ -57,6 +57,7 @@ public abstract class Workload implements Id {
         return new AutoValue_Workload.Builder().id(UUID.randomUUID().toString())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
+                .format("")
                 .sequenceStart(0)
                 .sequenceStop(0);
     }

@@ -22,17 +22,18 @@
  *
  */
 
-package ro.cosu.vampires.server.actors;
+package ro.cosu.vampires.server.actors.resource;
 
-import akka.actor.ActorRef;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import ro.cosu.vampires.server.resources.ResourceInfo;
-import ro.cosu.vampires.server.workload.ClientInfo;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+
+import akka.actor.ActorRef;
+import ro.cosu.vampires.server.resources.ResourceInfo;
+import ro.cosu.vampires.server.workload.ClientInfo;
 
 public class ResourceRegistry {
     /**

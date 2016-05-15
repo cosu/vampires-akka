@@ -24,16 +24,16 @@
 
 package ro.cosu.vampires.server.actors;
 
+import java.util.Optional;
+
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import ro.cosu.vampires.server.settings.Settings;
-import ro.cosu.vampires.server.settings.SettingsImpl;
+import ro.cosu.vampires.server.actors.settings.Settings;
+import ro.cosu.vampires.server.actors.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.ClientConfig;
 import ro.cosu.vampires.server.workload.ClientInfo;
-
-import java.util.Optional;
 
 public class ConfigActor extends UntypedActor {
     private final SettingsImpl settings =
@@ -52,15 +52,12 @@ public class ConfigActor extends UntypedActor {
             log.info("config for client {}:{} {}", clientInfo.metrics().metadata().get("host-hostname"),
                     clientInfo.id(), configFor);
             getSender().tell(configFor, getSelf());
-            getContext().actorSelection("/user/resourceManager").forward(clientInfo, getContext());
-            getContext().actorSelection("/user/workActor/resultActor").forward(clientInfo, getContext());
         } else {
             unhandled(message);
         }
     }
 
     private ClientConfig getConfigFor(ClientInfo clientInfo) {
-
         //take the first executor defined in the config
         final Optional<String> firstAvailableExecutor = settings
                 .getExecutors().stream()

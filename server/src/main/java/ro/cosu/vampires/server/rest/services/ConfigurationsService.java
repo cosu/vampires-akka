@@ -35,7 +35,7 @@ public class ConfigurationsService implements Service<Configuration, Configurati
     public Configuration create(ConfigurationPayload payload) {
         Configuration created = Configuration.fromPayload(payload);
         configurations.put(created.id(), created);
-        LOG.debug("Created from payload {} configuration with id {}", payload, created.id());
+        LOG.debug("Created  {} : {}", created.id(), created);
         return created;
     }
 

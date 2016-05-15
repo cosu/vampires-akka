@@ -24,17 +24,19 @@
 
 package ro.cosu.vampires.server.actors;
 
+import com.google.common.collect.Maps;
+
+import org.junit.Test;
+
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import akka.testkit.TestActorRef;
 import akka.testkit.TestProbe;
-import com.google.common.collect.Maps;
-import org.junit.Test;
 import ro.cosu.vampires.server.workload.ClientConfig;
 import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Metrics;
 import scala.concurrent.duration.Duration;
-
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;

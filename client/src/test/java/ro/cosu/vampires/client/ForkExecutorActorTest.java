@@ -24,11 +24,12 @@
 
 package ro.cosu.vampires.client;
 
-import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import akka.actor.ActorSystem;
+import akka.testkit.JavaTestKit;
 
 public class ForkExecutorActorTest {
     private static ActorSystem system;
@@ -51,7 +52,7 @@ public class ForkExecutorActorTest {
         //TODO use a probe for this
 //        TestActorRef<RegisterActor> ref = TestActorRef.create(system, ExecutorActor.props(), "executor1");
 //
-//        final Future<Object> future = akka.pattern.Patterns.ask(ref, new Computation("echo 1"), 3000);
+//        final Future<Object> future = akka.pattern.Patterns.ask(ref, ng Computation("echo 1"), 3000);
 //        assertTrue(future.isCompleted());
 //        Message.Result result = (Message.Result) Await.result(future, Duration.Zero());
 //

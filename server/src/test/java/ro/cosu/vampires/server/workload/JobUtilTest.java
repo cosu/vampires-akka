@@ -27,8 +27,10 @@ package ro.cosu.vampires.server.workload;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import org.junit.Test;
 
 import java.io.File;
@@ -43,7 +45,7 @@ public class JobUtilTest {
     @Test
     public void testBag() throws Exception {
 
-        Config config = ConfigFactory.load().getConfig("vampires.workload");
+        Config config = ConfigFactory.load().getConfigList("vampires.workloads").get(0);
 
         List<Job> jobs = JobUtil.fromConfig(config);
 

@@ -24,12 +24,17 @@
 
 package ro.cosu.vampires.server.actors;
 
-import akka.actor.*;
-import akka.event.Logging;
-import akka.event.LoggingAdapter;
-
 import java.util.LinkedList;
 import java.util.List;
+
+import akka.actor.ActorRef;
+import akka.actor.PoisonPill;
+import akka.actor.Props;
+import akka.actor.Terminated;
+import akka.actor.UntypedActor;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
+import ro.cosu.vampires.server.actors.resource.ResourceControl;
 
 public class Terminator extends UntypedActor {
 
@@ -58,7 +63,6 @@ public class Terminator extends UntypedActor {
             } else {
                 log.info("waiting for {} more", refs.size());
             }
-
         } else {
             unhandled(msg);
         }

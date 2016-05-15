@@ -3,6 +3,8 @@ package ro.cosu.vampires.server.rest.controllers;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 
+import org.slf4j.Logger;
+
 import java.nio.file.Paths;
 
 import ro.cosu.vampires.server.rest.JsonTransformer;
@@ -11,15 +13,15 @@ import ro.cosu.vampires.server.workload.Id;
 import spark.Route;
 import spark.Spark;
 
-import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 
 public abstract class AbstractRestController<T extends Id, P> implements Controller {
+
+
     private final Class<T> valueType;
     private final Class<P> payloadType;
     private final String path;
-
     @Inject
     private Service<T, P> service;
 
@@ -30,6 +32,8 @@ public abstract class AbstractRestController<T extends Id, P> implements Control
         loadRoutes();
     }
 
+    protected abstract Logger getLogger();
+
     private void loadRoutes() {
         String idPath = Paths.get(path, "/:id").toString();
         Spark.get(path, list(), JsonTransformer.get());
@@ -37,12 +41,6 @@ public abstract class AbstractRestController<T extends Id, P> implements Control
         Spark.delete(idPath, delete(), JsonTransformer.get());
         Spark.post(path, create(), JsonTransformer.get());
         Spark.post(idPath, update(), JsonTransformer.get());
-
-        Spark.exception(IllegalArgumentException.class, (exception, request, response) -> {
-            response.status(HTTP_BAD_REQUEST);
-            response.body(exception.getMessage());
-        });
-
     }
 
     public Route list() {
@@ -51,6 +49,7 @@ public abstract class AbstractRestController<T extends Id, P> implements Control
 
     public Route create() {
         return (request, response) -> {
+            getLogger().debug("got request {}", request.url());
             Gson gson = JsonTransformer.get().getGson();
             P fromJson = gson.fromJson(request.body(), payloadType);
             response.status(HTTP_CREATED);
