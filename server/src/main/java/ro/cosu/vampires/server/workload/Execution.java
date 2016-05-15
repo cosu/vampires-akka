@@ -34,6 +34,11 @@ public abstract class Execution implements Id {
 
     public abstract LocalDateTime updatedAt();
 
+    public  abstract Builder toBuilder();
+
+    public Execution withStatus(String status) {
+        return toBuilder().status(status).build();
+    }
 
     @AutoValue.Builder
     public abstract static class Builder {

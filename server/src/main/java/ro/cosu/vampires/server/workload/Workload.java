@@ -102,6 +102,9 @@ public abstract class Workload implements Id {
     }
 
 
+    public int size() {
+        return sequenceStart() - sequenceStop() +1;
+    }
     public List<Job> getJobs() {
         final String finalUrl = url();
         final String finalFormat = format();

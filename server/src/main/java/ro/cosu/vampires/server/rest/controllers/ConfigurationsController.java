@@ -11,9 +11,10 @@ public class ConfigurationsController extends AbstractRestController<Configurati
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationsController.class);
 
+    private final static String path = "/configurations";
 
     ConfigurationsController() {
-        super(Configuration.class, ConfigurationPayload.class, "/configurations");
+        super(Configuration.class, ConfigurationPayload.class, path);
     }
 
     @Override

@@ -35,12 +35,14 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Execution;
+import ro.cosu.vampires.server.workload.ExecutionStatus;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.writers.ResultsWriter;
 
@@ -102,7 +104,16 @@ public class ResultActor extends UntypedActor {
         } else if (message instanceof ClientInfo) {
             ClientInfo clientInfo = (ClientInfo) message;
             handleClientInfo(clientInfo);
-        } else if (message instanceof ResourceControl.Shutdown) {
+        } else if (message instanceof QueryResource) {
+            ExecutionStatus status = ExecutionStatus.fromExecution(execution).builder()
+                    .total(execution.workload().size())
+                    .completed(results.size())
+                    .status("running")
+                    .remaining(execution.workload().size() - results.size()).build();
+
+            getSender().tell(status, getSelf());
+        }
+        else if (message instanceof ResourceControl.Shutdown) {
             shutdown();
         } else {
             unhandled(message);

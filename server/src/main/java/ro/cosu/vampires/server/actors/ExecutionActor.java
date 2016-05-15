@@ -9,6 +9,7 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.Terminated;
 import akka.actor.UntypedActor;
+import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.resource.ResourceManagerActor;
 import ro.cosu.vampires.server.workload.ClientInfo;
@@ -51,8 +52,9 @@ public class ExecutionActor extends UntypedActor {
         } else if (message instanceof ResourceControl.Shutdown) {
             resourceManagerActor.tell(ResourceControl.Shutdown.create(), getSelf());
             resultActor.tell(ResourceControl.Shutdown.create(), getSelf());
-        }
-        if (message instanceof Terminated) {
+        } else if (message instanceof QueryResource) {
+            resultActor.forward(message, getContext());
+        } else if (message instanceof Terminated) {
             if (getSender().equals(resultActor)) {
                 getContext().stop(getSelf());
             }

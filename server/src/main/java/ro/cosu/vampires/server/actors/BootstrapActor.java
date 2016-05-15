@@ -12,6 +12,8 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import akka.pattern.Patterns;
+import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
@@ -22,6 +24,7 @@ import ro.cosu.vampires.server.rest.services.WorkloadsService;
 import ro.cosu.vampires.server.workload.ConfigurationPayload;
 import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.WorkloadPayload;
+import scala.concurrent.Future;
 import spark.Spark;
 
 public class BootstrapActor extends UntypedActor {
@@ -90,8 +93,10 @@ public class BootstrapActor extends UntypedActor {
         if (message instanceof Execution) {
             Execution execution = (Execution) message;
             startExecution(execution);
-        } else if (message instanceof ResourceInfo) {
-
+        } else if (message instanceof QueryResource) {
+            QueryResource info = (QueryResource) message;
+            ActorRef actorRef = executionMap.get(info.resourceId());
+            actorRef.forward(message, getContext());
         } else {
             unhandled(message);
         }

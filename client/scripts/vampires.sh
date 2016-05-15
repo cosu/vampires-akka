@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-export KAMON_SIGAR_FOLDER=/tmp
+randomdir=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c5)
+export KAMON_SIGAR_FOLDER=/tmp/${randomdir}
 
 # Attempt to set APP_HOME
 # Resolve links: $0 may be a link
@@ -21,3 +22,6 @@ APP_HOME="`pwd -P`"
 cd "$SAVED" >/dev/null
 
 ${APP_HOME}/bin/client "$@"
+
+# cleanup
+rm -fr ${KAMON_SIGAR_FOLDER}

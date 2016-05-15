@@ -14,10 +14,17 @@ import java.util.Map;
 import java.util.Optional;
 
 import akka.actor.ActorRef;
+import akka.pattern.Patterns;
+import akka.util.Timeout;
+import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.workload.Configuration;
 import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.ExecutionPayload;
+import ro.cosu.vampires.server.workload.ExecutionStatus;
 import ro.cosu.vampires.server.workload.Workload;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
+import scala.concurrent.duration.Duration;
 
 public class ExecutionsService implements Service<Execution, ExecutionPayload> {
 
@@ -80,6 +87,21 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
 
     @Override
     public Optional<Execution> get(String id) {
-        return Optional.ofNullable(executionMap.get(id));
+
+        Execution execution = null;
+        if (executionMap.keySet().contains(id)) {
+
+            Timeout timeout = new Timeout(Duration.create(100, "milliseconds"));
+
+            Future<Object> ask = Patterns.ask(actorRef, QueryResource.create(id), timeout);
+            try {
+                execution = (Execution) Await.result(ask, timeout.duration());
+
+            } catch (Exception e) {
+                LOG.error("Failed to get execution {}", e);
+                throw new RuntimeException(e);
+            }
+        }
+        return Optional.ofNullable(execution);
     }
 }

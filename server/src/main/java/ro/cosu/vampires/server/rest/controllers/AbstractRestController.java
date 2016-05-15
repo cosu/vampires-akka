@@ -22,13 +22,14 @@ public abstract class AbstractRestController<T extends Id, P> implements Control
     private final Class<T> valueType;
     private final Class<P> payloadType;
     private final String path;
+
     @Inject
     private Service<T, P> service;
 
     AbstractRestController(Class<T> valueType, Class<P> payloadType, String path) {
         this.valueType = valueType;
         this.payloadType = payloadType;
-        this.path = Paths.get("/", path).toAbsolutePath().toString();
+        this.path = Paths.get(path).toAbsolutePath().toString();
         loadRoutes();
     }
 

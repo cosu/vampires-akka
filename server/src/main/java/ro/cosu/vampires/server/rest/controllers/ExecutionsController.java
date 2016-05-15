@@ -10,8 +10,12 @@ import ro.cosu.vampires.server.workload.ExecutionPayload;
 public class ExecutionsController extends AbstractRestController<Execution, ExecutionPayload> {
     private static final Logger LOG = LoggerFactory.getLogger(ExecutionsController.class);
 
+
+    private final static String path = "/executions";
+
+
     ExecutionsController() {
-        super(Execution.class, ExecutionPayload.class, "/executions");
+        super(Execution.class, ExecutionPayload.class, path);
     }
 
     @Override
