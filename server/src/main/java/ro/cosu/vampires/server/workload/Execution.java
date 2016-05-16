@@ -62,7 +62,9 @@ public abstract class Execution implements Id {
     public  abstract Builder toBuilder();
 
     public Execution withInfo(ExecutionInfo info) {
-        return toBuilder().info(info).build();
+        return toBuilder()
+                .updatedAt(LocalDateTime.now())
+                .info(info).build();
     }
 
     @AutoValue.Builder

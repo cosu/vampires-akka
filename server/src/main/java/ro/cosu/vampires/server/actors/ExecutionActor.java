@@ -75,12 +75,13 @@ public class ExecutionActor extends UntypedActor {
     public void onReceive(Object message) throws Exception {
         // forward traffic to all actors
         if (message instanceof ClientInfo) {
-            watchees.stream().forEach(actorRef -> actorRef.tell(message, getSender()));
+            watchees.stream().forEach(actorRef -> actorRef.forward(message, getContext()));
         } else if (message instanceof Job) {
             resultActor.tell(message, getSender());
         } else if (message instanceof ResourceControl.Shutdown) {
-            resourceManagerActor.tell(ResourceControl.Shutdown.create(), getSelf());
-            resultActor.tell(ResourceControl.Shutdown.create(), getSelf());
+            resourceManagerActor.forward(message, getContext());
+            resultActor.forward(message, getContext());
+
         } else if (message instanceof Execution) {
             // send exec info back to parent
             getContext().parent().forward(message, getContext());

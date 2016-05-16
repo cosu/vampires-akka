@@ -42,14 +42,17 @@ import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
 import akka.testkit.TestActor;
 import ro.cosu.vampires.server.actors.messages.QueryResource;
+import ro.cosu.vampires.server.actors.messages.ShutdownResource;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.workload.Configuration;
 import ro.cosu.vampires.server.workload.ConfigurationPayload;
 import ro.cosu.vampires.server.workload.Execution;
+import ro.cosu.vampires.server.workload.ExecutionInfo;
 import ro.cosu.vampires.server.workload.ResourceDemand;
 import ro.cosu.vampires.server.workload.Workload;
 import ro.cosu.vampires.server.workload.WorkloadPayload;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -72,8 +75,20 @@ public class ServicesTestModule extends AbstractModule {
                     Execution execution = (Execution) msg;
                     executionMap.put((execution).id(), execution);
                 } else if (msg instanceof QueryResource) {
-                    Execution execution = executionMap.get(((QueryResource) msg).resourceId());
-                    sender.tell(execution, getActorRef());
+                    QueryResource info = (QueryResource) msg;
+                    if (info.equals(QueryResource.all())) {
+                        sender.tell(executionMap.values(), actorRef);
+                    } else {
+                        sender.tell(executionMap.get(info.resourceId()), actorRef);
+                    }
+                } else if (msg instanceof ShutdownResource) {
+                    Execution execution = executionMap.get(((ShutdownResource) msg).resourceId());
+                    ExecutionInfo executionInfo = execution.info().updateStatus(ExecutionInfo.Status.CANCELED);
+                    execution = execution.withInfo(executionInfo);
+                    executionMap.put(execution.id(), execution.withInfo(executionInfo));
+                    sender.tell(execution, actorRef);
+                } else {
+                    fail();
                 }
 
                 return keepRunning();

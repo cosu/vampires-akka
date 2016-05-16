@@ -49,8 +49,8 @@ import ro.cosu.vampires.server.workload.ExecutionPayload;
 import ro.cosu.vampires.server.workload.Workload;
 import spark.Spark;
 
-import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.core.Is.is;
@@ -133,7 +133,6 @@ public class ExecutionsControllerTest {
         Response res = request("GET", "/executions", "");
         Execution[] executions = gson.fromJson(res.body, Execution[].class);
         res = request("DELETE", "/executions/" + executions[0].id(), "");
-        // can't delete executions for now so BAD_REQUEST
-        assertThat(res.status, is(HTTP_BAD_REQUEST));
+        assertThat(res.status, is(HTTP_NO_CONTENT));
     }
 }

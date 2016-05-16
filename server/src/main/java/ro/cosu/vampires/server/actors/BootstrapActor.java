@@ -41,6 +41,7 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.QueryResource;
+import ro.cosu.vampires.server.actors.messages.ShutdownResource;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
@@ -49,6 +50,7 @@ import ro.cosu.vampires.server.rest.services.ConfigurationsService;
 import ro.cosu.vampires.server.rest.services.WorkloadsService;
 import ro.cosu.vampires.server.workload.ConfigurationPayload;
 import ro.cosu.vampires.server.workload.Execution;
+import ro.cosu.vampires.server.workload.ExecutionInfo;
 import ro.cosu.vampires.server.workload.WorkloadPayload;
 import spark.Spark;
 
@@ -76,7 +78,7 @@ public class BootstrapActor extends UntypedActor {
 
     @Override
     public void preStart() {
-        terminator.tell(new ResourceControl.Up(), getSelf());
+        terminator.tell(ResourceControl.Up.create(), getSelf());
         startWebserver();
         loadFromConfig();
     }
@@ -85,7 +87,6 @@ public class BootstrapActor extends UntypedActor {
         Spark.port(settings.vampires.getInt("rest-port"));
         Spark.init();
         injector = Guice.createInjector(restModule);
-
     }
 
     private void loadFromConfig() {
@@ -121,30 +122,68 @@ public class BootstrapActor extends UntypedActor {
     public void onReceive(Object message) throws Exception {
         if (message instanceof Execution) {
             Execution execution = (Execution) message;
-            if (!executionsToActors.containsKey(execution.id()))
-                startExecution(execution);
-            else {
-                //a finished execution
-                resultsMap.put(execution.id(), execution);
-            }
+            handleExecution(execution);
         } else if (message instanceof QueryResource) {
             QueryResource info = (QueryResource) message;
-            getSender().tell(resultsMap.get(info.resourceId()), getSelf());
-
+            queryResource(info);
+        } else if (message instanceof ShutdownResource) {
+            ShutdownResource shutdownResource = (ShutdownResource) message;
+            handleShutdown(shutdownResource);
         } else if (message instanceof Terminated) {
-            Optional<String> execId =
-                    executionsToActors.entrySet().stream()
-                            .filter(e -> e.getValue().equals(getSender()))
-                            .map(Map.Entry::getKey).findFirst();
-
-            if (execId.isPresent()) {
-                String id = execId.get();
-                executionsToActors.remove(id);
-                log.info("{} terminated ", id);
-            }
+            handleTerminated();
         } else {
             unhandled(message);
         }
+    }
 
+    private void handleShutdown(ShutdownResource shutdownResource) {
+
+        if (executionsToActors.containsKey(shutdownResource.resourceId())) {
+            Execution execution = resultsMap.get(shutdownResource.resourceId());
+            if (execution.info().status().equals(ExecutionInfo.Status.STARTING) ||
+                    execution.info().status().equals(ExecutionInfo.Status.RUNNING)) {
+                // shut down the actor
+                ActorRef executionActor = executionsToActors.get(shutdownResource.resourceId());
+                executionActor.tell(ResourceControl.Shutdown.create(), getSelf());
+
+                // update the current view of the execution
+                resultsMap.put(execution.id(),
+                        execution.withInfo(execution.info().updateStatus(ExecutionInfo.Status.STOPPING)));
+            } else {
+                log.warning("shutting down a non-running execution {}", execution);
+            }
+            getSender().tell(execution, getSelf());
+
+        }
+    }
+
+    private void handleTerminated() {
+        Optional<String> execId =
+                executionsToActors.entrySet().stream()
+                        .filter(e -> e.getValue().equals(getSender()))
+                        .map(Map.Entry::getKey).findFirst();
+
+        if (execId.isPresent()) {
+            String id = execId.get();
+            executionsToActors.remove(id);
+            log.info("{} terminated ", id);
+        }
+    }
+
+    private void handleExecution(Execution execution) {
+        if (!executionsToActors.containsKey(execution.id()))
+            startExecution(execution);
+        else {
+            //a finished execution
+            resultsMap.put(execution.id(), execution);
+        }
+    }
+
+    private void queryResource(QueryResource info) {
+        if (info.equals(QueryResource.all())) {
+            getSender().tell(resultsMap.values(), getSelf());
+        } else {
+            getSender().tell(resultsMap.get(info.resourceId()), getSelf());
+        }
     }
 }

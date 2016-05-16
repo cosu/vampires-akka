@@ -34,7 +34,9 @@ import org.junit.Test;
 import java.util.Map;
 
 import akka.actor.ActorRef;
+import akka.actor.Terminated;
 import akka.testkit.JavaTestKit;
+import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.workload.ClientConfig;
 import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Computation;
@@ -119,4 +121,25 @@ public class ExecutionActorTest extends AbstractActorTest {
                 .build();
     }
 
+
+    @Test
+    public void testShutdown() {
+
+        new JavaTestKit(system) {
+            {
+                Execution exec = getExec();
+                // create a test probe
+                final JavaTestKit workProbe = new JavaTestKit(system);
+
+                final ActorRef executionActor = system.actorOf(ExecutionActor.props(exec));
+
+                workProbe.watch(executionActor);
+
+                executionActor.tell(ResourceControl.Shutdown.create(), workProbe.getRef());
+
+                workProbe.expectMsgClass(Terminated.class);
+
+            }
+        };
+    }
 }

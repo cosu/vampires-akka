@@ -27,7 +27,9 @@
 package ro.cosu.vampires.server.rest.services;
 
 
-import com.google.common.collect.Maps;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.TypeLiteral;
 
@@ -35,14 +37,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 import akka.actor.ActorRef;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
 import ro.cosu.vampires.server.actors.messages.QueryResource;
+import ro.cosu.vampires.server.actors.messages.ShutdownResource;
 import ro.cosu.vampires.server.workload.Configuration;
 import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.ExecutionInfo;
@@ -55,8 +56,6 @@ import scala.concurrent.duration.Duration;
 public class ExecutionsService implements Service<Execution, ExecutionPayload> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExecutionsService.class);
-
-    private Map<String, Execution> executionMap = Collections.synchronizedSortedMap(Maps.newTreeMap());
 
     @Inject
     private ConfigurationsService configurationsService;
@@ -74,7 +73,23 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
 
     @Override
     public Collection<Execution> list() {
-        return executionMap.values();
+
+        Collection<Execution> executions = Lists.newArrayList();
+
+        Timeout timeout = new Timeout(Duration.create(100, "milliseconds"));
+
+        Future<Object> ask = Patterns.ask(actorRef, QueryResource.all(), timeout);
+
+        try {
+            Object result = Await.result(ask, timeout.duration());
+            if (result instanceof Collection) {
+                executions = (Collection<Execution>) result;
+            }
+            return executions;
+        } catch (Exception e) {
+            LOG.error("Failed to get execution {}", e);
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -97,37 +112,39 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
     }
 
     private void startExecution(Execution execution) {
-        executionMap.put(execution.id(), execution);
         LOG.info("starting execution: {}", execution);
         actorRef.tell(execution, ActorRef.noSender());
     }
 
     @Override
     public Optional<Execution> delete(String id) {
-        throw new IllegalArgumentException("delete not implemented");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(id), "id must not be empty");
+        return sendMessage(ShutdownResource.withId(id));
     }
 
     @Override
     public Optional<Execution> update(ExecutionPayload updated) {
-        throw new IllegalArgumentException("update not implemented");
+        throw new IllegalArgumentException("not implemented");
+    }
+
+    private Optional<Execution> sendMessage(Object message) {
+        Timeout timeout = new Timeout(Duration.create(100, "milliseconds"));
+
+        Future<Object> ask = Patterns.ask(actorRef, message, timeout);
+        try {
+            Execution execution = (Execution) Await.result(ask, timeout.duration());
+            return Optional.ofNullable(execution);
+        } catch (Exception e) {
+            LOG.error("Failed to get execution {}", e);
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Optional<Execution> get(String id) {
-
-        Execution execution = null;
-        if (executionMap.keySet().contains(id)) {
-
-            Timeout timeout = new Timeout(Duration.create(100, "milliseconds"));
-
-            Future<Object> ask = Patterns.ask(actorRef, QueryResource.create(id), timeout);
-            try {
-                execution = (Execution) Await.result(ask, timeout.duration());
-            } catch (Exception e) {
-                LOG.error("Failed to get execution {}", e);
-                throw new RuntimeException(e);
-            }
-        }
-        return Optional.ofNullable(execution);
+        return sendMessage(QueryResource.withId(id));
     }
+
+
+
 }

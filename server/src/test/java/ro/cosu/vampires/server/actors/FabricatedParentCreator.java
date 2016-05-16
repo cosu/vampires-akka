@@ -24,20 +24,47 @@
  *
  */
 
-package ro.cosu.vampires.server.actors.messages;
+package ro.cosu.vampires.server.actors;
 
+import akka.actor.Actor;
+import akka.actor.ActorRef;
+import akka.actor.Props;
+import akka.actor.Terminated;
+import akka.actor.UntypedActor;
+import akka.japi.Creator;
+import akka.testkit.TestProbe;
 
-import com.google.auto.value.AutoValue;
+class FabricatedParentCreator implements Creator<Actor> {
+    private final TestProbe proxy;
+    private Props props;
 
-@AutoValue
-public abstract class QueryResource {
-    public static QueryResource withId(String resourceId) {
-        return new AutoValue_QueryResource(resourceId);
+    public FabricatedParentCreator(TestProbe proxy, Props props) {
+        this.proxy = proxy;
+        this.props = props;
     }
 
-    public static QueryResource all() {
-        return new AutoValue_QueryResource("all");
-    }
-    public abstract String resourceId();
+    @Override
+    public Actor create() throws Exception {
+        return new UntypedActor() {
+            final ActorRef child = context().actorOf(props, "child");
 
+            @Override
+            public void preStart() {
+                context().watch(child);
+            }
+
+            @Override
+            public void onReceive(Object x) throws Exception {
+                if (sender().equals(child)) {
+                    if (x instanceof Terminated) {
+                        context().stop(getSelf());
+                    } else
+                        proxy.ref().forward(x, context());
+                } else {
+                    child.forward(x, context());
+                }
+
+            }
+        };
+    }
 }

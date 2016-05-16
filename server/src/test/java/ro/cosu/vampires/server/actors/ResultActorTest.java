@@ -33,6 +33,7 @@ import org.junit.Test;
 import java.util.concurrent.TimeUnit;
 
 import akka.actor.ActorRef;
+import akka.actor.Props;
 import akka.actor.Terminated;
 import akka.testkit.TestActorRef;
 import akka.testkit.TestProbe;
@@ -48,6 +49,9 @@ import ro.cosu.vampires.server.workload.Result;
 import ro.cosu.vampires.server.workload.Workload;
 import scala.concurrent.duration.Duration;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+
 public class ResultActorTest extends AbstractActorTest {
 
     private Execution getExec() {
@@ -61,13 +65,20 @@ public class ResultActorTest extends AbstractActorTest {
     @Test
     public void testShutdown() throws Exception {
 
-
         final TestProbe testProbe = new TestProbe(system);
-        final TestActorRef<ResultActor> sut = TestActorRef.create(system, ResultActor.props(getExec()));
-        testProbe.watch(sut);
-        sut.tell(new ResourceControl.Shutdown(), ActorRef.noSender());
+        Execution execution = getExec();
+        ActorRef parent = system.actorOf(Props.create(
+                new FabricatedParentCreator(testProbe,
+                        ResultActor.props(execution))));
 
-        testProbe.expectMsgClass(Duration.create(1, TimeUnit.SECONDS), Terminated.class);
+        testProbe.watch(parent);
+
+        parent.tell(ResourceControl.Shutdown.create(), testProbe.ref());
+
+        Execution received = testProbe.expectMsgClass(Duration.create(100, TimeUnit.MILLISECONDS), Execution.class);
+        testProbe.expectMsgClass(Duration.create(100, TimeUnit.MILLISECONDS), Terminated.class);
+
+        assertThat(received.info().status(), is(ExecutionInfo.Status.CANCELED));
     }
 
 

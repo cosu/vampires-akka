@@ -26,18 +26,14 @@
 
 package ro.cosu.vampires.server.actors.messages;
 
-
 import com.google.auto.value.AutoValue;
 
 @AutoValue
-public abstract class QueryResource {
-    public static QueryResource withId(String resourceId) {
-        return new AutoValue_QueryResource(resourceId);
+public abstract class ShutdownResource {
+    public static ShutdownResource withId(String resourceId) {
+        return new AutoValue_ShutdownResource(resourceId);
     }
 
-    public static QueryResource all() {
-        return new AutoValue_QueryResource("all");
-    }
     public abstract String resourceId();
 
 }

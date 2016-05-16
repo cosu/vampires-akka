@@ -108,7 +108,7 @@ public class ResultActor extends UntypedActor {
             handleClientInfo(clientInfo);
         }
         else if (message instanceof ResourceControl.Shutdown) {
-            shutdown();
+            shutdown(ExecutionInfo.Status.CANCELED);
         } else {
             unhandled(message);
         }
@@ -123,7 +123,6 @@ public class ResultActor extends UntypedActor {
                 .updateRemaining(execution.workload().size() - results.size());
 
         Execution execution = this.execution.withInfo(executionInfo);
-        log.debug("{}", execution);
         getContext().parent().tell(execution, getSelf());
     }
 
@@ -137,7 +136,7 @@ public class ResultActor extends UntypedActor {
         }
         if (results.size() == execution.workload().getJobs().size()) {
             log.debug("result actor exiting {}", results.size());
-            shutdown();
+            shutdown(ExecutionInfo.Status.FINISHED);
         }
     }
 
@@ -148,12 +147,12 @@ public class ResultActor extends UntypedActor {
         writers.forEach(r -> r.addClient(clientInfo));
     }
 
-    private void shutdown() {
+    private void shutdown(ExecutionInfo.Status status) {
         log.info("Total Duration: {}", formatDuration(Duration.between(startTime, LocalDateTime.now())));
         log.info("shutting down");
         writers.forEach(ResultsWriter::close);
         // init shutdown
-        sendCurrentExecutionInfo(ExecutionInfo.Status.FINISHED);
+        sendCurrentExecutionInfo(status);
         getContext().stop(getSelf());
     }
 }

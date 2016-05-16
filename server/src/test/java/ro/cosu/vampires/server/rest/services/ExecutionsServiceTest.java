@@ -35,20 +35,22 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.Optional;
+
 import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
 import ro.cosu.vampires.server.workload.Execution;
+import ro.cosu.vampires.server.workload.ExecutionInfo;
 import ro.cosu.vampires.server.workload.ExecutionMode;
 import ro.cosu.vampires.server.workload.ExecutionPayload;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 
 public class ExecutionsServiceTest extends AbstractServiceTest<Execution, ExecutionPayload> {
 
     private static ActorSystem system;
-
-    public static ActorSystem getActorSystem() {
-        return system;
-    }
 
     @BeforeClass
     public static void setup() {
@@ -77,9 +79,13 @@ public class ExecutionsServiceTest extends AbstractServiceTest<Execution, Execut
     }
 
     @Override
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void delete() throws Exception {
-        super.delete();
+        assertThat(instance.list().size(), is(1));
+        String id = instance.list().iterator().next().id();
+        Optional<Execution> delete = instance.delete(id);
+        assertThat(delete.isPresent(), is(true));
+        assertThat(delete.get().info().status(), is(ExecutionInfo.Status.CANCELED));
     }
 
     @Override
