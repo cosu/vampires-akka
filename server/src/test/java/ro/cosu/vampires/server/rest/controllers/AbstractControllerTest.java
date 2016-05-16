@@ -1,6 +1,33 @@
+/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro <cosu@cosu.ro>
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
 package ro.cosu.vampires.server.rest.controllers;
 
 import com.google.gson.Gson;
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Module;
 import com.google.inject.TypeLiteral;
@@ -21,6 +48,7 @@ import ro.cosu.vampires.server.rest.services.Service;
 import ro.cosu.vampires.server.workload.Id;
 import spark.Spark;
 
+import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -45,7 +73,14 @@ public abstract class AbstractControllerTest<T extends Id, P> {
 
     @Before
     public void setUp() throws Exception {
-        Guice.createInjector(getModule());
+        Guice.createInjector(
+                new AbstractModule() {
+                    @Override
+                    protected void configure() {
+                        install(getModule());
+                        bind(ExceptionMapper.class).asEagerSingleton();
+                    }
+                });
         Spark.awaitInitialization();
         create();
     }
@@ -87,7 +122,6 @@ public abstract class AbstractControllerTest<T extends Id, P> {
         assertThat(res.status, is(HTTP_OK));
 
         List<T> list = getList(res.body, getValueClass());
-        list.stream().map(Id::id).forEach(System.out::println);
         assertThat(list.size(), not(0));
 
         return list.get(0);
@@ -127,6 +161,19 @@ public abstract class AbstractControllerTest<T extends Id, P> {
         String toJson = gson.toJson(firstItem);
         Response res = request("POST", Paths.get(getPath(), firstItem.id()).toString(), toJson);
         assertThat(res.status, is(HTTP_CREATED));
+        Id updatedItem = getFirstItem();
+        assertThat(updatedItem.id(), is(firstItem.id()));
+    }
+
+    @Test
+    public void updateFail() throws Exception {
+        Id firstItem = getFirstItem();
+
+        // update with a empty body
+        Response res = request("POST", Paths.get(getPath(), firstItem.id()).toString(), "");
+
+        assertThat(res.status, is(HTTP_BAD_REQUEST));
+
         Id updatedItem = getFirstItem();
         assertThat(updatedItem.id(), is(firstItem.id()));
     }

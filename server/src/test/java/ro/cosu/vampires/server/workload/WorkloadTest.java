@@ -1,3 +1,29 @@
+/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro <cosu@cosu.ro>
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
 package ro.cosu.vampires.server.workload;
 
 import com.google.gson.FieldNamingPolicy;
@@ -25,22 +51,17 @@ public class WorkloadTest {
     @Test
     public void fromConfig() throws Exception {
         Config load = ConfigFactory.load("application-dev.conf");
-        Workload workload = Workload.fromConfig(load.getConfig("vampires.workload"));
+        WorkloadPayload workloadPayload = WorkloadPayload.fromConfig(load.getConfig("vampires.workload"));
+        Workload workload = Workload.fromPayload(workloadPayload);
         assertThat(workload.id(), not(isEmptyOrNullString()));
-    }
-
-    @Test
-    public void updateSingleField() throws Exception {
-        Workload workload = Workload.builder().build().update().sequenceStart(10).build();
-
-        assertThat(workload.sequenceStart(), is(10));
-
     }
 
     @Test
     public void update() throws Exception {
 
-        Workload workload = Workload.builder().build().update().sequenceStart(10).build();
+        Workload workload = Workload.builder()
+                .task("foo")
+                .build().update().sequenceStart(10).build();
 
         Gson gson = new GsonBuilder().setPrettyPrinting()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
@@ -58,9 +79,8 @@ public class WorkloadTest {
         Workload fromJson = gson.fromJson(j, Workload.class);
 
         assertThat(fromJson.id(), is(workload.id()));
-        Workload workload1 = workload.withUpdate(fromJson);
 
-        assertThat(workload1.sequenceStart(), is(15));
+        assertThat(fromJson.sequenceStart(), is(15));
 
     }
 
@@ -68,12 +88,16 @@ public class WorkloadTest {
     public void updateFields() throws Exception {
         Config load = ConfigFactory.load("application-dev.conf");
 
+        WorkloadPayload workloadPayload = WorkloadPayload.
+                fromConfig(load.getConfig("vampires.workload"));
 
-        Workload workload = Workload.fromConfig(load.getConfig("vampires.workload"));
+        Workload workload = Workload.fromPayload(workloadPayload);
 
-        Workload update = Workload.builder().sequenceStart(32).sequenceStop(12).build();
+        WorkloadPayload updatedPayload = workloadPayload.toBuilder().sequenceStart(32).sequenceStop(12)
+                .id(workload.id())
+                .build();
 
-        Workload updatedWorkload = workload.withUpdate(update);
+        Workload updatedWorkload = workload.updateWithPayload(updatedPayload);
 
         assertThat(updatedWorkload.sequenceStart(), is(32));
         assertThat(updatedWorkload.sequenceStop(), is(12));

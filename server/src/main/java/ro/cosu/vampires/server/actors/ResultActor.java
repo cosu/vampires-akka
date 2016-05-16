@@ -1,24 +1,26 @@
 /*
- * The MIT License (MIT)
- * Copyright © 2016 Cosmin Dumitru, http://cosu.ro <cosu@cosu.ro>
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the “Software”), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro <cosu@cosu.ro>
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
  *
  */
 
@@ -35,14 +37,13 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Execution;
-import ro.cosu.vampires.server.workload.ExecutionStatus;
+import ro.cosu.vampires.server.workload.ExecutionInfo;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.writers.ResultsWriter;
 
@@ -60,6 +61,7 @@ public class ResultActor extends UntypedActor {
 
     private ActorRef workActor;
     private Cancellable logSchedule;
+
 
     ResultActor(Execution execution) {
         writers = settings.getWriters();
@@ -104,14 +106,6 @@ public class ResultActor extends UntypedActor {
         } else if (message instanceof ClientInfo) {
             ClientInfo clientInfo = (ClientInfo) message;
             handleClientInfo(clientInfo);
-        } else if (message instanceof QueryResource) {
-            ExecutionStatus status = ExecutionStatus.fromExecution(execution).builder()
-                    .total(execution.workload().size())
-                    .completed(results.size())
-                    .status("running")
-                    .remaining(execution.workload().size() - results.size()).build();
-
-            getSender().tell(status, getSelf());
         }
         else if (message instanceof ResourceControl.Shutdown) {
             shutdown();
@@ -120,17 +114,30 @@ public class ResultActor extends UntypedActor {
         }
     }
 
+    private void sendCurrentExecutionInfo(ExecutionInfo.Status status) {
+        ExecutionInfo executionInfo = ExecutionInfo.empty()
+                .updateTotal(execution.workload().size())
+                .updateCompleted(results.size())
+                .updateStatus(status)
+                .updateElapsed(Duration.between(startTime, LocalDateTime.now()).toMillis())
+                .updateRemaining(execution.workload().size() - results.size());
+
+        Execution execution = this.execution.withInfo(executionInfo);
+        log.debug("{}", execution);
+        getContext().parent().tell(execution, getSelf());
+    }
+
     private void handleJob(Job job) {
         workActor.forward(job, getContext());
         if (!job.computation().id().equals(Computation.BACKOFF)
                 && !job.computation().id().equals(Computation.EMPTY)) {
             results.add(job);
             writers.forEach(r -> r.addResult(job));
+            sendCurrentExecutionInfo(ExecutionInfo.Status.RUNNING);
         }
-
         if (results.size() == execution.workload().getJobs().size()) {
-            log.debug("result actor exiting");
-            getContext().stop(getSelf());
+            log.debug("result actor exiting {}", results.size());
+            shutdown();
         }
     }
 
@@ -146,6 +153,7 @@ public class ResultActor extends UntypedActor {
         log.info("shutting down");
         writers.forEach(ResultsWriter::close);
         // init shutdown
+        sendCurrentExecutionInfo(ExecutionInfo.Status.FINISHED);
         getContext().stop(getSelf());
     }
 }

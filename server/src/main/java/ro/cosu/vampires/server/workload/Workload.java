@@ -1,25 +1,39 @@
+/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro <cosu@cosu.ro>
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
 package ro.cosu.vampires.server.workload;
 
 
 import com.google.auto.value.AutoValue;
-import com.google.common.collect.Sets;
 
-import com.typesafe.config.Config;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import javax.annotation.Nullable;
 
 import ro.cosu.vampires.server.util.gson.AutoGson;
 
@@ -28,36 +42,13 @@ import ro.cosu.vampires.server.util.gson.AutoGson;
 
 public abstract class Workload implements Id {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Workload.class);
-
-    public static Workload fromConfig(Config config) {
-        String format = "";
-        if (config.hasPath("format")) {
-            format = config.getString("format");
-        }
-
-        String url = "";
-        if (config.hasPath("url")) {
-            url = config.getString("url");
-        }
-
-        int sequenceStart = config.getInt("sequenceStart");
-        int sequenceStop = config.getInt("sequenceStop");
-        String task = config.getString("task");
-
-        return builder().format(format)
-                .task(task)
-                .url(url)
-                .sequenceStart(sequenceStart)
-                .sequenceStop(sequenceStop)
-                .build();
-    }
-
     public static Workload.Builder builder() {
         return new AutoValue_Workload.Builder().id(UUID.randomUUID().toString())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .format("")
+                .description("")
+                .url("")
                 .sequenceStart(0)
                 .sequenceStop(0);
     }
@@ -69,26 +60,31 @@ public abstract class Workload implements Id {
                 .builderFromPayload(payload, builder()).build();
     }
 
+
+    public Workload updateWithPayload(WorkloadPayload payload) {
+        return new AutoValueUtil<WorkloadPayload, Workload.Builder>() {
+        }
+                .builderFromPayload(payload, toBuilder()).build();
+    }
+
+
     public abstract String id();
 
-    @Nullable
     public abstract LocalDateTime createdAt();
 
-    @Nullable
     public abstract LocalDateTime updatedAt();
 
     public abstract int sequenceStart();
 
     public abstract int sequenceStop();
 
-    @Nullable
     public abstract String task();
 
-    @Nullable
     public abstract String format();
 
-    @Nullable
     public abstract String url();
+
+    public abstract String description();
 
     public abstract Builder toBuilder();
 
@@ -103,7 +99,7 @@ public abstract class Workload implements Id {
 
 
     public int size() {
-        return sequenceStart() - sequenceStop() +1;
+        return sequenceStop() - sequenceStart() + 1;
     }
     public List<Job> getJobs() {
         final String finalUrl = url();
@@ -112,35 +108,6 @@ public abstract class Workload implements Id {
                 .map(f -> String.format("%s %s%s", task(), finalUrl, f).trim())
                 .map(command -> Job.empty().withCommand(command))
                 .collect(Collectors.toList());
-
-    }
-
-    public Workload withUpdate(Workload workloadUpdate) {
-        //TODO this should live in a separate class so that all autovalues can share it
-        Builder builder = toBuilder().updatedAt(LocalDateTime.now());
-
-        Set<String> forbiddenMethods = Sets.newHashSet("toBuilder", "equals", "id", "toString",
-                "hashCode", "$jacocoInit");
-
-        Arrays.stream(getClass().getDeclaredMethods())
-                .filter(method -> !forbiddenMethods.contains(method.getName()))
-                .forEach(method -> {
-                    try {
-                        Object invoke = method.invoke(workloadUpdate);
-
-                        Method builderMethod = builder.getClass()
-                                .getMethod(method.getName(), method.getReturnType());
-
-                        if (invoke != null) {
-                            builderMethod.invoke(builder, invoke);
-                        }
-
-                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                        LOG.error("Error calling on " + method.getName() + " updating " + this, e);
-                    }
-                });
-
-        return builder.build();
 
     }
 
@@ -162,6 +129,8 @@ public abstract class Workload implements Id {
         public abstract Builder format(String format);
 
         public abstract Builder url(String format);
+
+        public abstract Builder description(String description);
 
         public abstract Workload build();
     }
