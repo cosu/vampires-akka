@@ -24,22 +24,24 @@
  *
  */
 
-package ro.cosu.vampires.server.rest.services;
+package ro.cosu.vampires.server.resources;
 
 
-import com.google.inject.Inject;
+import com.google.auto.value.AutoValue;
 
-import java.util.List;
+@AutoValue
+public abstract class ResourceId {
 
-import ro.cosu.vampires.server.workload.ProviderDescription;
-
-public class ProvidersService {
-
-    @Inject
-    private List<ProviderDescription> providers;
-
-    public List<ProviderDescription> list() {
-        return providers;
+    public static ResourceId create(String id, Resource.ProviderType providerType) {
+        return new AutoValue_ResourceId(id, providerType);
     }
+
+    public static ResourceId empty(Resource.ProviderType providerType) {
+        return new AutoValue_ResourceId("", providerType);
+    }
+
+    public abstract String id();
+
+    public abstract Resource.ProviderType provider();
 
 }

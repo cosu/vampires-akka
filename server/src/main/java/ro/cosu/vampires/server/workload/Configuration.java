@@ -44,7 +44,7 @@ public abstract class Configuration implements Id {
 //        "id": "37ecfc16-f0fc-4c43-a915-bfef7ac6116b",
 //        "created_at": "2016-08-05T08:40:51.620Z",
 //        "lastupdate_at": "2016-08-05T08:40:51.620Z",
-//        "description" : "my optional description",
+//        "properties" : "my optional properties",
 //        "resources":
 //        [
 //        {

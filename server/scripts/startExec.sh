@@ -19,7 +19,7 @@ curl -s --request POST \
     }
 ]
 }" \
-${api_server}/configurations | jq '.id')
+${api_server}/configurations | jq -r '.id')
 
 #create workload
 workload_id=$(
@@ -31,19 +31,20 @@ curl -s --request POST \
     \"task\": \"sleep 4\",
     \"description\": \"a new description\"
 }" \
-${api_server}/workloads | jq '.id')
+${api_server}/workloads | jq -r '.id')
 
-echo ${config_id} ${workload_id}
+echo configuration ${config_id}
+echo workload ${workload_id}
 
 #execute
 execution_id=$(curl -s \
      --request POST \
      --header "Content-Type: application/json" \
      --data-binary "{
-    \"configuration\": $config_id,
-    \"workload\": $workload_id,
+    \"configuration\": \"$config_id\",
+    \"workload\": \"$workload_id\",
     \"type\" : \"full\"
 }" \
 ${api_server}/executions |jq -r '.id')
 
-echo ${execution_id}
+echo execution ${execution_id}

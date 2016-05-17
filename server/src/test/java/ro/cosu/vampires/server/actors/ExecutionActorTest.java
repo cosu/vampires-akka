@@ -50,6 +50,7 @@ import ro.cosu.vampires.server.workload.Result;
 import ro.cosu.vampires.server.workload.Workload;
 import scala.concurrent.duration.Duration;
 
+import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
@@ -138,6 +139,8 @@ public class ExecutionActorTest extends AbstractActorTest {
                 executionActor.tell(ResourceControl.Shutdown.create(), workProbe.getRef());
 
                 workProbe.expectMsgClass(Terminated.class);
+
+                assertThat(workProbe.getLastSender(), is(executionActor));
 
             }
         };

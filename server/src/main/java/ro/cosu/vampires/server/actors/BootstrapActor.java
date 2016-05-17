@@ -183,7 +183,11 @@ public class BootstrapActor extends UntypedActor {
         if (info.equals(QueryResource.all())) {
             getSender().tell(resultsMap.values(), getSelf());
         } else {
-            getSender().tell(resultsMap.get(info.resourceId()), getSelf());
+            if (resultsMap.containsKey(info.resourceId())) {
+                getSender().tell(resultsMap.get(info.resourceId()), getSelf());
+            } else {
+                log.error("Invalid query for execution id {}", info.resourceId());
+            }
         }
     }
 }

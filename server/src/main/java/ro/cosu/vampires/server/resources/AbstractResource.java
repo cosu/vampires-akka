@@ -37,14 +37,14 @@ import java.util.concurrent.CompletionException;
 public abstract class AbstractResource implements Resource {
 
     private final Parameters parameters;
-    private final ResourceDescription description;
+    private final ResourceId description;
     private Resource.Status status;
     public AbstractResource(Resource.Parameters parameters) {
         this.parameters = parameters;
         setStatus(Status.SLEEPING);
-        this.description = ResourceDescription.create(generateId(), parameters.providerType());
+        this.description = ResourceId.create(generateId(), parameters.providerType());
         getLogger().debug("resource parameters {}", parameters);
-        getLogger().debug("creating resource with description {}", description);
+        getLogger().debug("creating resource with properties {}", description);
     }
 
     protected abstract Logger getLogger();
@@ -107,7 +107,7 @@ public abstract class AbstractResource implements Resource {
     }
 
     @Override
-    public ResourceDescription description() {
+    public ResourceId description() {
         return description;
     }
 
@@ -126,7 +126,7 @@ public abstract class AbstractResource implements Resource {
     @Override
     public String toString() {
         return getLogger().getName() + "{"
-                + "description=" + description + ", "
+                + "properties=" + description + ", "
                 + "info=" + status
                 + "}";
     }

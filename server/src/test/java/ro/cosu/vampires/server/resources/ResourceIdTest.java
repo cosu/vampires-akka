@@ -24,22 +24,22 @@
  *
  */
 
-package ro.cosu.vampires.server.rest.services;
+package ro.cosu.vampires.server.resources;
 
+import org.junit.Test;
 
-import com.google.inject.Inject;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
 
-import java.util.List;
-
-import ro.cosu.vampires.server.workload.ProviderDescription;
-
-public class ProvidersService {
-
-    @Inject
-    private List<ProviderDescription> providers;
-
-    public List<ProviderDescription> list() {
-        return providers;
+/**
+ * Created on 6-2-16.
+ */
+public class ResourceIdTest {
+    @Test
+    public void testCreateResourceDescription() throws Exception {
+        ResourceId test = ResourceId.create("test", Resource.ProviderType.LOCAL);
+        assertThat(test.id(), is(equalTo("test")));
+        assertThat(test.provider(), is(equalTo(Resource.ProviderType.LOCAL)));
     }
-
 }

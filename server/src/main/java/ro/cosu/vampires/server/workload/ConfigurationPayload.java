@@ -47,7 +47,7 @@ public abstract class ConfigurationPayload {
 
     public static ConfigurationPayload fromConfig(Config config) {
 
-        String description = config.hasPath("description") ? config.getString("description") : "";
+        String description = config.hasPath("properties") ? config.getString("properties") : "";
 
         List<ResourceDemand> resourceDemandsList = config.getConfigList("start")
                 .stream().map(demandConfig -> {

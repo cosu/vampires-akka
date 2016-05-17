@@ -149,7 +149,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         Thread.sleep(100);
 
-        String id = resourceInfo.description().id();
+        String id = resourceInfo.properties().id();
 
         ClientInfo clientInfo = ClientInfo.builder()
                 .executors(Maps.newHashMap())
@@ -185,7 +185,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
         resourceManagerActor.tell(bs, testProbe.ref());
         ResourceInfo ri = (ResourceInfo) testProbe.receiveOne(Duration.create("50 milliseconds"));
         assertThat(ri.status(), equalTo(Resource.Status.RUNNING));
-        assertThat(ri.description().provider(), equalTo(Resource.ProviderType.MOCK));
+        assertThat(ri.properties().provider(), equalTo(Resource.ProviderType.MOCK));
 
     }
 

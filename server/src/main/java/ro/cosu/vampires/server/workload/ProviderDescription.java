@@ -24,22 +24,48 @@
  *
  */
 
-package ro.cosu.vampires.server.rest.services;
+package ro.cosu.vampires.server.workload;
 
+import com.google.auto.value.AutoValue;
+import com.google.common.collect.ImmutableList;
 
-import com.google.inject.Inject;
+import ro.cosu.vampires.server.resources.Resource;
 
-import java.util.List;
+@AutoValue
+public abstract class ProviderDescription {
+//    "provider": "ec2",
+//            "name" : "Amazon EC2",
+//            "resources": [
+//    {
+//        "type": "eu-west1.t2.nano",
+//            "cost": 10
+//    }, {
+//        "type": "eu-west1.t2.micro",
+//                "cost": 100
+//    }, {
+//        "type": "eu-west1.t3.micro",
+//                "cost": 110
+//    }
+//},
 
-import ro.cosu.vampires.server.workload.ProviderDescription;
-
-public class ProvidersService {
-
-    @Inject
-    private List<ProviderDescription> providers;
-
-    public List<ProviderDescription> list() {
-        return providers;
+    public static Builder builder() {
+        return new AutoValue_ProviderDescription.Builder();
     }
 
+    public abstract Resource.ProviderType provider();
+
+    public abstract String description();
+
+    public abstract ImmutableList<ResourceDescription> resources();
+
+    @AutoValue.Builder
+    public static abstract class Builder {
+        public abstract Builder provider(Resource.ProviderType provider);
+
+        public abstract Builder description(String name);
+
+        public abstract Builder resources(ImmutableList<ResourceDescription> resourceDescriptions);
+
+        public abstract ProviderDescription build();
+    }
 }

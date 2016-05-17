@@ -56,7 +56,7 @@ public class ConfigurationTest {
     @Test
     public void fromConfig() throws Exception {
         String startConfig = "{" +
-                "description = foo\n" +
+                "properties = foo\n" +
                 "start  = [\n" +
                 "    {\n" +
                 "      provider = local\n" +
