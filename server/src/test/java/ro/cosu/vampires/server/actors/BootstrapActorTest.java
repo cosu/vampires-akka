@@ -83,11 +83,19 @@ public class BootstrapActorTest extends AbstractActorTest {
                 assertThat(stoppingExecution.id(), is(execution.id()));
                 assertThat(stoppingExecution.info().status(), is(ExecutionInfo.Status.STOPPING));
                 // let things stop cleanly
-                Thread.sleep(100);
+
                 // ask for the status
                 bootstrapActor.tell(QueryResource.withId(execution.id()), restService.getRef());
                 Execution canceledExecution = restService.expectMsgClass(Execution.class);
-                // shoudl be cancled
+
+                // retry a bit (actors comms is async)
+                int count = 0;
+                while (count < 3 && !canceledExecution.info().status().equals(ExecutionInfo.Status.CANCELED)) {
+                    Thread.sleep(100);
+                    count++;
+                    bootstrapActor.tell(QueryResource.withId(execution.id()), restService.getRef());
+                    canceledExecution = restService.expectMsgClass(Execution.class);
+                }
                 assertThat(canceledExecution.id(), is(execution.id()));
                 assertThat(canceledExecution.info().status(), is(ExecutionInfo.Status.CANCELED));
 
