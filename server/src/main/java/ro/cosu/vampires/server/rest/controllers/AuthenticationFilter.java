@@ -34,7 +34,6 @@ import java.util.List;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static spark.Spark.before;
 import static spark.Spark.halt;
-import static spark.Spark.options;
 
 public class AuthenticationFilter {
     private static List<String> storedCredentials = Lists.newLinkedList();
@@ -65,26 +64,5 @@ public class AuthenticationFilter {
             }
 
         });
-
-        // all  CORS
-        options("/*", (request, response) -> {
-
-            String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
-            if (accessControlRequestHeaders != null) {
-                response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
-            }
-
-            String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
-            if (accessControlRequestMethod != null) {
-                response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
-            }
-
-            return "OK";
-        });
-
-        before((request, response) -> {
-            response.header("Access-Control-Allow-Origin", "*");
-        });
-
     }
 }

@@ -26,20 +26,29 @@
 
 package ro.cosu.vampires.server.rest.controllers;
 
+import static spark.Spark.before;
+import static spark.Spark.options;
 
-import com.google.inject.AbstractModule;
+public class CorsFilter {
+    CorsFilter() {
+        // all  CORS
+        options("/*", (request, response) -> {
 
-public class ControllersModule extends AbstractModule{
+            String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
+            if (accessControlRequestHeaders != null) {
+                response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
+            }
 
-    @Override
-    protected void configure() {
-        bind(ProvidersController.class).asEagerSingleton();
-        bind(ConfigurationsController.class).asEagerSingleton();
-        bind(ExecutionsController.class).asEagerSingleton();
-        bind(WorkloadsController.class).asEagerSingleton();
-        bind(ExceptionMapper.class).asEagerSingleton();
-        bind(CorsFilter.class).asEagerSingleton();
+            String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
+            if (accessControlRequestMethod != null) {
+                response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
+            }
 
-//        bind(AuthenticationFilter.class).asEagerSingleton();
+            return "OK";
+        });
+
+        before((request, response) -> {
+            response.header("Access-Control-Allow-Origin", "*");
+        });
     }
 }
