@@ -91,7 +91,7 @@ public class BootstrapActorTest extends AbstractActorTest {
                 // retry a bit (actors comms is async)
                 int count = 0;
                 while (count < 3 && !canceledExecution.info().status().equals(ExecutionInfo.Status.CANCELED)) {
-                    Thread.sleep(100);
+                    Thread.sleep(1000);
                     count++;
                     bootstrapActor.tell(QueryResource.withId(execution.id()), restService.getRef());
                     canceledExecution = restService.expectMsgClass(Execution.class);
