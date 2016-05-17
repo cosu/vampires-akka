@@ -43,8 +43,15 @@ import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.workload.Metrics;
 import ro.cosu.vampires.server.workload.Result;
 import ro.cosu.vampires.server.workload.Workload;
+import ro.cosu.vampires.server.workload.schedulers.Scheduler;
+import ro.cosu.vampires.server.workload.schedulers.SimpleScheduler;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 public class WorkActorTest extends AbstractActorTest {
+    private int backOffinterval = 10;
+
     private Execution getExecution() {
         Configuration configuration = Configuration.builder().resources(ImmutableList.of()).description("foo").build();
         Workload workload = Workload.builder().format("foo").sequenceStart(0).sequenceStop(1).task("bar").build();
@@ -53,6 +60,9 @@ public class WorkActorTest extends AbstractActorTest {
                 type(ExecutionMode.FULL).info(ExecutionInfo.empty()).workload(workload).build();
     }
 
+    private Scheduler getScheduler() {
+        return new SimpleScheduler(getExecution().workload().getJobs(), 100, backOffinterval);
+    }
     @Test
     public void testWork() {
 
@@ -62,7 +72,7 @@ public class WorkActorTest extends AbstractActorTest {
                 final JavaTestKit workProbe = new JavaTestKit(system);
 
                 // create a work actor
-                final Props props = WorkActor.props(getExecution());
+                final Props props = WorkActor.props(getScheduler());
                 final ActorRef workActor = system.actorOf(props, "workactor");
                 workProbe.watch(workActor);
                 Job job = Job.builder()
@@ -70,21 +80,28 @@ public class WorkActorTest extends AbstractActorTest {
                         .hostMetrics(Metrics.empty())
                         .result(Result.empty())
                         .build();
-
+                // send the job request
                 workActor.tell(job, workProbe.getRef());
 
+                // receive the first job
                 Job receivedJob = workProbe.expectMsgClass(Job.class);
 
+                // send the processed job
                 workActor.tell(receivedJob.withResult(Result.empty()).withHostMetrics(Metrics.empty()), workProbe.getRef());
 
+                // receive a 2nd job
                 receivedJob = workProbe.expectMsgClass(Job.class);
 
+                // send the processed job
                 workActor.tell(receivedJob.withResult(Result.empty()).withHostMetrics(Metrics.empty()), workProbe.getRef());
 
+                // receive the 3rd job
                 receivedJob = workProbe.expectMsgClass(Job.class);
 
-                workActor.tell(receivedJob.withResult(Result.empty()).withHostMetrics(Metrics.empty()), workProbe.getRef());
+                // it should be a backoff
+                assertThat(receivedJob.computation(), is(Computation.backoff(backOffinterval)));
 
+                // work actor auto-shuts down{
                 workProbe.expectMsgClass(Terminated.class);
 
 

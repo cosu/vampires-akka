@@ -98,7 +98,8 @@ public class BootstrapActor extends UntypedActor {
         }
 
         if (settings.vampires.hasPath("configurations")) {
-            ConfigurationsService configurationsService = injector.getInstance(ConfigurationsService.class);
+            ConfigurationsService configurationsService = injector
+                    .getInstance(ConfigurationsService.class);
             settings.vampires.getConfigList("configurations").stream()
                     .map(ConfigurationPayload::fromConfig)
                     .forEach(configurationsService::create);
@@ -147,11 +148,13 @@ public class BootstrapActor extends UntypedActor {
                 executionActor.tell(ResourceControl.Shutdown.create(), getSelf());
 
                 // update the current view of the execution
-                resultsMap.put(execution.id(),
-                        execution.withInfo(execution.info().updateStatus(ExecutionInfo.Status.STOPPING)));
+                execution = execution.withInfo(execution.info()
+                        .updateStatus(ExecutionInfo.Status.STOPPING));
+                resultsMap.put(execution.id(), execution);
             } else {
                 log.warning("shutting down a non-running execution {}", execution);
             }
+
             getSender().tell(execution, getSelf());
 
         }

@@ -1,30 +1,30 @@
 /*
- * The MIT License (MIT)
- * Copyright © 2016 Cosmin Dumitru, http://cosu.ro <cosu@cosu.ro>
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the “Software”), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro <cosu@cosu.ro>
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
  *
  */
 
 package ro.cosu.vampires.server.actors;
-
-import java.util.List;
 
 import akka.actor.Props;
 import akka.actor.UntypedActor;
@@ -33,12 +33,8 @@ import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.Computation;
-import ro.cosu.vampires.server.workload.Execution;
-import ro.cosu.vampires.server.workload.ExecutionMode;
 import ro.cosu.vampires.server.workload.Job;
-import ro.cosu.vampires.server.workload.schedulers.SamplingScheduler;
 import ro.cosu.vampires.server.workload.schedulers.Scheduler;
-import ro.cosu.vampires.server.workload.schedulers.SimpleScheduler;
 
 public class WorkActor extends UntypedActor {
 
@@ -47,23 +43,12 @@ public class WorkActor extends UntypedActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private Scheduler scheduler;
 
-    // maybe we could inject a precooked scheduler here
-    WorkActor(Execution execution) {
-        scheduler = getScheduler(execution);
+    WorkActor(Scheduler scheduler) {
+        this.scheduler = scheduler;
     }
 
-    public static Props props(Execution execution) {
-        return Props.create(WorkActor.class, execution);
-    }
-
-    private Scheduler getScheduler(Execution execution) {
-        List<Job> jobs = execution.workload().getJobs();
-        if (execution.type().equals(ExecutionMode.SAMPLE)) {
-            log.info("running in sampling mode : sampling from {} jobs", jobs.size());
-            return new SamplingScheduler(jobs, settings.getJobDeadline(),
-                    settings.getBackoffInterval(), settings.getNumberOfJobsToSample());
-        } else
-            return new SimpleScheduler(jobs, settings.getJobDeadline(), settings.getBackoffInterval());
+    public static Props props(Scheduler scheduler) {
+        return Props.create(WorkActor.class, scheduler);
     }
 
     @Override

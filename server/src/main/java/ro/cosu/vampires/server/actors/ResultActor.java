@@ -44,7 +44,11 @@ import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.ExecutionInfo;
+import ro.cosu.vampires.server.workload.ExecutionMode;
 import ro.cosu.vampires.server.workload.Job;
+import ro.cosu.vampires.server.workload.schedulers.SamplingScheduler;
+import ro.cosu.vampires.server.workload.schedulers.Scheduler;
+import ro.cosu.vampires.server.workload.schedulers.SimpleScheduler;
 import ro.cosu.vampires.server.writers.ResultsWriter;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -85,7 +89,10 @@ public class ResultActor extends UntypedActor {
 
     @Override
     public void preStart() {
-        workActor = getContext().actorOf(WorkActor.props(execution), "workActor");
+
+        Scheduler scheduler = getScheduler(execution);
+
+        workActor = getContext().actorOf(WorkActor.props(scheduler), "workActor");
 
         logSchedule = getContext().system().scheduler().schedule(scala.concurrent.duration.Duration.Zero(),
                 scala.concurrent.duration.Duration.create(30, SECONDS), () -> {
@@ -154,5 +161,15 @@ public class ResultActor extends UntypedActor {
         // init shutdown
         sendCurrentExecutionInfo(status);
         getContext().stop(getSelf());
+    }
+
+    private Scheduler getScheduler(Execution execution) {
+        List<Job> jobs = execution.workload().getJobs();
+        if (execution.type().equals(ExecutionMode.SAMPLE)) {
+            log.info("running in sampling mode : sampling from {} jobs", jobs.size());
+            return new SamplingScheduler(jobs, settings.getJobDeadline(),
+                    settings.getBackoffInterval(), settings.getNumberOfJobsToSample());
+        } else
+            return new SimpleScheduler(jobs, settings.getJobDeadline(), settings.getBackoffInterval());
     }
 }
