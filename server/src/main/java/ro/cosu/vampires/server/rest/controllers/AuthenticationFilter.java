@@ -47,19 +47,23 @@ public class AuthenticationFilter {
 
         // stupid authentication
         before((request, response) -> {
-            boolean authenticated = false;
+            boolean authenticated = !request.session().isNew();
             String auth = request.headers("Authorization");
-            if (auth != null && auth.startsWith("Basic")) {
+
+            if (auth != null && auth.startsWith("Basic") || !authenticated) {
                 String b64Credentials = auth.substring("Basic".length()).trim();
                 String credentials = new String(Base64.getDecoder().decode(b64Credentials));
                 if (storedCredentials.contains(credentials)) {
                     authenticated = true;
+                    // store the user in the session
                     request.session().attribute("user", credentials.split(":")[0]);
+                    // 10 min sessions
+                    request.session().maxInactiveInterval(600);
+
                 }
             }
             if (!authenticated) {
                 response.header("WWW-Authenticate", "Basic realm=\"Restricted\"");
-
                 halt(HTTP_UNAUTHORIZED);
             }
 

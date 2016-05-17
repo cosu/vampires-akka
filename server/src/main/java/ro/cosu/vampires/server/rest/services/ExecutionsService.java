@@ -83,6 +83,7 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
         try {
             Object result = Await.result(ask, timeout.duration());
             if (result instanceof Collection) {
+                // silly java types
                 executions = (Collection<Execution>) result;
             }
             return executions;
