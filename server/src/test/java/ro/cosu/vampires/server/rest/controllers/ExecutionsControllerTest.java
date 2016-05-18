@@ -34,6 +34,13 @@ import com.google.inject.Module;
 
 import com.typesafe.config.ConfigFactory;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -53,10 +60,12 @@ import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
-import static ro.cosu.vampires.server.rest.controllers.Response.request;
+import static ro.cosu.vampires.server.rest.controllers.AbstractControllerTest.getHttpClient;
+import static ro.cosu.vampires.server.rest.controllers.AbstractControllerTest.url;
 
 
 public class ExecutionsControllerTest {
@@ -64,6 +73,8 @@ public class ExecutionsControllerTest {
     private static ActorSystem system;
     private static Injector injector;
     private Gson gson = JsonTransformer.get().getGson();
+
+    private String controllerUrl = "/executions";
 
     @AfterClass
     public static void teardown() {
@@ -80,6 +91,7 @@ public class ExecutionsControllerTest {
             @Override
             protected void configure() {
                 bind(ExecutionsController.class).asEagerSingleton();
+                bind(AuthenticationFilter.class).asEagerSingleton();
                 install(new ServicesTestModule(system));
             }
         };
@@ -101,11 +113,17 @@ public class ExecutionsControllerTest {
         ExecutionPayload payload = getPayload();
 
         String toJson = gson.toJson(payload);
-        Response res = request("POST", "/executions", toJson);
 
-        assertThat(res.status, is(HTTP_CREATED));
+        HttpPost httpPost = new HttpPost(url + controllerUrl);
+        httpPost.setEntity(new StringEntity(toJson));
+        httpPost.setHeader("Content-type", "application/json");
 
-        Execution execution = gson.fromJson(res.body, Execution.class);
+        HttpClient client = getHttpClient();
+
+        HttpResponse execute = client.execute(httpPost);
+        assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_CREATED));
+
+        Execution execution = gson.fromJson(EntityUtils.toString(execute.getEntity()), Execution.class);
 
         assertThat(execution.id(), not(isEmptyOrNullString()));
     }
@@ -113,26 +131,58 @@ public class ExecutionsControllerTest {
     @Test
     public void list() throws Exception {
         create();
-        Response res = request("GET", "/executions", "");
-        Execution[] executions = gson.fromJson(res.body, Execution[].class);
+
+        HttpClient client = getHttpClient();
+        HttpGet httpGet = new HttpGet(url + controllerUrl);
+        HttpResponse execute = client.execute(httpGet);
+        assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_OK));
+
+        Execution[] executions = gson.fromJson(EntityUtils.toString(execute.getEntity()), Execution[].class);
         assertThat(executions.length, not(0));
+
     }
 
     @Test
     public void get() throws Exception {
         create();
-        Response res = request("GET", "/executions", "");
-        Execution[] executions = gson.fromJson(res.body, Execution[].class);
-        res = request("GET", "/executions/" + executions[0].id(), "");
-        assertThat(res.status, is(HTTP_OK));
+
+        HttpClient client = getHttpClient();
+        HttpGet httpGet = new HttpGet(url + controllerUrl);
+        HttpResponse execute = client.execute(httpGet);
+        assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_OK));
+
+        Execution[] executions = gson.fromJson(EntityUtils.toString(execute.getEntity()), Execution[].class);
+        assertThat(executions.length, not(0));
+
+        httpGet = new HttpGet(url + controllerUrl + "/" + executions[0].id());
+        execute = client.execute(httpGet);
+
+        assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_OK));
     }
 
     @Test
     public void delete() throws Exception {
         create();
-        Response res = request("GET", "/executions", "");
-        Execution[] executions = gson.fromJson(res.body, Execution[].class);
-        res = request("DELETE", "/executions/" + executions[0].id(), "");
-        assertThat(res.status, is(HTTP_NO_CONTENT));
+
+        HttpGet httpGet = new HttpGet(url + controllerUrl);
+        HttpClient client = getHttpClient();
+
+        HttpResponse execute = client.execute(httpGet);
+        assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_OK));
+
+        Execution[] executions = gson.fromJson(EntityUtils.toString(execute.getEntity()), Execution[].class);
+
+        String deleteUrl = url + controllerUrl + "/" + executions[0].id();
+
+        HttpDelete httpDelete = new HttpDelete(deleteUrl);
+
+        HttpClient httpClient = getHttpClient();
+
+        execute = httpClient.execute(httpDelete);
+
+        assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_NO_CONTENT));
+
+        assertThat(execute.getEntity(), nullValue());
+
     }
 }

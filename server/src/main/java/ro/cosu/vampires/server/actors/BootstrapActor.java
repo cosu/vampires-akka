@@ -51,6 +51,7 @@ import ro.cosu.vampires.server.rest.services.WorkloadsService;
 import ro.cosu.vampires.server.workload.ConfigurationPayload;
 import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.ExecutionInfo;
+import ro.cosu.vampires.server.workload.User;
 import ro.cosu.vampires.server.workload.WorkloadPayload;
 import spark.Spark;
 
@@ -76,6 +77,10 @@ public class BootstrapActor extends UntypedActor {
         return Props.create(BootstrapActor.class, terminator);
     }
 
+    private User getUser() {
+        return User.create("foo");
+    }
+
     @Override
     public void preStart() {
         terminator.tell(ResourceControl.Up.create(), getSelf());
@@ -94,7 +99,7 @@ public class BootstrapActor extends UntypedActor {
             WorkloadsService workloadsService = injector.getInstance(WorkloadsService.class);
             settings.vampires.getConfigList("workloads").stream()
                     .map(WorkloadPayload::fromConfig)
-                    .forEach(workloadsService::create);
+                    .forEach(p -> workloadsService.create(p, getUser()));
         }
 
         if (settings.vampires.hasPath("configurations")) {
@@ -102,7 +107,7 @@ public class BootstrapActor extends UntypedActor {
                     .getInstance(ConfigurationsService.class);
             settings.vampires.getConfigList("configurations").stream()
                     .map(ConfigurationPayload::fromConfig)
-                    .forEach(configurationsService::create);
+                    .forEach(p -> configurationsService.create(p, getUser()));
         }
     }
 

@@ -72,8 +72,8 @@ public class ConfigurationsServiceTest extends AbstractServiceTest<Configuration
 
     @Override
     public void update() throws Exception {
-        assertThat(instance.list().size(), is(1));
-        Configuration next = instance.list().iterator().next();
+        assertThat(instance.list(getUser()).size(), is(1));
+        Configuration next = instance.list(getUser()).iterator().next();
 
         AutoValueUtil<Configuration, ConfigurationPayload.Builder>
                 configurationBuilderAutoValueUtil = new AutoValueUtil<>();
@@ -82,7 +82,7 @@ public class ConfigurationsServiceTest extends AbstractServiceTest<Configuration
 
         ConfigurationPayload updated = builder.description("foobar").build();
 
-        Optional<Configuration> update = instance.update(updated);
+        Optional<Configuration> update = instance.update(updated, getUser());
 
         assertThat(update.isPresent(), is(true));
         assertThat(update.get().description(), is("foobar"));
@@ -91,7 +91,7 @@ public class ConfigurationsServiceTest extends AbstractServiceTest<Configuration
     @Test(expected = NullPointerException.class)
     public void updateFail() throws Exception {
         ConfigurationPayload configurationPayload = ConfigurationPayload.builder().description("foo").build();
-        Optional<Configuration> update = instance.update(configurationPayload);
+        Optional<Configuration> update = instance.update(configurationPayload, getUser());
 
     }
 }

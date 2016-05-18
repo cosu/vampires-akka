@@ -40,6 +40,7 @@ import java.util.Optional;
 
 import ro.cosu.vampires.server.workload.Configuration;
 import ro.cosu.vampires.server.workload.ConfigurationPayload;
+import ro.cosu.vampires.server.workload.User;
 
 
 public class ConfigurationsService implements Service<Configuration, ConfigurationPayload> {
@@ -54,12 +55,12 @@ public class ConfigurationsService implements Service<Configuration, Configurati
     }
 
     @Override
-    public Collection<Configuration> list() {
+    public Collection<Configuration> list(User user) {
         return configurations.values();
     }
 
     @Override
-    public Configuration create(ConfigurationPayload payload) {
+    public Configuration create(ConfigurationPayload payload, User user) {
         Configuration created = Configuration.fromPayload(payload);
         configurations.put(created.id(), created);
         LOG.debug("Created  {} : {}", created.id(), created);
@@ -67,12 +68,12 @@ public class ConfigurationsService implements Service<Configuration, Configurati
     }
 
     @Override
-    public Optional<Configuration> delete(String id) {
+    public Optional<Configuration> delete(String id, User user) {
         return Optional.ofNullable(configurations.remove(id));
     }
 
     @Override
-    public Optional<Configuration> update(ConfigurationPayload updated) {
+    public Optional<Configuration> update(ConfigurationPayload updated, User user) {
         Preconditions.checkNotNull(updated, "empty payload");
         Preconditions.checkNotNull(updated.id(), "id must not be empty");
 
@@ -87,7 +88,7 @@ public class ConfigurationsService implements Service<Configuration, Configurati
     }
 
     @Override
-    public Optional<Configuration> get(String id) {
+    public Optional<Configuration> get(String id, User user) {
         return Optional.ofNullable(configurations.get(id));
     }
 }

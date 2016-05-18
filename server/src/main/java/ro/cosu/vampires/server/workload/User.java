@@ -24,25 +24,19 @@
  *
  */
 
-package ro.cosu.vampires.server.rest.services;
+package ro.cosu.vampires.server.workload;
 
+import com.google.auto.value.AutoValue;
 
-import java.util.Collection;
-import java.util.Optional;
+@AutoValue
+public abstract class User {
+    public static User admin() {
+        return new AutoValue_User("admin");
+    }
 
-import ro.cosu.vampires.server.workload.Id;
-import ro.cosu.vampires.server.workload.User;
+    public static User create(String id) {
+        return new AutoValue_User(id);
+    }
 
-public interface Service<T extends Id, P> {
-    Collection<T> list(User user);
-
-    T create(P payload, User user);
-
-    Optional<T> delete(String id, User user);
-
-    Optional<T> update(P updated, User user);
-
-    Optional<T> get(String id, User user);
-
-
+    public abstract String id();
 }

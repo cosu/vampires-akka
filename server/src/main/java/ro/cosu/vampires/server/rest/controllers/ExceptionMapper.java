@@ -54,7 +54,8 @@ public class ExceptionMapper {
 
         @Override
         public void handle(Exception exception, Request request, Response response) {
-            LOG.error("exception", exception);
+            LOG.error("Error for client {} path {} body {}", request.ip(), request.url(), request.body(), exception);
+//            LOG.error("exception", exception);
             response.status(HTTP_BAD_REQUEST);
             HashMap<Object, Object> map = Maps.newHashMap();
             map.put("error", exception.getMessage());

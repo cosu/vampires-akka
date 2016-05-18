@@ -81,9 +81,9 @@ public class ExecutionsServiceTest extends AbstractServiceTest<Execution, Execut
     @Override
     @Test
     public void delete() throws Exception {
-        assertThat(instance.list().size(), is(1));
-        String id = instance.list().iterator().next().id();
-        Optional<Execution> delete = instance.delete(id);
+        assertThat(instance.list(getUser()).size(), is(1));
+        String id = instance.list(getUser()).iterator().next().id();
+        Optional<Execution> delete = instance.delete(id, getUser());
         assertThat(delete.isPresent(), is(true));
         assertThat(delete.get().info().status(), is(ExecutionInfo.Status.CANCELED));
     }

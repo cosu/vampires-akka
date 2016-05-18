@@ -2,7 +2,6 @@
 
 set -o nounset
 
-api_server="http://localhost:4567"
+source ./common.sh
 
-
-curl -s ${api_server}/workloads
+${curl} ${api_server}/workloads

@@ -2,12 +2,11 @@
 
 set -o nounset
 
-
-api_server="http://localhost:4567"
+source ./common.sh
 
 ##create a configuration
 config_id=$(
-curl -s --request POST \
+${curl} --request POST \
 --header "Content-Type: application/json" \
 --data-binary "{
 \"description\" : \"my optional description\",

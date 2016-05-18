@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
+import ro.cosu.vampires.server.workload.User;
 import ro.cosu.vampires.server.workload.Workload;
 import ro.cosu.vampires.server.workload.WorkloadPayload;
 
@@ -56,12 +57,12 @@ public class WorkloadsService implements Service<Workload, WorkloadPayload> {
     }
 
     @Override
-    public Collection<Workload> list() {
+    public Collection<Workload> list(User user) {
         return workloads.values();
     }
 
     @Override
-    public Workload create(WorkloadPayload payload) {
+    public Workload create(WorkloadPayload payload, User user) {
 
         Workload created = Workload.fromPayload(payload);
         workloads.put(created.id(), created);
@@ -70,12 +71,12 @@ public class WorkloadsService implements Service<Workload, WorkloadPayload> {
     }
 
     @Override
-    public Optional<Workload> delete(String id) {
+    public Optional<Workload> delete(String id, User user) {
         return Optional.ofNullable(workloads.remove(id));
     }
 
     @Override
-    public Optional<Workload> update(WorkloadPayload updated) {
+    public Optional<Workload> update(WorkloadPayload updated, User user) {
         Preconditions.checkNotNull(updated.id(), "id must not be empty");
 
         if (workloads.containsKey(updated.id())) {
@@ -90,7 +91,7 @@ public class WorkloadsService implements Service<Workload, WorkloadPayload> {
     }
 
     @Override
-    public Optional<Workload> get(String id) {
+    public Optional<Workload> get(String id, User user) {
         return Optional.ofNullable(workloads.get(id));
     }
 }

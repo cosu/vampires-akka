@@ -26,13 +26,13 @@
 
 package ro.cosu.vampires.server.rest.controllers;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Base64;
-import java.util.List;
+import java.util.Set;
 
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static spark.Spark.before;
@@ -42,8 +42,7 @@ public class AuthenticationFilter {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationFilter.class);
 
-    private static List<String> storedCredentials = Lists.newLinkedList();
-
+    private static Set<String> storedCredentials = Sets.newHashSet();
     {
         // lame static store for now
         storedCredentials.add("admin:admin");
@@ -73,6 +72,7 @@ public class AuthenticationFilter {
             }
             // check result
             if (!authenticated) {
+                LOG.warn("unauthorized client {} url {} headers {}", request.ip(), request.url(), request.headers("Authorization"));
                 response.header("WWW-Authenticate", "Basic realm=\"Restricted\"");
                 halt(HTTP_UNAUTHORIZED);
             }

@@ -32,6 +32,18 @@ import com.google.inject.Guice;
 import com.google.inject.Module;
 import com.google.inject.TypeLiteral;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -46,6 +58,7 @@ import java.util.List;
 import ro.cosu.vampires.server.rest.JsonTransformer;
 import ro.cosu.vampires.server.rest.services.Service;
 import ro.cosu.vampires.server.workload.Id;
+import ro.cosu.vampires.server.workload.User;
 import spark.Spark;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
@@ -53,12 +66,13 @@ import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
-import static ro.cosu.vampires.server.rest.controllers.Response.request;
 
 public abstract class AbstractControllerTest<T extends Id, P> {
+    protected static String url = "http://localhost:4567";
     private Gson gson = new JsonTransformer().getGson();
 
     @AfterClass
@@ -71,6 +85,15 @@ public abstract class AbstractControllerTest<T extends Id, P> {
         Spark.init();
     }
 
+    protected static HttpClient getHttpClient() {
+        CredentialsProvider credsProvider = new BasicCredentialsProvider();
+        credsProvider.setCredentials(
+                AuthScope.ANY,
+                new UsernamePasswordCredentials(User.admin().id(), User.admin().id()));
+        return HttpClientBuilder.create()
+                .setDefaultCredentialsProvider(credsProvider).build();
+    }
+
     @Before
     public void setUp() throws Exception {
         Guice.createInjector(
@@ -79,6 +102,7 @@ public abstract class AbstractControllerTest<T extends Id, P> {
                     protected void configure() {
                         install(getModule());
                         bind(ExceptionMapper.class).asEagerSingleton();
+                        bind(AuthenticationFilter.class).asEagerSingleton();
                     }
                 });
         Spark.awaitInitialization();
@@ -91,9 +115,7 @@ public abstract class AbstractControllerTest<T extends Id, P> {
 
     protected abstract P getPayload();
 
-
     protected abstract String getPath();
-
 
     @SuppressWarnings("unchecked")
     private List<T> getList(String json, Class clazz) throws Exception {
@@ -110,18 +132,21 @@ public abstract class AbstractControllerTest<T extends Id, P> {
         return Class.forName(typeValue.getTypeName());
     }
 
-    private void checkResponseContainsItem(Response res) throws ClassNotFoundException {
-        Object fromJson = gson.fromJson(res.body, getValueClass());
+    private void checkResponseContainsItem(String response) throws ClassNotFoundException {
+        Object fromJson = gson.fromJson(response, getValueClass());
         assertThat(fromJson instanceof Id, is(true));
         Id id = (Id) fromJson;
         assertThat(id.id(), not(isEmptyOrNullString()));
     }
 
     private T getFirstItem() throws Exception {
-        Response res = request("GET", getPath(), "");
-        assertThat(res.status, is(HTTP_OK));
 
-        List<T> list = getList(res.body, getValueClass());
+        HttpClient client = getHttpClient();
+        HttpGet httpGet = new HttpGet(url + getPath());
+        HttpResponse execute = client.execute(httpGet);
+        assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_OK));
+
+        List<T> list = getList(EntityUtils.toString(execute.getEntity()), getValueClass());
         assertThat(list.size(), not(0));
 
         return list.get(0);
@@ -132,35 +157,56 @@ public abstract class AbstractControllerTest<T extends Id, P> {
         P payload = getPayload();
 
         String toJson = gson.toJson(payload);
-        Response res = request("POST", getPath(), toJson);
 
-        assertThat(res.status, is(HTTP_CREATED));
-        checkResponseContainsItem(res);
+        HttpPost httpPost = new HttpPost(url + getPath());
+        httpPost.setEntity(new StringEntity(toJson));
+        httpPost.setHeader("Content-type", "application/json");
+
+        HttpClient client = getHttpClient();
+
+        HttpResponse execute = client.execute(httpPost);
+        assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_CREATED));
+
+        checkResponseContainsItem(EntityUtils.toString(execute.getEntity()));
     }
-
 
     @Test
     public void delete() throws Exception {
         Id item = getFirstItem();
-        Response res = request("DELETE", Paths.get(getPath(), item.id()).toString(), "");
-        assertThat(res.status, is(HTTP_NO_CONTENT));
-        assertThat(res.body, isEmptyOrNullString());
+        String deleteUrl = url + Paths.get(getPath(), item.id()).toString();
+
+        HttpDelete httpDelete = new HttpDelete(deleteUrl);
+
+        HttpClient httpClient = getHttpClient();
+
+        HttpResponse execute = httpClient.execute(httpDelete);
+
+        assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_NO_CONTENT));
+
+        assertThat(execute.getEntity(), nullValue());
     }
 
     @Test
     public void list() throws Exception {
-        Response res = request("GET", getPath(), "");
-        assertThat(res.status, is(HTTP_OK));
-        List array = gson.fromJson(res.body, List.class);
-        assertThat(array.size(), not(0));
+        T firstItem = getFirstItem();
+        assertThat(firstItem, not(nullValue()));
     }
 
     @Test
     public void update() throws Exception {
         Id firstItem = getFirstItem();
         String toJson = gson.toJson(firstItem);
-        Response res = request("POST", Paths.get(getPath(), firstItem.id()).toString(), toJson);
-        assertThat(res.status, is(HTTP_CREATED));
+
+        HttpPost httpPost = new HttpPost(url + Paths.get(getPath(), firstItem.id()).toString());
+        httpPost.setEntity(new StringEntity(toJson));
+        httpPost.setHeader("Content-type", "application/json");
+
+        HttpClient client = getHttpClient();
+
+        HttpResponse execute = client.execute(httpPost);
+        assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_CREATED));
+
+
         Id updatedItem = getFirstItem();
         assertThat(updatedItem.id(), is(firstItem.id()));
     }
@@ -169,12 +215,15 @@ public abstract class AbstractControllerTest<T extends Id, P> {
     public void updateFail() throws Exception {
         Id firstItem = getFirstItem();
 
-        // update with a empty body
-        Response res = request("POST", Paths.get(getPath(), firstItem.id()).toString(), "");
+        HttpPost httpPost = new HttpPost(url + Paths.get(getPath(), firstItem.id()).toString());
+        httpPost.setEntity(new StringEntity(""));
+        httpPost.setHeader("Content-type", "application/json");
 
-        assertThat(res.status, is(HTTP_BAD_REQUEST));
+        HttpClient client = getHttpClient();
 
-        Id updatedItem = getFirstItem();
-        assertThat(updatedItem.id(), is(firstItem.id()));
+        HttpResponse execute = client.execute(httpPost);
+
+        assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_BAD_REQUEST));
+
     }
 }

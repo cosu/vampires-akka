@@ -26,6 +26,7 @@
 
 package ro.cosu.vampires.server.rest.controllers;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 
@@ -38,6 +39,8 @@ import java.util.Optional;
 import ro.cosu.vampires.server.rest.JsonTransformer;
 import ro.cosu.vampires.server.rest.services.Service;
 import ro.cosu.vampires.server.workload.Id;
+import ro.cosu.vampires.server.workload.User;
+import spark.Request;
 import spark.Route;
 import spark.Spark;
 
@@ -61,6 +64,11 @@ public abstract class AbstractRestController<T extends Id, P> implements Control
         loadRoutes();
     }
 
+
+    private User getUser(Request request) {
+        Preconditions.checkNotNull(request.session().attribute("user"), "invalid user provided");
+        return User.create(request.session().attribute("user"));
+    }
     protected abstract Logger getLogger();
 
     private void loadRoutes() {
@@ -73,23 +81,24 @@ public abstract class AbstractRestController<T extends Id, P> implements Control
     }
 
     public Route list() {
-        return (request, response) -> service.list();
+        return (request, response) -> service.list(getUser(request));
     }
 
     public Route create() {
         return (request, response) -> {
             getLogger().debug("got request {}", request.url());
+            User user = getUser(request);
             Gson gson = JsonTransformer.get().getGson();
             P fromJson = gson.fromJson(request.body(), payloadType);
             response.status(HTTP_CREATED);
-            return service.create(fromJson);
+            return service.create(fromJson, user);
         };
     }
 
     public Route get() {
         return (request, response) -> {
             String id = request.params(":id");
-            Optional<T> optional = service.get(id);
+            Optional<T> optional = service.get(id, getUser(request));
             if (optional.isPresent()) {
                 return optional.get();
             } else {
@@ -101,7 +110,7 @@ public abstract class AbstractRestController<T extends Id, P> implements Control
     public Route delete() {
         return ((request, response) -> {
             String id = request.params(":id");
-            service.delete(id);
+            service.delete(id, getUser(request));
             response.status(HTTP_NO_CONTENT);
             return null;
         });
@@ -112,7 +121,7 @@ public abstract class AbstractRestController<T extends Id, P> implements Control
             Gson gson = JsonTransformer.get().getGson();
             P fromJson = gson.fromJson(request.body(), payloadType);
             response.status(HTTP_CREATED);
-            return service.update(fromJson);
+            return service.update(fromJson, getUser(request));
         };
     }
 }

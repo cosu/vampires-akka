@@ -2,8 +2,7 @@
 
 set -o nounset
 
-
-api_server="http://localhost:4567"
+source ./common.sh
 
 if [[ $# -ne 1 ]]; then
     echo "provide exec id"
@@ -14,11 +13,11 @@ execution_id=$1
 
 status="running"
 while [[ ${status} == "running" || ${status} == "starting" ]];  do
-    exec=$(curl -s localhost:4567/executions/${execution_id})
-    completed=$(echo $exec| jq -r '.info.completed')
+    exec=$( ${curl} ${api_server}/executions/${execution_id})
+    completed=$(echo ${exec}| jq -r '.info.completed')
     echo completed ${completed} status ${status}
     status=$(echo ${exec}| jq -r '.info.status')
     sleep 0.1
 done
 
-curl -s localhost:4567/executions/${execution_id}
+${curl} ${api_server}/executions/${execution_id}

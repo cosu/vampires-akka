@@ -50,10 +50,10 @@ import spark.Spark;
 public class FilesController {
 
     private static final Logger LOG = LoggerFactory.getLogger(FilesController.class);
-    File uploadDir;
-    private long maxFileSize = 100000000;  // the maximum size allowed for uploaded files
-    private long maxRequestSize = 100000000;  // the maximum size allowed for multipart/form-data requests
-    private int fileSizeThreshold = 1024;  // the size threshold after which files will be written to disk
+    private static long maxFileSize = 100000000;  // the maximum size allowed for uploaded files
+    private static long maxRequestSize = 100000000;  // the maximum size allowed for multipart/form-data requests
+    private static int fileSizeThreshold = 1024;  // the size threshold after which files will be written to disk
+    private File uploadDir;
 
     @Inject
     FilesController(Config config) {

@@ -48,6 +48,7 @@ import ro.cosu.vampires.server.workload.Configuration;
 import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.ExecutionInfo;
 import ro.cosu.vampires.server.workload.ExecutionPayload;
+import ro.cosu.vampires.server.workload.User;
 import ro.cosu.vampires.server.workload.Workload;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
@@ -73,7 +74,7 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<Execution> list() {
+    public Collection<Execution> list(User user) {
 
         Collection<Execution> executions = Lists.newArrayList();
 
@@ -95,13 +96,13 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
     }
 
     @Override
-    public Execution create(ExecutionPayload executionPayload) {
+    public Execution create(ExecutionPayload executionPayload, User user) {
 
         LOG.debug("{} {}", configurationsService, wService);
-        Configuration configuration = configurationsService.get(executionPayload.configuration()).orElseThrow(() ->
+        Configuration configuration = configurationsService.get(executionPayload.configuration(), user).orElseThrow(() ->
                 new IllegalArgumentException("could not find configuration with id " + executionPayload.configuration()));
 
-        Workload workload = wService.get(executionPayload.workload()).orElseThrow(()
+        Workload workload = wService.get(executionPayload.workload(), user).orElseThrow(()
                 -> new IllegalArgumentException("could not find workload with id " + executionPayload.workload()));
 
         Execution execution = Execution.builder().workload(workload)
@@ -119,13 +120,13 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
     }
 
     @Override
-    public Optional<Execution> delete(String id) {
+    public Optional<Execution> delete(String id, User user) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(id), "id must not be empty");
         return sendMessage(ShutdownResource.withId(id));
     }
 
     @Override
-    public Optional<Execution> update(ExecutionPayload updated) {
+    public Optional<Execution> update(ExecutionPayload updated, User user) {
         throw new IllegalArgumentException("not implemented");
     }
 
@@ -133,6 +134,7 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
         Timeout timeout = new Timeout(Duration.create(100, "milliseconds"));
 
         Future<Object> ask = Patterns.ask(actorRef, message, timeout);
+
         try {
             Execution execution = (Execution) Await.result(ask, timeout.duration());
             return Optional.ofNullable(execution);
@@ -143,7 +145,7 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
     }
 
     @Override
-    public Optional<Execution> get(String id) {
+    public Optional<Execution> get(String id, User user) {
         return sendMessage(QueryResource.withId(id));
     }
 

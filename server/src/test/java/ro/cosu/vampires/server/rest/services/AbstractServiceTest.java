@@ -39,6 +39,7 @@ import org.junit.Test;
 import java.util.Optional;
 
 import ro.cosu.vampires.server.workload.Id;
+import ro.cosu.vampires.server.workload.User;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -46,13 +47,18 @@ import static org.hamcrest.core.Is.is;
 
 public abstract class AbstractServiceTest<T extends Id, P> {
 
+
     protected Service<T, P> instance;
+
+    protected User getUser() {
+        return User.admin();
+    }
 
     @Before
     public void setUp() {
         Injector injector = Guice.createInjector(getModule());
         instance = injector.getInstance(Key.get(getTypeTokenService()));
-        instance.create(getPayload());
+        instance.create(getPayload(), getUser());
     }
 
     protected abstract AbstractModule getModule();
@@ -63,21 +69,21 @@ public abstract class AbstractServiceTest<T extends Id, P> {
     protected abstract P getPayload();
 
     protected T create() {
-        return instance.create(getPayload());
+        return instance.create(getPayload(), getUser());
     }
 
     @Test
     public void list() throws Exception {
-        assertThat(instance.list().size(), is(1));
+        assertThat(instance.list(getUser()).size(), is(1));
     }
 
     @Test
     public void delete() throws Exception {
-        assertThat(instance.list().size(), is(1));
-        String id = instance.list().iterator().next().id();
-        Optional<T> delete = instance.delete(id);
+        assertThat(instance.list(getUser()).size(), is(1));
+        String id = instance.list(getUser()).iterator().next().id();
+        Optional<T> delete = instance.delete(id, getUser());
         assertThat(delete.isPresent(), is(true));
-        assertThat(instance.list().size(), is(0));
+        assertThat(instance.list(getUser()).size(), is(0));
     }
 
 
@@ -85,9 +91,9 @@ public abstract class AbstractServiceTest<T extends Id, P> {
 
     @Test
     public void get() throws Exception {
-        assertThat(instance.list().size(), is(1));
-        T next = instance.list().iterator().next();
-        Optional<T> optional = instance.get(next.id());
+        assertThat(instance.list(getUser()).size(), is(1));
+        T next = instance.list(getUser()).iterator().next();
+        Optional<T> optional = instance.get(next.id(), getUser());
         assertThat(optional.isPresent(), is(true));
     }
 
