@@ -71,6 +71,7 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
         };
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Collection<Execution> list() {
 

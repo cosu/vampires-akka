@@ -28,6 +28,9 @@ package ro.cosu.vampires.server.rest.controllers;
 
 import com.google.common.collect.Lists;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Base64;
 import java.util.List;
 
@@ -36,6 +39,9 @@ import static spark.Spark.before;
 import static spark.Spark.halt;
 
 public class AuthenticationFilter {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationFilter.class);
+
     private static List<String> storedCredentials = Lists.newLinkedList();
 
     {
@@ -50,23 +56,28 @@ public class AuthenticationFilter {
             boolean authenticated = !request.session().isNew();
             String auth = request.headers("Authorization");
 
-            if (auth != null && auth.startsWith("Basic") || !authenticated) {
-                String b64Credentials = auth.substring("Basic".length()).trim();
-                String credentials = new String(Base64.getDecoder().decode(b64Credentials));
-                if (storedCredentials.contains(credentials)) {
-                    authenticated = true;
-                    // store the user in the session
-                    request.session().attribute("user", credentials.split(":")[0]);
-                    // 10 min sessions
-                    request.session().maxInactiveInterval(600);
+            if (!authenticated) {
+                // try to authenticate
+                if (auth != null && auth.startsWith("Basic")) {
+                    String b64Credentials = auth.substring("Basic".length()).trim();
+                    String credentials = new String(Base64.getDecoder().decode(b64Credentials));
+                    if (storedCredentials.contains(credentials)) {
+                        authenticated = true;
+                        // store the user in the session
+                        request.session().attribute("user", credentials.split(":")[0]);
+                        // 10 min sessions
+                        request.session().maxInactiveInterval(600);
 
+                    }
                 }
             }
+            // check result
             if (!authenticated) {
                 response.header("WWW-Authenticate", "Basic realm=\"Restricted\"");
                 halt(HTTP_UNAUTHORIZED);
             }
-
         });
+
+        LOG.info("Authentication filter enabled");
     }
 }

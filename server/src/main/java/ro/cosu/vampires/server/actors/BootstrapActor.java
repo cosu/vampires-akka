@@ -64,7 +64,7 @@ public class BootstrapActor extends UntypedActor {
     private Map<String, Execution> resultsMap = Maps.newHashMap();
 
 
-    private RestModule restModule = new RestModule(getSelf(), settings.getProviders());
+    private RestModule restModule = new RestModule(getSelf(), settings.getProviders(), settings.vampires.getConfig("rest"));
     private Injector injector;
 
 
@@ -84,7 +84,7 @@ public class BootstrapActor extends UntypedActor {
     }
 
     private void startWebserver() {
-        Spark.port(settings.vampires.getInt("rest-port"));
+        Spark.port(settings.vampires.getInt("rest.port"));
         Spark.init();
         injector = Guice.createInjector(restModule);
     }

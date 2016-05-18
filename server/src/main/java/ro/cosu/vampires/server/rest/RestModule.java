@@ -29,6 +29,8 @@ package ro.cosu.vampires.server.rest;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
+import com.typesafe.config.Config;
+
 import java.util.List;
 
 import akka.actor.ActorRef;
@@ -39,17 +41,21 @@ import ro.cosu.vampires.server.workload.ProviderDescription;
 
 public class RestModule extends AbstractModule {
     private final ActorRef actorRef;
+
+
+    private final Config config;
     private List<ProviderDescription> providers;
 
-    public RestModule(ActorRef actorRef, List<ProviderDescription> providers) {
+    public RestModule(ActorRef actorRef, List<ProviderDescription> providers, Config config) {
         this.actorRef = actorRef;
         this.providers = providers;
+        this.config = config;
     }
 
     @Override
     protected void configure() {
         install(new ServicesModule());
-        install(new ControllersModule());
+        install(new ControllersModule(withAuth()));
     }
 
     @Provides
@@ -62,4 +68,12 @@ public class RestModule extends AbstractModule {
         return actorRef;
     }
 
+    @Provides
+    public Config getConfig() {
+        return config;
+    }
+
+    private boolean withAuth() {
+        return config.hasPath("auth") && config.getBoolean("auth");
+    }
 }
