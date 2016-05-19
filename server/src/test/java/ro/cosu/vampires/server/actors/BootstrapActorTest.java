@@ -35,10 +35,12 @@ import akka.actor.Props;
 import akka.testkit.JavaTestKit;
 import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.actors.messages.ShutdownResource;
+import ro.cosu.vampires.server.actors.messages.StartExecution;
 import ro.cosu.vampires.server.workload.Configuration;
 import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.ExecutionInfo;
 import ro.cosu.vampires.server.workload.ExecutionMode;
+import ro.cosu.vampires.server.workload.User;
 import ro.cosu.vampires.server.workload.Workload;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -62,21 +64,22 @@ public class BootstrapActorTest extends AbstractActorTest {
                 final JavaTestKit restService = new JavaTestKit(system);
 
                 Execution execution = getExecution();
+                StartExecution startExecution = StartExecution.create(User.admin(), execution);
                 //
                 final Props props = BootstrapActor.props(terminator.getRef());
                 final ActorRef bootstrapActor = system.actorOf(props, "bootstrap");
 
                 // start exec is fire and forget.
-                bootstrapActor.tell(execution, restService.getRef());
+                bootstrapActor.tell(startExecution, restService.getRef());
 
                 // query the state
-                bootstrapActor.tell(QueryResource.withId(execution.id()), restService.getRef());
+                bootstrapActor.tell(QueryResource.create(execution.id(), User.admin()), restService.getRef());
                 Execution startedExecution = restService.expectMsgClass(Execution.class);
                 assertThat(startedExecution.id(), is(execution.id()));
                 assertThat(startedExecution.info().status(), is(ExecutionInfo.Status.STARTING));
 
                 // shutdown
-                bootstrapActor.tell(ShutdownResource.withId(execution.id()), restService.getRef());
+                bootstrapActor.tell(ShutdownResource.create(execution.id(), User.admin()), restService.getRef());
 
                 Execution stoppingExecution = restService.expectMsgClass(Execution.class);
 
@@ -85,7 +88,7 @@ public class BootstrapActorTest extends AbstractActorTest {
                 // let things stop cleanly
 
                 // ask for the status
-                bootstrapActor.tell(QueryResource.withId(execution.id()), restService.getRef());
+                bootstrapActor.tell(QueryResource.create(execution.id(), User.admin()), restService.getRef());
                 Execution canceledExecution = restService.expectMsgClass(Execution.class);
 
                 // retry a bit (actors comms is async)
@@ -93,7 +96,7 @@ public class BootstrapActorTest extends AbstractActorTest {
                 while (count < 3 && !canceledExecution.info().status().equals(ExecutionInfo.Status.CANCELED)) {
                     Thread.sleep(1000);
                     count++;
-                    bootstrapActor.tell(QueryResource.withId(execution.id()), restService.getRef());
+                    bootstrapActor.tell(QueryResource.create(execution.id(), User.admin()), restService.getRef());
                     canceledExecution = restService.expectMsgClass(Execution.class);
                 }
                 assertThat(canceledExecution.id(), is(execution.id()));

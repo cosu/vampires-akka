@@ -65,6 +65,7 @@ import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
@@ -224,6 +225,22 @@ public abstract class AbstractControllerTest<T extends Id, P> {
         HttpResponse execute = client.execute(httpPost);
 
         assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_BAD_REQUEST));
+
+    }
+
+
+    @Test
+    public void unauthorized() throws Exception {
+
+        HttpPost httpPost = new HttpPost(url + getPath());
+        httpPost.setEntity(new StringEntity(""));
+        httpPost.setHeader("Content-type", "application/json");
+
+        HttpClient client = HttpClientBuilder.create().build();
+
+        HttpResponse execute = client.execute(httpPost);
+
+        assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_UNAUTHORIZED));
 
     }
 }

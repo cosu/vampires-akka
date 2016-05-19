@@ -56,6 +56,7 @@ import ro.cosu.vampires.server.resources.ResourceProvider;
 import ro.cosu.vampires.server.resources.mock.MockResourceModule;
 import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Metrics;
+import ro.cosu.vampires.server.workload.User;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
@@ -159,7 +160,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         resourceManagerActor.tell(clientInfo, testProbe.ref());
 
-        QueryResource resourceQuery = QueryResource.withId(id);
+        QueryResource resourceQuery = QueryResource.create(id, User.admin());
 
         final Future<Object> infoFuture = Patterns.ask(resourceManagerActor, resourceQuery, 1000);
 

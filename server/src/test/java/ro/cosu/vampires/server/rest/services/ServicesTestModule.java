@@ -43,6 +43,7 @@ import akka.testkit.JavaTestKit;
 import akka.testkit.TestActor;
 import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.actors.messages.ShutdownResource;
+import ro.cosu.vampires.server.actors.messages.StartExecution;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.workload.Configuration;
 import ro.cosu.vampires.server.workload.ConfigurationPayload;
@@ -73,12 +74,12 @@ public class ServicesTestModule extends AbstractModule {
 
             @Override
             public TestActor.AutoPilot run(ActorRef sender, Object msg) {
-                if (msg instanceof Execution) {
-                    Execution execution = (Execution) msg;
-                    executionMap.put((execution).id(), execution);
+                if (msg instanceof StartExecution) {
+                    StartExecution startExecution = (StartExecution) msg;
+                    executionMap.put(startExecution.execution().id(), startExecution.execution());
                 } else if (msg instanceof QueryResource) {
                     QueryResource info = (QueryResource) msg;
-                    if (info.equals(QueryResource.all())) {
+                    if (info.equals(QueryResource.all(info.user()))) {
                         sender.tell(executionMap.values(), actorRef);
                     } else {
                         sender.tell(executionMap.get(info.resourceId()), actorRef);

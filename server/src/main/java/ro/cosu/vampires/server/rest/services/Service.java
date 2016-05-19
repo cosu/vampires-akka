@@ -27,14 +27,14 @@
 package ro.cosu.vampires.server.rest.services;
 
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import ro.cosu.vampires.server.workload.Id;
 import ro.cosu.vampires.server.workload.User;
 
 public interface Service<T extends Id, P> {
-    Collection<T> list(User user);
+    List<T> list(User user);
 
     T create(P payload, User user);
 

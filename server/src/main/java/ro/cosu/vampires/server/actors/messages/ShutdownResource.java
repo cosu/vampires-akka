@@ -28,12 +28,17 @@ package ro.cosu.vampires.server.actors.messages;
 
 import com.google.auto.value.AutoValue;
 
+import ro.cosu.vampires.server.workload.User;
+
 @AutoValue
 public abstract class ShutdownResource {
-    public static ShutdownResource withId(String resourceId) {
-        return new AutoValue_ShutdownResource(resourceId);
+    public static ShutdownResource create(String resourceId, User user) {
+        return new AutoValue_ShutdownResource(resourceId, user);
     }
 
     public abstract String resourceId();
+
+    public abstract User user();
+
 
 }

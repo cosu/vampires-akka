@@ -27,14 +27,14 @@
 package ro.cosu.vampires.server.rest.services;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.ImmutableList;
 import com.google.inject.TypeLiteral;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -46,44 +46,49 @@ import ro.cosu.vampires.server.workload.WorkloadPayload;
 public class WorkloadsService implements Service<Workload, WorkloadPayload> {
     private static final Logger LOG = LoggerFactory.getLogger(WorkloadsService.class);
 
-    private Map<String, Workload> workloads = Collections.synchronizedSortedMap(Maps.newTreeMap());
+    private HashBasedTable<User, String, Workload> workloadHashBasedTable = HashBasedTable.create();
 
     WorkloadsService() {
         LOG.debug("init");
     }
+
     public static TypeLiteral<Service<Workload, WorkloadPayload>> getTypeTokenService() {
         return new TypeLiteral<Service<Workload, WorkloadPayload>>() {
         };
     }
 
+    private Map<String, Workload> getUserStore(User user) {
+        return workloadHashBasedTable.row(user);
+    }
+
     @Override
-    public Collection<Workload> list(User user) {
-        return workloads.values();
+    public List<Workload> list(User user) {
+        return ImmutableList.copyOf(getUserStore(user).values());
     }
 
     @Override
     public Workload create(WorkloadPayload payload, User user) {
 
         Workload created = Workload.fromPayload(payload);
-        workloads.put(created.id(), created);
+        getUserStore(user).put(created.id(), created);
         LOG.debug("Created  {} : {}", created.id(), created);
         return created;
     }
 
     @Override
     public Optional<Workload> delete(String id, User user) {
-        return Optional.ofNullable(workloads.remove(id));
+        return Optional.ofNullable(getUserStore(user).remove(id));
     }
 
     @Override
     public Optional<Workload> update(WorkloadPayload updated, User user) {
         Preconditions.checkNotNull(updated.id(), "id must not be empty");
 
-        if (workloads.containsKey(updated.id())) {
-            Workload workload = workloads.get(updated.id());
+        if (getUserStore(user).containsKey(updated.id())) {
+            Workload workload = getUserStore(user).get(updated.id());
             workload = workload.updateWithPayload(updated);
 
-            workloads.put(updated.id(), workload);
+            getUserStore(user).put(updated.id(), workload);
             return Optional.of(workload);
         } else {
             return Optional.empty();
@@ -92,6 +97,6 @@ public class WorkloadsService implements Service<Workload, WorkloadPayload> {
 
     @Override
     public Optional<Workload> get(String id, User user) {
-        return Optional.ofNullable(workloads.get(id));
+        return Optional.ofNullable(getUserStore(user).get(id));
     }
 }

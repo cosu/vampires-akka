@@ -27,10 +27,13 @@
 package ro.cosu.vampires.server.actors;
 
 
+import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 
@@ -42,6 +45,7 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.actors.messages.ShutdownResource;
+import ro.cosu.vampires.server.actors.messages.StartExecution;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
@@ -62,7 +66,8 @@ public class BootstrapActor extends UntypedActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     private Map<String, ActorRef> executionsToActors = Maps.newHashMap();
-    private Map<String, Execution> resultsMap = Maps.newHashMap();
+
+    private HashBasedTable<User, String, Execution> executionHashBasedTable = HashBasedTable.create();
 
 
     private RestModule restModule = new RestModule(getSelf(), settings.getProviders(), settings.vampires.getConfig("rest"));
@@ -111,13 +116,6 @@ public class BootstrapActor extends UntypedActor {
         }
     }
 
-    private void startExecution(Execution execution) {
-        ActorRef executionActor = getContext().actorOf(ExecutionActor.props(execution), execution.id());
-        executionsToActors.put(execution.id(), executionActor);
-        executionActor.tell(execution, getSelf());
-        getContext().watch(executionActor);
-        resultsMap.put(execution.id(), execution);
-    }
 
     @Override
     public void postStop() {
@@ -126,7 +124,10 @@ public class BootstrapActor extends UntypedActor {
 
     @Override
     public void onReceive(Object message) throws Exception {
-        if (message instanceof Execution) {
+        if (message instanceof StartExecution) {
+            StartExecution startExecution = (StartExecution) message;
+            handleStartExecution(startExecution);
+        } else if (message instanceof Execution) {
             Execution execution = (Execution) message;
             handleExecution(execution);
         } else if (message instanceof QueryResource) {
@@ -143,25 +144,27 @@ public class BootstrapActor extends UntypedActor {
     }
 
     private void handleShutdown(ShutdownResource shutdownResource) {
+        User user = shutdownResource.user();
 
-        if (executionsToActors.containsKey(shutdownResource.resourceId())) {
-            Execution execution = resultsMap.get(shutdownResource.resourceId());
-            if (execution.info().status().equals(ExecutionInfo.Status.STARTING) ||
-                    execution.info().status().equals(ExecutionInfo.Status.RUNNING)) {
-                // shut down the actor
+        boolean userHasExecution = getResultsMap(user).containsKey(shutdownResource.resourceId());
+        boolean executionHasActor = executionsToActors.containsKey(shutdownResource.resourceId());
+        HashSet<ExecutionInfo.Status> validStatus =
+                Sets.newHashSet(ExecutionInfo.Status.RUNNING, ExecutionInfo.Status.STARTING);
+        if (userHasExecution && executionHasActor) {
+            Execution execution = getResultsMap(user).get(shutdownResource.resourceId());
+            boolean executionCanShutdown = validStatus.contains(execution.info().status());
+            if (executionCanShutdown) {
                 ActorRef executionActor = executionsToActors.get(shutdownResource.resourceId());
                 executionActor.tell(ResourceControl.Shutdown.create(), getSelf());
 
                 // update the current view of the execution
                 execution = execution.withInfo(execution.info()
                         .updateStatus(ExecutionInfo.Status.STOPPING));
-                resultsMap.put(execution.id(), execution);
+                getResultsMap(user).put(execution.id(), execution);
             } else {
                 log.warning("shutting down a non-running execution {}", execution);
             }
-
             getSender().tell(execution, getSelf());
-
         }
     }
 
@@ -178,21 +181,35 @@ public class BootstrapActor extends UntypedActor {
         }
     }
 
-    private void handleExecution(Execution execution) {
-        if (!executionsToActors.containsKey(execution.id()))
-            startExecution(execution);
-        else {
-            //a finished execution
-            resultsMap.put(execution.id(), execution);
+    private void handleStartExecution(StartExecution startExecution) {
+        Execution execution = startExecution.execution();
+
+        if (!executionsToActors.containsKey(execution.id())) {
+            ActorRef executionActor = getContext().actorOf(ExecutionActor.props(execution), execution.id());
+            executionsToActors.put(execution.id(), executionActor);
+            executionActor.tell(execution, getSelf());
+            getContext().watch(executionActor);
+            getResultsMap(startExecution.user()).put(execution.id(), execution);
         }
     }
 
+    private void handleExecution(Execution execution) {
+        //lsupdate or finished execution
+        User user = executionHashBasedTable.column(execution.id()).keySet().iterator().next();
+        getResultsMap(user).put(execution.id(), execution);
+    }
+
+    private Map<String, Execution> getResultsMap(User user) {
+        return executionHashBasedTable.row(user);
+    }
+
     private void queryResource(QueryResource info) {
-        if (info.equals(QueryResource.all())) {
-            getSender().tell(resultsMap.values(), getSelf());
+        User user = info.user();
+        if (info.equals(QueryResource.all(info.user()))) {
+            getSender().tell(getResultsMap(user).values(), getSelf());
         } else {
-            if (resultsMap.containsKey(info.resourceId())) {
-                getSender().tell(resultsMap.get(info.resourceId()), getSelf());
+            if (getResultsMap(user).containsKey(info.resourceId())) {
+                getSender().tell(getResultsMap(user).get(info.resourceId()), getSelf());
             } else {
                 log.error("Invalid query for execution id {}", info.resourceId());
             }

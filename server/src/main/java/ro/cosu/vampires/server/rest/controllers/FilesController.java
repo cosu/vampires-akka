@@ -39,6 +39,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.stream.Collectors;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.Part;
@@ -46,6 +47,8 @@ import javax.servlet.http.Part;
 import ro.cosu.vampires.server.rest.JsonTransformer;
 import spark.Route;
 import spark.Spark;
+
+import static java.net.HttpURLConnection.HTTP_CREATED;
 
 public class FilesController {
 
@@ -57,12 +60,13 @@ public class FilesController {
 
     @Inject
     FilesController(Config config) {
-
-        uploadDir = new File(config.getString("uploadDir"));
+        uploadDir = new File(Paths.get(config.getString("uploadDir"), "/vampires").toUri());
         uploadDir.mkdir();
 
         LOG.debug("Upload dir {}", uploadDir);
         Spark.post("/upload", upload(), JsonTransformer.get());
+        Spark.get("/upload", list(), JsonTransformer.get());
+
     }
 
 
@@ -88,9 +92,20 @@ public class FilesController {
                 Files.copy(input, filePath, StandardCopyOption.REPLACE_EXISTING);
             }
 
+            response.status(HTTP_CREATED);
             return "OK";
         };
     }
 
 
+    public Route list() {
+        return (request, response) -> {
+
+            return Files.walk(Paths.get(uploadDir.getAbsolutePath())).filter(Files::isRegularFile)
+                    .filter(Files::isReadable)
+                    .map(Path::toFile)
+                    .collect(Collectors.toMap(File::getName, File::length));
+        };
+
+    }
 }

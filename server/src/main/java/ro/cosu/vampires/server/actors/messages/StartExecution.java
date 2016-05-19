@@ -26,23 +26,18 @@
 
 package ro.cosu.vampires.server.actors.messages;
 
-
 import com.google.auto.value.AutoValue;
 
+import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.User;
 
 @AutoValue
-public abstract class QueryResource {
-    public static QueryResource create(String resourceId, User user) {
-        return new AutoValue_QueryResource(resourceId, user);
+public abstract class StartExecution {
+    public static StartExecution create(User user, Execution execution) {
+        return new AutoValue_StartExecution(user, execution);
     }
-
-    public static QueryResource all(User user) {
-        return new AutoValue_QueryResource("all", user);
-    }
-    public abstract String resourceId();
 
     public abstract User user();
 
-
+    public abstract Execution execution();
 }

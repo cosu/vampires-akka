@@ -29,6 +29,7 @@ package ro.cosu.vampires.server.rest.services;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.TypeLiteral;
@@ -37,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import akka.actor.ActorRef;
@@ -44,6 +46,7 @@ import akka.pattern.Patterns;
 import akka.util.Timeout;
 import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.actors.messages.ShutdownResource;
+import ro.cosu.vampires.server.actors.messages.StartExecution;
 import ro.cosu.vampires.server.workload.Configuration;
 import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.ExecutionInfo;
@@ -74,13 +77,13 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Collection<Execution> list(User user) {
+    public List<Execution> list(User user) {
 
         Collection<Execution> executions = Lists.newArrayList();
 
         Timeout timeout = new Timeout(Duration.create(100, "milliseconds"));
 
-        Future<Object> ask = Patterns.ask(actorRef, QueryResource.all(), timeout);
+        Future<Object> ask = Patterns.ask(actorRef, QueryResource.all(user), timeout);
 
         try {
             Object result = Await.result(ask, timeout.duration());
@@ -88,9 +91,9 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
                 // silly java types
                 executions = (Collection<Execution>) result;
             }
-            return executions;
+            return ImmutableList.copyOf(executions);
         } catch (Exception e) {
-            LOG.error("Failed to get execution {}", e);
+            LOG.error("Failed to get execution", e);
             throw new RuntimeException(e);
         }
     }
@@ -98,7 +101,6 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
     @Override
     public Execution create(ExecutionPayload executionPayload, User user) {
 
-        LOG.debug("{} {}", configurationsService, wService);
         Configuration configuration = configurationsService.get(executionPayload.configuration(), user).orElseThrow(() ->
                 new IllegalArgumentException("could not find configuration with id " + executionPayload.configuration()));
 
@@ -110,19 +112,21 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
                 .type(executionPayload.type())
                 .info(ExecutionInfo.empty().updateRemaining(workload.size()))
                 .build();
+        LOG.info("user {} starting execution: {}", user, execution);
+        actorRef.tell(StartExecution.create(user, execution), ActorRef.noSender());
         startExecution(execution);
         return execution;
     }
 
     private void startExecution(Execution execution) {
-        LOG.info("starting execution: {}", execution);
-        actorRef.tell(execution, ActorRef.noSender());
+
+
     }
 
     @Override
     public Optional<Execution> delete(String id, User user) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(id), "id must not be empty");
-        return sendMessage(ShutdownResource.withId(id));
+        return sendMessage(ShutdownResource.create(id, user));
     }
 
     @Override
@@ -146,7 +150,7 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
 
     @Override
     public Optional<Execution> get(String id, User user) {
-        return sendMessage(QueryResource.withId(id));
+        return sendMessage(QueryResource.create(id, user));
     }
 
 

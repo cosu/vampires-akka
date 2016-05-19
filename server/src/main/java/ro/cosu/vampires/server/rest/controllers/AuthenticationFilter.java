@@ -46,6 +46,7 @@ public class AuthenticationFilter {
     {
         // lame static store for now
         storedCredentials.add("admin:admin");
+        storedCredentials.add("user:user");
     }
 
     public AuthenticationFilter() {

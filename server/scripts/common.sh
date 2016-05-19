@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-curl="curl -s -u admin:admin"
+user="admin"
+curl="curl -s -u ${user}:${user}"
 api_server="http://localhost:4567"
 
 #set -x

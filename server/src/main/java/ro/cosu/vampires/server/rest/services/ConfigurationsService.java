@@ -27,14 +27,14 @@
 package ro.cosu.vampires.server.rest.services;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.ImmutableList;
 import com.google.inject.TypeLiteral;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -47,29 +47,34 @@ public class ConfigurationsService implements Service<Configuration, Configurati
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationsService.class);
 
-    private Map<String, Configuration> configurations = Collections.synchronizedSortedMap(Maps.newTreeMap());
+    private HashBasedTable<User, String, Configuration> configurationHashBasedTable = HashBasedTable.create();
+
 
     public static TypeLiteral<Service<Configuration, ConfigurationPayload>> getTypeTokenService() {
         return new TypeLiteral<Service<Configuration, ConfigurationPayload>>() {
         };
     }
 
+    private Map<String, Configuration> getUserStore(User user) {
+        return configurationHashBasedTable.row(user);
+    }
+
     @Override
-    public Collection<Configuration> list(User user) {
-        return configurations.values();
+    public List<Configuration> list(User user) {
+        return ImmutableList.copyOf(getUserStore(user).values());
     }
 
     @Override
     public Configuration create(ConfigurationPayload payload, User user) {
         Configuration created = Configuration.fromPayload(payload);
-        configurations.put(created.id(), created);
+        getUserStore(user).put(created.id(), created);
         LOG.debug("Created  {} : {}", created.id(), created);
         return created;
     }
 
     @Override
     public Optional<Configuration> delete(String id, User user) {
-        return Optional.ofNullable(configurations.remove(id));
+        return Optional.ofNullable(getUserStore(user).remove(id));
     }
 
     @Override
@@ -77,10 +82,10 @@ public class ConfigurationsService implements Service<Configuration, Configurati
         Preconditions.checkNotNull(updated, "empty payload");
         Preconditions.checkNotNull(updated.id(), "id must not be empty");
 
-        if (configurations.containsKey(updated.id())) {
-            Configuration configuration = configurations.get(updated.id());
+        if (getUserStore(user).containsKey(updated.id())) {
+            Configuration configuration = getUserStore(user).get(updated.id());
 
-            configurations.put(updated.id(), configuration);
+            getUserStore(user).put(updated.id(), configuration);
             return Optional.of(configuration);
         } else {
             return Optional.empty();
@@ -89,6 +94,6 @@ public class ConfigurationsService implements Service<Configuration, Configurati
 
     @Override
     public Optional<Configuration> get(String id, User user) {
-        return Optional.ofNullable(configurations.get(id));
+        return Optional.ofNullable(getUserStore(user).get(id));
     }
 }
