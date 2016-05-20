@@ -10,8 +10,11 @@ set -ev
 
 # run the server
 
-VAMPIRES_HOME=$HOME/vampires-akka-dist/server-1.0-SNAPSHOT
+VAMPIRES_HOME=server/build/install/server
+export VAMPIRES_CLIENT="client/build/install/client/scripts/vampires.sh 127.0.0.1"
+
 ${VAMPIRES_HOME}/scripts/vampires_server.sh conf/local.conf local&
+
 
 sleep 5
 

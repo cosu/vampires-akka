@@ -61,6 +61,7 @@ public class JsonResultsWriter implements ResultsWriter {
         this.config = config;
 
         Preconditions.checkArgument(config.hasPath("writers.json.dir"), "missing  config key writers.json.dir");
+        Paths.get(config.getString("writers.json.dir")).toFile().mkdir();
         Preconditions.checkArgument(Paths.get(config.getString("writers.json.dir")).toFile().canWrite(), "output dir " +
                 "does not exist");
 
@@ -125,7 +126,7 @@ public class JsonResultsWriter implements ResultsWriter {
                 if (fileWriter != null)
                     fileWriter.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOG.error("Can not close writer", e);
             }
         }
     }

@@ -15,8 +15,6 @@ export BIND_HOST="0.0.0.0"
 echo "Vampires-Akka server: Binding to IP:${BIND_HOST}"
 echo "Server Opts: ${SERVER_OPTS}"
 
-VAMPIRES_SERVER_HOME="${HOME}/vampires-akka/server/"
-
 # Attempt to set APP_HOME
 # Resolve links: $0 may be a link
 PRG="$0"
