@@ -5,7 +5,7 @@ set -ev
 ./gradlew check --info
 
 
- install the client locally
+#nstall the client locally
 ./gradlew installDist
 
 # run the server
