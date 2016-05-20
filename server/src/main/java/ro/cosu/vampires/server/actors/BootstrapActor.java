@@ -29,11 +29,9 @@ package ro.cosu.vampires.server.actors;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 
@@ -148,11 +146,10 @@ public class BootstrapActor extends UntypedActor {
 
         boolean userHasExecution = getResultsMap(user).containsKey(shutdownResource.resourceId());
         boolean executionHasActor = executionsToActors.containsKey(shutdownResource.resourceId());
-        HashSet<ExecutionInfo.Status> validStatus =
-                Sets.newHashSet(ExecutionInfo.Status.RUNNING, ExecutionInfo.Status.STARTING);
+
         if (userHasExecution && executionHasActor) {
             Execution execution = getResultsMap(user).get(shutdownResource.resourceId());
-            boolean executionCanShutdown = validStatus.contains(execution.info().status());
+            boolean executionCanShutdown = ExecutionInfo.isActiveStatus(execution.info().status());
             if (executionCanShutdown) {
                 ActorRef executionActor = executionsToActors.get(shutdownResource.resourceId());
                 executionActor.tell(ResourceControl.Shutdown.create(), getSelf());

@@ -28,8 +28,10 @@ package ro.cosu.vampires.server.workload;
 
 
 import com.google.auto.value.AutoValue;
+import com.google.common.collect.Sets;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 
 import ro.cosu.vampires.server.util.gson.AutoGson;
 
@@ -37,10 +39,8 @@ import ro.cosu.vampires.server.util.gson.AutoGson;
 @AutoGson
 public abstract class ExecutionInfo {
 
-    public static Builder builder() {
-        return new AutoValue_ExecutionInfo.Builder()
-                .updatedAt(LocalDateTime.now());
-    }
+    private static HashSet<Status> ACTIVE_STATUSES =
+            Sets.newHashSet(ExecutionInfo.Status.RUNNING, ExecutionInfo.Status.STARTING);
 //    {
 //        "id" : "041363e3-6551-4202-947a-9fa8dab240ec",
 //            "info": "running",
@@ -51,6 +51,11 @@ public abstract class ExecutionInfo {
 //            "total": 15
 //    }
 
+    public static Builder builder() {
+        return new AutoValue_ExecutionInfo.Builder()
+                .updatedAt(LocalDateTime.now());
+    }
+
     public static ExecutionInfo empty() {
         return builder()
                 .total(0)
@@ -60,6 +65,10 @@ public abstract class ExecutionInfo {
                 .elapsed(0)
                 .status(Status.STARTING)
                 .build();
+    }
+
+    public static boolean isActiveStatus(Status status) {
+        return ACTIVE_STATUSES.contains(status);
     }
 
     public abstract Status status();
@@ -107,7 +116,9 @@ public abstract class ExecutionInfo {
         return update().status(status).build();
     }
 
+
     public enum Status {
+
         STARTING,
         RUNNING,
         CANCELED,
