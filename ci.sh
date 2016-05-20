@@ -2,11 +2,11 @@
 
 set -ev
 # run tests
-# ./gradlew check --info
+./gradlew check --info
 
 
 # install the client locally
-#./gradlew installLocal
+./gradlew installLocal
 
 # run the server
 
@@ -27,7 +27,7 @@ status=$(./server/scripts/getStatus.sh ${exec_id})
 
 if [[ ${status} == "finished" ]]; then
     echo "Success!"
-    jps | grep Server | awk '{print $1}' | xargs kill
+    jps | grep Server | awk '{print $1}' | xargs kill -SIGINT
     exit 0
 else
     jps | grep Server | awk '{print $1}' | xargs kill
