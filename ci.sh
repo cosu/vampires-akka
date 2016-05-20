@@ -8,6 +8,8 @@ set -ev
 #nstall the client locally
 ./gradlew installDist
 
+./gradlew integrationTest
+
 # run the server
 
 VAMPIRES_HOME=server/build/install/server
