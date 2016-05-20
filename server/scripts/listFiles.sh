@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-source ./common.sh
+source $(dirname $0)/common.sh
 
 ${curl}  ${api_server}/upload

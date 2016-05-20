@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source ./common.sh
+source $(dirname $0)/common.sh
 
 if [[ $# -ne 1 ]]; then
     echo "provide file"

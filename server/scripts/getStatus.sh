@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-set -o nounset
 
 source $(dirname $0)/common.sh
 
@@ -9,6 +8,6 @@ if [[ $# -ne 1 ]]; then
     exit 1
 fi
 
-${curl} --request DELETE ${api_server}'/executions/'$1
+execution_id=$1
 
-${curl} ${api_server}/executions/$1
+${curl} ${api_server}/executions/${execution_id}| jq -r '.info.status'

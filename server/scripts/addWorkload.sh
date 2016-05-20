@@ -2,7 +2,7 @@
 
 set -o nounset
 
-source ./common.sh
+source $(dirname $0)/common.sh
 
 #create workload
 workload_id=$(

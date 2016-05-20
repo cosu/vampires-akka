@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
 
-IP=`curl -s http://ip.cosu.ro/?ip |  tr -d '[[:space:]]'`
-export BIND_HOST="0.0.0.0"
-export HOST=${IP}
 export SERVER_OPTS="${SERVER_OPTS} -Dconfig.file=$1"
 shift
-echo "Vampires-Akka server: Binding to IP:${BIND_HOST} . Public host: ${HOST}"
+if [[ $1 != "local" ]]; then
+    IP=`curl -s http://ip.cosu.ro/?ip |  tr -d '[[:space:]]'`
+    export HOST=${IP}
+    echo "Public host: ${HOST}"
+else
+    shift
+    echo "Public host: localhost"
+fi
+export BIND_HOST="0.0.0.0"
+
+echo "Vampires-Akka server: Binding to IP:${BIND_HOST}"
 echo "Server Opts: ${SERVER_OPTS}"
 
 VAMPIRES_SERVER_HOME="${HOME}/vampires-akka/server/"

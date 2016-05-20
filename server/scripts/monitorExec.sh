@@ -2,7 +2,7 @@
 
 set -o nounset
 
-source ./common.sh
+source $(dirname $0)/common.sh
 
 if [[ $# -ne 1 ]]; then
     echo "provide exec id"
