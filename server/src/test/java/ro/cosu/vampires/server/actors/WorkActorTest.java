@@ -61,7 +61,7 @@ public class WorkActorTest extends AbstractActorTest {
     }
 
     private Scheduler getScheduler() {
-        return new SimpleScheduler(getExecution().workload().getJobs(), 100, backOffinterval);
+        return new SimpleScheduler(getExecution().workload().jobs(), 100, backOffinterval);
     }
     @Test
     public void testWork() {

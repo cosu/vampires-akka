@@ -28,6 +28,7 @@ package ro.cosu.vampires.server.workload;
 
 
 import com.google.auto.value.AutoValue;
+import com.google.common.base.Splitter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,8 +48,10 @@ public abstract class Workload implements Id {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .format("")
+                .task("")
                 .description("")
                 .url("")
+                .file("")
                 .sequenceStart(0)
                 .sequenceStop(0);
     }
@@ -84,6 +87,8 @@ public abstract class Workload implements Id {
 
     public abstract String url();
 
+    public abstract String file();
+
     public abstract String description();
 
     public abstract Builder toBuilder();
@@ -94,10 +99,25 @@ public abstract class Workload implements Id {
     }
 
     public int size() {
-        return sequenceStop() - sequenceStart() + 1;
+        return jobs().size();
     }
 
-    public List<Job> getJobs() {
+    public List<Job> jobs() {
+        if (!file().equals("")) {
+            return getJobsFromFile();
+        } else {
+            return getJobsFromSequence();
+        }
+    }
+
+
+    private List<Job> getJobsFromFile() {
+        return Splitter.on("\n").splitToList(file()).stream()
+                .map(Job.empty()::withCommand)
+                .collect(Collectors.toList());
+    }
+
+    private List<Job> getJobsFromSequence() {
         final String finalUrl = url();
         final String finalFormat = format();
         return IntStream.rangeClosed(sequenceStart(), sequenceStop()).mapToObj(i -> String.format(finalFormat, i))
@@ -122,6 +142,8 @@ public abstract class Workload implements Id {
         public abstract Builder task(String task);
 
         public abstract Builder format(String format);
+
+        public abstract Builder file(String file);
 
         public abstract Builder url(String format);
 

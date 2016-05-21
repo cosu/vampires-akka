@@ -71,7 +71,7 @@ public class WorkloadsService implements Service<Workload, WorkloadPayload> {
 
         Workload created = Workload.fromPayload(payload);
         getUserStore(user).put(created.id(), created);
-        LOG.debug("Created  {} : {}", created.id(), created);
+        LOG.debug("Created  for user {}:  {} with {} jobs", user.id(), created.id(), created.size());
         return created;
     }
 

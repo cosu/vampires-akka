@@ -81,7 +81,7 @@ public class BootstrapActor extends UntypedActor {
     }
 
     private User getUser() {
-        return User.create("foo");
+        return User.admin();
     }
 
     @Override

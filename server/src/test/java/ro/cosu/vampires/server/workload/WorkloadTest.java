@@ -103,4 +103,15 @@ public class WorkloadTest {
         assertThat(updatedWorkload.sequenceStop(), is(12));
 
     }
+
+    @Test
+    public void file() throws Exception {
+
+        WorkloadPayload workloadPayload = WorkloadPayload.builder()
+                .file("foo\nbar\nbaz").build();
+
+        Workload workload = Workload.fromPayload(workloadPayload);
+
+        assertThat(workload.size(), is(3));
+    }
 }

@@ -63,6 +63,11 @@ public abstract class WorkloadPayload {
             url = config.getString("description");
         }
 
+        String file = "";
+        if (config.hasPath("file")) {
+            file = config.getString("file");
+        }
+
         int sequenceStart = config.getInt("sequenceStart");
         int sequenceStop = config.getInt("sequenceStop");
         String task = config.getString("task");
@@ -70,6 +75,7 @@ public abstract class WorkloadPayload {
         return builder().format(format)
                 .task(task)
                 .url(url)
+                .file(file)
                 .description(description)
                 .sequenceStart(sequenceStart)
                 .sequenceStop(sequenceStop)

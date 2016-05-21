@@ -96,7 +96,7 @@ public class ResultActor extends UntypedActor {
 
         logSchedule = getContext().system().scheduler().schedule(scala.concurrent.duration.Duration.Zero(),
                 scala.concurrent.duration.Duration.create(30, SECONDS), () -> {
-                    log.info("results so far: {}/{}", results.size(), execution.workload().getJobs().size());
+                    log.info("results so far: {}/{}", results.size(), execution.workload().jobs().size());
                 }, getContext().system().dispatcher());
     }
 
@@ -141,7 +141,7 @@ public class ResultActor extends UntypedActor {
             writers.forEach(r -> r.addResult(job));
             sendCurrentExecutionInfo(ExecutionInfo.Status.RUNNING);
         }
-        if (results.size() == execution.workload().getJobs().size()) {
+        if (results.size() == execution.workload().jobs().size()) {
             log.debug("result actor exiting {}", results.size());
             shutdown(ExecutionInfo.Status.FINISHED);
         }
@@ -164,7 +164,7 @@ public class ResultActor extends UntypedActor {
     }
 
     private Scheduler getScheduler(Execution execution) {
-        List<Job> jobs = execution.workload().getJobs();
+        List<Job> jobs = execution.workload().jobs();
         if (execution.type().equals(ExecutionMode.SAMPLE)) {
             log.info("running in sampling mode : sampling from {} jobs", jobs.size());
             return new SamplingScheduler(jobs, settings.getJobDeadline(),
