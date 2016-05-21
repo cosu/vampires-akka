@@ -57,6 +57,7 @@ import spark.Route;
 import spark.Spark;
 
 import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 
 public class FilesController {
 
@@ -64,7 +65,7 @@ public class FilesController {
     private static long maxFileSize = 100000000;  // the maximum size allowed for uploaded files
     private static long maxRequestSize = 100000000;  // the maximum size allowed for multipart/form-data requests
     private static int fileSizeThreshold = 1024;  // the size threshold after which files will be written to disk
-    Map<String, FileInfo> files;
+    private Map<String, FileInfo> files;
     private File uploadDir;
 
     @Inject
@@ -83,6 +84,8 @@ public class FilesController {
         Spark.post("/upload", upload(), JsonTransformer.get());
         Spark.get("/upload", list(), JsonTransformer.get());
         Spark.get("/upload/:id", get());
+        Spark.delete("/upload/:id", delete(), JsonTransformer.get());
+
 
 
     }
@@ -100,8 +103,6 @@ public class FilesController {
             request.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
             String fileName = request.raw().getPart("file").getSubmittedFileName();
 
-            LOG.debug("upload file: {}", fileName);
-
             Part uploadedFilePart = request.raw().getPart("file");
 
             Path filePath = Paths.get(uploadDir.getAbsolutePath(), fileName);
@@ -114,7 +115,7 @@ public class FilesController {
                     .orElseThrow(() -> new IOException("failed to upload file"));
 
             files.put(fileInfo.id(), fileInfo);
-
+            LOG.debug("added file: {}", fileInfo);
             response.status(HTTP_CREATED);
             return "OK";
         };
@@ -150,8 +151,29 @@ public class FilesController {
 
             return response.raw();
         };
+    }
+
+    public Route delete() {
+        return (request, response) -> {
+            String id = request.params("id");
+            Preconditions.checkNotNull(id, "file id missing");
+
+            FileInfo fileInfo = files.get(id);
+            Preconditions.checkNotNull(fileInfo, "invalid file");
+            Path path = Paths.get(uploadDir.getAbsolutePath(), fileInfo.name());
+            LOG.debug("delete file: {}", fileInfo);
+
+            boolean deleted = path.toFile().delete();
+
+            Preconditions.checkArgument(deleted, "could not delete file");
+            response.status(HTTP_NO_CONTENT);
+
+            return null;
+        };
 
     }
+
+
     public Route list() {
         return (request, response) -> {
             return getAllFilesInfo().values();

@@ -110,6 +110,7 @@ public abstract class AbstractRestController<T extends Id, P> implements Control
     public Route delete() {
         return ((request, response) -> {
             String id = request.params(":id");
+            Preconditions.checkNotNull(id, "id missing");
             service.delete(id, getUser(request));
             response.status(HTTP_NO_CONTENT);
             return null;

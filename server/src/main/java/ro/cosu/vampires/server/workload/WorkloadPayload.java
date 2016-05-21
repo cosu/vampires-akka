@@ -104,7 +104,6 @@ public abstract class WorkloadPayload {
 
         public abstract Builder id(String id);
 
-
         public abstract WorkloadPayload build();
     }
 
