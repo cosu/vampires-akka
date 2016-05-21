@@ -53,13 +53,13 @@ import ro.cosu.vampires.server.workload.Execution;
 public class ResourceManagerActor extends UntypedActor {
     private final SettingsImpl settings =
             Settings.SettingsProvider.get(getContext().system());
-    protected ResourceRegistry resourceRegistry = new ResourceRegistry();
+    private ResourceRegistry resourceRegistry = new ResourceRegistry();
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
-    private ResourceManager rm;
+    private ResourceManager resourceManager;
 
     public ResourceManagerActor() {
         Injector injector = Guice.createInjector(new ResourceModule(settings.vampires));
-        rm = injector.getInstance(ResourceManager.class);
+        resourceManager = injector.getInstance(ResourceManager.class);
     }
 
     public static Props props() {
@@ -69,7 +69,7 @@ public class ResourceManagerActor extends UntypedActor {
     private void createResource(CreateResource create) {
         log.debug("create resource {}", create.type());
 
-        final Optional<ResourceProvider> provider = rm.getProvider(create.type());
+        final Optional<ResourceProvider> provider = resourceManager.getProvider(create.type());
         if (provider.isPresent()) {
             ActorRef resourceActor = getContext().actorOf(ResourceActor.props(provider.get()));
             getContext().watch(resourceActor);
@@ -134,7 +134,7 @@ public class ResourceManagerActor extends UntypedActor {
     }
 
     private void bootstrapResource(BootstrapResource bootstrap) {
-        rm.getProvider(bootstrap.type()).ifPresent(rp -> bootstrapResource(rp, bootstrap));
+        resourceManager.getProvider(bootstrap.type()).ifPresent(rp -> bootstrapResource(rp, bootstrap));
     }
 
     private void terminatedResource(ActorRef sender) {

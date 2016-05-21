@@ -20,7 +20,7 @@ ${VAMPIRES_HOME}/scripts/vampires_server.sh conf/local.conf local&
 
 sleep 5
 
-exec_id=$(./server/scripts/startExec.sh  |grep execution | awk ' {print $2}')
+exec_id=$(./server/scripts/all.sh  |grep execution | awk ' {print $2}')
 
 ./server/scripts/monitorExec.sh ${exec_id}
 

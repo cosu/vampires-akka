@@ -46,6 +46,7 @@ public class ResourceActor extends UntypedActorWithStash {
     private final ResourceProvider resourceProvider;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private Resource resource;
+
     private Procedure<Object> active = message -> {
         ActorRef sender = getSender();
 
@@ -100,6 +101,7 @@ public class ResourceActor extends UntypedActorWithStash {
         }
 
         Optional<Resource> resourceOptional = resourceProvider.create(create.parameters());
+
 
         if (resourceOptional.isPresent()) {
             this.resource = resourceOptional.get();

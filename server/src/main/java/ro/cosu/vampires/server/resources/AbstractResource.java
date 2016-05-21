@@ -30,7 +30,6 @@ import com.google.common.annotations.VisibleForTesting;
 
 import org.slf4j.Logger;
 
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
@@ -42,16 +41,12 @@ public abstract class AbstractResource implements Resource {
     public AbstractResource(Resource.Parameters parameters) {
         this.parameters = parameters;
         setStatus(Status.SLEEPING);
-        this.description = ResourceId.create(generateId(), parameters.providerType());
+        this.description = ResourceId.create(parameters.id(), parameters.providerType());
         getLogger().debug("resource parameters {}", parameters);
         getLogger().debug("creating resource with properties {}", description);
     }
 
     protected abstract Logger getLogger();
-
-    private String generateId() {
-        return UUID.randomUUID().toString();
-    }
 
     public CompletableFuture<Resource> start() {
         return CompletableFuture.supplyAsync(this::startCall)
