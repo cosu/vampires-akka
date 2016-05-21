@@ -93,11 +93,6 @@ public abstract class Workload implements Id {
                 .updatedAt(LocalDateTime.now());
     }
 
-    public Workload touch() {
-        return toBuilder().updatedAt(LocalDateTime.now()).build();
-    }
-
-
     public int size() {
         return sequenceStop() - sequenceStart() + 1;
     }

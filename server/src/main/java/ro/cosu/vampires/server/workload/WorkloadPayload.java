@@ -114,9 +114,9 @@ public abstract class WorkloadPayload {
 
         public abstract Builder url(String format);
 
-        public abstract Builder description(String format);
+        public abstract Builder description(String description);
 
-        public abstract Builder file(String id);
+        public abstract Builder file(String file);
 
         public abstract Builder id(String id);
 

@@ -45,7 +45,7 @@ public class AutoValueUtil<P, B> {
 
     public B builderFromPayload(P payload, B builder) {
 
-        Set<String> forbiddenMethods = Sets.newHashSet("equals", "toString", "hashCode", "$jacocoInit");
+        Set<String> forbiddenMethods = Sets.newHashSet("equals", "toString", "hashCode", "$jacocoInit", "file");
         Arrays.stream(typeTokenPayload.getRawType().getDeclaredMethods())
                 // we filter out the methods that seem to be builders
                 .filter(method -> !method.getReturnType().getName().toLowerCase().contains("builder"))
