@@ -99,6 +99,8 @@ public class BootstrapIT {
 
         Timeout timeout = new Timeout(Duration.create(100, "milliseconds"));
 
+        Thread.sleep(1000);
+
         while (running && count < maxCount) {
 
             Thread.sleep(1000);

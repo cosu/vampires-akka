@@ -8,7 +8,7 @@ set -ev
 #nstall the client locally
 ./gradlew installDist
 
-./gradlew integrationTest
+./gradlew integrationTest --info
 
 # run the server
 

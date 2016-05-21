@@ -26,6 +26,8 @@
 
 package ro.cosu.vampires.server.rest.controllers;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
 import com.typesafe.config.Config;
@@ -34,17 +36,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.servlet.MultipartConfigElement;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
 import ro.cosu.vampires.server.rest.JsonTransformer;
+import ro.cosu.vampires.server.workload.FileInfo;
 import spark.Route;
 import spark.Spark;
 
@@ -56,6 +64,7 @@ public class FilesController {
     private static long maxFileSize = 100000000;  // the maximum size allowed for uploaded files
     private static long maxRequestSize = 100000000;  // the maximum size allowed for multipart/form-data requests
     private static int fileSizeThreshold = 1024;  // the size threshold after which files will be written to disk
+    Map<String, FileInfo> files;
     private File uploadDir;
 
     @Inject
@@ -63,9 +72,18 @@ public class FilesController {
         uploadDir = new File(Paths.get(config.getString("uploadDir"), "/vampires").toUri());
         uploadDir.mkdir();
 
+        try {
+            files = getAllFilesInfo();
+        } catch (IOException e) {
+            LOG.error("can not read files");
+            files = Maps.newConcurrentMap();
+        }
+
         LOG.debug("Upload dir {}", uploadDir);
         Spark.post("/upload", upload(), JsonTransformer.get());
         Spark.get("/upload", list(), JsonTransformer.get());
+        Spark.get("/upload/:id", get());
+
 
     }
 
@@ -92,20 +110,54 @@ public class FilesController {
                 Files.copy(input, filePath, StandardCopyOption.REPLACE_EXISTING);
             }
 
+            FileInfo fileInfo = FileInfo.fromFile(filePath.toFile())
+                    .orElseThrow(() -> new IOException("failed to upload file"));
+
+            files.put(fileInfo.id(), fileInfo);
+
             response.status(HTTP_CREATED);
             return "OK";
         };
     }
 
 
-    public Route list() {
-        return (request, response) -> {
+    private Map<String, FileInfo> getAllFilesInfo() throws IOException {
+        return Files.walk(Paths.get(uploadDir.getAbsolutePath())).filter(Files::isRegularFile)
+                .filter(Files::isReadable)
+                .map(Path::toFile)
+                .map(FileInfo::fromFile)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toConcurrentMap(FileInfo::id, Function.identity()));
+    }
 
-            return Files.walk(Paths.get(uploadDir.getAbsolutePath())).filter(Files::isRegularFile)
-                    .filter(Files::isReadable)
-                    .map(Path::toFile)
-                    .collect(Collectors.toMap(File::getName, File::length));
+    public Route get() {
+        return (request, response) -> {
+            String id = request.params("id");
+            Preconditions.checkNotNull(id, "file id missing");
+
+            FileInfo fileInfo = files.get(id);
+            Preconditions.checkNotNull(fileInfo, "invalid file");
+
+            response.type("text/plain");
+
+            HttpServletResponse raw = response.raw();
+
+            raw.getOutputStream().write(Files.readAllBytes(
+                    Paths.get(uploadDir.getAbsolutePath(), fileInfo.name())));
+            raw.getOutputStream().flush();
+            raw.getOutputStream().close();
+
+            return response.raw();
         };
 
     }
+    public Route list() {
+        return (request, response) -> {
+            return getAllFilesInfo().values();
+        };
+
+    }
+
+
 }
