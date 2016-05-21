@@ -38,6 +38,7 @@ import java.util.Set;
 public class AutoValueUtil<P, B> {
     private final TypeToken<P> typeTokenPayload = new TypeToken<P>(getClass()) {
     };
+
     private final TypeToken<B> typeTokenBuilder = new TypeToken<B>(getClass()) {
     };
 

@@ -101,6 +101,7 @@ public abstract class Workload implements Id {
     public int size() {
         return sequenceStop() - sequenceStart() + 1;
     }
+
     public List<Job> getJobs() {
         final String finalUrl = url();
         final String finalFormat = format();
@@ -108,7 +109,6 @@ public abstract class Workload implements Id {
                 .map(f -> String.format("%s %s%s", task(), finalUrl, f).trim())
                 .map(command -> Job.empty().withCommand(command))
                 .collect(Collectors.toList());
-
     }
 
     @AutoValue.Builder

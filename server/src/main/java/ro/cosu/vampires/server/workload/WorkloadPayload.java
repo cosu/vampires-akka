@@ -58,6 +58,11 @@ public abstract class WorkloadPayload {
             url = config.getString("url");
         }
 
+        String description = "";
+        if (config.hasPath("description")) {
+            url = config.getString("description");
+        }
+
         int sequenceStart = config.getInt("sequenceStart");
         int sequenceStop = config.getInt("sequenceStop");
         String task = config.getString("task");
@@ -65,11 +70,11 @@ public abstract class WorkloadPayload {
         return builder().format(format)
                 .task(task)
                 .url(url)
+                .description(description)
                 .sequenceStart(sequenceStart)
                 .sequenceStop(sequenceStop)
                 .build();
     }
-
 
     @Nullable
     public abstract String id();
@@ -87,6 +92,13 @@ public abstract class WorkloadPayload {
     @Nullable
     public abstract String url();
 
+    @Nullable
+    public abstract String description();
+
+    @Nullable
+    public abstract String file();
+
+
     public abstract Builder toBuilder();
 
     @AutoValue.Builder
@@ -102,7 +114,9 @@ public abstract class WorkloadPayload {
 
         public abstract Builder url(String format);
 
-        public abstract Builder id(String id);
+        public abstract Builder description(String format);
+
+        public abstract Builder file(String id);
 
         public abstract WorkloadPayload build();
     }
