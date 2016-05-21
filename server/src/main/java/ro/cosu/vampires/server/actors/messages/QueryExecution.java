@@ -32,13 +32,13 @@ import com.google.auto.value.AutoValue;
 import ro.cosu.vampires.server.workload.User;
 
 @AutoValue
-public abstract class QueryResource {
-    public static QueryResource create(String resourceId, User user) {
-        return new AutoValue_QueryResource(resourceId, user);
+public abstract class QueryExecution {
+    public static QueryExecution create(String resourceId, User user) {
+        return new AutoValue_QueryExecution(resourceId, user);
     }
 
-    public static QueryResource all(User user) {
-        return new AutoValue_QueryResource("all", user);
+    public static QueryExecution all(User user) {
+        return new AutoValue_QueryExecution("all", user);
     }
     public abstract String resourceId();
 

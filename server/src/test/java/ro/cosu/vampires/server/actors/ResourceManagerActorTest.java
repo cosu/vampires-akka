@@ -46,7 +46,7 @@ import akka.testkit.TestActorRef;
 import akka.testkit.TestProbe;
 import ro.cosu.vampires.server.actors.messages.BootstrapResource;
 import ro.cosu.vampires.server.actors.messages.CreateResource;
-import ro.cosu.vampires.server.actors.messages.QueryResource;
+import ro.cosu.vampires.server.actors.messages.QueryExecution;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.resource.ResourceManagerActor;
 import ro.cosu.vampires.server.resources.Resource;
@@ -160,7 +160,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         resourceManagerActor.tell(clientInfo, testProbe.ref());
 
-        QueryResource resourceQuery = QueryResource.create(id, User.admin());
+        QueryExecution resourceQuery = QueryExecution.create(id, User.admin());
 
         final Future<Object> infoFuture = Patterns.ask(resourceManagerActor, resourceQuery, 1000);
 

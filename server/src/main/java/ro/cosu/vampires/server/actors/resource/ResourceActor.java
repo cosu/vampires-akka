@@ -36,7 +36,7 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.japi.Procedure;
 import ro.cosu.vampires.server.actors.messages.CreateResource;
-import ro.cosu.vampires.server.actors.messages.QueryResource;
+import ro.cosu.vampires.server.actors.messages.QueryExecution;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.resources.ResourceProvider;
@@ -49,7 +49,7 @@ public class ResourceActor extends UntypedActorWithStash {
     private Procedure<Object> active = message -> {
         ActorRef sender = getSender();
 
-        if (message instanceof QueryResource) {
+        if (message instanceof QueryExecution) {
             sendResourceInfo(sender);
         } else if (message instanceof ClientInfo) {
             connectClient((ClientInfo) message);
@@ -77,7 +77,7 @@ public class ResourceActor extends UntypedActorWithStash {
         if (message instanceof CreateResource) {
             CreateResource create = (CreateResource) message;
             createResource(create, sender);
-        } else if (message instanceof QueryResource) {
+        } else if (message instanceof QueryExecution) {
             sendResourceInfo(sender);
         } else if (message instanceof ResourceInfo) {
             ResourceInfo resourceInfo = (ResourceInfo) message;

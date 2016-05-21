@@ -41,7 +41,7 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
 import akka.testkit.TestActor;
-import ro.cosu.vampires.server.actors.messages.QueryResource;
+import ro.cosu.vampires.server.actors.messages.QueryExecution;
 import ro.cosu.vampires.server.actors.messages.ShutdownResource;
 import ro.cosu.vampires.server.actors.messages.StartExecution;
 import ro.cosu.vampires.server.resources.Resource;
@@ -77,9 +77,9 @@ public class ServicesTestModule extends AbstractModule {
                 if (msg instanceof StartExecution) {
                     StartExecution startExecution = (StartExecution) msg;
                     executionMap.put(startExecution.execution().id(), startExecution.execution());
-                } else if (msg instanceof QueryResource) {
-                    QueryResource info = (QueryResource) msg;
-                    if (info.equals(QueryResource.all(info.user()))) {
+                } else if (msg instanceof QueryExecution) {
+                    QueryExecution info = (QueryExecution) msg;
+                    if (info.equals(QueryExecution.all(info.user()))) {
                         sender.tell(executionMap.values(), actorRef);
                     } else {
                         sender.tell(executionMap.get(info.resourceId()), actorRef);

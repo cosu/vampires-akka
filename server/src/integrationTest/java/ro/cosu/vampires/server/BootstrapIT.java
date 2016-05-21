@@ -39,7 +39,7 @@ import akka.pattern.Patterns;
 import akka.util.Timeout;
 import ro.cosu.vampires.server.actors.BootstrapActor;
 import ro.cosu.vampires.server.actors.Terminator;
-import ro.cosu.vampires.server.actors.messages.QueryResource;
+import ro.cosu.vampires.server.actors.messages.QueryExecution;
 import ro.cosu.vampires.server.actors.messages.StartExecution;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.workload.Configuration;
@@ -95,28 +95,20 @@ public class BootstrapIT {
 
         int count = 0;
         int maxCount = 100;
+        boolean running = true;
 
         Timeout timeout = new Timeout(Duration.create(100, "milliseconds"));
 
-        Thread.sleep(2000);
+        while (running && count < maxCount) {
 
-        System.out.println(System.getProperty("user.dir"));
-        while (true) {
+            Thread.sleep(1000);
+            count++;
 
             Future<Object> ask = Patterns.ask(bootstrap,
-                    QueryResource.create(execution.id(), User.admin()), timeout);
+                    QueryExecution.create(execution.id(), User.admin()), timeout);
             execution = (Execution) Await.result(ask, timeout.duration());
             System.out.println(execution.info().status());
-
-            boolean running = ExecutionInfo.isActiveStatus(execution.info().status());
-
-            if (running && count < maxCount) {
-                count++;
-                Thread.sleep(1000);
-            } else {
-                //exiting
-                break;
-            }
+            running = ExecutionInfo.isActiveStatus(execution.info().status());
 
         }
 

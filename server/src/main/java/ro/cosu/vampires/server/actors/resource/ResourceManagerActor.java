@@ -1,24 +1,26 @@
 /*
- * The MIT License (MIT)
- * Copyright © 2016 Cosmin Dumitru, http://cosu.ro <cosu@cosu.ro>
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the “Software”), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro <cosu@cosu.ro>
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
  *
  */
 
@@ -37,7 +39,7 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.BootstrapResource;
 import ro.cosu.vampires.server.actors.messages.CreateResource;
-import ro.cosu.vampires.server.actors.messages.QueryResource;
+import ro.cosu.vampires.server.actors.messages.QueryExecution;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
 import ro.cosu.vampires.server.resources.Resource;
@@ -100,8 +102,8 @@ public class ResourceManagerActor extends UntypedActor {
         } else if (message instanceof CreateResource) {
             final CreateResource create = (CreateResource) message;
             createResource(create);
-        } else if (message instanceof QueryResource) {
-            final QueryResource query = (QueryResource) message;
+        } else if (message instanceof QueryExecution) {
+            final QueryExecution query = (QueryExecution) message;
             queryResource(query, sender);
         } else if (message instanceof ResourceControl.Shutdown) {
             shutdownResources();
@@ -163,7 +165,7 @@ public class ResourceManagerActor extends UntypedActor {
         resourceRegistry.registerResource(sender, resourceInfo);
     }
 
-    private void queryResource(QueryResource query, ActorRef sender) {
+    private void queryResource(QueryExecution query, ActorRef sender) {
         Optional<ActorRef> resourceOfClient = resourceRegistry.lookupResourceOfClient(query.resourceId());
 
         if (resourceOfClient.isPresent()) {

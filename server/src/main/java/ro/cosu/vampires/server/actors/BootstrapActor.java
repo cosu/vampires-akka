@@ -41,7 +41,7 @@ import akka.actor.Terminated;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import ro.cosu.vampires.server.actors.messages.QueryResource;
+import ro.cosu.vampires.server.actors.messages.QueryExecution;
 import ro.cosu.vampires.server.actors.messages.ShutdownResource;
 import ro.cosu.vampires.server.actors.messages.StartExecution;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
@@ -128,8 +128,8 @@ public class BootstrapActor extends UntypedActor {
         } else if (message instanceof Execution) {
             Execution execution = (Execution) message;
             handleExecution(execution);
-        } else if (message instanceof QueryResource) {
-            QueryResource info = (QueryResource) message;
+        } else if (message instanceof QueryExecution) {
+            QueryExecution info = (QueryExecution) message;
             queryResource(info);
         } else if (message instanceof ShutdownResource) {
             ShutdownResource shutdownResource = (ShutdownResource) message;
@@ -200,9 +200,9 @@ public class BootstrapActor extends UntypedActor {
         return executionHashBasedTable.row(user);
     }
 
-    private void queryResource(QueryResource info) {
+    private void queryResource(QueryExecution info) {
         User user = info.user();
-        if (info.equals(QueryResource.all(info.user()))) {
+        if (info.equals(QueryExecution.all(info.user()))) {
             getSender().tell(getResultsMap(user).values(), getSelf());
         } else {
             if (getResultsMap(user).containsKey(info.resourceId())) {

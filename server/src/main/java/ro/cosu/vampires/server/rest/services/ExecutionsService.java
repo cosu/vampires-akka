@@ -44,7 +44,7 @@ import java.util.Optional;
 import akka.actor.ActorRef;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
-import ro.cosu.vampires.server.actors.messages.QueryResource;
+import ro.cosu.vampires.server.actors.messages.QueryExecution;
 import ro.cosu.vampires.server.actors.messages.ShutdownResource;
 import ro.cosu.vampires.server.actors.messages.StartExecution;
 import ro.cosu.vampires.server.workload.Configuration;
@@ -83,7 +83,7 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
 
         Timeout timeout = new Timeout(Duration.create(100, "milliseconds"));
 
-        Future<Object> ask = Patterns.ask(actorRef, QueryResource.all(user), timeout);
+        Future<Object> ask = Patterns.ask(actorRef, QueryExecution.all(user), timeout);
 
         try {
             Object result = Await.result(ask, timeout.duration());
@@ -150,7 +150,7 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
 
     @Override
     public Optional<Execution> get(String id, User user) {
-        return sendMessage(QueryResource.create(id, user));
+        return sendMessage(QueryExecution.create(id, user));
     }
 
 
