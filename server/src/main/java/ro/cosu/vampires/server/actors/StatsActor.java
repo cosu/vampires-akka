@@ -118,18 +118,21 @@ public class StatsActor extends UntypedActor {
                 .forEach(e -> {
 
                     Double value = e.getValue();
-                    if (value < 1) {
+                    if (value < 100) {
                         value = 1000. * value;
                     }
                     long rounded = Math.round(value);
-
                     String key = e.getKey();
-                    metricRegistry.histogram(providerType + "-" + key).update(rounded);
-                    metricRegistry.histogram(providerType + "-" + instanceType + "-" + key).update(rounded);
-                    metricRegistry.histogram(providerType + "-" + instanceType + "-" + from + "-" + key).update(rounded);
+                    updateMetric(providerType.name(), instanceType, from, key, rounded);
                 });
 
+        updateMetric(providerType.name(), instanceType, from, "duration", job.result().duration());
 
+    }
 
+    private void updateMetric(String providerType, String instanceType, String clientId, String metric, long value) {
+        metricRegistry.histogram(providerType + ":" + metric).update(value);
+        metricRegistry.histogram(providerType + ":" + instanceType + ":" + metric).update(value);
+        metricRegistry.histogram(providerType + ":" + instanceType + ":" + clientId + ":" + metric).update(value);
     }
 }
