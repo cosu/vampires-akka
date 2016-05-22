@@ -65,40 +65,32 @@ public class ResourceManagerActor extends UntypedActor {
         return Props.create(ResourceManagerActor.class);
     }
 
-    private void createResource(CreateResource create) {
-        log.debug("create resource {}", create.type());
-
-        final Optional<ResourceProvider> provider = resourceManager.getProvider(create.type());
-        if (provider.isPresent()) {
-            ActorRef resourceActor = getContext().actorOf(ResourceActor.props(provider.get()));
-            getContext().watch(resourceActor);
-            resourceRegistry.addResourceActor(resourceActor);
-            resourceActor.forward(create, getContext());
-        } else {
-            log.error("Error getting {} providerType resource provider.", create.type());
-        }
-    }
-
 
     @Override
     public void onReceive(Object message) throws Exception {
         ActorRef sender = getSender();
 
         if (message instanceof BootstrapResource) {
+            // start a resource
             final BootstrapResource bootstrap = (BootstrapResource) message;
             bootstrapResource(bootstrap);
         } else if (message instanceof QueryResource) {
+            // query a specific resource
             final QueryResource query = (QueryResource) message;
             queryResource(query, sender);
         } else if (message instanceof ResourceControl.Shutdown) {
+            // shutdown everything
             shutdownResources();
         } else if (message instanceof ResourceInfo) {
+            // sent by the resource when the state changes
             final ResourceInfo resourceInfo = (ResourceInfo) message;
             registerResource(resourceInfo, sender);
         } else if (message instanceof ClientInfo) {
+            // sent when a client registers
             final ClientInfo clientInfo = (ClientInfo) message;
             registerClient(clientInfo);
         } else if (message instanceof Terminated) {
+            // resource terminates
             terminatedResource(sender);
         } else {
             log.debug("unhandled {}", message);
@@ -107,16 +99,20 @@ public class ResourceManagerActor extends UntypedActor {
     }
 
 
-
     private void bootstrapResource(BootstrapResource bootstrap) {
-        resourceManager.getProvider(bootstrap.type()).ifPresent(rp -> {
-            Resource.Parameters parameters = rp.getParameters(bootstrap.name())
-                    .withServerId(bootstrap.serverId());
+        ResourceProvider rp = resourceManager.getProvider(bootstrap.type()).orElseThrow(()
+                -> new IllegalArgumentException("Error getting " + bootstrap.type()
+                + " resource provider.")
+        );
 
-            CreateResource create = CreateResource.create(bootstrap.type(), parameters);
+        Resource.Parameters parameters = rp.getParameters(bootstrap.name())
+                .withServerId(bootstrap.serverId());
 
-            createResource(create);
-        });
+        CreateResource create = CreateResource.create(bootstrap.type(), parameters);
+        ActorRef resourceActor = getContext().actorOf(ResourceActor.props(rp));
+        getContext().watch(resourceActor);
+        resourceRegistry.addResourceActor(resourceActor);
+        resourceActor.forward(create, getContext());
     }
 
     private void terminatedResource(ActorRef sender) {
