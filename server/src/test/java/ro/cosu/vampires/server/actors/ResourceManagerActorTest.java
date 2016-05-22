@@ -87,7 +87,8 @@ public class ResourceManagerActorTest extends AbstractActorTest {
             @Provides
             @Named("Config")
             Config provideConfig() {
-                return ConfigFactory.parseString("mock.foo={}");
+                return ConfigFactory.parseString("mock.foo={}\n" +
+                        "mock.fail{command=fail}");
             }
 
         };
@@ -97,11 +98,11 @@ public class ResourceManagerActorTest extends AbstractActorTest {
     public void testStartResourceFail() throws Exception {
         final TestProbe testProbe = new TestProbe(system);
 
-        CreateResource createResourceWhichFails = getCreateResource("fail");
+        BootstrapResource bs = BootstrapResource.create(RESOURCE_PROVIDER_TYPE, "fail", "foo");
         TestActorRef<ResourceManagerActor> resourceManagerActor = TestActorRef.create(system,
                 ResourceManagerActor.props());
 
-        resourceManagerActor.tell(createResourceWhichFails, testProbe.ref());
+        resourceManagerActor.tell(bs, testProbe.ref());
 
         testProbe.expectMsgClass(Duration.create(2, TimeUnit.SECONDS), ResourceInfo.class);
 
@@ -111,35 +112,18 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
     }
 
-    @Test
-    public void testStartResource() throws Exception {
-        final TestProbe testProbe = new TestProbe(system);
-
-        CreateResource createResourceWhichFails = getCreateResource("foo");
-        TestActorRef<ResourceManagerActor> resourceManagerActor = TestActorRef.create(system,
-                ResourceManagerActor.props());
-
-        resourceManagerActor.tell(createResourceWhichFails, testProbe.ref());
-
-        testProbe.expectMsgClass(Duration.create(1, TimeUnit.SECONDS), ResourceInfo.class);
-
-        final ResourceInfo resourceInfo = (ResourceInfo) testProbe.lastMessage().msg();
-
-        assertThat(resourceInfo.status(), is(Resource.Status.RUNNING));
-
-    }
 
     @Test
     public void testStartStopResource() throws Exception {
 
         final TestProbe testProbe = new TestProbe(system);
 
-        CreateResource createResource = getCreateResource("foo");
+        BootstrapResource bs = BootstrapResource.create(RESOURCE_PROVIDER_TYPE, "foo", "foo");
 
         TestActorRef<ResourceManagerActor> resourceManagerActor = TestActorRef.create(system, ResourceManagerActor
                 .props());
 
-        resourceManagerActor.tell(createResource, testProbe.ref());
+        resourceManagerActor.tell(bs, testProbe.ref());
 
         testProbe.expectMsgClass(Duration.create(1, TimeUnit.SECONDS), ResourceInfo.class);
 

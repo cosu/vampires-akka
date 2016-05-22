@@ -37,6 +37,7 @@ import akka.actor.Terminated;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import ro.cosu.vampires.server.actors.messages.BootstrapResource;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.resource.ResourceManagerActor;
 import ro.cosu.vampires.server.workload.ClientInfo;
@@ -62,13 +63,21 @@ public class ExecutionActor extends UntypedActor {
     private void startExecution(Execution execution) {
 
         resourceManagerActor = getContext().actorOf(ResourceManagerActor.props(), "resourceActor");
-        resourceManagerActor.tell(execution, getSelf());
         resultActor = getContext().actorOf(ResultActor.props(execution), "resultActor");
         getContext().watch(resourceManagerActor);
         getContext().watch(resultActor);
 
         watchees.add(resourceManagerActor);
         watchees.add(resultActor);
+
+        execution
+                .configuration().withMode(execution.type())
+                .resources()
+                .stream()
+                .map(resourceDemand -> BootstrapResource.create(
+                        resourceDemand.provider(), resourceDemand.type(), execution.id())
+                )
+                .forEach(bootstrapResource -> resourceManagerActor.tell(bootstrapResource, getSender()));
     }
 
     @Override
@@ -93,4 +102,5 @@ public class ExecutionActor extends UntypedActor {
             unhandled(message);
         }
     }
+
 }

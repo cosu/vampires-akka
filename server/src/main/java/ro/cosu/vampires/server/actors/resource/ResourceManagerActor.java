@@ -48,7 +48,6 @@ import ro.cosu.vampires.server.resources.ResourceManager;
 import ro.cosu.vampires.server.resources.ResourceModule;
 import ro.cosu.vampires.server.resources.ResourceProvider;
 import ro.cosu.vampires.server.workload.ClientInfo;
-import ro.cosu.vampires.server.workload.Execution;
 
 public class ResourceManagerActor extends UntypedActor {
     private final SettingsImpl settings =
@@ -80,28 +79,14 @@ public class ResourceManagerActor extends UntypedActor {
         }
     }
 
-    private void bootstrapResource(ResourceProvider resourceProvider, BootstrapResource bootstrap) {
-        Resource.Parameters parameters = resourceProvider.getParameters(bootstrap.name())
-                .withServerId(bootstrap.serverId());
-
-        CreateResource create = CreateResource
-                .create(bootstrap.type(), parameters);
-        createResource(create);
-    }
 
     @Override
     public void onReceive(Object message) throws Exception {
         ActorRef sender = getSender();
 
-        if (message instanceof Execution) {
-            final Execution execution = (Execution) message;
-            startExecution(execution);
-        } else if (message instanceof BootstrapResource) {
+        if (message instanceof BootstrapResource) {
             final BootstrapResource bootstrap = (BootstrapResource) message;
             bootstrapResource(bootstrap);
-        } else if (message instanceof CreateResource) {
-            final CreateResource create = (CreateResource) message;
-            createResource(create);
         } else if (message instanceof QueryResource) {
             final QueryResource query = (QueryResource) message;
             queryResource(query, sender);
@@ -121,20 +106,17 @@ public class ResourceManagerActor extends UntypedActor {
         }
     }
 
-    private void startExecution(Execution execution) {
-        // if sample then use only 1 instance
-        execution
-                .configuration().withMode(execution.type())
-                .resources()
-                .stream()
-                .map(resourceDemand -> BootstrapResource.create(
-                        resourceDemand.provider(), resourceDemand.type(), execution.id())
-                )
-                .forEach(bootstrapResource -> getSelf().tell(bootstrapResource, getSender()));
-    }
+
 
     private void bootstrapResource(BootstrapResource bootstrap) {
-        resourceManager.getProvider(bootstrap.type()).ifPresent(rp -> bootstrapResource(rp, bootstrap));
+        resourceManager.getProvider(bootstrap.type()).ifPresent(rp -> {
+            Resource.Parameters parameters = rp.getParameters(bootstrap.name())
+                    .withServerId(bootstrap.serverId());
+
+            CreateResource create = CreateResource.create(bootstrap.type(), parameters);
+
+            createResource(create);
+        });
     }
 
     private void terminatedResource(ActorRef sender) {
