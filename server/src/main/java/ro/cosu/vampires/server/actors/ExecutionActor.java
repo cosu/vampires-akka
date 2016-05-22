@@ -38,6 +38,7 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.BootstrapResource;
+import ro.cosu.vampires.server.actors.messages.QueryStats;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.resource.ResourceManagerActor;
 import ro.cosu.vampires.server.resources.ResourceInfo;
@@ -96,6 +97,8 @@ public class ExecutionActor extends UntypedActor {
             if (getSender().equals(resultActor)) {
                 getContext().stop(getSelf());
             }
+        } else if (message instanceof QueryStats) {
+            resultActor.forward(message, getContext());
         } else {
             unhandled(message);
         }

@@ -26,8 +26,10 @@
 
 package ro.cosu.vampires.server.actors;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
+import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;
 
@@ -41,10 +43,13 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.japi.Creator;
+import ro.cosu.vampires.server.actors.messages.QueryStats;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.workload.ClientInfo;
+import ro.cosu.vampires.server.workload.HistogramSnapshot;
 import ro.cosu.vampires.server.workload.Job;
+import ro.cosu.vampires.server.workload.Stats;
 
 public class StatsActor extends UntypedActor {
 
@@ -79,7 +84,8 @@ public class StatsActor extends UntypedActor {
 
     @Override
     public void postStop() {
-        reporter.report();
+//        reporter.report();
+        log.debug("stats {}", getStats());
         reporter.stop();
     }
 
@@ -93,9 +99,28 @@ public class StatsActor extends UntypedActor {
         }
         if (message instanceof ClientInfo) {
             process((ClientInfo) message);
+        }
+        if (message instanceof QueryStats) {
+            process((QueryStats) message);
         } else {
             unhandled(message);
         }
+    }
+
+    private void process(QueryStats message) {
+        Stats stats = getStats();
+        getSender().tell(stats, getSelf());
+    }
+
+    private Stats getStats() {
+        Map<String, HistogramSnapshot> stats = Maps.newHashMap();
+        metricRegistry.getHistograms().entrySet().stream().forEach(m -> {
+            String name = m.getKey();
+            Histogram value = m.getValue();
+            stats.put(name, HistogramSnapshot.fromHistogram(name, value));
+        });
+
+        return Stats.builder().stats(ImmutableMap.copyOf(stats)).build();
     }
 
     private void process(ClientInfo message) {

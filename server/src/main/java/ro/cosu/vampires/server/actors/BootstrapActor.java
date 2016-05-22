@@ -42,6 +42,7 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.QueryExecution;
+import ro.cosu.vampires.server.actors.messages.QueryStats;
 import ro.cosu.vampires.server.actors.messages.ShutdownResource;
 import ro.cosu.vampires.server.actors.messages.StartExecution;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
@@ -134,6 +135,8 @@ public class BootstrapActor extends UntypedActor {
         } else if (message instanceof ShutdownResource) {
             ShutdownResource shutdownResource = (ShutdownResource) message;
             handleShutdown(shutdownResource);
+        } else if (message instanceof QueryStats) {
+            handleStats((QueryStats) message);
         } else if (message instanceof Terminated) {
             handleTerminated();
         } else {
@@ -198,6 +201,19 @@ public class BootstrapActor extends UntypedActor {
 
     private Map<String, Execution> getResultsMap(User user) {
         return executionHashBasedTable.row(user);
+    }
+
+    private void handleStats(QueryStats stats) {
+        User user = stats.user();
+        if (stats.equals(QueryExecution.all(stats.user()))) {
+            getSender().tell(getResultsMap(user).values(), getSelf());
+        } else {
+            if (getResultsMap(user).containsKey(stats.resourceId())) {
+                getSender().tell(getResultsMap(user).get(stats.resourceId()), getSelf());
+            } else {
+                log.error("Invalid query for execution id {}", stats.resourceId());
+            }
+        }
     }
 
     private void queryResource(QueryExecution info) {

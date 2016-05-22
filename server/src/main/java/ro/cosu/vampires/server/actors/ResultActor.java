@@ -37,6 +37,7 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import ro.cosu.vampires.server.actors.messages.QueryStats;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
@@ -116,6 +117,8 @@ public class ResultActor extends UntypedActor {
         } else if (message instanceof ClientInfo) {
             ClientInfo clientInfo = (ClientInfo) message;
             handleClientInfo(clientInfo);
+        } else if (message instanceof QueryStats) {
+            statsActor.forward(message, getContext());
         } else if (message instanceof ResourceInfo) {
             ResourceInfo resourceInfo = (ResourceInfo) message;
             handleResourceInfo(resourceInfo);
