@@ -38,6 +38,10 @@ public abstract class Stats {
         return new AutoValue_Stats.Builder();
     }
 
+    public static Stats empty() {
+        return builder().stats(ImmutableMap.of()).build();
+    }
+
     public abstract ImmutableMap<String, HistogramSnapshot> stats();
 
     @AutoValue.Builder

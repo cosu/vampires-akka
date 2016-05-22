@@ -37,7 +37,6 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import ro.cosu.vampires.server.actors.messages.QueryStats;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
@@ -48,6 +47,7 @@ import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.ExecutionInfo;
 import ro.cosu.vampires.server.workload.ExecutionMode;
 import ro.cosu.vampires.server.workload.Job;
+import ro.cosu.vampires.server.workload.Stats;
 import ro.cosu.vampires.server.workload.schedulers.SamplingScheduler;
 import ro.cosu.vampires.server.workload.schedulers.Scheduler;
 import ro.cosu.vampires.server.workload.schedulers.SimpleScheduler;
@@ -61,6 +61,9 @@ public class ResultActor extends UntypedActor {
             Settings.SettingsProvider.get(getContext().system());
     private final LocalDateTime startTime = LocalDateTime.now();
     private final Execution execution;
+    private Stats stats;
+
+
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private List<Job> results = new LinkedList<>();
     private List<ResultsWriter> writers;
@@ -117,8 +120,10 @@ public class ResultActor extends UntypedActor {
         } else if (message instanceof ClientInfo) {
             ClientInfo clientInfo = (ClientInfo) message;
             handleClientInfo(clientInfo);
-        } else if (message instanceof QueryStats) {
-            statsActor.forward(message, getContext());
+        } else if (message instanceof Stats) {
+            this.stats = (Stats) message;
+            sendCurrentExecutionInfo(ExecutionInfo.Status.RUNNING);
+
         } else if (message instanceof ResourceInfo) {
             ResourceInfo resourceInfo = (ResourceInfo) message;
             handleResourceInfo(resourceInfo);
@@ -139,6 +144,7 @@ public class ResultActor extends UntypedActor {
                 .updateTotal(execution.workload().size())
                 .updateCompleted(results.size())
                 .updateStatus(status)
+                .updateStats(stats)
                 .updateElapsed(Duration.between(startTime, LocalDateTime.now()).toMillis())
                 .updateRemaining(execution.workload().size() - results.size());
 
@@ -153,7 +159,6 @@ public class ResultActor extends UntypedActor {
             results.add(job);
             writers.forEach(r -> r.addResult(job));
             statsActor.tell(job, getSender());
-            sendCurrentExecutionInfo(ExecutionInfo.Status.RUNNING);
         }
         if (results.size() == execution.workload().jobs().size()) {
             log.debug("result actor exiting {}", results.size());

@@ -41,15 +41,6 @@ public abstract class ExecutionInfo {
 
     private static HashSet<Status> ACTIVE_STATUSES =
             Sets.newHashSet(ExecutionInfo.Status.RUNNING, ExecutionInfo.Status.STARTING);
-//    {
-//        "id" : "041363e3-6551-4202-947a-9fa8dab240ec",
-//            "info": "running",
-//            "last_update_at": "2016-08-05T08:40:51.620Z",
-//            "completed": 10,
-//            "failed": 0,
-//            "remaining": 5,
-//            "total": 15
-//    }
 
     public static Builder builder() {
         return new AutoValue_ExecutionInfo.Builder()
@@ -63,6 +54,7 @@ public abstract class ExecutionInfo {
                 .remaining(0)
                 .failed(0)
                 .elapsed(0)
+                .stats(Stats.empty())
                 .status(Status.STARTING)
                 .build();
     }
@@ -84,6 +76,8 @@ public abstract class ExecutionInfo {
     public abstract int completed();
 
     public abstract long elapsed();
+
+    public abstract Stats stats();
 
     public abstract Builder toBuilder();
 
@@ -116,6 +110,10 @@ public abstract class ExecutionInfo {
         return update().status(status).build();
     }
 
+    public ExecutionInfo updateStats(Stats stats) {
+        return update().stats(stats).build();
+    }
+
 
     public enum Status {
 
@@ -133,6 +131,9 @@ public abstract class ExecutionInfo {
         public abstract Builder updatedAt(LocalDateTime createdAt);
 
         public abstract Builder total(int i);
+
+        public abstract Builder stats(Stats stats);
+
 
         public abstract Builder completed(int i);
 

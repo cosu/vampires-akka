@@ -33,17 +33,13 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;
 
-import org.slf4j.LoggerFactory;
-
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.japi.Creator;
-import ro.cosu.vampires.server.actors.messages.QueryStats;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.workload.ClientInfo;
@@ -73,20 +69,19 @@ public class StatsActor extends UntypedActor {
 
     @Override
     public void preStart() {
-        reporter = Slf4jReporter.forRegistry(metricRegistry)
-                .outputTo(LoggerFactory.getLogger("ro.cosu.vampires.server.stats"))
-                .convertRatesTo(TimeUnit.SECONDS)
-                .convertDurationsTo(TimeUnit.MILLISECONDS)
-                .build();
-        reporter.start(5, TimeUnit.SECONDS);
+//        reporter = Slf4jReporter.forRegistry(metricRegistry)
+//                .outputTo(LoggerFactory.getLogger("ro.cosu.vampires.server.stats"))
+//                .convertRatesTo(TimeUnit.SECONDS)
+//                .convertDurationsTo(TimeUnit.MILLISECONDS)
+//                .build();
+//        reporter.start(5, TimeUnit.SECONDS);
 
     }
 
     @Override
     public void postStop() {
-//        reporter.report();
-        log.debug("stats {}", getStats());
-        reporter.stop();
+//        log.debug("stats {}", getStats());
+//        reporter.stop();
     }
 
     @Override
@@ -99,18 +94,12 @@ public class StatsActor extends UntypedActor {
         }
         if (message instanceof ClientInfo) {
             process((ClientInfo) message);
-        }
-        if (message instanceof QueryStats) {
-            process((QueryStats) message);
         } else {
             unhandled(message);
         }
     }
 
-    private void process(QueryStats message) {
-        Stats stats = getStats();
-        getSender().tell(stats, getSelf());
-    }
+
 
     private Stats getStats() {
         Map<String, HistogramSnapshot> stats = Maps.newHashMap();
@@ -153,11 +142,15 @@ public class StatsActor extends UntypedActor {
 
         updateMetric(providerType.name(), instanceType, from, "duration", job.result().duration());
 
+        Stats stats = getStats();
+
+        getContext().parent().tell(stats, getSelf());
+
     }
 
     private void updateMetric(String providerType, String instanceType, String clientId, String metric, long value) {
-        metricRegistry.histogram(providerType + ":" + metric).update(value);
-        metricRegistry.histogram(providerType + ":" + instanceType + ":" + metric).update(value);
-        metricRegistry.histogram(providerType + ":" + instanceType + ":" + clientId + ":" + metric).update(value);
+        metricRegistry.histogram(metric + ":" + providerType).update(value);
+        metricRegistry.histogram(metric + ":" + providerType + ":" + instanceType).update(value);
+        metricRegistry.histogram(metric + ":" + providerType + ":" + instanceType + ":" + clientId).update(value);
     }
 }
