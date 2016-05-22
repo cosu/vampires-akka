@@ -66,6 +66,7 @@ public class ResultActor extends UntypedActor {
     private ActorRef workActor;
     private Cancellable logSchedule;
 
+    private ActorRef statsActor;
 
     ResultActor(Execution execution) {
         writers = settings.getWriters();
@@ -93,6 +94,7 @@ public class ResultActor extends UntypedActor {
         Scheduler scheduler = getScheduler(execution);
 
         workActor = getContext().actorOf(WorkActor.props(scheduler), "workActor");
+        statsActor = getContext().actorOf(StatsActor.props(), "stats");
 
         logSchedule = getContext().system().scheduler().schedule(scala.concurrent.duration.Duration.Zero(),
                 scala.concurrent.duration.Duration.create(30, SECONDS), () -> {
@@ -139,6 +141,7 @@ public class ResultActor extends UntypedActor {
                 && !job.computation().id().equals(Computation.EMPTY)) {
             results.add(job);
             writers.forEach(r -> r.addResult(job));
+            statsActor.tell(job, getSender());
             sendCurrentExecutionInfo(ExecutionInfo.Status.RUNNING);
         }
         if (results.size() == execution.workload().jobs().size()) {

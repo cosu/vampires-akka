@@ -36,7 +36,7 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.japi.Procedure;
 import ro.cosu.vampires.server.actors.messages.CreateResource;
-import ro.cosu.vampires.server.actors.messages.QueryExecution;
+import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.resources.ResourceProvider;
@@ -46,11 +46,13 @@ public class ResourceActor extends UntypedActorWithStash {
     private final ResourceProvider resourceProvider;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private Resource resource;
+    private Resource.Parameters parameters;
+
 
     private Procedure<Object> active = message -> {
         ActorRef sender = getSender();
 
-        if (message instanceof QueryExecution) {
+        if (message instanceof QueryResource) {
             sendResourceInfo(sender);
         } else if (message instanceof ClientInfo) {
             connectClient((ClientInfo) message);
@@ -63,6 +65,7 @@ public class ResourceActor extends UntypedActorWithStash {
             unhandled(message);
         }
     };
+
 
     ResourceActor(ResourceProvider resourceProvider) {
         this.resourceProvider = resourceProvider;
@@ -78,7 +81,7 @@ public class ResourceActor extends UntypedActorWithStash {
         if (message instanceof CreateResource) {
             CreateResource create = (CreateResource) message;
             createResource(create, sender);
-        } else if (message instanceof QueryExecution) {
+        } else if (message instanceof QueryResource) {
             sendResourceInfo(sender);
         } else if (message instanceof ResourceInfo) {
             ResourceInfo resourceInfo = (ResourceInfo) message;
@@ -94,13 +97,15 @@ public class ResourceActor extends UntypedActorWithStash {
         }
     }
 
-    private void createResource(CreateResource create, ActorRef sender) {
+    private void createResource(CreateResource createResource, ActorRef sender) {
         if (resource != null && !resource.status().equals(Resource.Status.SLEEPING)) {
             log.warning("Attempting to start an already started resource. doing nothing");
             return;
         }
 
-        Optional<Resource> resourceOptional = resourceProvider.create(create.parameters());
+        parameters = createResource.parameters();
+
+        Optional<Resource> resourceOptional = resourceProvider.create(parameters);
 
 
         if (resourceOptional.isPresent()) {

@@ -46,7 +46,7 @@ import akka.testkit.TestActorRef;
 import akka.testkit.TestProbe;
 import ro.cosu.vampires.server.actors.messages.BootstrapResource;
 import ro.cosu.vampires.server.actors.messages.CreateResource;
-import ro.cosu.vampires.server.actors.messages.QueryExecution;
+import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.resource.ResourceManagerActor;
 import ro.cosu.vampires.server.resources.Resource;
@@ -56,7 +56,6 @@ import ro.cosu.vampires.server.resources.ResourceProvider;
 import ro.cosu.vampires.server.resources.mock.MockResourceModule;
 import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Metrics;
-import ro.cosu.vampires.server.workload.User;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
@@ -160,7 +159,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
 
         resourceManagerActor.tell(clientInfo, testProbe.ref());
 
-        QueryExecution resourceQuery = QueryExecution.create(id, User.admin());
+        QueryResource resourceQuery = QueryResource.create(id);
 
         final Future<Object> infoFuture = Patterns.ask(resourceManagerActor, resourceQuery, 1000);
 

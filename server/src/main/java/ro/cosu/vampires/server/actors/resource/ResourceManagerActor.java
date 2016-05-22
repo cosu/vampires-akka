@@ -39,7 +39,7 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.BootstrapResource;
 import ro.cosu.vampires.server.actors.messages.CreateResource;
-import ro.cosu.vampires.server.actors.messages.QueryExecution;
+import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
 import ro.cosu.vampires.server.resources.Resource;
@@ -102,8 +102,8 @@ public class ResourceManagerActor extends UntypedActor {
         } else if (message instanceof CreateResource) {
             final CreateResource create = (CreateResource) message;
             createResource(create);
-        } else if (message instanceof QueryExecution) {
-            final QueryExecution query = (QueryExecution) message;
+        } else if (message instanceof QueryResource) {
+            final QueryResource query = (QueryResource) message;
             queryResource(query, sender);
         } else if (message instanceof ResourceControl.Shutdown) {
             shutdownResources();
@@ -165,7 +165,7 @@ public class ResourceManagerActor extends UntypedActor {
         resourceRegistry.registerResource(sender, resourceInfo);
     }
 
-    private void queryResource(QueryExecution query, ActorRef sender) {
+    private void queryResource(QueryResource query, ActorRef sender) {
         Optional<ActorRef> resourceOfClient = resourceRegistry.lookupResourceOfClient(query.resourceId());
 
         if (resourceOfClient.isPresent()) {

@@ -24,23 +24,48 @@
  *
  */
 
-package ro.cosu.vampires.server.actors.messages;
+package ro.cosu.vampires.server.actors;
 
-import com.google.auto.value.AutoValue;
+import com.codahale.metrics.MetricRegistry;
 
-import ro.cosu.vampires.server.resources.Resource;
+import akka.actor.Props;
+import akka.actor.UntypedActor;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
+import akka.japi.Creator;
+import ro.cosu.vampires.server.workload.Job;
 
-@AutoValue
-public abstract class BootstrapResource {
-    public static BootstrapResource create(Resource.ProviderType providerType, String name,
-                                           String serverId) {
-        return new AutoValue_BootstrapResource(providerType, name, serverId);
+public class StatsActor extends UntypedActor {
+
+    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
+
+    private MetricRegistry metricRegistry = new MetricRegistry();
+
+    public static Props props() {
+        return Props.create(new Creator<StatsActor>() {
+
+            @Override
+            public StatsActor create() throws Exception {
+                return new StatsActor();
+            }
+        });
     }
 
-    public abstract Resource.ProviderType type();
 
-    public abstract String name();
+    @Override
+    public void onReceive(Object message) throws Exception {
+        if (message instanceof Job) {
+            process((Job) message);
+        } else {
+            unhandled(message);
+        }
+    }
 
-    public abstract String serverId();
+    private void process(Job job) {
 
+        job.hostMetrics().metrics().stream().flatMap(m -> m.values().entrySet().stream())
+                .forEach(e -> metricRegistry.histogram(e.getKey()).update(Math.round(e.getValue())));
+
+
+    }
 }
