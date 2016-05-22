@@ -149,8 +149,13 @@ public class StatsActor extends UntypedActor {
     }
 
     private void updateMetric(String providerType, String instanceType, String clientId, String metric, long value) {
-        metricRegistry.histogram(metric + ":" + providerType).update(value);
-        metricRegistry.histogram(metric + ":" + providerType + ":" + instanceType).update(value);
-        metricRegistry.histogram(metric + ":" + providerType + ":" + instanceType + ":" + clientId).update(value);
+        if (metric.contains("bytes")) {
+            metricRegistry.counter(metric).inc(value);
+        } else {
+            metricRegistry.histogram(metric + ":" + providerType).update(value);
+            metricRegistry.histogram(metric + ":" + providerType + ":" + instanceType).update(value);
+            metricRegistry.histogram(metric + ":" + providerType + ":" + instanceType + ":" + clientId).update(value);
+
+        }
     }
 }

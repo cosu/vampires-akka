@@ -61,7 +61,7 @@ public class ResultActor extends UntypedActor {
             Settings.SettingsProvider.get(getContext().system());
     private final LocalDateTime startTime = LocalDateTime.now();
     private final Execution execution;
-    private Stats stats;
+    private Stats stats = Stats.empty();
 
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
