@@ -40,6 +40,7 @@ import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.BootstrapResource;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.resource.ResourceManagerActor;
+import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.Job;
@@ -70,14 +71,10 @@ public class ExecutionActor extends UntypedActor {
         watchees.add(resourceManagerActor);
         watchees.add(resultActor);
 
-        execution
-                .configuration().withMode(execution.type())
-                .resources()
-                .stream()
-                .map(resourceDemand -> BootstrapResource.create(
-                        resourceDemand.provider(), resourceDemand.type(), execution.id())
-                )
-                .forEach(bootstrapResource -> resourceManagerActor.tell(bootstrapResource, getSender()));
+        execution.configuration().withMode(execution.type()).resources().stream()
+                .map(resourceDemand -> BootstrapResource.create(resourceDemand.provider(),
+                        resourceDemand.type(), execution.id()))
+                .forEach(bootstrapResource -> resourceManagerActor.tell(bootstrapResource, getSelf()));
     }
 
     @Override
@@ -90,7 +87,8 @@ public class ExecutionActor extends UntypedActor {
         } else if (message instanceof ResourceControl.Shutdown) {
             resourceManagerActor.forward(message, getContext());
             resultActor.forward(message, getContext());
-
+        } else if (message instanceof ResourceInfo) {
+            resultActor.forward(message, getContext());
         } else if (message instanceof Execution) {
             // send exec info back to parent
             getContext().parent().forward(message, getContext());

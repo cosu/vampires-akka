@@ -52,6 +52,8 @@ public abstract class LocalResourceParameters implements Resource.Parameters {
 
     public abstract String id();
 
+    public abstract String instanceType();
+
     public abstract Builder toBuilder();
 
     public LocalResourceParameters withServerId(String serverId) {
@@ -78,6 +80,7 @@ public abstract class LocalResourceParameters implements Resource.Parameters {
 
         public abstract Builder serverId(String serverId);
 
+        public abstract Builder instanceType(String instanceType);
 
         public abstract LocalResourceParameters build();
 

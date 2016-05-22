@@ -34,8 +34,8 @@ import akka.actor.ActorRef;
 import akka.testkit.TestProbe;
 import ro.cosu.vampires.server.actors.resource.ResourceRegistry;
 import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.resources.ResourceId;
 import ro.cosu.vampires.server.resources.ResourceInfo;
+import ro.cosu.vampires.server.resources.mock.MockResourceParameters;
 import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Metrics;
 
@@ -45,15 +45,24 @@ import static org.hamcrest.core.IsNull.notNullValue;
 
 public class ResourceRegistryTest extends AbstractActorTest {
 
+
     private static ActorRef createActorRef() {
         TestProbe testProbe = new TestProbe(system);
         return testProbe.ref();
     }
 
+    private Resource.Parameters getParameters() {
+        return MockResourceParameters.builder()
+                .instanceType("foo")
+                .id("foo")
+                .command("foo")
+                .build();
+    }
+
     @Test
     public void testAddResource() throws Exception {
         final ResourceRegistry resourceRegistry = new ResourceRegistry();
-        resourceRegistry.addResourceActor(createActorRef());
+        resourceRegistry.addResourceActor(createActorRef(), getParameters());
         assertThat(resourceRegistry.getResourceActors().size(), is(1));
 
     }
@@ -62,7 +71,7 @@ public class ResourceRegistryTest extends AbstractActorTest {
     public void testRegisterClient() throws Exception {
         final ResourceRegistry resourceRegistry = new ResourceRegistry();
         final ActorRef actorRef = createActorRef();
-        resourceRegistry.addResourceActor(actorRef);
+        resourceRegistry.addResourceActor(actorRef, getParameters());
 
         resourceRegistry.registerClient(actorRef, ClientInfo.builder().executors(new HashMap<>()).id
                 ("foo").metrics(Metrics.empty()).build());
@@ -75,9 +84,9 @@ public class ResourceRegistryTest extends AbstractActorTest {
 
         final ResourceRegistry resourceRegistry = new ResourceRegistry();
         final ActorRef actorRef = createActorRef();
-        resourceRegistry.addResourceActor(actorRef);
+        resourceRegistry.addResourceActor(actorRef, getParameters());
 
-        final ResourceInfo resourceInfo = ResourceInfo.create(ResourceId.create("foo", Resource.ProviderType.MOCK),
+        final ResourceInfo resourceInfo = ResourceInfo.create(getParameters(),
                 Resource.Status.RUNNING);
         resourceRegistry.registerResource(actorRef, resourceInfo);
         final ClientInfo clientInfo = ClientInfo.builder().executors(new HashMap<>()).id
@@ -93,9 +102,9 @@ public class ResourceRegistryTest extends AbstractActorTest {
     public void testRegisterResource() throws Exception {
         final ResourceRegistry resourceRegistry = new ResourceRegistry();
         final ActorRef actorRef = createActorRef();
-        resourceRegistry.addResourceActor(actorRef);
+        resourceRegistry.addResourceActor(actorRef, getParameters());
 
-        final ResourceInfo resourceInfo = ResourceInfo.create(ResourceId.create("foo", Resource.ProviderType.MOCK),
+        final ResourceInfo resourceInfo = ResourceInfo.create(getParameters(),
                 Resource.Status.RUNNING);
         resourceRegistry.registerResource(actorRef, resourceInfo);
         final ActorRef foo = resourceRegistry.lookupResourceOfClient("foo").get();
@@ -108,7 +117,7 @@ public class ResourceRegistryTest extends AbstractActorTest {
     public void testRemoveResource() throws Exception {
         final ResourceRegistry resourceRegistry = new ResourceRegistry();
         final ActorRef actorRef = createActorRef();
-        resourceRegistry.addResourceActor(actorRef);
+        resourceRegistry.addResourceActor(actorRef, getParameters());
         resourceRegistry.removeResource(actorRef);
         assertThat(resourceRegistry.getResourceActors().size(), is(0));
     }

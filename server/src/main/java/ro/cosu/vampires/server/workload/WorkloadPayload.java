@@ -59,8 +59,8 @@ public abstract class WorkloadPayload {
         }
 
         String description = "";
-        if (config.hasPath("description")) {
-            url = config.getString("description");
+        if (config.hasPath("parameters")) {
+            url = config.getString("parameters");
         }
 
         String file = "";

@@ -30,19 +30,19 @@ import com.google.auto.value.AutoValue;
 
 @AutoValue
 public abstract class ResourceInfo {
-    public static ResourceInfo create(ResourceId description, Resource.Status status) {
-        return new AutoValue_ResourceInfo(description, status);
+    public static ResourceInfo create(Resource.Parameters parameters, Resource.Status status) {
+        return new AutoValue_ResourceInfo(parameters, status);
     }
 
-    public static ResourceInfo unknown(Resource.ProviderType providerType) {
-        return new AutoValue_ResourceInfo(ResourceId.empty(providerType), Resource.Status.UNKNOWN);
+    public static ResourceInfo unknown(Resource.Parameters parameters) {
+        return new AutoValue_ResourceInfo(parameters, Resource.Status.UNKNOWN);
     }
 
-    public static ResourceInfo failed(Resource.ProviderType providerType) {
-        return new AutoValue_ResourceInfo(ResourceId.empty(providerType), Resource.Status.FAILED);
+    public static ResourceInfo failed(Resource.Parameters parameters) {
+        return new AutoValue_ResourceInfo(parameters, Resource.Status.FAILED);
     }
 
-    public abstract ResourceId properties();
+    public abstract Resource.Parameters parameters();
 
     public abstract Resource.Status status();
 

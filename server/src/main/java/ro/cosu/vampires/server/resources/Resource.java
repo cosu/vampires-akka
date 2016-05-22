@@ -45,12 +45,12 @@ public interface Resource {
 
     void onFail() throws Exception;
 
-    ResourceId description();
+    Parameters parameters();
 
     Status status();
 
     default ResourceInfo info() {
-        return ResourceInfo.create(description(), status());
+        return ResourceInfo.create(parameters(), status());
     }
 
     enum Status {
@@ -74,6 +74,8 @@ public interface Resource {
     interface Parameters extends Serializable {
         ProviderType providerType();
 
+        String instanceType();
+
         String id();
 
         String serverId();
@@ -85,6 +87,9 @@ public interface Resource {
         Parameters withId(String id);
 
         interface Builder {
+
+            Builder instanceType(String instanceType);
+
             Builder fromConfig(Config config);
 
             Resource.Parameters build();

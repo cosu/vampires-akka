@@ -28,12 +28,14 @@ package ro.cosu.vampires.server.actors.resource;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import akka.actor.ActorRef;
+import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.workload.ClientInfo;
 
@@ -42,12 +44,14 @@ public class ResourceRegistry {
      * ResourceActors - local akka actors clients - client remote akka actors ClientIds -
      * initialized at creation - shared by both remote and resource
      */
-    protected List<ActorRef> resourceActors = new LinkedList<>();
+//    protected List<ActorRef> resourceActors = new LinkedList<>();
     protected BiMap<String, ActorRef> clientIdsToResourceActors = HashBiMap.create();
     protected BiMap<String, ActorRef> clientIdsToClientActors = HashBiMap.create();
+    private Map<String, Resource.Parameters> clientParameters = Maps.newHashMap();
 
-    public void addResourceActor(ActorRef resource) {
-        resourceActors.add(resource);
+    public void addResourceActor(ActorRef resource, Resource.Parameters parameters) {
+        clientIdsToResourceActors.put(parameters.id(), resource);
+        clientParameters.put(parameters.id(), parameters);
     }
 
     public BiMap<String, ActorRef> getRegisteredClients() {
@@ -58,12 +62,12 @@ public class ResourceRegistry {
         return Optional.ofNullable(clientIdsToResourceActors.get(clientId));
     }
 
-    public List<ActorRef> getResourceActors() {
-        return resourceActors;
+    public Set<ActorRef> getResourceActors() {
+        return clientIdsToResourceActors.values();
     }
 
     public void registerResource(ActorRef localResourceActor, ResourceInfo resourceInfo) {
-        String clientId = resourceInfo.properties().id();
+        String clientId = resourceInfo.parameters().id();
         clientIdsToResourceActors.put(clientId, localResourceActor);
     }
 
@@ -75,6 +79,9 @@ public class ResourceRegistry {
         String clientId = clientIdsToResourceActors.inverse().get(resourceActor);
         clientIdsToClientActors.remove(clientId);
         clientIdsToResourceActors.remove(clientId);
-        resourceActors.remove(resourceActor);
+    }
+
+    public Resource.Parameters getParameterForClient(String id) {
+        return clientParameters.get(id);
     }
 }

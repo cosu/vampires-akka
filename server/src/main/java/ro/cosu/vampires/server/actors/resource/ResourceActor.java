@@ -107,12 +107,12 @@ public class ResourceActor extends UntypedActorWithStash {
 
         Optional<Resource> resourceOptional = resourceProvider.create(parameters);
 
-
         if (resourceOptional.isPresent()) {
             this.resource = resourceOptional.get();
             // do it async because activate needs a context
             // which is not available after the future completes
             this.resource.start().thenAccept(started -> {
+                log.debug("sending to {}", sender);
                 sendResourceInfo(sender);
                 sendResourceInfo(getSelf());
             });
@@ -149,7 +149,7 @@ public class ResourceActor extends UntypedActorWithStash {
     }
 
     private void connectClient(ClientInfo clientInfo) {
-        if (clientInfo.id().equals(resource.description().id())) {
+        if (clientInfo.id().equals(resource.parameters().id())) {
             resource.connected();
             log.info("Connected: {}", resource.info());
         } else {
@@ -160,7 +160,7 @@ public class ResourceActor extends UntypedActorWithStash {
     private void sendResourceInfo(ActorRef toActor) {
         ResourceInfo info = Optional.ofNullable(this.resource)
                 .map(Resource::info)
-                .orElse(ResourceInfo.failed(resourceProvider.getProviderType()));
+                .orElse(ResourceInfo.failed(parameters));
         toActor.tell(info, getSelf());
     }
 

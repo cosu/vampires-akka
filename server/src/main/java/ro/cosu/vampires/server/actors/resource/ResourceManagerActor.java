@@ -109,9 +109,10 @@ public class ResourceManagerActor extends UntypedActor {
                 .withServerId(bootstrap.serverId());
 
         CreateResource create = CreateResource.create(bootstrap.type(), parameters);
-        ActorRef resourceActor = getContext().actorOf(ResourceActor.props(rp));
+        ActorRef resourceActor = getContext().actorOf(ResourceActor.props(rp),
+                parameters.providerType() + "-" + parameters.id());
         getContext().watch(resourceActor);
-        resourceRegistry.addResourceActor(resourceActor);
+        resourceRegistry.addResourceActor(resourceActor, parameters);
         resourceActor.forward(create, getContext());
     }
 

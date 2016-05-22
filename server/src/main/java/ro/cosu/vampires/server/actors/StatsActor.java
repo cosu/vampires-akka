@@ -26,13 +26,24 @@
 
 package ro.cosu.vampires.server.actors;
 
+import com.google.common.collect.Maps;
+
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Slf4jReporter;
+
+import org.slf4j.LoggerFactory;
+
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.japi.Creator;
+import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.resources.ResourceInfo;
+import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Job;
 
 public class StatsActor extends UntypedActor {
@@ -40,6 +51,10 @@ public class StatsActor extends UntypedActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     private MetricRegistry metricRegistry = new MetricRegistry();
+
+    private Slf4jReporter reporter;
+    private Map<String, ClientInfo> clientsInfo = Maps.newHashMap();
+    private Map<String, ResourceInfo> resourcesInfo = Maps.newHashMap();
 
     public static Props props() {
         return Props.create(new Creator<StatsActor>() {
@@ -51,20 +66,69 @@ public class StatsActor extends UntypedActor {
         });
     }
 
+    @Override
+    public void preStart() {
+        reporter = Slf4jReporter.forRegistry(metricRegistry)
+                .outputTo(LoggerFactory.getLogger("ro.cosu.vampires.server.stats"))
+                .convertRatesTo(TimeUnit.SECONDS)
+                .convertDurationsTo(TimeUnit.MILLISECONDS)
+                .build();
+        reporter.start(5, TimeUnit.SECONDS);
+
+    }
+
+    @Override
+    public void postStop() {
+        reporter.report();
+        reporter.stop();
+    }
 
     @Override
     public void onReceive(Object message) throws Exception {
         if (message instanceof Job) {
             process((Job) message);
+        }
+        if (message instanceof ResourceInfo) {
+            process((ResourceInfo) message);
+        }
+        if (message instanceof ClientInfo) {
+            process((ClientInfo) message);
         } else {
             unhandled(message);
         }
     }
 
+    private void process(ClientInfo message) {
+        clientsInfo.put(message.id(), message);
+
+    }
+
+    private void process(ResourceInfo message) {
+        resourcesInfo.put(message.parameters().id(), message);
+    }
+
     private void process(Job job) {
 
+        String from = job.from();
+        String instanceType = resourcesInfo.get(from).parameters().instanceType();
+        Resource.ProviderType providerType = resourcesInfo.get(from).parameters().providerType();
+
+
         job.hostMetrics().metrics().stream().flatMap(m -> m.values().entrySet().stream())
-                .forEach(e -> metricRegistry.histogram(e.getKey()).update(Math.round(e.getValue())));
+                .forEach(e -> {
+
+                    Double value = e.getValue();
+                    if (value < 1) {
+                        value = 1000. * value;
+                    }
+                    long rounded = Math.round(value);
+
+                    String key = e.getKey();
+                    metricRegistry.histogram(providerType + "-" + key).update(rounded);
+                    metricRegistry.histogram(providerType + "-" + instanceType + "-" + key).update(rounded);
+                    metricRegistry.histogram(providerType + "-" + instanceType + "-" + from + "-" + key).update(rounded);
+                });
+
 
 
     }

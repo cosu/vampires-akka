@@ -177,7 +177,7 @@ public class SettingsImpl implements Extension {
                             })
                             .collect(Collectors.toList());
 
-                    String name = providerConfig.hasPath("description") ? providerConfig.getString("description") : providerType;
+                    String name = providerConfig.hasPath("parameters") ? providerConfig.getString("parameters") : providerType;
 
                     return ProviderDescription.builder()
                             .description(name)

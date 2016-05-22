@@ -75,8 +75,8 @@ public class ResultActorTest extends AbstractActorTest {
 
         parent.tell(ResourceControl.Shutdown.create(), testProbe.ref());
 
-        Execution received = testProbe.expectMsgClass(Duration.create(100, TimeUnit.MILLISECONDS), Execution.class);
-        testProbe.expectMsgClass(Duration.create(100, TimeUnit.MILLISECONDS), Terminated.class);
+        Execution received = testProbe.expectMsgClass(Duration.create(1000, TimeUnit.MILLISECONDS), Execution.class);
+        testProbe.expectMsgClass(Duration.create(1000, TimeUnit.MILLISECONDS), Terminated.class);
 
         assertThat(received.info().status(), is(ExecutionInfo.Status.CANCELED));
     }

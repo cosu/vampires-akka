@@ -63,6 +63,9 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
 
     public abstract String id();
 
+    public abstract String instanceType();
+
+
     public Das5ResourceParameters withServerId(String serverId) {
         return toBuilder().serverId(serverId).build();
     }
@@ -88,6 +91,7 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
 
         public abstract Builder serverId(String s);
 
+        public abstract Builder instanceType(String instanceType);
 
         public Builder fromConfig(Config config) {
             this.command(config.getString("command"));

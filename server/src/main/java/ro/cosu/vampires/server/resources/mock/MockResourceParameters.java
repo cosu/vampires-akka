@@ -53,6 +53,8 @@ public abstract class MockResourceParameters implements Resource.Parameters {
 
     public abstract Builder toBuilder();
 
+    public abstract String instanceType();
+
     public abstract String id();
 
     public MockResourceParameters withServerId(String serverId) {
@@ -76,6 +78,8 @@ public abstract class MockResourceParameters implements Resource.Parameters {
         public abstract Builder command(String command);
 
         public abstract Builder serverId(String serverId);
+
+        public abstract Builder instanceType(String instanceType);
 
         public abstract Builder id(String id);
 

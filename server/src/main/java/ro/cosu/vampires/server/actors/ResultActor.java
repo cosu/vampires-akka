@@ -40,6 +40,7 @@ import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
+import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Execution;
@@ -115,12 +116,19 @@ public class ResultActor extends UntypedActor {
         } else if (message instanceof ClientInfo) {
             ClientInfo clientInfo = (ClientInfo) message;
             handleClientInfo(clientInfo);
+        } else if (message instanceof ResourceInfo) {
+            ResourceInfo resourceInfo = (ResourceInfo) message;
+            handleResourceInfo(resourceInfo);
         }
         else if (message instanceof ResourceControl.Shutdown) {
             shutdown(ExecutionInfo.Status.CANCELED);
         } else {
             unhandled(message);
         }
+    }
+
+    private void handleResourceInfo(ResourceInfo resourceInfo) {
+        statsActor.forward(resourceInfo, getContext());
     }
 
     private void sendCurrentExecutionInfo(ExecutionInfo.Status status) {
@@ -154,6 +162,7 @@ public class ResultActor extends UntypedActor {
         ActorRef configActor = getContext().actorOf(ConfigActor.props());
         log.debug("got client info {}", clientInfo);
         configActor.forward(clientInfo, getContext());
+        statsActor.forward(clientInfo, getContext());
         writers.forEach(r -> r.addClient(clientInfo));
     }
 

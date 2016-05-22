@@ -60,6 +60,8 @@ public abstract class SshResourceParameters implements Resource.Parameters {
 
     public abstract String id();
 
+    public abstract String instanceType();
+
     public abstract Builder toBuilder();
 
     public SshResourceParameters withServerId(String serverId) {
@@ -98,6 +100,8 @@ public abstract class SshResourceParameters implements Resource.Parameters {
         public abstract Builder port(int i);
 
         public abstract Builder serverId(String s);
+
+        public abstract Builder instanceType(String instanceType);
 
         public abstract Builder id(String id);
 

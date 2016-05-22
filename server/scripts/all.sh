@@ -27,7 +27,7 @@ ${curl} --request POST \
     --header "Content-Type: application/json" \
     --data-binary "{
     \"sequence_start\": \"0\",
-    \"sequence_stop\": \"20\",
+    \"sequence_stop\": \"9\",
     \"task\": \"sleep 2\",
     \"description\": \"a new description\"
 }" \
