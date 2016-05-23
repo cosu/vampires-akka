@@ -1,35 +1,28 @@
 /*
+ * The MIT License (MIT)
+ * Copyright © 2016 Cosmin Dumitru, http://cosu.ro <cosu@cosu.ro>
  *
- *  * The MIT License (MIT)
- *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro <cosu@cosu.ro>
- *  *
- *  * Permission is hereby granted, free of charge, to any person obtaining a copy
- *  * of this software and associated documentation files (the “Software”), to deal
- *  * in the Software without restriction, including without limitation the rights
- *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- *  * copies of the Software, and to permit persons to whom the Software is
- *  * furnished to do so, subject to the following conditions:
- *  *
- *  * The above copyright notice and this permission notice shall be included in
- *  * all copies or substantial portions of the Software.
- *  *
- *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- *  * THE SOFTWARE.
- *  *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the “Software”), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  *
  */
 
 package ro.cosu.vampires.server.actors;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.LinkedList;
-import java.util.List;
 
 import akka.actor.ActorRef;
 import akka.actor.Cancellable;
@@ -41,16 +34,16 @@ import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
 import ro.cosu.vampires.server.resources.ResourceInfo;
-import ro.cosu.vampires.server.workload.ClientInfo;
-import ro.cosu.vampires.server.workload.Computation;
-import ro.cosu.vampires.server.workload.Execution;
-import ro.cosu.vampires.server.workload.ExecutionInfo;
-import ro.cosu.vampires.server.workload.ExecutionMode;
-import ro.cosu.vampires.server.workload.Job;
+import ro.cosu.vampires.server.workload.*;
 import ro.cosu.vampires.server.workload.schedulers.SamplingScheduler;
 import ro.cosu.vampires.server.workload.schedulers.Scheduler;
 import ro.cosu.vampires.server.workload.schedulers.SimpleScheduler;
 import ro.cosu.vampires.server.writers.ResultsWriter;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.List;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -67,12 +60,14 @@ public class ResultActor extends UntypedActor {
 
     private ActorRef workActor;
     private Cancellable logSchedule;
+    private int totalSize = 0;
 
     private StatsProcessor statsProcessor = new StatsProcessor();
 
     ResultActor(Execution execution) {
         writers = settings.getWriters();
         this.execution = execution;
+        totalSize = execution.workload().size();
     }
 
     public static Props props(Execution execution) {
@@ -133,12 +128,12 @@ public class ResultActor extends UntypedActor {
 
     private void sendCurrentExecutionInfo(ExecutionInfo.Status status) {
         ExecutionInfo executionInfo = ExecutionInfo.empty()
-                .updateTotal(execution.workload().size())
+                .updateTotal(totalSize)
                 .updateCompleted(results.size())
                 .updateStatus(status)
                 .updateStats(statsProcessor.getStats())
                 .updateElapsed(Duration.between(startTime, LocalDateTime.now()).toMillis())
-                .updateRemaining(execution.workload().size() - results.size());
+                .updateRemaining(totalSize - results.size());
 
         Execution execution = this.execution.withInfo(executionInfo);
         getContext().parent().tell(execution, getSelf());
