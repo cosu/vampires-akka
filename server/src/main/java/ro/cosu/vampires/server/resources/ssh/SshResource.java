@@ -53,7 +53,8 @@ public class SshResource extends AbstractResource {
 
     @Override
     public void onStart() throws IOException, JSchException {
-        String command = "nohup " + parameters.command() + " " + parameters().id() + " > /dev/null 2>&1 &  echo $! ";
+        String command = "nohup " + parameters.command() + " " + " " + parameters.serverId() + " "
+                + parameters().id() + " > /dev/null 2>&1 &  echo $! ";
         this.commandOutput = exec(command);
 
     }

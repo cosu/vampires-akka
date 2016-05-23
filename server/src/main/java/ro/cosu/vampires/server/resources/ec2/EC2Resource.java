@@ -73,7 +73,7 @@ public class EC2Resource extends AbstractResource {
         URL cloudInitResource = Resources.getResource("cloud_init.yaml");
         String cloudInit = Resources.toString(cloudInitResource, Charsets.UTF_8);
 
-        String command = parameters.command() + " " + parameters().id();
+        String command = parameters.command() + " " + parameters.serverId() + " " + parameters().id();
 
         cloudInit = cloudInit.replace("$command", command);
         LOG.debug("EC2command:  {}", command);
