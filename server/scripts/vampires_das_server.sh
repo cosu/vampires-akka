@@ -2,7 +2,7 @@
 
 IP=$(ip -f inet addr show ib0 |grep inet |awk '{print $2}'|cut -f1 -d/)
 
-export SERVER_OPTS="$SERVER_OPTS -Dconfig.file=$1"
+export SERVER_OPTS="$SERVER_OPTS -Dconfig.file=$1 -Djava.security.egd=file:/dev/./urandom"
 export BIND_HOST="0.0.0.0"
 export HOST=${IP}
 shift
