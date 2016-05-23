@@ -37,10 +37,12 @@ import java.util.Set;
 @AutoGson
 public abstract class Trace implements Serializable {
 
+    private static LocalDateTime emptyTime = LocalDateTime.parse("2000-01-01T00:00:00");
+
     public static Trace empty() {
         return builder().cpuSet(Sets.newHashSet())
-                .start(LocalDateTime.parse("2000-01-01T00:00:00"))
-                .stop(LocalDateTime.parse("2000-01-01T00:00:00"))
+                .start(emptyTime)
+                .stop(emptyTime)
                 .totalCpuCount(0)
                 .executorMetrics(Metrics.empty())
                 .executor("unknown")

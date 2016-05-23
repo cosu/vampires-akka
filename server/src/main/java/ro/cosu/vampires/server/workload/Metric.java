@@ -35,6 +35,7 @@ import java.time.LocalDateTime;
 @AutoGson
 public abstract class Metric implements Serializable {
 
+    private static LocalDateTime emptyTime = LocalDateTime.parse("2000-01-01T00:00:00");
     public static Builder builder() {
         return new AutoValue_Metric.Builder();
     }
@@ -43,7 +44,7 @@ public abstract class Metric implements Serializable {
 
         return new AutoValue_Metric.Builder()
                 .values(ImmutableMap.of())
-                .time(LocalDateTime.parse("2000-01-01T00:00:00"))
+                .time(emptyTime)
                 .build();
     }
 
