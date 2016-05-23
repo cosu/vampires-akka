@@ -45,6 +45,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 
@@ -60,6 +61,7 @@ public class ResultActor extends UntypedActor {
 
     private ActorRef workActor;
     private Cancellable logSchedule;
+    private Cancellable statsSchedule;
     private int totalSize = 0;
 
     private StatsProcessor statsProcessor = new StatsProcessor();
@@ -94,13 +96,20 @@ public class ResultActor extends UntypedActor {
 
         logSchedule = getContext().system().scheduler().schedule(scala.concurrent.duration.Duration.Zero(),
                 scala.concurrent.duration.Duration.create(30, SECONDS), () -> {
-                    log.info("results so far: {}/{}", results.size(), execution.workload().jobs().size());
+                    log.info("results so far: {}/{}", results.size(), totalSize);
                 }, getContext().system().dispatcher());
+
+        statsSchedule = getContext().system().scheduler().schedule(scala.concurrent.duration.Duration.Zero(),
+                scala.concurrent.duration.Duration.create(500, MILLISECONDS), () -> {
+                    statsProcessor.flush();
+                }, getContext().system().dispatcher());
+
     }
 
     @Override
     public void postStop() {
         logSchedule.cancel();
+        statsSchedule.cancel();
     }
 
     @Override
@@ -167,6 +176,7 @@ public class ResultActor extends UntypedActor {
         log.info("shutting down");
         writers.forEach(ResultsWriter::close);
         // init shutdown
+        statsProcessor.flush();
         sendCurrentExecutionInfo(status);
         getContext().stop(getSelf());
     }
