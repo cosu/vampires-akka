@@ -148,7 +148,7 @@ public class ResultActor extends UntypedActor {
             statsProcessor.process(job);
             sendCurrentExecutionInfo(ExecutionInfo.Status.RUNNING);
         }
-        if (results.size() == execution.workload().jobs().size()) {
+        if (results.size() == totalSize) {
             log.debug("result actor exiting {}", results.size());
             shutdown(ExecutionInfo.Status.FINISHED);
         }
