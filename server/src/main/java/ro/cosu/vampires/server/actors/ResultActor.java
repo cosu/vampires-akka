@@ -47,7 +47,6 @@ import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.ExecutionInfo;
 import ro.cosu.vampires.server.workload.ExecutionMode;
 import ro.cosu.vampires.server.workload.Job;
-import ro.cosu.vampires.server.workload.Stats;
 import ro.cosu.vampires.server.workload.schedulers.SamplingScheduler;
 import ro.cosu.vampires.server.workload.schedulers.Scheduler;
 import ro.cosu.vampires.server.workload.schedulers.SimpleScheduler;
@@ -61,8 +60,6 @@ public class ResultActor extends UntypedActor {
             Settings.SettingsProvider.get(getContext().system());
     private final LocalDateTime startTime = LocalDateTime.now();
     private final Execution execution;
-    private Stats stats = Stats.empty();
-
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private List<Job> results = new LinkedList<>();
@@ -71,7 +68,7 @@ public class ResultActor extends UntypedActor {
     private ActorRef workActor;
     private Cancellable logSchedule;
 
-    private ActorRef statsActor;
+    private StatsProcessor statsProcessor = new StatsProcessor();
 
     ResultActor(Execution execution) {
         writers = settings.getWriters();
@@ -99,7 +96,6 @@ public class ResultActor extends UntypedActor {
         Scheduler scheduler = getScheduler(execution);
 
         workActor = getContext().actorOf(WorkActor.props(scheduler), "workActor");
-        statsActor = getContext().actorOf(StatsActor.props(), "stats");
 
         logSchedule = getContext().system().scheduler().schedule(scala.concurrent.duration.Duration.Zero(),
                 scala.concurrent.duration.Duration.create(30, SECONDS), () -> {
@@ -120,10 +116,6 @@ public class ResultActor extends UntypedActor {
         } else if (message instanceof ClientInfo) {
             ClientInfo clientInfo = (ClientInfo) message;
             handleClientInfo(clientInfo);
-        } else if (message instanceof Stats) {
-            this.stats = (Stats) message;
-            sendCurrentExecutionInfo(ExecutionInfo.Status.RUNNING);
-
         } else if (message instanceof ResourceInfo) {
             ResourceInfo resourceInfo = (ResourceInfo) message;
             handleResourceInfo(resourceInfo);
@@ -136,7 +128,7 @@ public class ResultActor extends UntypedActor {
     }
 
     private void handleResourceInfo(ResourceInfo resourceInfo) {
-        statsActor.forward(resourceInfo, getContext());
+        statsProcessor.process(resourceInfo);
     }
 
     private void sendCurrentExecutionInfo(ExecutionInfo.Status status) {
@@ -144,7 +136,7 @@ public class ResultActor extends UntypedActor {
                 .updateTotal(execution.workload().size())
                 .updateCompleted(results.size())
                 .updateStatus(status)
-                .updateStats(stats)
+                .updateStats(statsProcessor.getStats())
                 .updateElapsed(Duration.between(startTime, LocalDateTime.now()).toMillis())
                 .updateRemaining(execution.workload().size() - results.size());
 
@@ -158,7 +150,8 @@ public class ResultActor extends UntypedActor {
                 && !job.computation().id().equals(Computation.EMPTY)) {
             results.add(job);
             writers.forEach(r -> r.addResult(job));
-            statsActor.tell(job, getSender());
+            statsProcessor.process(job);
+            sendCurrentExecutionInfo(ExecutionInfo.Status.RUNNING);
         }
         if (results.size() == execution.workload().jobs().size()) {
             log.debug("result actor exiting {}", results.size());
@@ -170,8 +163,8 @@ public class ResultActor extends UntypedActor {
         ActorRef configActor = getContext().actorOf(ConfigActor.props());
         log.debug("got client info {}", clientInfo);
         configActor.forward(clientInfo, getContext());
-        statsActor.forward(clientInfo, getContext());
         writers.forEach(r -> r.addClient(clientInfo));
+        statsProcessor.process(clientInfo);
     }
 
     private void shutdown(ExecutionInfo.Status status) {

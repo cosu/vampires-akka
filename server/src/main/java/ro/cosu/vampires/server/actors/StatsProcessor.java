@@ -35,11 +35,6 @@ import com.codahale.metrics.Slf4jReporter;
 
 import java.util.Map;
 
-import akka.actor.Props;
-import akka.actor.UntypedActor;
-import akka.event.Logging;
-import akka.event.LoggingAdapter;
-import akka.japi.Creator;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.workload.ClientInfo;
@@ -47,9 +42,8 @@ import ro.cosu.vampires.server.workload.HistogramSnapshot;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.workload.Stats;
 
-public class StatsActor extends UntypedActor {
+public class StatsProcessor {
 
-    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     private MetricRegistry metricRegistry = new MetricRegistry();
 
@@ -57,51 +51,8 @@ public class StatsActor extends UntypedActor {
     private Map<String, ClientInfo> clientsInfo = Maps.newHashMap();
     private Map<String, ResourceInfo> resourcesInfo = Maps.newHashMap();
 
-    public static Props props() {
-        return Props.create(new Creator<StatsActor>() {
 
-            @Override
-            public StatsActor create() throws Exception {
-                return new StatsActor();
-            }
-        });
-    }
-
-    @Override
-    public void preStart() {
-//        reporter = Slf4jReporter.forRegistry(metricRegistry)
-//                .outputTo(LoggerFactory.getLogger("ro.cosu.vampires.server.stats"))
-//                .convertRatesTo(TimeUnit.SECONDS)
-//                .convertDurationsTo(TimeUnit.MILLISECONDS)
-//                .build();
-//        reporter.start(5, TimeUnit.SECONDS);
-
-    }
-
-    @Override
-    public void postStop() {
-//        log.debug("stats {}", getStats());
-//        reporter.stop();
-    }
-
-    @Override
-    public void onReceive(Object message) throws Exception {
-        if (message instanceof Job) {
-            process((Job) message);
-        }
-        if (message instanceof ResourceInfo) {
-            process((ResourceInfo) message);
-        }
-        if (message instanceof ClientInfo) {
-            process((ClientInfo) message);
-        } else {
-            unhandled(message);
-        }
-    }
-
-
-
-    private Stats getStats() {
+    public Stats getStats() {
         Map<String, HistogramSnapshot> stats = Maps.newHashMap();
         metricRegistry.getHistograms().entrySet().stream().forEach(m -> {
             String name = m.getKey();
@@ -112,16 +63,16 @@ public class StatsActor extends UntypedActor {
         return Stats.builder().stats(ImmutableMap.copyOf(stats)).build();
     }
 
-    private void process(ClientInfo message) {
+    public void process(ClientInfo message) {
         clientsInfo.put(message.id(), message);
 
     }
 
-    private void process(ResourceInfo message) {
+    public void process(ResourceInfo message) {
         resourcesInfo.put(message.parameters().id(), message);
     }
 
-    private void process(Job job) {
+    public void process(Job job) {
 
         String from = job.from();
         String instanceType = resourcesInfo.get(from).parameters().instanceType();
@@ -141,10 +92,6 @@ public class StatsActor extends UntypedActor {
                 });
 
         updateMetric(providerType.name(), instanceType, from, "duration", job.result().duration());
-
-        Stats stats = getStats();
-
-        getContext().parent().tell(stats, getSelf());
 
     }
 
