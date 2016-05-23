@@ -98,7 +98,9 @@ public class StatsProcessor {
     private void updateMetric(String providerType, String instanceType, String clientId, String metric, long value) {
         if (metric.contains("bytes")) {
             metricRegistry.counter(metric).inc(value);
+            // todo 
         } else {
+            metricRegistry.histogram(metric).update(value);
             metricRegistry.histogram(metric + ":" + providerType).update(value);
             metricRegistry.histogram(metric + ":" + providerType + ":" + instanceType).update(value);
             metricRegistry.histogram(metric + ":" + providerType + ":" + instanceType + ":" + clientId).update(value);
