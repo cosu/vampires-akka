@@ -44,7 +44,7 @@ public class ResourceRegistry {
      * ResourceActors - local akka actors clients - client remote akka actors ClientIds -
      * initialized at creation - shared by both remote and resource
      */
-//    protected List<ActorRef> resourceActors = new LinkedList<>();
+
     protected BiMap<String, ActorRef> clientIdsToResourceActors = HashBiMap.create();
     protected BiMap<String, ActorRef> clientIdsToClientActors = HashBiMap.create();
     private Map<String, Resource.Parameters> clientParameters = Maps.newHashMap();

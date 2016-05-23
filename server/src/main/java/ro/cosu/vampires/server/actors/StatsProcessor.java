@@ -33,8 +33,12 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Map;
 
+import ro.cosu.vampires.server.Server;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.workload.ClientInfo;
@@ -44,6 +48,8 @@ import ro.cosu.vampires.server.workload.Stats;
 
 public class StatsProcessor {
 
+
+    private static final Logger LOG = LoggerFactory.getLogger(StatsProcessor.class);
 
     private MetricRegistry metricRegistry = new MetricRegistry();
 
@@ -75,6 +81,11 @@ public class StatsProcessor {
     public void process(Job job) {
 
         String from = job.from();
+        // do not process jobs from strangers
+        if (!resourcesInfo.containsKey(from)){
+            LOG.warn("client {} not registered. skipping processing", from);
+            return;
+        }
         String instanceType = resourcesInfo.get(from).parameters().instanceType();
         Resource.ProviderType providerType = resourcesInfo.get(from).parameters().providerType();
 
@@ -98,7 +109,7 @@ public class StatsProcessor {
     private void updateMetric(String providerType, String instanceType, String clientId, String metric, long value) {
         if (metric.contains("bytes")) {
             metricRegistry.counter(metric).inc(value);
-            // todo 
+            // todo
         } else {
             metricRegistry.histogram(metric).update(value);
             metricRegistry.histogram(metric + ":" + providerType).update(value);
