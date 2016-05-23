@@ -24,31 +24,20 @@
 
 package ro.cosu.vampires.client.executors.docker;
 
-import com.google.common.base.Joiner;
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
-
 import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.DockerException;
 import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.command.CreateContainerResponse;
+import com.github.dockerjava.api.exception.DockerException;
 import com.github.dockerjava.api.model.Frame;
 import com.github.dockerjava.api.model.Info;
 import com.github.dockerjava.core.command.LogContainerResultCallback;
+import com.github.dockerjava.core.command.WaitContainerResultCallback;
+import com.google.common.base.Joiner;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.typesafe.config.Config;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Optional;
-
-import javax.ws.rs.ProcessingException;
-
 import ro.cosu.vampires.client.allocation.CpuAllocator;
 import ro.cosu.vampires.client.allocation.CpuSet;
 import ro.cosu.vampires.client.executors.Executor;
@@ -56,6 +45,14 @@ import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Result;
 import ro.cosu.vampires.server.workload.Trace;
+
+import javax.ws.rs.ProcessingException;
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Optional;
 
 public class DockerExecutor implements Executor {
 
@@ -89,7 +86,7 @@ public class DockerExecutor implements Executor {
 
         if (cpuSet.isPresent()) {
             LOG.debug("docker cpuset {}", cpuSet);
-            createContainerCmd.withCpuset(Joiner.on(",").join(cpuSet.get().getCpuSet()));
+            createContainerCmd.withCpusetCpus(Joiner.on(",").join(cpuSet.get().getCpuSet()));
         }
         CreateContainerResponse container = createContainerCmd.exec();
         containerId = container.getId();
@@ -110,7 +107,8 @@ public class DockerExecutor implements Executor {
 
         executorMetricsCollector.startMonitoring(containerId);
 
-        int exitCode = dockerClient.waitContainerCmd(containerId).exec();
+        int exitCode = dockerClient.waitContainerCmd(containerId).exec(new WaitContainerResultCallback())
+                .awaitStatusCode();
 
         LocalDateTime stop = LocalDateTime.now();
         String output = "";
@@ -121,7 +119,7 @@ public class DockerExecutor implements Executor {
             LOG.error("docker create log error {}", e);
         }
 
-        dockerClient.waitContainerCmd(containerId).exec();
+        dockerClient.waitContainerCmd(containerId).exec(new WaitContainerResultCallback()).awaitStatusCode();
 
         executorMetricsCollector.stopMonitoring();
 
@@ -142,8 +140,8 @@ public class DockerExecutor implements Executor {
 
     private String getOutput() throws InterruptedException {
         return dockerClient.logContainerCmd(containerId)
-                .withStdErr()
-                .withStdOut()
+                .withStdErr(true)
+                .withStdOut(true)
                 .exec(new DockerLogResultCallback())
                 .awaitCompletion()
                 .toString();

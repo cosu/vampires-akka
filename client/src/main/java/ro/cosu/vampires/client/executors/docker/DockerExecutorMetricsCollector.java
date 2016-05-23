@@ -118,7 +118,7 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
     @Override
     public void startMonitoring(String id) {
         this.id = id;
-        dockerClient.statsCmd().withContainerId(id).exec(statsCallback);
+        dockerClient.statsCmd(id).exec(statsCallback);
     }
 
     @Override
