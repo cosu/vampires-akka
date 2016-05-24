@@ -64,7 +64,7 @@ public class SettingsImplTest {
     @Test
     public void testGetCpuSetSize() throws Exception {
 
-        Config config = ConfigFactory.parseString("vampires.cpuSetSize=4").withFallback(devConfig);
+        Config config = ConfigFactory.parseString("vampires.cpu-set-size=4").withFallback(devConfig);
 
         SettingsImpl settings = new SettingsImpl(config);
         assertThat(settings.getCpuSetSize(), is(4));
@@ -72,7 +72,7 @@ public class SettingsImplTest {
 
     @Test
     public void testNoCpuSetSize() {
-        Config config = ConfigFactory.parseString("vampires.cpuSetSize = null").withFallback(devConfig);
+        Config config = ConfigFactory.parseString("vampires.cpu-set-size= null").withFallback(devConfig);
         SettingsImpl settings = new SettingsImpl(config);
 
         assertThat(settings.getCpuSetSize(), is(1));
