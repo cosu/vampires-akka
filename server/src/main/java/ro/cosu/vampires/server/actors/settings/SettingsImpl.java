@@ -1,53 +1,39 @@
 /*
+ * The MIT License (MIT)
+ * Copyright © 2016 Cosmin Dumitru, http://cosu.ro <cosu@cosu.ro>
  *
- *  * The MIT License (MIT)
- *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro <cosu@cosu.ro>
- *  *
- *  * Permission is hereby granted, free of charge, to any person obtaining a copy
- *  * of this software and associated documentation files (the “Software”), to deal
- *  * in the Software without restriction, including without limitation the rights
- *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- *  * copies of the Software, and to permit persons to whom the Software is
- *  * furnished to do so, subject to the following conditions:
- *  *
- *  * The above copyright notice and this permission notice shall be included in
- *  * all copies or substantial portions of the Software.
- *  *
- *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- *  * THE SOFTWARE.
- *  *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the “Software”), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  *
  */
 
 package ro.cosu.vampires.server.actors.settings;
 
+import akka.actor.Extension;
 import com.google.common.base.Enums;
 import com.google.common.collect.ImmutableList;
-
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
 import com.typesafe.config.ConfigValueType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import akka.actor.Extension;
 import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.workload.ExecutionMode;
-import ro.cosu.vampires.server.workload.Job;
-import ro.cosu.vampires.server.workload.JobUtil;
-import ro.cosu.vampires.server.workload.ProviderDescription;
-import ro.cosu.vampires.server.workload.ResourceDescription;
+import ro.cosu.vampires.server.workload.*;
 import ro.cosu.vampires.server.workload.schedulers.SamplingScheduler;
 import ro.cosu.vampires.server.workload.schedulers.Scheduler;
 import ro.cosu.vampires.server.workload.schedulers.SimpleScheduler;
@@ -55,9 +41,21 @@ import ro.cosu.vampires.server.writers.ResultsWriter;
 import ro.cosu.vampires.server.writers.json.JsonResultsWriter;
 import ro.cosu.vampires.server.writers.mongo.MongoWriter;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class SettingsImpl implements Extension {
 
     public static final String SAMPLING_MODE = "sampling";
+    public static final String SAMPLE_SIZE = "sample-size";
+    public static final String EXECUTORS = "executors";
+    public static final String CPU_SET_SIZE = "cpu-set-size";
+    public static final String MODE = "mode";
+    public static final String JOB_DEADLINE_SECONDS = "job-deadline-seconds";
+    public static final String ENABLED_WRITERS = "enabled-writers";
+    public static final String BACKOFF_INTERVAL_SECONDS = "backoff-interval-seconds";
     private static final int DEFAULT_CPU_SET_SIZE = 1;
     private static final Logger LOG = LoggerFactory.getLogger(Settings.class);
     private final static int DEFAULT_MAX_JOB_DEADLINE = 60;
@@ -73,7 +71,7 @@ public class SettingsImpl implements Extension {
 
     public List<ResultsWriter> getWriters() {
         List<ResultsWriter> writers = new LinkedList<>();
-        List<String> enabledWriters = vampires.getStringList("enabled-writers");
+        List<String> enabledWriters = vampires.getStringList(ENABLED_WRITERS);
         if (enabledWriters.contains("json")) {
             writers.add(new JsonResultsWriter(vampires));
         }
@@ -104,8 +102,8 @@ public class SettingsImpl implements Extension {
     }
 
     public int getNumberOfJobsToSample() {
-        if (vampires.hasPath("sampleSize")) {
-            return vampires.getInt("sampleSize");
+        if (vampires.hasPath(SAMPLE_SIZE)) {
+            return vampires.getInt(SAMPLE_SIZE);
         } else {
             LOG.warn("Missing sampleSize config value. using default {}", JOBS_TO_SAMPLE);
             return JOBS_TO_SAMPLE;
@@ -113,8 +111,8 @@ public class SettingsImpl implements Extension {
     }
 
     public List<String> getExecutors() {
-        if (vampires.hasPath("executors")) {
-            return vampires.getStringList("executors").stream().map(String::toUpperCase).collect(Collectors.toList());
+        if (vampires.hasPath(EXECUTORS)) {
+            return vampires.getStringList(EXECUTORS).stream().map(String::toUpperCase).collect(Collectors.toList());
         } else {
             LOG.warn("Missing executors config value. using default {}", DEFAULT_EXECUTOR);
             return Collections.singletonList(DEFAULT_EXECUTOR);
@@ -123,20 +121,20 @@ public class SettingsImpl implements Extension {
     }
 
     public int getBackoffInterval() {
-        if (vampires.hasPath("backoffInterval")) {
-            return vampires.getInt("backoffInterval");
+        if (vampires.hasPath(BACKOFF_INTERVAL_SECONDS)) {
+            return vampires.getInt(BACKOFF_INTERVAL_SECONDS);
         } else {
-            LOG.warn("missing backoffInterval. Using default value: {}", DEFAULT_BACK_OFF_INTERVAL);
+            LOG.warn("missing " + BACKOFF_INTERVAL_SECONDS + " . Using default value: {}", DEFAULT_BACK_OFF_INTERVAL);
         }
         return DEFAULT_BACK_OFF_INTERVAL;
 
     }
 
     public int getCpuSetSize() {
-        if (vampires.hasPath("cpuSetSize")) {
-            return vampires.getInt("cpuSetSize");
+        if (vampires.hasPath(CPU_SET_SIZE)) {
+            return vampires.getInt(CPU_SET_SIZE);
         } else {
-            LOG.warn("missing executor cpuSetSize. Using default value: {}", DEFAULT_CPU_SET_SIZE);
+            LOG.warn("missing executor " + CPU_SET_SIZE + " . Using default value: {}", DEFAULT_CPU_SET_SIZE);
         }
         return DEFAULT_CPU_SET_SIZE;
     }
@@ -144,8 +142,8 @@ public class SettingsImpl implements Extension {
     public int getJobDeadline() {
 
         int maxJobSeconds = DEFAULT_MAX_JOB_DEADLINE;
-        if (vampires.hasPath("jobDeadlineSeconds")) {
-            maxJobSeconds = vampires.getInt("jobDeadlineSeconds");
+        if (vampires.hasPath(JOB_DEADLINE_SECONDS)) {
+            maxJobSeconds = vampires.getInt(JOB_DEADLINE_SECONDS);
         } else {
             LOG.warn("maxJobSeconds not provided. Using default value of {}", DEFAULT_MAX_JOB_DEADLINE);
         }
@@ -192,8 +190,8 @@ public class SettingsImpl implements Extension {
 
     public ExecutionMode getMode() {
         ExecutionMode executionMode = ExecutionMode.FULL;
-        if (vampires.hasPath("mode")) {
-            executionMode = Enums.getIfPresent(ExecutionMode.class, vampires.getString("mode").
+        if (vampires.hasPath(MODE)) {
+            executionMode = Enums.getIfPresent(ExecutionMode.class, vampires.getString(MODE).
                     toUpperCase()).or(ExecutionMode.FULL);
         }
         return executionMode;
