@@ -27,42 +27,41 @@
 package ro.cosu.vampires.server.workload;
 
 import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableMap;
+
+import com.codahale.metrics.Counter;
 
 import ro.cosu.vampires.server.util.gson.AutoGson;
 
 @AutoValue
 @AutoGson
-public abstract class Stats {
+public abstract class CounterSnapshot {
+
+
     public static Builder builder() {
-        return new AutoValue_Stats.Builder();
+        return new AutoValue_CounterSnapshot.Builder();
     }
 
-    public static Stats empty() {
-        return builder().histograms(ImmutableMap.of())
-                .meters(ImmutableMap.of())
-                .counters(ImmutableMap.of())
+    public static CounterSnapshot fromCounter(String name, Counter counter) {
+
+        return builder()
+                .name(name)
+                .count(counter.getCount())
                 .build();
+
     }
 
+    public abstract Builder toBuilder();
 
-    public abstract ImmutableMap<String, CounterSnapshot> counters();
+    public abstract String name();
 
-    public abstract ImmutableMap<String, MeterSnapshot> meters();
-
-    public abstract ImmutableMap<String, HistogramSnapshot> histograms();
-
+    public abstract long count();
 
     @AutoValue.Builder
     public abstract static class Builder {
-        public abstract Stats build();
+        public abstract Builder count(long value);
 
-        public abstract Builder meters(ImmutableMap<String, MeterSnapshot> meters);
+        public abstract Builder name(String value);
 
-        public abstract Builder histograms(ImmutableMap<String, HistogramSnapshot> histograms);
-
-        public abstract Builder counters(ImmutableMap<String, CounterSnapshot> counters);
-
-
+        public abstract CounterSnapshot build();
     }
 }

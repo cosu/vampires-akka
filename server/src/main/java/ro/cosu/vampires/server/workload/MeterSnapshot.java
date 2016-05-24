@@ -27,42 +27,63 @@
 package ro.cosu.vampires.server.workload;
 
 import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableMap;
+
+import com.codahale.metrics.Meter;
 
 import ro.cosu.vampires.server.util.gson.AutoGson;
 
 @AutoValue
 @AutoGson
-public abstract class Stats {
+public abstract class MeterSnapshot {
+
     public static Builder builder() {
-        return new AutoValue_Stats.Builder();
+        return new AutoValue_MeterSnapshot.Builder();
     }
 
-    public static Stats empty() {
-        return builder().histograms(ImmutableMap.of())
-                .meters(ImmutableMap.of())
-                .counters(ImmutableMap.of())
+    public static MeterSnapshot fromMeter(String name, Meter meter) {
+
+        return builder()
+                .name(name)
+                .count(meter.getCount())
+                .m1(meter.getOneMinuteRate())
+                .m5(meter.getFiveMinuteRate())
+                .m15(meter.getFifteenMinuteRate())
+                .mean(meter.getMeanRate())
                 .build();
+
     }
 
+    public abstract Builder toBuilder();
 
-    public abstract ImmutableMap<String, CounterSnapshot> counters();
+    public abstract String name();
 
-    public abstract ImmutableMap<String, MeterSnapshot> meters();
+    public abstract long count();
 
-    public abstract ImmutableMap<String, HistogramSnapshot> histograms();
+    public abstract double mean();
+
+    public abstract double m1();
+
+    public abstract double m5();
+
+    public abstract double m15();
 
 
     @AutoValue.Builder
     public abstract static class Builder {
-        public abstract Stats build();
+        public abstract Builder count(long value);
 
-        public abstract Builder meters(ImmutableMap<String, MeterSnapshot> meters);
+        public abstract Builder name(String value);
 
-        public abstract Builder histograms(ImmutableMap<String, HistogramSnapshot> histograms);
+        public abstract Builder mean(double value);
 
-        public abstract Builder counters(ImmutableMap<String, CounterSnapshot> counters);
+        public abstract Builder m1(double value);
+
+        public abstract Builder m5(double value);
+
+        public abstract Builder m15(double value);
 
 
+        public abstract MeterSnapshot build();
     }
+
 }
