@@ -117,6 +117,7 @@ public class StatsProcessor {
         String instanceType = resourcesInfo.get(from).parameters().instanceType();
         Resource.ProviderType providerType = resourcesInfo.get(from).parameters().providerType();
 
+        // TODO: compute cost here
 
         job.hostMetrics().metrics().stream().flatMap(m -> m.values().entrySet().stream())
                 .forEach(e -> {

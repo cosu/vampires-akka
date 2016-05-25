@@ -72,6 +72,7 @@ public interface Resource {
     }
 
     interface Parameters extends Serializable {
+
         ProviderType providerType();
 
         String instanceType();
