@@ -62,6 +62,8 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
 
     public abstract String id();
 
+    public abstract double cost();
+
     public abstract Builder toBuilder();
 
     public EC2ResourceParameters withServerId(String serverId) {
@@ -78,6 +80,8 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
         public abstract Builder command(String s);
 
         public abstract Builder imageId(String s);
+
+        public abstract Builder cost(double cost);
 
         public abstract Builder id(String id);
 
@@ -96,7 +100,7 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
         public Builder fromConfig(Config config) {
             String region = config.getString("region");
             Preconditions.checkArgument(region.split("-").length == 3, "Invalid region: " + region);
-
+            this.cost(config.getDouble("cost"));
             this.command(config.getString("command"));
             this.instanceType(config.getString("instanceType"));
             this.imageId(config.getString("imageId"));

@@ -53,8 +53,12 @@ public class AuthenticationFilter {
 
         // stupid authentication
         before((request, response) -> {
+
             boolean authenticated = !request.session().isNew();
             String auth = request.headers("Authorization");
+
+            if( request.requestMethod().equals("OPTIONS"))
+                authenticated = true;
 
             if (!authenticated) {
                 // try to authenticate

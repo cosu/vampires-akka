@@ -42,6 +42,7 @@ public abstract class MockResourceParameters implements Resource.Parameters {
     public static Builder builder() {
         return new AutoValue_MockResourceParameters.Builder().providerType(Resource.ProviderType.MOCK)
                 .id(UUID.randomUUID().toString())
+                .cost(0)
                 .serverId("");
     }
 
@@ -56,6 +57,9 @@ public abstract class MockResourceParameters implements Resource.Parameters {
     public abstract String instanceType();
 
     public abstract String id();
+
+
+    public abstract double cost();
 
     public MockResourceParameters withServerId(String serverId) {
         return toBuilder().serverId("").build();
@@ -82,6 +86,8 @@ public abstract class MockResourceParameters implements Resource.Parameters {
         public abstract Builder instanceType(String instanceType);
 
         public abstract Builder id(String id);
+
+        public abstract Builder cost(double cost);
 
         public abstract MockResourceParameters build();
 

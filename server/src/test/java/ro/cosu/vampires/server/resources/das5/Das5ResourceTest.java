@@ -73,6 +73,7 @@ public class Das5ResourceTest {
             private Config provideConfig() {
                 return ConfigFactory.parseString("resources.das5.local { " +
                         "user= foo\n" +
+                        "cost=100\n" +
                         "address=bar\n" +
                         "privateKey=baz\n" +
                         "command = foo}");

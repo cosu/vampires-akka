@@ -79,6 +79,8 @@ public interface Resource {
 
         String id();
 
+        double cost();
+
         String serverId();
 
         String command();

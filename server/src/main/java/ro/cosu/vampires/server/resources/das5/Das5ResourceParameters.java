@@ -41,6 +41,7 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
     public static Builder builder() {
         return new AutoValue_Das5ResourceParameters.Builder()
                 .port(22).providerType(Resource.ProviderType.DAS5)
+                .cost(0.)
                 .id(UUID.randomUUID().toString())
                 .serverId("");
     }
@@ -54,6 +55,8 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
     public abstract String privateKey();
 
     public abstract int port();
+
+    public abstract double cost();
 
     public abstract Resource.ProviderType providerType();
 
@@ -87,6 +90,8 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
 
         public abstract Builder port(int i);
 
+        public abstract Builder cost(double cost);
+
         public abstract Builder providerType(Resource.ProviderType providerType);
 
         public abstract Builder serverId(String s);
@@ -96,6 +101,7 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
         public Builder fromConfig(Config config) {
             this.command(config.getString("command"));
             this.user(config.getString("user"));
+            this.cost(config.getDouble("cost"));
             this.address(config.getString("address"));
             this.privateKey(config.getString("privateKey"));
             if (config.hasPath("port")) {

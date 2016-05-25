@@ -33,6 +33,7 @@ import com.typesafe.config.Config;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.resources.ec2.EC2ResourceParameters;
 
 @AutoValue
 public abstract class LocalResourceParameters implements Resource.Parameters {
@@ -41,6 +42,7 @@ public abstract class LocalResourceParameters implements Resource.Parameters {
     public static Builder builder() {
         return new AutoValue_LocalResourceParameters.Builder().providerType(Resource.ProviderType.LOCAL)
                 .id(UUID.randomUUID().toString())
+                .cost(0.)
                 .serverId("");
     }
 
@@ -51,6 +53,8 @@ public abstract class LocalResourceParameters implements Resource.Parameters {
     public abstract String serverId();
 
     public abstract String id();
+
+    public abstract double cost();
 
     public abstract String instanceType();
 
@@ -67,12 +71,14 @@ public abstract class LocalResourceParameters implements Resource.Parameters {
     @AutoValue.Builder
     public abstract static class Builder implements Resource.Parameters.Builder {
         public Builder fromConfig(Config config) {
+            this.cost(config.getDouble("cost"));
             this.command(config.getString("command"));
             return this;
         }
 
         public abstract Builder providerType(Resource.ProviderType providerType);
 
+        public abstract Builder cost(double cost);
 
         public abstract Builder id(String command);
 

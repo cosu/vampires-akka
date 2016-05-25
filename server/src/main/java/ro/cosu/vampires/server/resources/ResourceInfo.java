@@ -28,23 +28,26 @@ package ro.cosu.vampires.server.resources;
 
 import com.google.auto.value.AutoValue;
 
+import java.time.LocalDateTime;
+
 @AutoValue
 public abstract class ResourceInfo {
     public static ResourceInfo create(Resource.Parameters parameters, Resource.Status status) {
-        return new AutoValue_ResourceInfo(parameters, status);
+        return new AutoValue_ResourceInfo(parameters, status, LocalDateTime.now());
     }
 
     public static ResourceInfo unknown(Resource.Parameters parameters) {
-        return new AutoValue_ResourceInfo(parameters, Resource.Status.UNKNOWN);
+        return new AutoValue_ResourceInfo(parameters, Resource.Status.UNKNOWN, LocalDateTime.now());
     }
 
     public static ResourceInfo failed(Resource.Parameters parameters) {
-        return new AutoValue_ResourceInfo(parameters, Resource.Status.FAILED);
+        return new AutoValue_ResourceInfo(parameters, Resource.Status.FAILED, LocalDateTime.now());
     }
 
     public abstract Resource.Parameters parameters();
 
     public abstract Resource.Status status();
 
+    public abstract LocalDateTime createdAt();
 
 }

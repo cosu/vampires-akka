@@ -39,7 +39,7 @@ public class BuilderTest {
     @Test
     public void testFromConfig() throws Exception {
 
-        Config config = ConfigFactory.load();
+        Config config = ConfigFactory.load("application-dev.conf");
 
         Config resourcesConfig = config.getConfig("vampires.resources");
         Config sshConfig = config.getConfig("vampires.resources.ssh");

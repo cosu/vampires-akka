@@ -42,7 +42,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 public class SshResourceIT {
     @Test
     public void testSshResoure() throws Exception {
-        Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.load().getConfig("vampires")));
+        Injector injector = Guice.createInjector(new ResourceModule(ConfigFactory.load("application-dev.conf").getConfig("vampires")));
 
 
         ResourceManager rm = injector.getInstance(ResourceManager.class);

@@ -80,6 +80,7 @@ public class EC2ResourceTest {
                                 "command=bar\n" +
                                 "imageId=baz\n" +
                                 "keyName=foo\n" +
+                                "cost=100\n" +
                                 "securityGroup=foo\n" +
                                 "eu-west-1.t2.medium {\n" +
                                 "region=eu-east-1\n" +

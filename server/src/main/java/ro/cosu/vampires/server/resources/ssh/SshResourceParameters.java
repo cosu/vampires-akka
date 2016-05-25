@@ -41,6 +41,7 @@ public abstract class SshResourceParameters implements Resource.Parameters {
     public static Builder builder() {
         return new AutoValue_SshResourceParameters.Builder().port(22).providerType(Resource.ProviderType.SSH)
                 .id(UUID.randomUUID().toString())
+                .cost(0)
                 .serverId("");
     }
 
@@ -59,6 +60,10 @@ public abstract class SshResourceParameters implements Resource.Parameters {
     public abstract String serverId();
 
     public abstract String id();
+
+
+    public abstract double cost();
+
 
     public abstract String instanceType();
 
@@ -79,6 +84,7 @@ public abstract class SshResourceParameters implements Resource.Parameters {
             this.command(config.getString("command"));
             this.user(config.getString("user"));
             this.address(config.getString("address"));
+            this.cost(config.getDouble("cost"));
             this.privateKey(config.getString("privateKey"));
             if (config.hasPath("port")) {
                 this.port(config.getInt("port"));
@@ -86,7 +92,7 @@ public abstract class SshResourceParameters implements Resource.Parameters {
             return this;
         }
 
-
+        public abstract Builder cost(double cost);
         public abstract Builder providerType(Resource.ProviderType providerType);
 
         public abstract Builder command(String s);

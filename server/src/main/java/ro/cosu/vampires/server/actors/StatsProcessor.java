@@ -26,20 +26,32 @@
 
 package ro.cosu.vampires.server.actors;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import com.codahale.metrics.Counter;
+import com.codahale.metrics.DerivativeGauge;
+import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
+import com.codahale.metrics.Metric;
+import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
+
+import net.sf.cglib.core.Local;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
@@ -49,6 +61,7 @@ import ro.cosu.vampires.server.workload.HistogramSnapshot;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.workload.MeterSnapshot;
 import ro.cosu.vampires.server.workload.Stats;
+import ro.cosu.vampires.server.workload.ValueSnapshot;
 
 public class StatsProcessor {
 
@@ -56,6 +69,7 @@ public class StatsProcessor {
 
     private MetricRegistry metricRegistry = new MetricRegistry();
 
+    private Map<String, LocalDateTime> clientsCreatedAt= Maps.newHashMap();
     private Map<String, ClientInfo> clientsInfo = Maps.newHashMap();
     private Map<String, ResourceInfo> resourcesInfo = Maps.newHashMap();
 
@@ -65,7 +79,7 @@ public class StatsProcessor {
         Map<String, HistogramSnapshot> histograms = Maps.newHashMap();
         Map<String, MeterSnapshot> meters = Maps.newHashMap();
         Map<String, CounterSnapshot> counters = Maps.newHashMap();
-
+        Map<String, ValueSnapshot> values = Maps.newHashMap();
 
 
         metricRegistry.getHistograms().entrySet().stream().forEach(m -> {
@@ -86,8 +100,15 @@ public class StatsProcessor {
             counters.put(name, CounterSnapshot.fromCounter(name, value));
         });
 
+        metricRegistry.getGauges().entrySet().stream().forEach(m -> {
+            String name = m.getKey();
+            Gauge value = m.getValue();
+            values.put(name, ValueSnapshot.fromGauge(name, value));
+        });
+
         latestStats = Stats.builder()
                 .counters(ImmutableMap.copyOf(counters))
+                .values(ImmutableMap.copyOf(values))
                 .meters(ImmutableMap.copyOf(meters))
                 .histograms(ImmutableMap.copyOf(histograms)).build();
     }
@@ -98,12 +119,45 @@ public class StatsProcessor {
     }
 
     public void process(ClientInfo message) {
+        String from = message.id();
         clientsInfo.put(message.id(), message);
 
+//        updateMetric(from, "resources", 0);
     }
 
     public void process(ResourceInfo message) {
-        resourcesInfo.put(message.parameters().id(), message);
+        String from = message.parameters().id();
+
+        clientsCreatedAt.put(from, message.createdAt());
+        resourcesInfo.put(from, message);
+
+        // node count
+        for (String key : getKeysForMetric(from, "resources")) {
+            metricRegistry.counter(key).inc();
+        }
+
+        List<String> costMetricKeys = getKeysForMetric(from, "cost");
+        // remove the client key from the keys. this will provide the actual value
+
+        String clientCostMetricKey = costMetricKeys.remove(0);
+
+        // register a cost gauge for this client
+        metricRegistry.register(clientCostMetricKey, (Gauge<Double>) () -> getCostForClient(from));
+
+        // cost gauges for the rest
+
+        for (String key: costMetricKeys) {
+            // key not registered yet
+            if (!metricRegistry.getGauges().containsKey(key)) {
+
+                metricRegistry.register(key, (Gauge<Double>) () ->
+                        // get all the sub-gauges (but not the current gauge - nudge it with a :)
+                        metricRegistry.getGauges((name, metric) -> name.startsWith(key + ":"))
+                                .values().stream()
+                                .mapToDouble(g -> (Double) g.getValue())
+                                .sum());
+            }
+        }
     }
 
     public void process(Job job) {
@@ -114,10 +168,6 @@ public class StatsProcessor {
             LOG.warn("client {} not registered. skipping processing", from);
             return;
         }
-        String instanceType = resourcesInfo.get(from).parameters().instanceType();
-        Resource.ProviderType providerType = resourcesInfo.get(from).parameters().providerType();
-
-        // TODO: compute cost here
 
         job.hostMetrics().metrics().stream().flatMap(m -> m.values().entrySet().stream())
                 .forEach(e -> {
@@ -127,22 +177,17 @@ public class StatsProcessor {
                     }
                     long rounded = Math.round(value);
                     String key = e.getKey();
-                    updateMetric(providerType.name(), instanceType, from, key, rounded);
+                    updateMetric(from, key, rounded);
                 });
 
-        updateMetric(providerType.name(), instanceType, from, "duration", job.result().duration());
-        updateMetric(providerType.name(), instanceType, from, "job", 0);
+        updateMetric(from, "duration", job.result().duration());
+        updateMetric(from, "job", 0);
 
     }
 
-    private void updateMetric(String providerType, String instanceType, String clientId, String metric, long value) {
+    private void updateMetric(String clientId, String metric, long value) {
 
-        List<String> keys = Lists.newArrayList(metric,
-                metric + ":" + providerType,
-                metric + ":" + providerType + ":" + instanceType,
-                metric + ":" + providerType + ":" + instanceType + ":" + clientId);
-
-        for (String key : keys) {
+        for (String key : getKeysForMetric(clientId, metric)) {
             if (metric.equals("job")) {
                 metricRegistry.meter(key).mark();
             } else if (metric.contains("bytes")) {
@@ -151,6 +196,40 @@ public class StatsProcessor {
                 metricRegistry.histogram(key).update(value);
             }
         }
+    }
 
+    private double getCostForClient(String id) {
+
+        long billedHours = getDurationForClient(id).toHours()+ 1;
+        double cost = resourcesInfo.get(id).parameters().cost();
+        return billedHours * cost;
+    }
+
+    private Duration getDurationForClient(String id){
+        LocalDateTime createdAt = clientsCreatedAt.get(id);
+        LocalDateTime now = LocalDateTime.now();
+
+        return Duration.between(createdAt, now);
+    }
+
+    private String getInstanceType(String from){
+        return resourcesInfo.get(from).parameters().instanceType();
+    }
+
+    private Resource.ProviderType getProviderType (String from) {
+        return  resourcesInfo.get(from).parameters().providerType();
+    }
+
+    private List<String> getKeysForMetric(String clientId, String metric) {
+
+        String instanceType = getInstanceType(clientId);
+        Resource.ProviderType providerType = getProviderType(clientId);
+
+        // return the keys in reverse order: most specific (longest) first
+        return Lists.reverse(Lists.newArrayList(metric,
+                Joiner.on(":").join(metric, providerType),
+                Joiner.on(":").join(metric, providerType, instanceType),
+                Joiner.on(":").join(metric, providerType, instanceType),
+                Joiner.on(":").join(metric, providerType, instanceType, clientId)));
     }
 }
