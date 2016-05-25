@@ -32,26 +32,18 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import com.codahale.metrics.Counter;
-import com.codahale.metrics.DerivativeGauge;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
-import com.codahale.metrics.Metric;
-import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
-
-import net.sf.cglib.core.Local;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
@@ -114,15 +106,12 @@ public class StatsProcessor {
     }
 
     public Stats getStats() {
-
         return latestStats;
     }
 
     public void process(ClientInfo message) {
         String from = message.id();
-        clientsInfo.put(message.id(), message);
-
-//        updateMetric(from, "resources", 0);
+        clientsInfo.put(from, message);
     }
 
     public void process(ResourceInfo message) {
@@ -139,7 +128,7 @@ public class StatsProcessor {
         List<String> costMetricKeys = getKeysForMetric(from, "cost");
         // remove the client key from the keys. this will provide the actual value
 
-        String clientCostMetricKey = costMetricKeys.remove(0);
+        String clientCostMetricKey = costMetricKeys.get(0);
 
         // register a cost gauge for this client
         metricRegistry.register(clientCostMetricKey, (Gauge<Double>) () -> getCostForClient(from));
@@ -151,8 +140,9 @@ public class StatsProcessor {
             if (!metricRegistry.getGauges().containsKey(key)) {
 
                 metricRegistry.register(key, (Gauge<Double>) () ->
-                        // get all the sub-gauges (but not the current gauge - nudge it with a :)
-                        metricRegistry.getGauges((name, metric) -> name.startsWith(key + ":"))
+                        // get all the sibling gauges (but not the current gauge - nudge it with a :)
+                        metricRegistry.getGauges((name, metric) -> name.startsWith(key + ":") &&
+                                name.split(":").length - key.split(":").length == 1)
                                 .values().stream()
                                 .mapToDouble(g -> (Double) g.getValue())
                                 .sum());
@@ -228,7 +218,6 @@ public class StatsProcessor {
         // return the keys in reverse order: most specific (longest) first
         return Lists.reverse(Lists.newArrayList(metric,
                 Joiner.on(":").join(metric, providerType),
-                Joiner.on(":").join(metric, providerType, instanceType),
                 Joiner.on(":").join(metric, providerType, instanceType),
                 Joiner.on(":").join(metric, providerType, instanceType, clientId)));
     }
