@@ -40,6 +40,7 @@ import scala.concurrent.duration.FiniteDuration;
 public class ActorUtil {
     private static FiniteDuration MAX_WAIT = Duration.create(100, TimeUnit.MILLISECONDS);
 
+    @SuppressWarnings("unchecked")
     public static <T> Optional<T> ask(Object message, ActorRef actorRef) {
         Timeout timeout = new Timeout(MAX_WAIT);
         Future<Object> ask = Patterns.ask(actorRef, message, timeout);
