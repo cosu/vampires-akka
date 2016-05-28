@@ -120,6 +120,7 @@ public class ResourceManagerActor extends UntypedActor {
 
     private void terminatedResource(ActorRef sender) {
         log.debug("terminated {}", sender);
+        getContext().unwatch(sender);
         resourceRegistry.removeResource(sender);
         if (resourceRegistry.getResourceActors().isEmpty()) {
             getContext().stop(getSelf());
