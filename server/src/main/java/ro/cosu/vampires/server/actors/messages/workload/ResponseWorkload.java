@@ -24,17 +24,20 @@
  *
  */
 
-package ro.cosu.vampires.server.workload;
+package ro.cosu.vampires.server.actors.messages.workload;
 
 import com.google.auto.value.AutoValue;
+import com.google.common.collect.ImmutableList;
+
+import java.util.List;
+
+import ro.cosu.vampires.server.workload.Workload;
 
 @AutoValue
-public abstract class ResourceDescription {
-    public static ResourceDescription create(String type, double cost) {
-        return new AutoValue_ResourceDescription(type, cost);
+public abstract class ResponseWorkload implements WorkloadMessage {
+    public static ResponseWorkload create(List<Workload> configurations) {
+        return new AutoValue_ResponseWorkload(ImmutableList.copyOf(configurations));
     }
 
-    public abstract String type();
-
-    public abstract double cost();
+    public abstract List<Workload> values();
 }

@@ -24,17 +24,10 @@
  *
  */
 
-package ro.cosu.vampires.server.workload;
+package ro.cosu.vampires.server.resources.di;
 
-import com.google.auto.value.AutoValue;
+public interface IResFact<T extends IResource> {
 
-@AutoValue
-public abstract class ResourceDescription {
-    public static ResourceDescription create(String type, double cost) {
-        return new AutoValue_ResourceDescription(type, cost);
-    }
+    T get(String type);
 
-    public abstract String type();
-
-    public abstract double cost();
 }

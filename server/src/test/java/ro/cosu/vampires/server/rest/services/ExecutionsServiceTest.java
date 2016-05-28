@@ -29,16 +29,10 @@ package ro.cosu.vampires.server.rest.services;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 
-import com.typesafe.config.ConfigFactory;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Optional;
 
-import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
 import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.ExecutionInfo;
 import ro.cosu.vampires.server.workload.ExecutionMode;
@@ -50,22 +44,10 @@ import static org.hamcrest.core.Is.is;
 
 public class ExecutionsServiceTest extends AbstractServiceTest<Execution, ExecutionPayload> {
 
-    private static ActorSystem system;
-
-    @BeforeClass
-    public static void setup() {
-        system = ActorSystem.create("test", ConfigFactory.load("application-dev.conf"));
-    }
-
-    @AfterClass
-    public static void teardown() {
-        JavaTestKit.shutdownActorSystem(system);
-        system = null;
-    }
 
     @Override
     protected AbstractModule getModule() {
-        return new ServicesTestModule(system);
+        return new ServicesTestModule(actorSystem);
     }
 
     @Override

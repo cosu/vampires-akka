@@ -27,14 +27,22 @@
 package ro.cosu.vampires.server.rest.services;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 
 import com.typesafe.config.ConfigFactory;
 
+import akka.actor.ActorRef;
+import ro.cosu.vampires.server.actors.WorkloadsActor;
 import ro.cosu.vampires.server.workload.Workload;
 import ro.cosu.vampires.server.workload.WorkloadPayload;
 
 public class WorkloadsServiceTest extends AbstractServiceTest<Workload, WorkloadPayload> {
+
+
+    private static ActorRef getActor() {
+        return actorSystem.actorOf(WorkloadsActor.props());
+    }
 
     @Override
     protected AbstractModule getModule() {
@@ -43,6 +51,11 @@ public class WorkloadsServiceTest extends AbstractServiceTest<Workload, Workload
             protected void configure() {
                 bind(getTypeTokenService()).to(new TypeLiteral<WorkloadsService>() {
                 });
+            }
+
+            @Provides
+            ActorRef actor() {
+                return getActor();
             }
         };
         return module;

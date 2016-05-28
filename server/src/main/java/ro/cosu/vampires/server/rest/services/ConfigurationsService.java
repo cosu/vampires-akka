@@ -27,17 +27,21 @@
 package ro.cosu.vampires.server.rest.services;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.inject.Inject;
 import com.google.inject.TypeLiteral;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
+import akka.actor.ActorRef;
+import ro.cosu.vampires.server.actors.messages.configuration.CreateConfiguration;
+import ro.cosu.vampires.server.actors.messages.configuration.DeleteConfiguration;
+import ro.cosu.vampires.server.actors.messages.configuration.QueryConfiguration;
+import ro.cosu.vampires.server.actors.messages.configuration.ResponseConfiguration;
 import ro.cosu.vampires.server.workload.Configuration;
 import ro.cosu.vampires.server.workload.ConfigurationPayload;
 import ro.cosu.vampires.server.workload.User;
@@ -46,54 +50,70 @@ import ro.cosu.vampires.server.workload.User;
 public class ConfigurationsService implements Service<Configuration, ConfigurationPayload> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationsService.class);
-
-    private HashBasedTable<User, String, Configuration> configurationHashBasedTable = HashBasedTable.create();
-
+    @Inject
+    private ActorRef actorRef;
 
     public static TypeLiteral<Service<Configuration, ConfigurationPayload>> getTypeTokenService() {
         return new TypeLiteral<Service<Configuration, ConfigurationPayload>>() {
         };
     }
 
-    private Map<String, Configuration> getUserStore(User user) {
-        return configurationHashBasedTable.row(user);
-    }
-
     @Override
     public List<Configuration> list(User user) {
-        return ImmutableList.copyOf(getUserStore(user).values());
+        QueryConfiguration queryConfiguration = QueryConfiguration.all(user);
+        return getConfigurations(queryConfiguration);
+    }
+
+    private List<Configuration> getConfigurations(QueryConfiguration queryConfiguration) {
+        Optional<ResponseConfiguration> ask = ActorUtil.ask(queryConfiguration, actorRef);
+        ResponseConfiguration responseConfiguration = ask.orElseThrow(() -> new RuntimeException("failed to get"));
+        return responseConfiguration.configurations();
     }
 
     @Override
     public Configuration create(ConfigurationPayload payload, User user) {
         Configuration created = Configuration.fromPayload(payload);
-        getUserStore(user).put(created.id(), created);
-        LOG.debug("Created  {} : {}", created.id(), created);
-        return created;
+
+        Optional<Configuration> ask = ActorUtil.ask(CreateConfiguration.create(created, user), actorRef);
+
+        return ask.orElseThrow(() -> new RuntimeException("failed to create"));
     }
 
     @Override
     public Optional<Configuration> delete(String id, User user) {
-        return Optional.ofNullable(getUserStore(user).remove(id));
+        DeleteConfiguration deleteConfiguration = DeleteConfiguration.create(Lists.newArrayList(id), user);
+        Optional<ResponseConfiguration> ask = ActorUtil.ask(deleteConfiguration, actorRef);
+        ResponseConfiguration responseConfiguration = ask.orElseThrow(() -> new RuntimeException("failed to delete"));
+        List<Configuration> configurations = responseConfiguration.configurations();
+        if (configurations.isEmpty()) {
+            return Optional.empty();
+        } else
+            return Optional.of(configurations.get(0));
     }
 
     @Override
-    public Optional<Configuration> update(ConfigurationPayload updated, User user) {
-        Preconditions.checkNotNull(updated, "empty payload");
-        Preconditions.checkNotNull(updated.id(), "id must not be empty");
+    public Optional<Configuration> update(ConfigurationPayload payload, User user) {
+        Preconditions.checkNotNull(payload, "empty payload");
+        Preconditions.checkNotNull(payload.id(), "id must not be empty");
 
-        if (getUserStore(user).containsKey(updated.id())) {
-            Configuration configuration = getUserStore(user).get(updated.id());
+        Optional<Configuration> currentOptional = get(payload.id(), user);
 
-            getUserStore(user).put(updated.id(), configuration);
-            return Optional.of(configuration);
-        } else {
-            return Optional.empty();
+        if (currentOptional.isPresent()) {
+            Configuration configuration = currentOptional.get();
+            configuration = configuration.updateFromPayload(payload);
+            CreateConfiguration createConfiguration = CreateConfiguration.create(configuration, user);
+            return ActorUtil.ask(createConfiguration, actorRef);
         }
+        return Optional.empty();
     }
 
     @Override
     public Optional<Configuration> get(String id, User user) {
-        return Optional.ofNullable(getUserStore(user).get(id));
+        QueryConfiguration queryConfiguration = QueryConfiguration.create(id, user);
+        List<Configuration> configurations = getConfigurations(queryConfiguration);
+        if (configurations.isEmpty()) {
+            return Optional.empty();
+        } else
+            return Optional.of(configurations.get(0));
     }
 }

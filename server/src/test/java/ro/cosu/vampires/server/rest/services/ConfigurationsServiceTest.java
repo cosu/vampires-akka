@@ -29,12 +29,15 @@ package ro.cosu.vampires.server.rest.services;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 
 import org.junit.Test;
 
 import java.util.Optional;
 
+import akka.actor.ActorRef;
+import ro.cosu.vampires.server.actors.ConfigurationsActor;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.workload.AutoValueUtil;
 import ro.cosu.vampires.server.workload.Configuration;
@@ -45,13 +48,26 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 public class ConfigurationsServiceTest extends AbstractServiceTest<Configuration, ConfigurationPayload> {
+
+
+    private static ActorRef getActor() {
+        return actorSystem.actorOf(ConfigurationsActor.props());
+    }
+
+
     @Override
     protected AbstractModule getModule() {
+
         AbstractModule module = new AbstractModule() {
             @Override
             protected void configure() {
                 bind(getTypeTokenService()).to(new TypeLiteral<ConfigurationsService>() {
                 });
+            }
+
+            @Provides
+            ActorRef actor() {
+                return getActor();
             }
         };
         return module;

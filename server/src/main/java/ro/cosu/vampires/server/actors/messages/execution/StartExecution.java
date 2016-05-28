@@ -24,17 +24,20 @@
  *
  */
 
-package ro.cosu.vampires.server.workload;
+package ro.cosu.vampires.server.actors.messages.execution;
 
 import com.google.auto.value.AutoValue;
 
+import ro.cosu.vampires.server.workload.Execution;
+import ro.cosu.vampires.server.workload.User;
+
 @AutoValue
-public abstract class ResourceDescription {
-    public static ResourceDescription create(String type, double cost) {
-        return new AutoValue_ResourceDescription(type, cost);
+public abstract class StartExecution implements ExecutionMessage {
+    public static StartExecution create(User user, Execution execution) {
+        return new AutoValue_StartExecution(user, execution);
     }
 
-    public abstract String type();
+    public abstract User user();
 
-    public abstract double cost();
+    public abstract Execution execution();
 }

@@ -40,7 +40,7 @@ import org.junit.Test;
 import akka.actor.ActorRef;
 import akka.testkit.JavaTestKit;
 import akka.testkit.TestActor;
-import ro.cosu.vampires.server.actors.messages.CreateResource;
+import ro.cosu.vampires.server.actors.messages.resource.CreateResource;
 import ro.cosu.vampires.server.actors.resource.ResourceActor;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.resources.Resource;

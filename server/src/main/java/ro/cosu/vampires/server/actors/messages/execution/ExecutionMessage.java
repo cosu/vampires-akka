@@ -24,20 +24,7 @@
  *
  */
 
-package ro.cosu.vampires.server.actors.messages;
+package ro.cosu.vampires.server.actors.messages.execution;
 
-import com.google.auto.value.AutoValue;
-
-import ro.cosu.vampires.server.workload.Execution;
-import ro.cosu.vampires.server.workload.User;
-
-@AutoValue
-public abstract class StartExecution {
-    public static StartExecution create(User user, Execution execution) {
-        return new AutoValue_StartExecution(user, execution);
-    }
-
-    public abstract User user();
-
-    public abstract Execution execution();
+public interface ExecutionMessage {
 }

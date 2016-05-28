@@ -44,5 +44,4 @@ public interface Service<T extends Id, P> {
 
     Optional<T> get(String id, User user);
 
-
 }

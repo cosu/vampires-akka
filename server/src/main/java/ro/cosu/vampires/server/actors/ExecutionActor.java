@@ -1,29 +1,38 @@
 /*
- * The MIT License (MIT)
- * Copyright © 2016 Cosmin Dumitru, http://cosu.ro <cosu@cosu.ro>
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the “Software”), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro <cosu@cosu.ro>
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
  *
  */
 
 package ro.cosu.vampires.server.actors;
 
+
+import com.google.common.collect.Sets;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import akka.actor.ActorRef;
 import akka.actor.Props;
@@ -31,9 +40,8 @@ import akka.actor.Terminated;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import com.google.common.collect.Sets;
-import ro.cosu.vampires.server.actors.messages.BootstrapResource;
 import ro.cosu.vampires.server.actors.messages.QueryStats;
+import ro.cosu.vampires.server.actors.messages.resource.BootstrapResource;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.resource.ResourceManagerActor;
 import ro.cosu.vampires.server.resources.ResourceInfo;
@@ -41,11 +49,6 @@ import ro.cosu.vampires.server.workload.ClientInfo;
 import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.workload.ResourceDemand;
-
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class ExecutionActor extends UntypedActor {
 
@@ -79,15 +82,14 @@ public class ExecutionActor extends UntypedActor {
     }
 
     private List<BootstrapResource> bootstrapResourceList(String executionid, ResourceDemand resourceDemand) {
-        return IntStream.range(0, resourceDemand.count()).boxed().map(i -> {
-            return BootstrapResource.create(resourceDemand.provider(), resourceDemand.type(), executionid);
-        }).collect(Collectors.toList());
+        return IntStream.range(0, resourceDemand.count()).boxed()
+                .map(i -> BootstrapResource.create(resourceDemand.provider(), resourceDemand.type(), executionid))
+                .collect(Collectors.toList());
     }
 
 
     @Override
     public void onReceive(Object message) throws Exception {
-        // forward traffic to all actors
         if (message instanceof ClientInfo) {
             watchees.stream().forEach(actorRef -> actorRef.forward(message, getContext()));
         } else if (message instanceof Job) {

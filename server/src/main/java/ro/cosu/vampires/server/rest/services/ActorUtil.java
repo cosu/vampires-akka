@@ -24,21 +24,31 @@
  *
  */
 
-package ro.cosu.vampires.server.actors.messages;
+package ro.cosu.vampires.server.rest.services;
 
-import com.google.auto.value.AutoValue;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
-import ro.cosu.vampires.server.workload.User;
+import akka.actor.ActorRef;
+import akka.pattern.Patterns;
+import akka.util.Timeout;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
+import scala.concurrent.duration.Duration;
+import scala.concurrent.duration.FiniteDuration;
 
-@AutoValue
-public abstract class ShutdownResource {
-    public static ShutdownResource create(String resourceId, User user) {
-        return new AutoValue_ShutdownResource(resourceId, user);
+public class ActorUtil {
+    private static FiniteDuration MAX_WAIT = Duration.create(100, TimeUnit.MILLISECONDS);
+
+    public static <T> Optional<T> ask(Object message, ActorRef actorRef) {
+        Timeout timeout = new Timeout(MAX_WAIT);
+        Future<Object> ask = Patterns.ask(actorRef, message, timeout);
+        Object result;
+        try {
+            result = Await.result(ask, timeout.duration());
+        } catch (Exception e) {
+            throw new RuntimeException("timed out waiting for response");
+        }
+        return Optional.ofNullable((T) result);
     }
-
-    public abstract String resourceId();
-
-    public abstract User user();
-
-
 }

@@ -99,6 +99,7 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
         public abstract Builder instanceType(String instanceType);
 
         public Builder fromConfig(Config config) {
+
             this.command(config.getString("command"));
             this.user(config.getString("user"));
             this.cost(config.getDouble("cost"));

@@ -30,15 +30,11 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import ro.cosu.vampires.server.actors.settings.Settings;
-import ro.cosu.vampires.server.actors.settings.SettingsImpl;
 import ro.cosu.vampires.server.workload.Computation;
 import ro.cosu.vampires.server.workload.Job;
 import ro.cosu.vampires.server.workload.schedulers.Scheduler;
 
 public class WorkActor extends UntypedActor {
-
-    private final SettingsImpl settings = Settings.SettingsProvider.get(getContext().system());
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private Scheduler scheduler;

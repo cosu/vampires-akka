@@ -32,6 +32,8 @@ import com.google.inject.Guice;
 import com.google.inject.Module;
 import com.google.inject.TypeLiteral;
 
+import com.typesafe.config.ConfigFactory;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -55,6 +57,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import akka.actor.ActorSystem;
+import akka.testkit.JavaTestKit;
 import ro.cosu.vampires.server.rest.JsonTransformer;
 import ro.cosu.vampires.server.rest.services.Service;
 import ro.cosu.vampires.server.workload.Id;
@@ -73,17 +77,25 @@ import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
 public abstract class AbstractControllerTest<T extends Id, P> {
+
+    protected static ActorSystem actorSystem;
+
+
     protected static String url = "http://localhost:4567";
     private Gson gson = new JsonTransformer().getGson();
 
     @AfterClass
     public static void teardown() {
         Spark.stop();
+        JavaTestKit.shutdownActorSystem(actorSystem);
+        actorSystem = null;
+
     }
 
     @BeforeClass
     public static void setUpClass() {
         Spark.init();
+        actorSystem = ActorSystem.create("test", ConfigFactory.load("application-dev.conf"));
     }
 
     protected static HttpClient getHttpClient() {

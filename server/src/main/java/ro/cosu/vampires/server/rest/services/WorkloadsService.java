@@ -27,17 +27,21 @@
 package ro.cosu.vampires.server.rest.services;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.inject.Inject;
 import com.google.inject.TypeLiteral;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
+import akka.actor.ActorRef;
+import ro.cosu.vampires.server.actors.messages.workload.CreateWorkload;
+import ro.cosu.vampires.server.actors.messages.workload.DeleteWorkload;
+import ro.cosu.vampires.server.actors.messages.workload.QueryWorkload;
+import ro.cosu.vampires.server.actors.messages.workload.ResponseWorkload;
 import ro.cosu.vampires.server.workload.User;
 import ro.cosu.vampires.server.workload.Workload;
 import ro.cosu.vampires.server.workload.WorkloadPayload;
@@ -46,57 +50,74 @@ import ro.cosu.vampires.server.workload.WorkloadPayload;
 public class WorkloadsService implements Service<Workload, WorkloadPayload> {
     private static final Logger LOG = LoggerFactory.getLogger(WorkloadsService.class);
 
-    private HashBasedTable<User, String, Workload> workloadHashBasedTable = HashBasedTable.create();
+    @Inject
+    private ActorRef actorRef;
 
-    WorkloadsService() {
-        LOG.debug("init");
-    }
 
     public static TypeLiteral<Service<Workload, WorkloadPayload>> getTypeTokenService() {
         return new TypeLiteral<Service<Workload, WorkloadPayload>>() {
         };
     }
 
-    private Map<String, Workload> getUserStore(User user) {
-        return workloadHashBasedTable.row(user);
-    }
-
     @Override
     public List<Workload> list(User user) {
-        return ImmutableList.copyOf(getUserStore(user).values());
+        QueryWorkload queryWorkload = QueryWorkload.all(user);
+        return getWorkloads(queryWorkload);
+    }
+
+    private List<Workload> getWorkloads(QueryWorkload queryWorkload) {
+        Optional<ResponseWorkload> ask = ActorUtil.ask(queryWorkload, actorRef);
+        ResponseWorkload responseConfiguration = ask.orElseThrow(() -> new RuntimeException("failed to get"));
+        return responseConfiguration.values();
     }
 
     @Override
     public Workload create(WorkloadPayload payload, User user) {
 
         Workload created = Workload.fromPayload(payload);
-        getUserStore(user).put(created.id(), created);
+
+        Optional<Workload> ask = ActorUtil.ask(CreateWorkload.create(created, user), actorRef);
         LOG.debug("Created  for user {}:  {} with {} jobs", user.id(), created.id(), created.size());
-        return created;
+
+        return ask.orElseThrow(() -> new RuntimeException("failed to create"));
     }
 
     @Override
     public Optional<Workload> delete(String id, User user) {
-        return Optional.ofNullable(getUserStore(user).remove(id));
+        DeleteWorkload deleteConfiguration = DeleteWorkload.create(Lists.newArrayList(id), user);
+        Optional<ResponseWorkload> ask = ActorUtil.ask(deleteConfiguration, actorRef);
+        ResponseWorkload responseConfiguration = ask.orElseThrow(() -> new RuntimeException("failed to delete"));
+        List<Workload> workloads = responseConfiguration.values();
+        if (workloads.isEmpty()) {
+            return Optional.empty();
+        } else
+            return Optional.of(workloads.get(0));
     }
 
     @Override
-    public Optional<Workload> update(WorkloadPayload updated, User user) {
-        Preconditions.checkNotNull(updated.id(), "id must not be empty");
+    public Optional<Workload> update(WorkloadPayload payload, User user) {
+        Preconditions.checkNotNull(payload, "empty payload");
+        Preconditions.checkNotNull(payload.id(), "id must not be empty");
 
-        if (getUserStore(user).containsKey(updated.id())) {
-            Workload workload = getUserStore(user).get(updated.id());
-            workload = workload.updateWithPayload(updated);
+        Optional<Workload> currentOptional = get(payload.id(), user);
 
-            getUserStore(user).put(updated.id(), workload);
-            return Optional.of(workload);
-        } else {
-            return Optional.empty();
+        if (currentOptional.isPresent()) {
+            Workload workload = currentOptional.get();
+
+            workload = workload.updateFromPayload(payload);
+            CreateWorkload createConfiguration = CreateWorkload.create(workload, user);
+            return ActorUtil.ask(createConfiguration, actorRef);
         }
+        return Optional.empty();
     }
 
     @Override
     public Optional<Workload> get(String id, User user) {
-        return Optional.ofNullable(getUserStore(user).get(id));
+        QueryWorkload queryWorkload = QueryWorkload.create(id, user);
+        List<Workload> workloads = getWorkloads(queryWorkload);
+        if (workloads.isEmpty()) {
+            return Optional.empty();
+        } else
+            return Optional.of(workloads.get(0));
     }
 }

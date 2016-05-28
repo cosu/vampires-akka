@@ -34,6 +34,7 @@ public abstract class QueryResource {
         return new AutoValue_QueryResource(resourceId);
     }
 
+
     public abstract String resourceId();
 
 }

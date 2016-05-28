@@ -115,14 +115,17 @@ subprojects {
 
     dependencies {
         def akkaVersion = "2.11:2.4.6"
+        def guiceVersion = "4.0"
 
         compile "com.typesafe.akka:akka-actor_${akkaVersion}"
         compile "com.typesafe.akka:akka-remote_${akkaVersion}"
         compile "com.typesafe.akka:akka-slf4j_${akkaVersion}"
 
         compile 'com.google.guava:guava:19.0'
-        compile 'com.google.inject:guice:4.0'
-        compile 'com.google.inject.extensions:guice-multibindings:4.0'
+        compile "com.google.inject:guice:${guiceVersion}"
+        compile "com.google.inject.extensions:guice-multibindings:${guiceVersion}"
+        compile "com.google.inject.extensions:guice-assistedinject:${guiceVersion}"
+
         compile 'com.google.auto.value:auto-value:1.2'
         compile 'com.google.code.gson:gson:2.6.2'
         compile 'com.google.code.findbugs:jsr305:3.0.1'

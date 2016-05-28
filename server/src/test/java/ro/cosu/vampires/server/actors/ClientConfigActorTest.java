@@ -1,24 +1,26 @@
 /*
- * The MIT License (MIT)
- * Copyright © 2016 Cosmin Dumitru, http://cosu.ro <cosu@cosu.ro>
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the “Software”), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro <cosu@cosu.ro>
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
  *
  */
 
@@ -41,13 +43,13 @@ import scala.concurrent.duration.Duration;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-public class ConfigActorTest extends AbstractActorTest {
+public class ClientConfigActorTest extends AbstractActorTest {
 
     @Test
     public void testGetConfig() throws Exception {
         TestProbe testProbe = new TestProbe(system);
 
-        TestActorRef<ConfigActor> config = TestActorRef.create(system, ConfigActor.props());
+        TestActorRef<ClientConfigActor> config = TestActorRef.create(system, ClientConfigActor.props());
 
         Map<String, Integer> executors = Maps.newHashMap();
         executors.put("FORK", 1);
@@ -72,7 +74,7 @@ public class ConfigActorTest extends AbstractActorTest {
     public void testEmptyConfig() throws Exception {
         final TestProbe testProbe = new TestProbe(system);
 
-        TestActorRef<ConfigActor> config = TestActorRef.create(system, ConfigActor.props());
+        TestActorRef<ClientConfigActor> config = TestActorRef.create(system, ClientConfigActor.props());
         Map<String, Integer> executors = Maps.newHashMap();
 
         final ClientInfo clientInfo = ClientInfo.builder()

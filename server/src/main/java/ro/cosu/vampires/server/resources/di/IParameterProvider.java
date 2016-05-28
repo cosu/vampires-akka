@@ -24,17 +24,19 @@
  *
  */
 
-package ro.cosu.vampires.server.workload;
+package ro.cosu.vampires.server.resources.di;
 
-import com.google.auto.value.AutoValue;
-
-@AutoValue
-public abstract class ResourceDescription {
-    public static ResourceDescription create(String type, double cost) {
-        return new AutoValue_ResourceDescription(type, cost);
-    }
-
-    public abstract String type();
-
-    public abstract double cost();
+public interface IParameterProvider<T extends IResource.IParameters> {
+    T get(String typeInstance);
 }
+//public interface IParameterProvider<T extends Resource.Parameters> {
+//    T get(String instanceType);
+//
+//    default Config getConfig(Config config, Resource.ProviderType providerType, String instanceType) {
+//        String providerKey = providerType.toString().toLowerCase();
+//        String instanceKey = providerKey + "."+ instanceType;
+//        return config.getConfig(instanceKey)
+//                .withFallback(config.getConfig(providerKey))
+//                .withFallback(config);
+//    }
+//}

@@ -33,11 +33,17 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 
+import com.typesafe.config.ConfigFactory;
+
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Optional;
 
+import akka.actor.ActorSystem;
+import akka.testkit.JavaTestKit;
 import ro.cosu.vampires.server.workload.Id;
 import ro.cosu.vampires.server.workload.User;
 
@@ -47,8 +53,19 @@ import static org.hamcrest.core.Is.is;
 
 public abstract class AbstractServiceTest<T extends Id, P> {
 
-
+    protected static ActorSystem actorSystem;
     protected Service<T, P> instance;
+
+    @BeforeClass
+    public static void setup() {
+        actorSystem = ActorSystem.create("test", ConfigFactory.load("application-dev.conf"));
+    }
+
+    @AfterClass
+    public static void teardown() {
+        JavaTestKit.shutdownActorSystem(actorSystem);
+        actorSystem = null;
+    }
 
     protected User getUser() {
         return User.admin();

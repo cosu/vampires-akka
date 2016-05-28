@@ -97,7 +97,7 @@ public class WorkloadTest {
                 .id(workload.id())
                 .build();
 
-        Workload updatedWorkload = workload.updateWithPayload(updatedPayload);
+        Workload updatedWorkload = workload.updateFromPayload(updatedPayload);
 
         assertThat(updatedWorkload.sequenceStart(), is(32));
         assertThat(updatedWorkload.sequenceStop(), is(12));

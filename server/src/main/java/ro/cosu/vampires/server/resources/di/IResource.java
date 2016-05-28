@@ -24,23 +24,13 @@
  *
  */
 
-package ro.cosu.vampires.server.actors.messages;
+package ro.cosu.vampires.server.resources.di;
 
-import com.google.auto.value.AutoValue;
+public interface IResource<T extends IResource.IParameters> {
 
-import ro.cosu.vampires.server.resources.Resource;
+    T parameters();
 
-@AutoValue
-public abstract class BootstrapResource {
-    public static BootstrapResource create(Resource.ProviderType providerType, String name,
-                                           String serverId) {
-        return new AutoValue_BootstrapResource(providerType, name, serverId);
+    interface IParameters {
+        String foo();
     }
-
-    public abstract Resource.ProviderType type();
-
-    public abstract String name();
-
-    public abstract String serverId();
-
 }

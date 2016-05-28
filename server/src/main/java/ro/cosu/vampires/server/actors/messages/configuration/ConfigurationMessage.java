@@ -24,17 +24,7 @@
  *
  */
 
-package ro.cosu.vampires.server.workload;
+package ro.cosu.vampires.server.actors.messages.configuration;
 
-import com.google.auto.value.AutoValue;
-
-@AutoValue
-public abstract class ResourceDescription {
-    public static ResourceDescription create(String type, double cost) {
-        return new AutoValue_ResourceDescription(type, cost);
-    }
-
-    public abstract String type();
-
-    public abstract double cost();
+public interface ConfigurationMessage {
 }

@@ -24,17 +24,28 @@
  *
  */
 
-package ro.cosu.vampires.server.workload;
+package ro.cosu.vampires.server.actors.messages.configuration;
 
 import com.google.auto.value.AutoValue;
+import com.google.common.collect.ImmutableList;
+
+import java.util.List;
+
+import ro.cosu.vampires.server.workload.User;
 
 @AutoValue
-public abstract class ResourceDescription {
-    public static ResourceDescription create(String type, double cost) {
-        return new AutoValue_ResourceDescription(type, cost);
+public abstract class QueryConfiguration implements ConfigurationMessage {
+
+    public static QueryConfiguration create(String resourceId, User user) {
+        return new AutoValue_QueryConfiguration(ImmutableList.of(resourceId), user);
     }
 
-    public abstract String type();
+    public static QueryConfiguration all(User user) {
+        return new AutoValue_QueryConfiguration(ImmutableList.of(), user);
+    }
 
-    public abstract double cost();
+    public abstract List<String> resources();
+
+    public abstract User user();
+
 }

@@ -24,17 +24,22 @@
  *
  */
 
-package ro.cosu.vampires.server.workload;
+package ro.cosu.vampires.server.resources.di;
 
-import com.google.auto.value.AutoValue;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 
-@AutoValue
-public abstract class ResourceDescription {
-    public static ResourceDescription create(String type, double cost) {
-        return new AutoValue_ResourceDescription(type, cost);
+public class MResource implements IResource<MParameters> {
+
+    private final MParameters a;
+
+    @Inject
+    MResource(IParameterProvider<MParameters> provider, @Assisted String type) {
+        a = provider.get(type);
     }
 
-    public abstract String type();
-
-    public abstract double cost();
+    @Override
+    public MParameters parameters() {
+        return a;
+    }
 }

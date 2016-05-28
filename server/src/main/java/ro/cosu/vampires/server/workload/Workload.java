@@ -64,7 +64,7 @@ public abstract class Workload implements Id {
     }
 
 
-    public Workload updateWithPayload(WorkloadPayload payload) {
+    public Workload updateFromPayload(WorkloadPayload payload) {
         return new AutoValueUtil<WorkloadPayload, Workload.Builder>() {
         }
                 .builderFromPayload(payload, toBuilder()).build();
