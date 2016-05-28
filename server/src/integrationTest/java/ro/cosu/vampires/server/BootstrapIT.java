@@ -39,8 +39,10 @@ import akka.pattern.Patterns;
 import akka.util.Timeout;
 import ro.cosu.vampires.server.actors.BootstrapActor;
 import ro.cosu.vampires.server.actors.Terminator;
+import ro.cosu.vampires.server.actors.messages.configuration.CreateConfiguration;
 import ro.cosu.vampires.server.actors.messages.execution.QueryExecution;
 import ro.cosu.vampires.server.actors.messages.execution.StartExecution;
+import ro.cosu.vampires.server.actors.messages.workload.CreateWorkload;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.workload.Configuration;
 import ro.cosu.vampires.server.workload.ConfigurationPayload;
@@ -83,6 +85,13 @@ public class BootstrapIT {
                 .fromPayload(
                         WorkloadPayload.builder().sequenceStart(0).sequenceStop(5).task("sleep 1")
                                 .build());
+
+        CreateWorkload createWorkload = CreateWorkload.create(workload, User.admin());
+        CreateConfiguration createConfiguration = CreateConfiguration.create(configuration, User.admin());
+
+        bootstrap.tell(createWorkload, ActorRef.noSender());
+        bootstrap.tell(createConfiguration, ActorRef.noSender());
+
 
         Execution execution = Execution.builder().configuration(configuration)
                 .type(ExecutionMode.FULL)
