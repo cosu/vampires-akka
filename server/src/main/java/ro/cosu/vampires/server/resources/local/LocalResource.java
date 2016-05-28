@@ -40,8 +40,6 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import ro.cosu.vampires.server.resources.AbstractResource;
 
@@ -64,7 +62,7 @@ public class LocalResource extends AbstractResource {
         // TODO check somehow that the file exists and then exit
         CommandLine cmd = new CommandLine("/bin/sh");
         cmd.addArgument("-c");
-        cmd.addArgument("nohup " + parameters.command() + " " + parameters.serverId() + " " + parameters().id() + " 2>&1 0</dev/null & echo $! ", false);
+        cmd.addArgument("nohup " + parameters.command() + " " + parameters.serverId() + " " + parameters().id() + " 2>&1 0</dev/null & ", false);
 
         LOG.debug("local starting {}", cmd);
         execute(cmd);
@@ -73,14 +71,17 @@ public class LocalResource extends AbstractResource {
     private void execute(CommandLine cmd) throws IOException {
         executor.setWorkingDirectory(Paths.get("").toAbsolutePath().toFile());
         executor.setStreamHandler(new PumpStreamHandler(collectingLogOutputStream));
-        executor.setWatchdog(new ExecuteWatchdog(10000));
+        // watchdog for 3 hours. a bit excessive ?
+        executor.setWatchdog(new ExecuteWatchdog(1000 * 60 * 60 * 3));
 
         int exitCode = 0;
         try {
             LOG.debug("execute {}", cmd.toString());
             exitCode = executor.execute(cmd);
-            LOG.debug("Output {}", collectingLogOutputStream.getLines());
-            if (exitCode != 0) throw new IOException("Non zero exit code");
+            if (exitCode != 0) {
+                LOG.error("Output {}", collectingLogOutputStream.getLines());
+                throw new IOException("Non zero exit code");
+            }
         } catch (IOException e) {
             LOG.debug("{} has failed with error {}: {}", this, exitCode, e);
             LOG.debug("{}", Joiner.on("\n").join(collectingLogOutputStream.getLines()));
@@ -90,22 +91,12 @@ public class LocalResource extends AbstractResource {
 
     @Override
     public void onStop() throws IOException {
-        LOG.debug("local stopping");
-        try {
-            // the first line has the pid.
-            Optional<Integer> firstInt = collectingLogOutputStream.getLines().stream().map(Integer::parseInt).findFirst();
-            if (firstInt.isPresent()) {
-                int pid = firstInt.get();
-                CommandLine cmd = new CommandLine("/bin/sh");
-                cmd.addArgument("-c");
-                cmd.addArgument("kill " + pid, false);
-                execute(cmd);
-            } else {
-                throw new NumberFormatException();
-            }
-        } catch (NumberFormatException | NoSuchElementException ex) {
-            LOG.warn("Failed to create pid value. nohup process exited prematurely");
-        }
+        LOG.debug("local  " + parameters().id() + " stopping");
+        CommandLine cmd = new CommandLine("/bin/sh");
+        cmd.addArgument("-c");
+        cmd.addArgument(String.format("pgrep %s; if [ $? -eq 0 ]; then pkill %s; fi ", parameters.id(),
+                parameters.id()), false);
+        execute(cmd);
     }
 
     @Override

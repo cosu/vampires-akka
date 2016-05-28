@@ -112,7 +112,9 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
                 .type(executionPayload.type())
                 .info(ExecutionInfo.empty().updateRemaining(workload.size()))
                 .build();
-        LOG.info("user {} starting execution: {}", user, execution);
+        LOG.info("user {} starting execution: {}", user, execution.id());
+        LOG.debug("Execution:\n{}", execution);
+
         actorRef.tell(StartExecution.create(user, execution), ActorRef.noSender());
         startExecution(execution);
         return execution;

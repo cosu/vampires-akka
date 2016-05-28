@@ -171,7 +171,7 @@ public class ResultActor extends UntypedActor {
     }
 
     private void handleClientInfo(ClientInfo clientInfo) {
-        ActorRef configActor = getContext().actorOf(ClientConfigActor.props());
+        ActorRef configActor = getContext().actorOf(ClientConfigActor.props(), "clientConfig");
         log.debug("got client info {}", clientInfo);
         configActor.forward(clientInfo, getContext());
         writers.forEach(r -> r.addClient(clientInfo));

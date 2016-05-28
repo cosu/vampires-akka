@@ -38,7 +38,6 @@ public abstract class AbstractResource implements Resource {
     public AbstractResource(Resource.Parameters parameters) {
         this.parameters = parameters;
         setStatus(Status.SLEEPING);
-        getLogger().debug("resource parameters {}", parameters);
     }
 
     protected abstract Logger getLogger();
@@ -108,14 +107,14 @@ public abstract class AbstractResource implements Resource {
     }
 
     public void setStatus(Status status) {
-        getLogger().debug("{} => {}", this, status);
+        getLogger().debug("{} => {}", toString(), status);
         //TODO check for illegal state transition
         this.status = status;
     }
 
     @Override
     public String toString() {
-        return ResourceInfo.create(parameters(), status()).toString();
+        return String.format("%s %s %s = %s", parameters.providerType(), parameters.instanceType(), parameters.id(), status);
     }
 
 }

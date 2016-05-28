@@ -51,8 +51,8 @@ public class ClientConfigActor extends UntypedActor {
         if (message instanceof ClientInfo) {
             ClientInfo clientInfo = (ClientInfo) message;
             final ClientConfig configFor = getConfigFor(clientInfo);
-            log.info("config for client {}:{} {}", clientInfo.metrics().metadata().get("host-hostname"),
-                    clientInfo.id(), configFor);
+            log.debug("config for client {} {} {}", clientInfo.id(),
+                    clientInfo.metrics().metadata().get("host-hostname"), configFor);
             getSender().tell(configFor, getSelf());
         } else {
             unhandled(message);

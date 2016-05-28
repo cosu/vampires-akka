@@ -112,7 +112,6 @@ public class ResourceActor extends UntypedActorWithStash {
             // do it async because activate needs a context
             // which is not available after the future completes
             this.resource.start().thenAccept(started -> {
-                log.debug("sending to {}", sender);
                 sendResourceInfo(sender);
                 sendResourceInfo(getSelf());
             });
