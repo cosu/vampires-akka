@@ -66,8 +66,6 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
     private Optional<CpuSet> cpuSet;
 
     private CommandLine getCommandLine(String command) {
-        CommandLine cmd = new CommandLine("/bin/sh");
-        cmd.addArgument("-c");
 
         LOG.debug("cpuset {}", cpuSet);
         String newCommand = command;
@@ -76,10 +74,8 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
             newCommand = "numactl --physcpubind=" + cpus + " " + command;
         }
 
-        cmd.addArgument(newCommand, false);
-
-        LOG.info("executing {} with timeout {} minutes", cmd, TIMEOUT_IN_MILIS / 1000 / 60);
-        return cmd;
+        LOG.info("executing {} with timeout {} minutes", newCommand, TIMEOUT_IN_MILIS / 1000 / 60);
+        return CommandLine.parse(newCommand);
     }
 
     @Override
