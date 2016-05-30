@@ -28,7 +28,7 @@ ${curl} --request POST \
     --data-binary "{
     \"sequence_start\": \"0\",
     \"sequence_stop\": \"9\",
-    \"task\": \"sleep 2\",
+    \"task\": \"wget -O /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip\",
     \"description\": \"a new description\"
 }" \
 ${api_server}/workloads | jq -r '.id')

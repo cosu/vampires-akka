@@ -124,7 +124,7 @@ public class NetworkSource implements Source {
                     previousValue = nis.getRxBytes();
                     Duration between = Duration.between(previousSample, LocalDateTime.now());
                     long delta = nis.getTxBytes() - previousValue;
-                    return (delta / between.toMillis() > 0) ? delta / between.toMillis() : 0;
+                    return (delta > 0) ? delta / between.toMillis() : 0;
                 } catch (SigarException e) {
                     LOG.error("network metric register failed ", e);
                 }
