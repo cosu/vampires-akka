@@ -31,15 +31,15 @@ import com.google.inject.Inject;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 
-import org.hyperic.sigar.NetInterfaceStat;
-import org.hyperic.sigar.Sigar;
-import org.hyperic.sigar.SigarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+
+import oshi.hardware.HardwareAbstractionLayer;
+import oshi.hardware.NetworkIF;
+import oshi.hardware.platform.linux.LinuxNetworks;
 
 import static com.codahale.metrics.MetricRegistry.name;
 
@@ -48,23 +48,30 @@ public class NetworkSource implements Source {
 
     private final static String NAME = "network";
 
+
+    final private MetricRegistry metricRegistry;
+
+    private final HardwareAbstractionLayer hal;
+
+    LinuxNetworks linuxNetworks = new LinuxNetworks();
+
     @Inject
-    private Sigar sigar;
-    @Inject
-    private MetricRegistry metricRegistry;
+    public NetworkSource(MetricRegistry metricRegistry, HardwareAbstractionLayer hal) {
+        this.metricRegistry = metricRegistry;
+        this.hal = hal;
+
+
+    }
 
     public void register() {
-        try {
-            Arrays.stream(sigar.getNetInterfaceList()).forEach(iface -> {
-                metricRegistry.register(name(getName(), "tx-bytes", iface), this.txBytesGague(iface));
-                metricRegistry.register(name(getName(), "rx-bytes", iface), this.rxBytesGague(iface));
-                metricRegistry.register(name(getName(), "rx-speed", iface), this.rxBytesSpeedGauge(iface));
-                metricRegistry.register(name(getName(), "tx-speed", iface), this.txBytesSpeedGauge(iface));
-
-            });
-        } catch (SigarException e) {
-            LOG.error("network metric register failed ", e);
+        NetworkIF[] netArray = hal.getNetworkIFs();
+        for (NetworkIF net : netArray) {
+            metricRegistry.register(name(getName(), "tx-bytes", net.getName()), this.txBytesGague(net));
+            metricRegistry.register(name(getName(), "rx-bytes", net.getName()), this.rxBytesGague(net));
+            metricRegistry.register(name(getName(), "rx-speed", net.getName()), this.rxBytesSpeedGauge(net));
+            metricRegistry.register(name(getName(), "tx-speed", net.getName()), this.txBytesSpeedGauge(net));
         }
+
 
         LOG.debug("registered network source");
 
@@ -76,72 +83,57 @@ public class NetworkSource implements Source {
     }
 
 
-    private Gauge<Long> txBytesGague(final String iface) {
+    private Gauge<Long> txBytesGague(final NetworkIF iface) {
         return () -> {
-            try {
-                NetInterfaceStat nis = sigar.getNetInterfaceStat(iface);
-                return nis.getTxBytes();
-            } catch (SigarException e) {
-                LOG.error("network metric register failed ", e);
-            }
-            return null;
+            linuxNetworks.updateNetworkStats(iface);
+            return iface.getBytesSent();
         };
     }
 
+    private Gauge<Long> rxBytesGague(final NetworkIF iface) {
 
-    private Gauge<Long> txBytesSpeedGauge(final String iface) {
+        return () -> {
+            linuxNetworks.updateNetworkStats(iface);
+            return iface.getBytesRecv();
+        };
+    }
+
+    private Gauge<Long> txBytesSpeedGauge(final NetworkIF iface) {
 
         return new Gauge<Long>() {
-            long previousValue = 0;
+            long previousValue = iface.getBytesRecv();
             LocalDateTime previousSample = LocalDateTime.now();
 
             @Override
             public Long getValue() {
-                try {
-                    NetInterfaceStat nis = sigar.getNetInterfaceStat(iface);
-                    previousValue = nis.getTxBytes();
-                    Duration between = Duration.between(previousSample, LocalDateTime.now());
-                    long delta = nis.getTxBytes() - previousValue;
-                    return (delta / between.toMillis() > 0) ? delta / between.toMillis() : 0;
-                } catch (SigarException e) {
-                    LOG.error("network metric register failed ", e);
-                }
-                return null;
+                linuxNetworks.updateNetworkStats(iface);
+                previousValue = iface.getBytesSent();
+                Duration between = Duration.between(previousSample, LocalDateTime.now());
+                double delta = iface.getBytesSent() - previousValue;
+                return (delta > 0) ? Math.round(delta / between.toMillis() * 1000) : 0;
+
             }
         };
     }
 
-    private Gauge<Long> rxBytesSpeedGauge(final String iface) {
+    private Gauge<Long> rxBytesSpeedGauge(final NetworkIF iface) {
 
         return new Gauge<Long>() {
-            long previousValue = 0;
+            long previousValue = iface.getBytesRecv();
             LocalDateTime previousSample = LocalDateTime.now();
 
             @Override
             public Long getValue() {
-                try {
-                    NetInterfaceStat nis = sigar.getNetInterfaceStat(iface);
-                    previousValue = nis.getRxBytes();
-                    Duration between = Duration.between(previousSample, LocalDateTime.now());
-                    long delta = nis.getTxBytes() - previousValue;
-                    return (delta / between.toMillis() > 0) ? delta / between.toMillis() : 0;
-                } catch (SigarException e) {
-                    LOG.error("network metric register failed ", e);
-                }
-                return null;
+                linuxNetworks.updateNetworkStats(iface);
+
+                Duration between = Duration.between(previousSample, LocalDateTime.now());
+                double delta = iface.getBytesRecv() - previousValue;
+                previousValue = iface.getBytesRecv();
+                return (delta > 0) ? Math.round(delta / between.toMillis() * 1000) : 0;
+
             }
         };
     }
 
-    private Gauge<Long> rxBytesGague(final String iface) {
-        return () -> {
-            try {
-                NetInterfaceStat nis = sigar.getNetInterfaceStat(iface);
-                return nis.getRxBytes();
-            } catch (SigarException e) {
-                LOG.error("network metric register failed ", e);
-            }
-            return null;
-        };
-    }
+
 }

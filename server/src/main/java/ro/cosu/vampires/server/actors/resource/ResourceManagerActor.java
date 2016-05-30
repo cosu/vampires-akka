@@ -130,7 +130,6 @@ public class ResourceManagerActor extends UntypedActor {
 
     private void registerClient(ClientInfo clientInfo) {
         getContext().watch(getSender());
-        log.debug("watch {}", getSender());
         resourceRegistry.registerClient(getSender(), clientInfo);
         resourceRegistry.lookupResourceOfClient(clientInfo.id())
                 .ifPresent(resourceActor -> resourceActor.forward(clientInfo, getContext()));

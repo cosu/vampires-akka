@@ -26,46 +26,34 @@
 
 package ro.cosu.vampires.client.monitoring;
 
-import com.google.inject.Guice;
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-
 import com.codahale.metrics.MetricRegistry;
 
-import org.hyperic.sigar.Sigar;
+import org.junit.Test;
 
-import java.util.Set;
+import oshi.SystemInfo;
 
-import kamon.sigar.SigarProvisioner;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertThat;
 
-public class MonitoringManager {
-    private final Set<Source> sources;
+public class HostSourceTest {
 
-    @Inject
-    public MonitoringManager(Set<Source> sources) {
-        this.sources = sources;
-    }
+    @Test
+    public void host() throws Exception {
+        SystemInfo si = new SystemInfo();
 
-    public static MetricRegistry getMetricRegistry() throws Exception {
-        MetricRegistry metricRegistry = new MetricRegistry();
+        MetricRegistry mr = new MetricRegistry();
 
-        Injector injector = Guice.createInjector(new MonitoringModule(metricRegistry));
+        HostSource hs = new HostSource(mr, si);
 
-        injector.getInstance(MonitoringManager.class).register();
-        return metricRegistry;
+        hs.register();
 
-    }
+        mr.getGauges().entrySet().stream().forEach(e -> {
+            System.out.println(e.getKey());
 
-    public static Sigar getSigar() throws Exception {
-        SigarProvisioner.provision();
-        return new Sigar();
-    }
+            System.out.println(e.getValue().getValue());
+            assertThat(e.getValue().getValue(), not(0));
+        });
 
-//    public static MetricRegistry getMetricRegistry() throws Exception {
-//        return getMetricRegistry(getSigar());
-//    }
 
-    public void register() {
-        sources.stream().forEach(Source::register);
     }
 }
