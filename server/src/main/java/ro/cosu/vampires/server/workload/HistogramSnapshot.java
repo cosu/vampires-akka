@@ -27,9 +27,13 @@
 package ro.cosu.vampires.server.workload;
 
 import com.google.auto.value.AutoValue;
+import com.google.common.collect.ImmutableList;
+import com.google.common.primitives.Longs;
 
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Snapshot;
+
+import java.util.List;
 
 import ro.cosu.vampires.server.util.gson.AutoGson;
 
@@ -57,6 +61,7 @@ public abstract class HistogramSnapshot {
                 .p99(snapshot.get99thPercentile())
                 .p999(snapshot.get999thPercentile())
                 .stddev(snapshot.getStdDev())
+                .values(ImmutableList.copyOf(Longs.asList(snapshot.getValues())))
                 .build();
 
     }
@@ -87,6 +92,8 @@ public abstract class HistogramSnapshot {
 
     public abstract double stddev();
 
+    public abstract List<Long> values();
+
     @AutoValue.Builder
     public abstract static class Builder {
         public abstract Builder count(long value);
@@ -112,6 +119,9 @@ public abstract class HistogramSnapshot {
         public abstract Builder p999(double value);
 
         public abstract Builder stddev(double value);
+
+        public abstract Builder values(List<Long> values);
+
 
         public abstract HistogramSnapshot build();
     }
