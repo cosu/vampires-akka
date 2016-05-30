@@ -26,46 +26,32 @@
 
 package ro.cosu.vampires.client.monitoring;
 
-import com.google.inject.Guice;
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-
 import com.codahale.metrics.MetricRegistry;
 
-import org.hyperic.sigar.Sigar;
+import org.junit.Test;
 
-import java.util.Set;
+import oshi.SystemInfo;
 
-import kamon.sigar.SigarProvisioner;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertThat;
 
-public class MonitoringManager {
-    private final Set<Source> sources;
+public class CpuSourceTest {
 
-    @Inject
-    public MonitoringManager(Set<Source> sources) {
-        this.sources = sources;
-    }
+    @Test
+    public void CpuSource() throws Exception {
 
-    public static MetricRegistry getMetricRegistry() throws Exception {
-        MetricRegistry metricRegistry = new MetricRegistry();
+        SystemInfo si = new SystemInfo();
 
-        Injector injector = Guice.createInjector(new MonitoringModule(metricRegistry));
+        MetricRegistry mr = new MetricRegistry();
 
-        injector.getInstance(MonitoringManager.class).register();
-        return metricRegistry;
 
-    }
+        CpuSource cpuSource = new CpuSource(mr, si.getHardware().getProcessor());
 
-    public static Sigar getSigar() throws Exception {
-        SigarProvisioner.provision();
-        return new Sigar();
-    }
+        cpuSource.register();
 
-//    public static MetricRegistry getMetricRegistry() throws Exception {
-//        return getMetricRegistry(getSigar());
-//    }
+        mr.getGauges().values().stream().forEach(g -> {
+            assertThat(g.getValue(), not(0));
+        });
 
-    public void register() {
-        sources.stream().forEach(Source::register);
     }
 }

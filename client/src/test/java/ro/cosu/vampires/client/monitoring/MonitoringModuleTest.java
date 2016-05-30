@@ -35,13 +35,9 @@ import org.hyperic.sigar.Sigar;
 import org.junit.Test;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import java.util.Arrays;
 import java.util.logging.LogManager;
 
 import kamon.sigar.SigarProvisioner;
-import oshi.SystemInfo;
-import oshi.hardware.CentralProcessor;
-import oshi.hardware.HardwareAbstractionLayer;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -58,7 +54,8 @@ public class MonitoringModuleTest {
         Sigar sigar = new Sigar();
         MetricRegistry metricRegistry = new MetricRegistry();
 
-        Injector injector = Guice.createInjector(new MonitoringModule(metricRegistry, sigar));
+
+        Injector injector = Guice.createInjector(new MonitoringModule(metricRegistry));
 
         injector.getInstance(MonitoringManager.class).register();
 
@@ -67,27 +64,26 @@ public class MonitoringModuleTest {
 
     }
 
-    @Test
-    public void cpu() throws Exception {
-        SigarProvisioner.provision();
-        Sigar sigar = new Sigar();
-        double[] loadAverage = sigar.getLoadAverage();
+//    @Test
+//    public void cpu() throws Exception {
+//        SigarProvisioner.provision();
+//        Sigar sigar = new Sigar();
+//        double[] loadAverage = sigar.getLoadAverage();
+//
+//        System.out.println(sigar.getCpuPerc());
+//        System.out.println(sigar.getCpu());
+//        Arrays.stream(sigar.getCpuList()).forEach(System.out::println);
+//        Arrays.stream(sigar.getCpuPercList()).forEach(System.out::println);
+//        Arrays.stream(sigar.getCpuInfoList()).forEach(System.out::println);
+//        Arrays.stream(loadAverage).forEach(System.out::println)
+//
+//    }
 
-        System.out.println(sigar.getCpuPerc());
-        System.out.println(sigar.getCpu());
-        Arrays.stream(sigar.getCpuList()).forEach(System.out::println);
-        Arrays.stream(sigar.getCpuPercList()).forEach(System.out::println);
-        Arrays.stream(sigar.getCpuInfoList()).forEach(System.out::println);
-        Arrays.stream(loadAverage).forEach(System.out::println);
-
-
-    }
-
-    @Test
-    public void oshi() throws Exception {
-        SystemInfo si = new SystemInfo();
-        CentralProcessor p = si.getHardware().getProcessor();
-        HardwareAbstractionLayer hal = si.getHardware();
+//    @Test
+//    public void oshi() throws Exception {
+//        SystemInfo si = new SystemInfo();
+//        CentralProcessor p = si.getHardware().getProcessor();
+//        HardwareAbstractionLayer hal = si.getHardware();
 
 
 //        NetworkIF[] netArray = hal.getNetworkIFs();
@@ -105,27 +101,27 @@ public class MonitoringModuleTest {
 //                    hasData ? net.getPacketsSent() + " packets" : "?",
 //                    hasData ? FormatUtil.formatBytes(net.getBytesSent()) : "?");
 //        }
-
-        System.out.println(p.getSystemCpuLoad());
-        System.out.println(p.getSystemCpuLoadBetweenTicks());
-        System.out.println(p.getSystemLoadAverage());
-        System.out.println(p.getProcessorCpuLoadBetweenTicks()[0]);
-        System.out.println(p.getProcessorCpuLoadBetweenTicks()[1]);
-
-        for (int cpu = 0; cpu < p.getLogicalProcessorCount(); cpu++) {
-            long[][] processorCpuLoadTicks = p.getProcessorCpuLoadTicks();
-            for (int i = 0; i < processorCpuLoadTicks[cpu].length; i++) {
-                System.out.println(processorCpuLoadTicks[cpu][i]);
-            }
-        }
-
-
-        StringBuilder procCpu = new StringBuilder("CPU load per processor:");
-        double[] load = hal.getProcessor().getProcessorCpuLoadBetweenTicks();
-        for (int cpu = 0; cpu < load.length; cpu++) {
-            procCpu.append(String.format(" %.1f%%", load[cpu] * 100));
-        }
-        System.out.println(procCpu.toString());
+//
+//        System.out.println(p.getSystemCpuLoad());
+//        System.out.println(p.getSystemCpuLoadBetweenTicks());
+//        System.out.println(p.getSystemLoadAverage());
+//        System.out.println(p.getProcessorCpuLoadBetweenTicks()[0]);
+//        System.out.println(p.getProcessorCpuLoadBetweenTicks()[1]);
+//
+//        for (int cpu = 0; cpu < p.getLogicalProcessorCount(); cpu++) {
+//            long[][] processorCpuLoadTicks = p.getProcessorCpuLoadTicks();
+//            for (int i = 0; i < processorCpuLoadTicks[cpu].length; i++) {
+//                System.out.println(processorCpuLoadTicks[cpu][i]);
+//            }
+//        }
+//
+//
+//        StringBuilder procCpu = new StringBuilder("CPU load per processor:");
+//        double[] load = hal.getProcessor().getProcessorCpuLoadBetweenTicks();
+//        for (int cpu = 0; cpu < load.length; cpu++) {
+//            procCpu.append(String.format(" %.1f%%", load[cpu] * 100));
+//        }
+//        System.out.println(procCpu.toString());
 
     }
 }
