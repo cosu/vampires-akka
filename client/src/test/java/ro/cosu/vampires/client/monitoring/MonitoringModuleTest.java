@@ -31,13 +31,10 @@ import com.google.inject.Injector;
 
 import com.codahale.metrics.MetricRegistry;
 
-import org.hyperic.sigar.Sigar;
 import org.junit.Test;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.util.logging.LogManager;
-
-import kamon.sigar.SigarProvisioner;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,8 +47,7 @@ public class MonitoringModuleTest {
 
     @Test
     public void testMonitoring() throws Exception {
-        SigarProvisioner.provision();
-        Sigar sigar = new Sigar();
+
         MetricRegistry metricRegistry = new MetricRegistry();
 
 
@@ -123,5 +119,5 @@ public class MonitoringModuleTest {
 //        }
 //        System.out.println(procCpu.toString());
 
-    }
+//    }
 }
