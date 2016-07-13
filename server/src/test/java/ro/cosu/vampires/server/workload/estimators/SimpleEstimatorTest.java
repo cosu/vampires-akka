@@ -24,21 +24,37 @@
  *
  */
 
-package ro.cosu.vampires.server.workload;
+package ro.cosu.vampires.server.workload.estimators;
 
-import com.google.auto.value.AutoValue;
+import com.google.common.collect.Maps;
+
+import org.junit.Test;
+
+import java.util.Map;
 
 import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.workload.ResourceDescription;
 
-@AutoValue
-public abstract class ResourceDescription {
-    public static ResourceDescription create(String type, Resource.ProviderType providerType, double cost) {
-        return new AutoValue_ResourceDescription(type, providerType, cost);
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.*;
+
+public class SimpleEstimatorTest {
+    @Test
+    public void estimate() throws Exception {
+
+        Map<ResourceDescription, Long> counts = Maps.newHashMap();
+        Map<ResourceDescription, Double> durations = Maps.newHashMap();
+
+        ResourceDescription resourceDescription = ResourceDescription.create("local", Resource.ProviderType.MOCK, 100);
+
+        counts.put(resourceDescription, 1L);
+        durations.put(resourceDescription, 100.);
+
+
+        SimpleEstimator simpleEstimator = new SimpleEstimator(counts, durations, 100.);
+
+        assertThat(simpleEstimator.estimate(), not(0));
+
     }
 
-    public abstract String type();
-
-    public abstract Resource.ProviderType providerType();
-
-    public abstract double cost();
 }

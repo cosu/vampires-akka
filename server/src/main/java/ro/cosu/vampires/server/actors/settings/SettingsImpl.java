@@ -181,7 +181,9 @@ public class SettingsImpl implements Extension {
                                 if (resourceConfig.hasPath("cost")) {
                                     cost = resourceConfig.getDouble("cost");
                                 }
-                                return ResourceDescription.create(key, cost);
+                                Resource.ProviderType pt = Resource.ProviderType.valueOf(providerType.toUpperCase());
+
+                                return ResourceDescription.create(key, pt,cost);
                             })
                             .collect(Collectors.toList());
 

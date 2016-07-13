@@ -24,21 +24,8 @@
  *
  */
 
-package ro.cosu.vampires.server.workload;
+package ro.cosu.vampires.server.workload.estimators;
 
-import com.google.auto.value.AutoValue;
+public class Pareto {
 
-import ro.cosu.vampires.server.resources.Resource;
-
-@AutoValue
-public abstract class ResourceDescription {
-    public static ResourceDescription create(String type, Resource.ProviderType providerType, double cost) {
-        return new AutoValue_ResourceDescription(type, providerType, cost);
-    }
-
-    public abstract String type();
-
-    public abstract Resource.ProviderType providerType();
-
-    public abstract double cost();
 }
