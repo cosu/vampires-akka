@@ -43,21 +43,13 @@ public class NetworkSourceTest {
         SystemInfo si = new SystemInfo();
 
         MetricRegistry mr = new MetricRegistry();
-
-
         NetworkSource ns = new NetworkSource(mr, si.getHardware());
 
         ns.register();
 
-
         mr.getGauges().entrySet().stream().forEach(e -> {
-            System.out.println(e.getKey());
-
-            System.out.println(e.getValue().getValue());
             assertThat(e.getValue().getValue(), not(0));
         });
-
-        System.out.println(ParseUtil.jsonPrettyPrint(si.toJSON()));
 
 
     }

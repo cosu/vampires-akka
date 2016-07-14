@@ -29,7 +29,7 @@ apply plugin: 'distribution'
 
 
 wrapper {
-    gradleVersion = '2.11'
+    gradleVersion = '2.14'
 }
 
 
@@ -114,8 +114,8 @@ subprojects {
     integrationTest.dependsOn installDist
 
     dependencies {
-        def akkaVersion = "2.11:2.4.6"
-        def guiceVersion = "4.0"
+        def akkaVersion = "2.11:2.4.8"
+        def guiceVersion = "4.1.0"
 
         compile "com.typesafe.akka:akka-actor_${akkaVersion}"
         compile "com.typesafe.akka:akka-remote_${akkaVersion}"
@@ -163,17 +163,17 @@ project(':client') {
     mainClassName = "ro.cosu.vampires.client.Client"
     dependencies {
         compile project(':server')
-        compile 'com.github.docker-java:docker-java:3.0.0-RC5'
-        compile 'com.github.dblock:oshi-core:2.4'
+        compile 'com.github.docker-java:docker-java:3.0.0'
+        compile 'com.github.dblock:oshi-core:3.0'
     }
 }
 
 project(':server'){
     mainClassName = "ro.cosu.vampires.server.Server"
     dependencies {
-        compile 'org.mongodb.morphia:morphia:1.1.1'
+        compile 'org.mongodb.morphia:morphia:1.2.1'
         compile 'com.jcraft:jsch:0.1.53'
-        compile 'org.mongodb.morphia:morphia-logging-slf4j:1.1.1'
+        compile 'org.mongodb.morphia:morphia-logging-slf4j:1.2.1'
         compile 'com.amazonaws:aws-java-sdk-ec2:1.11.+'
         compile 'com.sparkjava:spark-core:2.5'
         compile 'javax.ws.rs:javax.ws.rs-api:2.0.1'
