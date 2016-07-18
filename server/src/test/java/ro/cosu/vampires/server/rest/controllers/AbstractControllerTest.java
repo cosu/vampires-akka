@@ -159,7 +159,8 @@ public abstract class AbstractControllerTest<T extends Id, P> {
         HttpResponse execute = client.execute(httpGet);
         assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_OK));
 
-        List<T> list = getList(EntityUtils.toString(execute.getEntity()), getValueClass());
+        String entity = EntityUtils.toString(execute.getEntity());
+        List<T> list = getList(entity, getValueClass());
         assertThat(list.size(), not(0));
 
         return list.get(0);

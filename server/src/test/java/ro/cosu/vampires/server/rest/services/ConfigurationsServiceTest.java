@@ -43,6 +43,7 @@ import ro.cosu.vampires.server.workload.AutoValueUtil;
 import ro.cosu.vampires.server.workload.Configuration;
 import ro.cosu.vampires.server.workload.ConfigurationPayload;
 import ro.cosu.vampires.server.workload.ResourceDemand;
+import ro.cosu.vampires.server.workload.ResourceDescription;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -82,7 +83,8 @@ public class ConfigurationsServiceTest extends AbstractServiceTest<Configuration
     @Override
     protected ConfigurationPayload getPayload() {
         ImmutableList<ResourceDemand> resourceDemands = ImmutableList.of(ResourceDemand.builder().count(1)
-                .provider(Resource.ProviderType.MOCK).type("bar").build());
+                .resourceDescription(ResourceDescription.create("bar", Resource.ProviderType.MOCK, 0L))
+                .build());
         return ConfigurationPayload.create("foo", resourceDemands);
     }
 

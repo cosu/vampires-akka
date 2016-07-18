@@ -50,6 +50,7 @@ import ro.cosu.vampires.server.workload.ConfigurationPayload;
 import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.ExecutionInfo;
 import ro.cosu.vampires.server.workload.ResourceDemand;
+import ro.cosu.vampires.server.workload.ResourceDescription;
 import ro.cosu.vampires.server.workload.User;
 import ro.cosu.vampires.server.workload.Workload;
 import ro.cosu.vampires.server.workload.WorkloadPayload;
@@ -115,7 +116,8 @@ public class ServicesTestModule extends AbstractModule {
 
     private ConfigurationPayload getConfigurationPayload() {
         ImmutableList<ResourceDemand> resourceDemands = ImmutableList.of(ResourceDemand.builder().count(1)
-                .provider(Resource.ProviderType.MOCK).type("bar").build());
+                .resourceDescription(ResourceDescription.create("bar", Resource.ProviderType.MOCK,  0L))
+                .build());
         return ConfigurationPayload.create("foo", resourceDemands);
     }
 

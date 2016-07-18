@@ -56,8 +56,9 @@ public abstract class ConfigurationPayload {
 
                     Resource.ProviderType providerType = Enums.stringConverter
                             (Resource.ProviderType.class).convert(demandConfig.getString("provider").toUpperCase());
-                    return ResourceDemand.builder().count(count).type(type)
-                            .provider(providerType).build();
+                    return ResourceDemand.builder().count(count)
+                            .resourceDescription(ResourceDescription.create(type, providerType, 0))
+                            .build();
                 }).collect(Collectors.toList());
 
         ImmutableList<ResourceDemand> resourceDemands = ImmutableList.copyOf(resourceDemandsList);

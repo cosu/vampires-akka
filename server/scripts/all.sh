@@ -13,8 +13,11 @@ ${curl} --request POST \
 \"resources\":
 [
     {
-        \"provider\": \"local\",
-        \"type\": \"local\",
+        \"resource_description\":
+        {
+            \"provider\": \"local\",
+            \"type\": \"local\"
+        },
         \"count\": \"1\"
     }
 ]

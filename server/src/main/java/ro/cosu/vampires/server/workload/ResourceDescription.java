@@ -29,8 +29,11 @@ package ro.cosu.vampires.server.workload;
 import com.google.auto.value.AutoValue;
 
 import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.util.gson.AutoGson;
 
 @AutoValue
+@AutoGson
+
 public abstract class ResourceDescription {
     public static ResourceDescription create(String type, Resource.ProviderType providerType, double cost) {
         return new AutoValue_ResourceDescription(type, providerType, cost);
@@ -38,7 +41,7 @@ public abstract class ResourceDescription {
 
     public abstract String type();
 
-    public abstract Resource.ProviderType providerType();
+    public abstract Resource.ProviderType provider();
 
     public abstract double cost();
 }

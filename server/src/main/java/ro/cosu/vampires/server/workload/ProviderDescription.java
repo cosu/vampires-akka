@@ -30,8 +30,11 @@ import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 
 import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.util.gson.AutoGson;
 
 @AutoValue
+@AutoGson
+
 public abstract class ProviderDescription {
 //    "provider": "ec2",
 //            "name" : "Amazon EC2",

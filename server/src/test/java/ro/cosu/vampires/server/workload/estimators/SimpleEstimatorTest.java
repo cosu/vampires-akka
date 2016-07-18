@@ -30,31 +30,87 @@ import com.google.common.collect.Maps;
 
 import org.junit.Test;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.workload.ResourceDemand;
 import ro.cosu.vampires.server.workload.ResourceDescription;
 
+import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.*;
 
 public class SimpleEstimatorTest {
-    @Test
-    public void estimate() throws Exception {
 
-        Map<ResourceDescription, Long> counts = Maps.newHashMap();
+    @Test
+    public void estimateOneResource() throws Exception {
+
         Map<ResourceDescription, Double> durations = Maps.newHashMap();
 
-        ResourceDescription resourceDescription = ResourceDescription.create("local", Resource.ProviderType.MOCK, 100);
+        List<ResourceDemand> demand = Collections.singletonList(ResourceDemand.builder().count(1).resourceDescription(
+                ResourceDescription.create("mock", Resource.ProviderType.MOCK, 1L)
+                ).build()
+        );
 
-        counts.put(resourceDescription, 1L);
-        durations.put(resourceDescription, 100.);
+        demand.forEach(r -> durations.put(r.resourceDescription(), 1.));
 
+        SimpleEstimator simpleEstimator = new SimpleEstimator(durations, 1);
 
-        SimpleEstimator simpleEstimator = new SimpleEstimator(counts, durations, 100.);
-
-        assertThat(simpleEstimator.estimate(), not(0));
-
+        assertThat(simpleEstimator.estimate(demand), is(1.));
     }
 
+
+    @Test
+    public void estimateTwoJobs() throws Exception {
+
+        Map<ResourceDescription, Double> durations = Maps.newHashMap();
+
+        List<ResourceDemand> demand = Collections.singletonList(ResourceDemand.builder().count(1).resourceDescription(
+                ResourceDescription.create("mock", Resource.ProviderType.MOCK, 1L)
+                ).build()
+        );
+
+        demand.forEach(r -> durations.put(r.resourceDescription(), 1.));
+
+        SimpleEstimator simpleEstimator = new SimpleEstimator(durations, 2);
+
+        assertThat(simpleEstimator.estimate(demand), is(2.));
+    }
+
+    @Test
+    public void estimateTwoResources() throws Exception {
+
+        Map<ResourceDescription, Double> durations = Maps.newHashMap();
+
+        List<ResourceDemand> demand = Collections.singletonList(ResourceDemand.builder().count(2).resourceDescription(
+                ResourceDescription.create("mock", Resource.ProviderType.MOCK, 1L)
+                ).build()
+        );
+
+        demand.forEach(r -> durations.put(r.resourceDescription(), 1.));
+
+        SimpleEstimator simpleEstimator = new SimpleEstimator(durations, 2);
+
+        assertThat(simpleEstimator.estimate(demand), is(1.));
+    }
+
+
+    @Test
+    public void estimateMoreResources() throws Exception {
+
+        Map<ResourceDescription, Double> durations = Maps.newHashMap();
+
+        List<ResourceDemand> demand = Collections.singletonList(ResourceDemand.builder().count(50).resourceDescription(
+                ResourceDescription.create("mock", Resource.ProviderType.MOCK, 1L)
+                ).build()
+        );
+
+        demand.forEach(r -> durations.put(r.resourceDescription(), 1.));
+
+        SimpleEstimator simpleEstimator = new SimpleEstimator(durations, 100);
+
+        assertThat(simpleEstimator.estimate(demand), is(2.));
+    }
 }

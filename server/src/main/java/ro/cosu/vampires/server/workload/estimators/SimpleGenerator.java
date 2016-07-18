@@ -26,105 +26,54 @@
 
 package ro.cosu.vampires.server.workload.estimators;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.workload.Configuration;
-import ro.cosu.vampires.server.workload.Execution;
-import ro.cosu.vampires.server.workload.ProviderDescription;
 import ro.cosu.vampires.server.workload.ResourceDemand;
 import ro.cosu.vampires.server.workload.ResourceDescription;
-import ro.cosu.vampires.server.workload.User;
 
 public class SimpleGenerator implements Generator {
-    private int maxResourcesPerProvider;
-//    private final HashMap<String, Worker> workerParams;
-//    private final int maxWorkers;
-//    private Schedule currentSchedule;
-//    private double currentId;
-//    private double totalSchedules;
-//
-//    private HashBasedTable<Resource.ProviderType, ResourceDescription, Long> configurations= HashBasedTable.create();
-    private Map<ResourceDescription, Long> configurations = Maps.newHashMap();
 
-    public SimpleGenerator(int maxResourcesPerProvider, List<ResourceDescription> resourceDescriptions) {
-        this.maxResourcesPerProvider = maxResourcesPerProvider;
-        // init to 0
-        resourceDescriptions.stream().forEach(rd -> configurations.put(rd, 0L));
+    private final Map<ResourceDescription, Integer> maxResources;
+    private Map<ResourceDescription, Integer> lastSchedule;
 
+    public SimpleGenerator(Map<ResourceDescription, Integer> maxResources) {
+        this.maxResources = maxResources;
+        lastSchedule = Maps.newHashMap(maxResources);
+        lastSchedule.keySet().forEach(k -> lastSchedule.put(k, 0));
     }
 
-    public void getNextSchedule() {
+    public List<ResourceDemand> getNextSchedule() {
+        Map<ResourceDescription, Integer> schedule = Maps.newHashMap(lastSchedule);
 
+        for (ResourceDescription k : schedule.keySet()) {
+            if (schedule.get(k) < maxResources.get(k)) {
+                schedule.put(k, schedule.get(k) + 1);
+                break;
+            }
+        }
+
+        lastSchedule = schedule;
+
+        return lastSchedule.keySet().stream().map(k -> ResourceDemand.builder().count(lastSchedule.get(k))
+                .resourceDescription(k).build()
+        ).collect(Collectors.toList());
     }
-//    public ScheduleGenerator(HashMap<String, Worker> workerParams, int maxWorkers) {
-//
-//        this.workerParams = workerParams;
-//        this.maxWorkers = maxWorkers;
-//
-//        HashMap<String, Integer> configuration = new HashMap<String, Integer>();
-//
-//        totalSchedules = 1.;
-//        for (Worker worker : workerParams.values()) {
-//            configuration.put(worker.getType(), 0);
-//            logger.info("getMaxWorkers" + worker.getMaxWorkers());
-//            totalSchedules *= (worker.getMaxWorkers() + 1);
-//        }
-//        logger.info("total sched" + totalSchedules);
-//
-//        currentId = 0;
-//        currentSchedule = new Schedule(configuration, workerParams, currentId, 0.);
-//
-//    }
 
-//    public Schedule getNextSchedule() {
+    boolean hasNext() {
+        Integer current = lastSchedule.values().stream().reduce(0, (a, b) -> a + b);
+        Integer max = maxResources.values().stream().reduce(0, (a, b) -> a + b);
+        return current < max;
+    }
 
-//        HashMap<String, Integer> configuration = new HashMap<String, Integer>(currentSchedule.getSchedule());
-//
-//        int sum = Integer.MAX_VALUE;
-//
-//        while (sum > maxWorkers && hasNext()) {
-//            for (String workerType : configuration.keySet()) {
-//
-//                int currentValue = configuration.get(workerType);
-//
-//                if (configuration.get(workerType) < workerParams.get(workerType).getMaxWorkers()) {
-//                    currentValue++;
-//                    configuration.put(workerType, currentValue);
-//
-//                    break;
-//                } else {
-//                    configuration.put(workerType, 0);
-//                }
-//            }
-//
-//            sum = 0;
-//            for (String workerType : configuration.keySet()) {
-//                sum += configuration.get(workerType);
-//            }
-//            currentId++;
-//        }
-//
-//
-//        if (sum <= maxWorkers)
-//            currentSchedule = new Schedule(configuration, workerParams, currentId, 0);
-//
-//
-//        return currentSchedule;
-//    }
-//
-//    public boolean hasNext() {
-//
-//        if (totalSchedules - currentId > 1) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-//
-//    }
+
+    public List<ResourceDescription> resources() {
+        return new ArrayList<>(maxResources.keySet());
+    }
+
+
 }

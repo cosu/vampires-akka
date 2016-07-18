@@ -50,6 +50,7 @@ import ro.cosu.vampires.server.workload.Execution;
 import ro.cosu.vampires.server.workload.ExecutionInfo;
 import ro.cosu.vampires.server.workload.ExecutionMode;
 import ro.cosu.vampires.server.workload.ResourceDemand;
+import ro.cosu.vampires.server.workload.ResourceDescription;
 import ro.cosu.vampires.server.workload.User;
 import ro.cosu.vampires.server.workload.Workload;
 import ro.cosu.vampires.server.workload.WorkloadPayload;
@@ -76,8 +77,9 @@ public class BootstrapIT {
                 .fromPayload(
                         ConfigurationPayload.create("integration test",
                                 ImmutableList.of(ResourceDemand.builder().count(1)
-                                        .type("local")
-                                        .provider(Resource.ProviderType.LOCAL).build())
+                                        .resourceDescription(
+                                                ResourceDescription.create("local", Resource.ProviderType.LOCAL, 0))
+                                        .build())
                         )
                 );
 

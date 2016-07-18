@@ -82,11 +82,11 @@ public class ConfigurationsActor extends UntypedActor {
             // this is a convoluted way to update the cost
             double sum = createConfiguration.configuration().resources().stream()
                     .mapToDouble(resourceDemand -> settings.getProviders().stream().filter(p -> p.provider()
-                            .equals(resourceDemand.provider()))
+                            .equals(resourceDemand.resourceDescription().provider()))
                             .findFirst()
                             .map(providerDescription -> providerDescription.resources().stream()
                                     .filter(
-                                            resourceDescription -> resourceDescription.type().equals(resourceDemand.type())
+                                            resourceDescription -> resourceDescription.type().equals(resourceDemand.resourceDescription().type())
                                     )
                                     .mapToDouble(ResourceDescription::cost).findFirst().orElse(0.)
                             ).orElse(0.)).sum();

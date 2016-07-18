@@ -29,7 +29,6 @@ package ro.cosu.vampires.server.workload;
 
 import com.google.auto.value.AutoValue;
 
-import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.util.gson.AutoGson;
 
 @AutoValue
@@ -40,9 +39,7 @@ public abstract class ResourceDemand {
         return new AutoValue_ResourceDemand.Builder();
     }
 
-    public abstract Resource.ProviderType provider();
-
-    public abstract String type();
+    public abstract ResourceDescription resourceDescription();
 
     public abstract int count();
 
@@ -57,9 +54,7 @@ public abstract class ResourceDemand {
 
         public abstract Builder count(int count);
 
-        public abstract Builder provider(Resource.ProviderType type);
-
-        public abstract Builder type(String type);
+        public abstract Builder resourceDescription(ResourceDescription resourceDescription);
 
         public abstract ResourceDemand build();
     }

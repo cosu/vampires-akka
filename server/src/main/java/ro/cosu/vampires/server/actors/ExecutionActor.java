@@ -83,7 +83,10 @@ public class ExecutionActor extends UntypedActor {
 
     private List<BootstrapResource> bootstrapResourceList(String executionid, ResourceDemand resourceDemand) {
         return IntStream.range(0, resourceDemand.count()).boxed()
-                .map(i -> BootstrapResource.create(resourceDemand.provider(), resourceDemand.type(), executionid))
+                .map(i -> BootstrapResource.create(
+                        resourceDemand.resourceDescription().provider(),
+                        resourceDemand.resourceDescription().type(),
+                        executionid))
                 .collect(Collectors.toList());
     }
 
@@ -91,7 +94,7 @@ public class ExecutionActor extends UntypedActor {
     @Override
     public void onReceive(Object message) throws Exception {
         if (message instanceof ClientInfo) {
-            watchees.stream().forEach(actorRef -> actorRef.forward(message, getContext()));
+            watchees.forEach(actorRef -> actorRef.forward(message, getContext()));
         } else if (message instanceof Job) {
             resultActor.tell(message, getSender());
         } else if (message instanceof ResourceControl.Shutdown) {

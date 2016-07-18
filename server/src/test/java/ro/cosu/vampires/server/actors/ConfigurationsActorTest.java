@@ -42,6 +42,7 @@ import ro.cosu.vampires.server.actors.messages.configuration.ResponseConfigurati
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.workload.Configuration;
 import ro.cosu.vampires.server.workload.ResourceDemand;
+import ro.cosu.vampires.server.workload.ResourceDescription;
 import ro.cosu.vampires.server.workload.User;
 import scala.concurrent.duration.Duration;
 
@@ -55,7 +56,9 @@ public class ConfigurationsActorTest extends AbstractActorTest {
     private CreateConfiguration getCreate() {
         Configuration localResource = Configuration.builder().description("localResource")
                 .resources(ImmutableList.of(
-                        ResourceDemand.builder().count(1).provider(Resource.ProviderType.LOCAL).type("local").build()
+                        ResourceDemand.builder().count(1)
+                                .resourceDescription(ResourceDescription.create("local", Resource.ProviderType.LOCAL, 0L))
+                                .build()
                 )).build();
         return CreateConfiguration.create(localResource, User.admin());
     }

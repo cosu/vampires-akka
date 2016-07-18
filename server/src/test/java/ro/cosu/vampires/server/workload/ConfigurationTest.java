@@ -46,7 +46,9 @@ public class ConfigurationTest {
     public void builder() throws Exception {
         Configuration foo = Configuration.builder().description("foo")
                 .resources(ImmutableList.of(
-                        ResourceDemand.builder().count(1).provider(Resource.ProviderType.MOCK).type("bar").build()
+                        ResourceDemand.builder().count(1)
+                                .resourceDescription(ResourceDescription.create("bar", Resource.ProviderType.MOCK, 0L))
+                                .build()
                 )).build();
         assertThat(foo.id(), not(isEmptyOrNullString()));
 
@@ -71,7 +73,7 @@ public class ConfigurationTest {
         ConfigurationPayload configuration = ConfigurationPayload.fromConfig(config);
 
         assertThat(configuration.resources().size(), is(1));
-        assertThat(configuration.resources().get(0).provider(), is(Resource.ProviderType.LOCAL));
+        assertThat(configuration.resources().get(0).resourceDescription().provider(), is(Resource.ProviderType.LOCAL));
     }
 
 

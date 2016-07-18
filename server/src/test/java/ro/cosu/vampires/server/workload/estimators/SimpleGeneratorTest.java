@@ -26,35 +26,40 @@
 
 package ro.cosu.vampires.server.workload.estimators;
 
-import java.util.List;
+import com.google.common.collect.Maps;
+
+import org.junit.Test;
+
 import java.util.Map;
 
-import ro.cosu.vampires.server.workload.ResourceDemand;
+import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.workload.ResourceDescription;
 
-public class SimpleEstimator implements Estimator {
+import static org.junit.Assert.*;
 
-    private final Map<ResourceDescription, Double> durationsPerInstanceType;
+public class SimpleGeneratorTest {
+    @Test
+    public void getNextSchedule() throws Exception {
 
-    private final double numberOfJobs;
+        Map<ResourceDescription, Integer> resourceDescriptionLongMap = Maps.newHashMap();
 
-    public SimpleEstimator(Map<ResourceDescription, Double> durationsPerInstanceType,
-                           double numberOfJobs) {
-        this.durationsPerInstanceType = durationsPerInstanceType;
-        this.numberOfJobs = numberOfJobs;
-    }
+        resourceDescriptionLongMap.put(ResourceDescription
+                .create("small", Resource.ProviderType.MOCK, 10), 3);
 
-    public double estimate(List<ResourceDemand> resourceDemands) {
+        resourceDescriptionLongMap.put(ResourceDescription
+                .create("medium", Resource.ProviderType.MOCK, 10), 3);
 
-        double ratesSum = resourceDemands.stream()
-                .filter(rd -> rd.count() > 0)
-                .mapToDouble(rd -> {
-                    int count = rd.count();
-                    Double duration = durationsPerInstanceType.get(rd.resourceDescription());
-                    return count / duration;
-        }).sum();
+        resourceDescriptionLongMap.put(ResourceDescription
+                .create("large", Resource.ProviderType.MOCK, 10), 3);
 
-        return numberOfJobs / ratesSum;
+        SimpleGenerator generator = new SimpleGenerator(resourceDescriptionLongMap);
 
+        int count = 0;
+        while (generator.hasNext()){
+            generator.getNextSchedule();
+            count ++;
+        }
+
+        assertEquals(9, count);
     }
 }
