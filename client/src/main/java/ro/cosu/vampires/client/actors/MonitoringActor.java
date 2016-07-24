@@ -41,10 +41,10 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.client.monitoring.MetricsWindow;
-import ro.cosu.vampires.server.workload.Job;
-import ro.cosu.vampires.server.workload.JobStatus;
-import ro.cosu.vampires.server.workload.Metric;
-import ro.cosu.vampires.server.workload.Metrics;
+import ro.cosu.vampires.server.values.jobs.Job;
+import ro.cosu.vampires.server.values.jobs.JobStatus;
+import ro.cosu.vampires.server.values.jobs.metrics.Metric;
+import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 import scala.concurrent.duration.Duration;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;

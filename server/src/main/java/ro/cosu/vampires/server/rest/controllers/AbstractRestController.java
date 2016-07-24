@@ -38,8 +38,8 @@ import java.util.Optional;
 
 import ro.cosu.vampires.server.rest.JsonTransformer;
 import ro.cosu.vampires.server.rest.services.Service;
-import ro.cosu.vampires.server.workload.Id;
-import ro.cosu.vampires.server.workload.User;
+import ro.cosu.vampires.server.values.Id;
+import ro.cosu.vampires.server.values.User;
 import spark.Request;
 import spark.Route;
 import spark.Spark;

@@ -31,7 +31,7 @@ import com.google.inject.Inject;
 
 import java.util.List;
 
-import ro.cosu.vampires.server.workload.ProviderDescription;
+import ro.cosu.vampires.server.values.resources.ProviderDescription;
 
 public class ProvidersService {
 

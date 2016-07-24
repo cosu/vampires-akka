@@ -44,8 +44,8 @@ import java.util.Optional;
 
 import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
-import ro.cosu.vampires.server.workload.Id;
-import ro.cosu.vampires.server.workload.User;
+import ro.cosu.vampires.server.values.Id;
+import ro.cosu.vampires.server.values.User;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;

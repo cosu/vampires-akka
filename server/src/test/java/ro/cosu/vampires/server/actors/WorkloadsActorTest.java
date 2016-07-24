@@ -41,9 +41,9 @@ import ro.cosu.vampires.server.actors.messages.workload.CreateWorkload;
 import ro.cosu.vampires.server.actors.messages.workload.DeleteWorkload;
 import ro.cosu.vampires.server.actors.messages.workload.QueryWorkload;
 import ro.cosu.vampires.server.actors.messages.workload.ResponseWorkload;
-import ro.cosu.vampires.server.workload.User;
-import ro.cosu.vampires.server.workload.Workload;
-import ro.cosu.vampires.server.workload.WorkloadPayload;
+import ro.cosu.vampires.server.values.User;
+import ro.cosu.vampires.server.values.jobs.Workload;
+import ro.cosu.vampires.server.values.jobs.WorkloadPayload;
 import scala.concurrent.duration.Duration;
 
 import static org.hamcrest.MatcherAssert.assertThat;

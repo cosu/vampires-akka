@@ -36,8 +36,8 @@ import ro.cosu.vampires.server.actors.resource.ResourceRegistry;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.resources.mock.MockResourceParameters;
-import ro.cosu.vampires.server.workload.ClientInfo;
-import ro.cosu.vampires.server.workload.Metrics;
+import ro.cosu.vampires.server.values.ClientInfo;
+import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;

@@ -47,13 +47,13 @@ import java.util.Map;
 
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
-import ro.cosu.vampires.server.workload.ClientInfo;
-import ro.cosu.vampires.server.workload.CounterSnapshot;
-import ro.cosu.vampires.server.workload.HistogramSnapshot;
-import ro.cosu.vampires.server.workload.Job;
-import ro.cosu.vampires.server.workload.MeterSnapshot;
-import ro.cosu.vampires.server.workload.Stats;
-import ro.cosu.vampires.server.workload.ValueSnapshot;
+import ro.cosu.vampires.server.values.ClientInfo;
+import ro.cosu.vampires.server.values.jobs.Job;
+import ro.cosu.vampires.server.values.jobs.metrics.CounterSnapshot;
+import ro.cosu.vampires.server.values.jobs.metrics.HistogramSnapshot;
+import ro.cosu.vampires.server.values.jobs.metrics.MeterSnapshot;
+import ro.cosu.vampires.server.values.jobs.metrics.Stats;
+import ro.cosu.vampires.server.values.jobs.metrics.ValueSnapshot;
 
 public class StatsProcessor {
 

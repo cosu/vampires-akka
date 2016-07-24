@@ -42,7 +42,7 @@ import java.time.LocalDateTime;
 import ro.cosu.vampires.server.util.gson.AutoValueAdapterFactory;
 import ro.cosu.vampires.server.util.gson.ImmutableListTypeAdapterFactory;
 import ro.cosu.vampires.server.util.gson.ImmutableMapTypeAdapterFactory;
-import ro.cosu.vampires.server.workload.Job;
+import ro.cosu.vampires.server.values.jobs.Job;
 import ro.cosu.vampires.server.writers.json.LocalDateTimeDeserializer;
 import ro.cosu.vampires.server.writers.json.LocalDateTimeSerializer;
 

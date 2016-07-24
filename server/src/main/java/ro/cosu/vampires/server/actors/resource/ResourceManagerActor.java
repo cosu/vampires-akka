@@ -48,7 +48,7 @@ import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.resources.ResourceManager;
 import ro.cosu.vampires.server.resources.ResourceModule;
 import ro.cosu.vampires.server.resources.ResourceProvider;
-import ro.cosu.vampires.server.workload.ClientInfo;
+import ro.cosu.vampires.server.values.ClientInfo;
 
 public class ResourceManagerActor extends UntypedActor {
     private final SettingsImpl settings =

@@ -36,7 +36,7 @@ import java.util.List;
 import akka.actor.ActorRef;
 import ro.cosu.vampires.server.rest.controllers.ControllersModule;
 import ro.cosu.vampires.server.rest.services.ServicesModule;
-import ro.cosu.vampires.server.workload.ProviderDescription;
+import ro.cosu.vampires.server.values.resources.ProviderDescription;
 
 
 public class RestModule extends AbstractModule {

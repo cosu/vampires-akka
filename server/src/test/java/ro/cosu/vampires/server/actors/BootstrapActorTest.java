@@ -36,12 +36,12 @@ import akka.testkit.JavaTestKit;
 import ro.cosu.vampires.server.actors.messages.execution.QueryExecution;
 import ro.cosu.vampires.server.actors.messages.execution.StartExecution;
 import ro.cosu.vampires.server.actors.messages.resource.ShutdownResource;
-import ro.cosu.vampires.server.workload.Configuration;
-import ro.cosu.vampires.server.workload.Execution;
-import ro.cosu.vampires.server.workload.ExecutionInfo;
-import ro.cosu.vampires.server.workload.ExecutionMode;
-import ro.cosu.vampires.server.workload.User;
-import ro.cosu.vampires.server.workload.Workload;
+import ro.cosu.vampires.server.values.resources.Configuration;
+import ro.cosu.vampires.server.values.jobs.Execution;
+import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
+import ro.cosu.vampires.server.values.jobs.ExecutionMode;
+import ro.cosu.vampires.server.values.User;
+import ro.cosu.vampires.server.values.jobs.Workload;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;

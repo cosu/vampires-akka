@@ -28,8 +28,8 @@ package ro.cosu.vampires.server.actors.messages.workload;
 
 import com.google.auto.value.AutoValue;
 
-import ro.cosu.vampires.server.workload.User;
-import ro.cosu.vampires.server.workload.Workload;
+import ro.cosu.vampires.server.values.User;
+import ro.cosu.vampires.server.values.jobs.Workload;
 
 @AutoValue
 public abstract class CreateWorkload implements WorkloadMessage {

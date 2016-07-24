@@ -35,9 +35,9 @@ import java.util.concurrent.TimeUnit;
 
 import akka.testkit.TestActorRef;
 import akka.testkit.TestProbe;
-import ro.cosu.vampires.server.workload.ClientConfig;
-import ro.cosu.vampires.server.workload.ClientInfo;
-import ro.cosu.vampires.server.workload.Metrics;
+import ro.cosu.vampires.server.values.ClientConfig;
+import ro.cosu.vampires.server.values.ClientInfo;
+import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 import scala.concurrent.duration.Duration;
 
 import static org.hamcrest.MatcherAssert.assertThat;

@@ -49,11 +49,11 @@ import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
 import ro.cosu.vampires.server.rest.JsonTransformer;
 import ro.cosu.vampires.server.rest.services.ServicesTestModule;
-import ro.cosu.vampires.server.workload.Configuration;
-import ro.cosu.vampires.server.workload.Execution;
-import ro.cosu.vampires.server.workload.ExecutionMode;
-import ro.cosu.vampires.server.workload.ExecutionPayload;
-import ro.cosu.vampires.server.workload.Workload;
+import ro.cosu.vampires.server.values.resources.Configuration;
+import ro.cosu.vampires.server.values.jobs.Execution;
+import ro.cosu.vampires.server.values.jobs.ExecutionMode;
+import ro.cosu.vampires.server.values.jobs.ExecutionPayload;
+import ro.cosu.vampires.server.values.jobs.Workload;
 import spark.Spark;
 
 import static java.net.HttpURLConnection.HTTP_CREATED;

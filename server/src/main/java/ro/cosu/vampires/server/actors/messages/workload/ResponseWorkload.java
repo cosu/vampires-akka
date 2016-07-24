@@ -31,7 +31,7 @@ import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 
-import ro.cosu.vampires.server.workload.Workload;
+import ro.cosu.vampires.server.values.jobs.Workload;
 
 @AutoValue
 public abstract class ResponseWorkload implements WorkloadMessage {

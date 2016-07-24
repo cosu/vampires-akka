@@ -40,7 +40,7 @@ import ro.cosu.vampires.server.actors.messages.resource.CreateResource;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.resources.ResourceProvider;
-import ro.cosu.vampires.server.workload.ClientInfo;
+import ro.cosu.vampires.server.values.ClientInfo;
 
 public class ResourceActor extends UntypedActorWithStash {
     private final ResourceProvider resourceProvider;

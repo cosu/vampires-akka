@@ -43,10 +43,10 @@ import ro.cosu.vampires.server.actors.messages.configuration.QueryConfiguration;
 import ro.cosu.vampires.server.actors.messages.configuration.ResponseConfiguration;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
-import ro.cosu.vampires.server.workload.Configuration;
-import ro.cosu.vampires.server.workload.ConfigurationPayload;
-import ro.cosu.vampires.server.workload.ResourceDescription;
-import ro.cosu.vampires.server.workload.User;
+import ro.cosu.vampires.server.values.User;
+import ro.cosu.vampires.server.values.resources.Configuration;
+import ro.cosu.vampires.server.values.resources.ConfigurationPayload;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 public class ConfigurationsActor extends UntypedActor {
 

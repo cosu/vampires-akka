@@ -61,8 +61,8 @@ import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
 import ro.cosu.vampires.server.rest.JsonTransformer;
 import ro.cosu.vampires.server.rest.services.Service;
-import ro.cosu.vampires.server.workload.Id;
-import ro.cosu.vampires.server.workload.User;
+import ro.cosu.vampires.server.values.Id;
+import ro.cosu.vampires.server.values.User;
 import spark.Spark;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;

@@ -35,8 +35,8 @@ import akka.actor.ActorRef;
 import ro.cosu.vampires.server.actors.WorkloadsActor;
 import ro.cosu.vampires.server.rest.services.Service;
 import ro.cosu.vampires.server.rest.services.WorkloadsService;
-import ro.cosu.vampires.server.workload.Workload;
-import ro.cosu.vampires.server.workload.WorkloadPayload;
+import ro.cosu.vampires.server.values.jobs.Workload;
+import ro.cosu.vampires.server.values.jobs.WorkloadPayload;
 
 
 public class WorkloadsControllerTest extends AbstractControllerTest<Workload, WorkloadPayload> {

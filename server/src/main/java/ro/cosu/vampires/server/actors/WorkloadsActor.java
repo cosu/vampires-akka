@@ -43,8 +43,8 @@ import ro.cosu.vampires.server.actors.messages.workload.QueryWorkload;
 import ro.cosu.vampires.server.actors.messages.workload.ResponseWorkload;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
-import ro.cosu.vampires.server.workload.User;
-import ro.cosu.vampires.server.workload.Workload;
+import ro.cosu.vampires.server.values.User;
+import ro.cosu.vampires.server.values.jobs.Workload;
 
 public class WorkloadsActor extends UntypedActor {
 

@@ -30,7 +30,7 @@ import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 
-import ro.cosu.vampires.server.workload.Configuration;
+import ro.cosu.vampires.server.values.resources.Configuration;
 
 @AutoValue
 public abstract class ResponseConfiguration implements ConfigurationMessage {

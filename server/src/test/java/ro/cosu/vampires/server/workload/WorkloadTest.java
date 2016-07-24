@@ -38,6 +38,8 @@ import org.junit.Test;
 import java.time.LocalDateTime;
 
 import ro.cosu.vampires.server.util.gson.AutoValueAdapterFactory;
+import ro.cosu.vampires.server.values.jobs.Workload;
+import ro.cosu.vampires.server.values.jobs.WorkloadPayload;
 import ro.cosu.vampires.server.writers.json.LocalDateTimeDeserializer;
 import ro.cosu.vampires.server.writers.json.LocalDateTimeSerializer;
 

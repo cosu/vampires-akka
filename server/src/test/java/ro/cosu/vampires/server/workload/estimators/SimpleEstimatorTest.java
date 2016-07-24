@@ -26,6 +26,7 @@
 
 package ro.cosu.vampires.server.workload.estimators;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
 import org.junit.Test;
@@ -35,8 +36,10 @@ import java.util.List;
 import java.util.Map;
 
 import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.workload.ResourceDemand;
-import ro.cosu.vampires.server.workload.ResourceDescription;
+import ro.cosu.vampires.server.values.resources.Configuration;
+import ro.cosu.vampires.server.values.resources.ResourceDemand;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
+import ro.cosu.vampires.server.estimators.SimpleEstimator;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -56,9 +59,11 @@ public class SimpleEstimatorTest {
 
         demand.forEach(r -> durations.put(r.resourceDescription(), 1.));
 
+        Configuration configuration = Configuration.builder().resources(ImmutableList.copyOf(demand)).build();
+
         SimpleEstimator simpleEstimator = new SimpleEstimator(durations, 1);
 
-        assertThat(simpleEstimator.estimate(demand), is(1.));
+        assertThat(simpleEstimator.estimate(configuration), is(1.));
     }
 
 
@@ -76,7 +81,9 @@ public class SimpleEstimatorTest {
 
         SimpleEstimator simpleEstimator = new SimpleEstimator(durations, 2);
 
-        assertThat(simpleEstimator.estimate(demand), is(2.));
+        Configuration configuration = Configuration.builder().resources(ImmutableList.copyOf(demand)).build();
+
+        assertThat(simpleEstimator.estimate(configuration), is(2.));
     }
 
     @Test
@@ -93,7 +100,9 @@ public class SimpleEstimatorTest {
 
         SimpleEstimator simpleEstimator = new SimpleEstimator(durations, 2);
 
-        assertThat(simpleEstimator.estimate(demand), is(1.));
+        Configuration configuration = Configuration.builder().resources(ImmutableList.copyOf(demand)).build();
+
+        assertThat(simpleEstimator.estimate(configuration), is(1.));
     }
 
 
@@ -111,6 +120,8 @@ public class SimpleEstimatorTest {
 
         SimpleEstimator simpleEstimator = new SimpleEstimator(durations, 100);
 
-        assertThat(simpleEstimator.estimate(demand), is(2.));
+        Configuration configuration = Configuration.builder().resources(ImmutableList.copyOf(demand)).build();
+
+        assertThat(simpleEstimator.estimate(configuration), is(2.));
     }
 }

@@ -30,6 +30,12 @@ import com.google.common.collect.ImmutableList;
 
 import org.junit.Test;
 
+import ro.cosu.vampires.server.values.resources.Configuration;
+import ro.cosu.vampires.server.values.jobs.Execution;
+import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
+import ro.cosu.vampires.server.values.jobs.ExecutionMode;
+import ro.cosu.vampires.server.values.jobs.Workload;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 

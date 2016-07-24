@@ -28,8 +28,8 @@ package ro.cosu.vampires.server.actors.messages.execution;
 
 import com.google.auto.value.AutoValue;
 
-import ro.cosu.vampires.server.workload.Execution;
-import ro.cosu.vampires.server.workload.User;
+import ro.cosu.vampires.server.values.User;
+import ro.cosu.vampires.server.values.jobs.Execution;
 
 @AutoValue
 public abstract class StartExecution implements ExecutionMessage {

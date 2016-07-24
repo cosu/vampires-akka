@@ -30,9 +30,9 @@ import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import ro.cosu.vampires.server.workload.Computation;
-import ro.cosu.vampires.server.workload.Job;
-import ro.cosu.vampires.server.workload.schedulers.Scheduler;
+import ro.cosu.vampires.server.schedulers.Scheduler;
+import ro.cosu.vampires.server.values.jobs.Computation;
+import ro.cosu.vampires.server.values.jobs.Job;
 
 public class WorkActor extends UntypedActor {
 

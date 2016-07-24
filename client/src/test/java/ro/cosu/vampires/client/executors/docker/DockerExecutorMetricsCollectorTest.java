@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
-import ro.cosu.vampires.server.workload.Metrics;
+import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

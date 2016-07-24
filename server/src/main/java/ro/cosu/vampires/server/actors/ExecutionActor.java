@@ -45,10 +45,10 @@ import ro.cosu.vampires.server.actors.messages.resource.BootstrapResource;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.resource.ResourceManagerActor;
 import ro.cosu.vampires.server.resources.ResourceInfo;
-import ro.cosu.vampires.server.workload.ClientInfo;
-import ro.cosu.vampires.server.workload.Execution;
-import ro.cosu.vampires.server.workload.Job;
-import ro.cosu.vampires.server.workload.ResourceDemand;
+import ro.cosu.vampires.server.values.ClientInfo;
+import ro.cosu.vampires.server.values.jobs.Execution;
+import ro.cosu.vampires.server.values.jobs.Job;
+import ro.cosu.vampires.server.values.resources.ResourceDemand;
 
 public class ExecutionActor extends UntypedActor {
 

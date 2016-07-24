@@ -36,10 +36,10 @@ import ro.cosu.vampires.server.actors.ConfigurationsActor;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.rest.services.ConfigurationsService;
 import ro.cosu.vampires.server.rest.services.Service;
-import ro.cosu.vampires.server.workload.Configuration;
-import ro.cosu.vampires.server.workload.ConfigurationPayload;
-import ro.cosu.vampires.server.workload.ResourceDemand;
-import ro.cosu.vampires.server.workload.ResourceDescription;
+import ro.cosu.vampires.server.values.resources.Configuration;
+import ro.cosu.vampires.server.values.resources.ConfigurationPayload;
+import ro.cosu.vampires.server.values.resources.ResourceDemand;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 
 public class ConfigurationsControllerTest extends AbstractControllerTest<Configuration, ConfigurationPayload> {

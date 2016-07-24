@@ -34,6 +34,10 @@ import com.typesafe.config.ConfigFactory;
 import org.junit.Test;
 
 import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.values.resources.Configuration;
+import ro.cosu.vampires.server.values.resources.ConfigurationPayload;
+import ro.cosu.vampires.server.values.resources.ResourceDemand;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.core.Is.is;

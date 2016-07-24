@@ -31,7 +31,7 @@ import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 
-import ro.cosu.vampires.server.workload.User;
+import ro.cosu.vampires.server.values.User;
 
 @AutoValue
 public abstract class QueryConfiguration implements ConfigurationMessage {

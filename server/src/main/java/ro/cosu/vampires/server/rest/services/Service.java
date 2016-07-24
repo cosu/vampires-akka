@@ -30,8 +30,8 @@ package ro.cosu.vampires.server.rest.services;
 import java.util.List;
 import java.util.Optional;
 
-import ro.cosu.vampires.server.workload.Id;
-import ro.cosu.vampires.server.workload.User;
+import ro.cosu.vampires.server.values.Id;
+import ro.cosu.vampires.server.values.User;
 
 public interface Service<T extends Id, P> {
     List<T> list(User user);

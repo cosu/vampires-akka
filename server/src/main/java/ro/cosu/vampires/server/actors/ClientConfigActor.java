@@ -34,8 +34,8 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
-import ro.cosu.vampires.server.workload.ClientConfig;
-import ro.cosu.vampires.server.workload.ClientInfo;
+import ro.cosu.vampires.server.values.ClientConfig;
+import ro.cosu.vampires.server.values.ClientInfo;
 
 public class ClientConfigActor extends UntypedActor {
     private final SettingsImpl settings =

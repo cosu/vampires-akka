@@ -28,7 +28,7 @@ package ro.cosu.vampires.server.actors.messages.resource;
 
 import com.google.auto.value.AutoValue;
 
-import ro.cosu.vampires.server.workload.User;
+import ro.cosu.vampires.server.values.User;
 
 @AutoValue
 public abstract class ShutdownResource {

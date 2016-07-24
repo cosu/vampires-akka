@@ -28,8 +28,8 @@ package ro.cosu.vampires.server.actors.messages.configuration;
 
 import com.google.auto.value.AutoValue;
 
-import ro.cosu.vampires.server.workload.Configuration;
-import ro.cosu.vampires.server.workload.User;
+import ro.cosu.vampires.server.values.User;
+import ro.cosu.vampires.server.values.resources.Configuration;
 
 @AutoValue
 public abstract class CreateConfiguration implements ConfigurationMessage {

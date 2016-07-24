@@ -52,7 +52,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
 import ro.cosu.vampires.server.rest.JsonTransformer;
-import ro.cosu.vampires.server.workload.FileInfo;
+import ro.cosu.vampires.server.values.FileInfo;
 import spark.Route;
 import spark.Spark;
 

@@ -48,9 +48,9 @@ import java.util.Optional;
 
 import ro.cosu.vampires.client.allocation.CpuAllocator;
 import ro.cosu.vampires.client.allocation.CpuSet;
-import ro.cosu.vampires.server.workload.Computation;
-import ro.cosu.vampires.server.workload.Result;
-import ro.cosu.vampires.server.workload.Trace;
+import ro.cosu.vampires.server.values.jobs.Computation;
+import ro.cosu.vampires.server.values.jobs.Result;
+import ro.cosu.vampires.server.values.jobs.metrics.Trace;
 
 
 public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor {

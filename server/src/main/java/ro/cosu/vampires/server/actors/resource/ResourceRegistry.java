@@ -37,7 +37,7 @@ import java.util.Set;
 import akka.actor.ActorRef;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
-import ro.cosu.vampires.server.workload.ClientInfo;
+import ro.cosu.vampires.server.values.ClientInfo;
 
 public class ResourceRegistry {
     /**

@@ -40,10 +40,10 @@ import ro.cosu.vampires.server.actors.messages.configuration.DeleteConfiguration
 import ro.cosu.vampires.server.actors.messages.configuration.QueryConfiguration;
 import ro.cosu.vampires.server.actors.messages.configuration.ResponseConfiguration;
 import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.workload.Configuration;
-import ro.cosu.vampires.server.workload.ResourceDemand;
-import ro.cosu.vampires.server.workload.ResourceDescription;
-import ro.cosu.vampires.server.workload.User;
+import ro.cosu.vampires.server.values.resources.Configuration;
+import ro.cosu.vampires.server.values.resources.ResourceDemand;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
+import ro.cosu.vampires.server.values.User;
 import scala.concurrent.duration.Duration;
 
 import static org.hamcrest.MatcherAssert.assertThat;

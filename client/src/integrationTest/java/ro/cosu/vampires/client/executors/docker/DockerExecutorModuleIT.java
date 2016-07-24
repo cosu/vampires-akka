@@ -35,8 +35,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import ro.cosu.vampires.client.executors.Executor;
-import ro.cosu.vampires.server.workload.Computation;
-import ro.cosu.vampires.server.workload.Result;
+import ro.cosu.vampires.server.values.jobs.Computation;
+import ro.cosu.vampires.server.values.jobs.Result;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNot.not;

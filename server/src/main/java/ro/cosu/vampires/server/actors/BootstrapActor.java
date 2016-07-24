@@ -51,10 +51,10 @@ import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
 import ro.cosu.vampires.server.rest.RestModule;
 import ro.cosu.vampires.server.rest.services.WorkloadsService;
-import ro.cosu.vampires.server.workload.Execution;
-import ro.cosu.vampires.server.workload.ExecutionInfo;
-import ro.cosu.vampires.server.workload.User;
-import ro.cosu.vampires.server.workload.WorkloadPayload;
+import ro.cosu.vampires.server.values.User;
+import ro.cosu.vampires.server.values.jobs.Execution;
+import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
+import ro.cosu.vampires.server.values.jobs.WorkloadPayload;
 import spark.Spark;
 
 public class BootstrapActor extends UntypedActor {

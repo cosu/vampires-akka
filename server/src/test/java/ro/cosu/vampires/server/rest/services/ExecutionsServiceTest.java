@@ -33,10 +33,10 @@ import org.junit.Test;
 
 import java.util.Optional;
 
-import ro.cosu.vampires.server.workload.Execution;
-import ro.cosu.vampires.server.workload.ExecutionInfo;
-import ro.cosu.vampires.server.workload.ExecutionMode;
-import ro.cosu.vampires.server.workload.ExecutionPayload;
+import ro.cosu.vampires.server.values.jobs.Execution;
+import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
+import ro.cosu.vampires.server.values.jobs.ExecutionMode;
+import ro.cosu.vampires.server.values.jobs.ExecutionPayload;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;

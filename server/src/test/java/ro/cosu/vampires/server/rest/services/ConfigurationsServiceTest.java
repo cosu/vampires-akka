@@ -39,11 +39,11 @@ import java.util.Optional;
 import akka.actor.ActorRef;
 import ro.cosu.vampires.server.actors.ConfigurationsActor;
 import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.workload.AutoValueUtil;
-import ro.cosu.vampires.server.workload.Configuration;
-import ro.cosu.vampires.server.workload.ConfigurationPayload;
-import ro.cosu.vampires.server.workload.ResourceDemand;
-import ro.cosu.vampires.server.workload.ResourceDescription;
+import ro.cosu.vampires.server.values.AutoValueUtil;
+import ro.cosu.vampires.server.values.resources.Configuration;
+import ro.cosu.vampires.server.values.resources.ConfigurationPayload;
+import ro.cosu.vampires.server.values.resources.ResourceDemand;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
