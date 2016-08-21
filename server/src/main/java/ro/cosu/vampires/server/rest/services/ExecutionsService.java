@@ -65,7 +65,7 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
     private ConfigurationsService configurationsService;
 
     @Inject
-    private WorkloadsService wService;
+    private WorkloadsService workloadsService;
 
     @Inject
     private ActorRef actorRef;
@@ -104,7 +104,7 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
         Configuration configuration = configurationsService.get(executionPayload.configuration(), user).orElseThrow(() ->
                 new IllegalArgumentException("could not find configuration with id " + executionPayload.configuration()));
 
-        Workload workload = wService.get(executionPayload.workload(), user).orElseThrow(()
+        Workload workload = workloadsService.get(executionPayload.workload(), user).orElseThrow(()
                 -> new IllegalArgumentException("could not find workload with id " + executionPayload.workload()));
 
         Execution execution = Execution.builder().workload(workload)

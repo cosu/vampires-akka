@@ -42,29 +42,6 @@ import ro.cosu.vampires.server.values.jobs.ExecutionMode;
 @AutoGson
 public abstract class Configuration implements Id {
 
-    //[
-//        {
-//        "id": "37ecfc16-f0fc-4c43-a915-bfef7ac6116b",
-//        "created_at": "2016-08-05T08:40:51.620Z",
-//        "lastupdate_at": "2016-08-05T08:40:51.620Z",
-//        "properties" : "my optional properties",
-//        "resources":
-//        [
-//        {
-//        "provider": "ec2",
-//        "providerType": "eu-west1.t2.micro",
-//        "count": "5"
-//        },
-//        {
-//        "provider": "ec2",
-//        "providerType": "eu-west1.t2.nano",
-//        "count": "5"
-//        }
-//        ],
-//        "cost": 100
-//        }
-//        ]
-
 
     public static Builder builder() {
         return new AutoValue_Configuration.Builder()

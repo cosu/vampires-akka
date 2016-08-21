@@ -51,34 +51,14 @@ public class ConfigurationTest {
         Configuration foo = Configuration.builder().description("foo")
                 .resources(ImmutableList.of(
                         ResourceDemand.builder().count(1)
-                                .resourceDescription(ResourceDescription.create("bar", Resource.ProviderType.MOCK, 0L))
+                                .resourceDescription(
+                                        ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("bar").cost(0).build()
+                                )
                                 .build()
                 )).build();
         assertThat(foo.id(), not(isEmptyOrNullString()));
 
         assertThat(foo.resources().size(), not(0));
     }
-
-    @Test
-    public void fromConfig() throws Exception {
-        String startConfig = "{" +
-                "properties = foo\n" +
-                "start  = [\n" +
-                "    {\n" +
-                "      provider = local\n" +
-                "      type = local\n" +
-                "      count = 1\n" +
-                "    }\n" +
-                "  ]" +
-                "}";
-
-        Config config = ConfigFactory.parseString(startConfig);
-
-        ConfigurationPayload configuration = ConfigurationPayload.fromConfig(config);
-
-        assertThat(configuration.resources().size(), is(1));
-        assertThat(configuration.resources().get(0).resourceDescription().provider(), is(Resource.ProviderType.LOCAL));
-    }
-
 
 }

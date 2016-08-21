@@ -28,15 +28,22 @@ package ro.cosu.vampires.server.values.resources;
 
 import com.google.auto.value.AutoValue;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.util.gson.AutoGson;
+import ro.cosu.vampires.server.values.Id;
 
 @AutoValue
 @AutoGson
 
-public abstract class ResourceDescription {
-    public static ResourceDescription create(String type, Resource.ProviderType providerType, double cost) {
-        return new AutoValue_ResourceDescription(type, providerType, cost);
+public abstract class ResourceDescription implements Id {
+
+    public static Builder builder() {
+        return new AutoValue_ResourceDescription.Builder()
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now());
     }
 
     public abstract String type();
@@ -44,4 +51,39 @@ public abstract class ResourceDescription {
     public abstract Resource.ProviderType provider();
 
     public abstract double cost();
+
+    public abstract String id();
+
+    public abstract LocalDateTime createdAt();
+
+    public abstract LocalDateTime updatedAt();
+
+    @AutoValue.Builder
+    public static abstract class Builder {
+
+        public abstract Builder provider(Resource.ProviderType provider);
+
+        abstract Resource.ProviderType provider();
+
+        public abstract Builder type(String type);
+
+        abstract String type();
+
+        public abstract Builder cost(double cost);
+
+        public abstract Builder id(String id);
+
+        public abstract Builder createdAt(LocalDateTime createdAt);
+
+        public abstract Builder updatedAt(LocalDateTime createdAt);
+
+        abstract ResourceDescription autoBuild();
+
+        public ResourceDescription build() {
+            String result = UUID.nameUUIDFromBytes((provider().toString() + type()).getBytes()).toString();
+            id(result);
+            return autoBuild();
+        }
+    }
+
 }

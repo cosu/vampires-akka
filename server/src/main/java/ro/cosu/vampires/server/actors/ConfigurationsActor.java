@@ -45,7 +45,6 @@ import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
 import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.resources.Configuration;
-import ro.cosu.vampires.server.values.resources.ConfigurationPayload;
 import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 public class ConfigurationsActor extends UntypedActor {
@@ -64,65 +63,62 @@ public class ConfigurationsActor extends UntypedActor {
     }
 
     @Override
-    public void preStart() {
-        User user = settings.getDefaultUser();
-        if (settings.vampires.hasPath("configurations")) {
-            settings.vampires.getConfigList("configurations").stream()
-                    .map(ConfigurationPayload::fromConfig)
-                    .map(Configuration::fromPayload)
-                    .forEach(c -> getUserStore(user).put(c.id(), c));
-        }
-    }
-
-    @Override
     public void onReceive(Object message) throws Exception {
-
         if (message instanceof CreateConfiguration) {
-            CreateConfiguration createConfiguration = (CreateConfiguration) message;
-            // this is a convoluted way to update the cost
-            double sum = createConfiguration.configuration().resources().stream()
-                    .mapToDouble(resourceDemand -> settings.getProviders().stream().filter(p -> p.provider()
-                            .equals(resourceDemand.resourceDescription().provider()))
-                            .findFirst()
-                            .map(providerDescription -> providerDescription.resources().stream()
-                                    .filter(
-                                            resourceDescription -> resourceDescription.type().equals(resourceDemand.resourceDescription().type())
-                                    )
-                                    .mapToDouble(ResourceDescription::cost).findFirst().orElse(0.)
-                            ).orElse(0.)).sum();
-
-            Configuration configuration = createConfiguration.configuration().withCost(sum);
-            getUserStore(createConfiguration.user()).put(configuration.id(), configuration);
-            getSender().tell(configuration, getSelf());
+            handleCreation((CreateConfiguration) message);
         } else if (message instanceof QueryConfiguration) {
-
-            QueryConfiguration queryConfiguration = (QueryConfiguration) message;
-            Map<String, Configuration> userStore = getUserStore(queryConfiguration.user());
-
-            List<Configuration> configurations;
-            if (queryConfiguration.resources().isEmpty())
-                configurations = ImmutableList.copyOf(userStore.values());
-            else
-                configurations = queryConfiguration.resources().stream().filter(userStore::containsKey)
-                        .map(userStore::get).collect(Collectors.toList());
-
-            ResponseConfiguration responseConfiguration = ResponseConfiguration.create(configurations);
-
-            getSender().tell(responseConfiguration, getSelf());
+            handleQuery((QueryConfiguration) message);
         } else if (message instanceof DeleteConfiguration) {
-            DeleteConfiguration deleteConfiguration = (DeleteConfiguration) message;
-
-            Map<String, Configuration> userStore = getUserStore(deleteConfiguration.user());
-
-            List<Configuration> deleted = deleteConfiguration.configurations().stream().filter(userStore::containsKey)
-                    .map(userStore::remove).collect(Collectors.toList());
-
-            getSender().tell(ResponseConfiguration.create(deleted), getSelf());
-
+            handleDeletion((DeleteConfiguration) message);
         } else {
             log.error("unhandled {}", message);
             unhandled(message);
         }
+    }
+
+    private void handleDeletion(DeleteConfiguration deleteConfiguration) {
+
+        Map<String, Configuration> userStore = getUserStore(deleteConfiguration.user());
+
+        List<Configuration> deleted = deleteConfiguration.configurations().stream().filter(userStore::containsKey)
+                .map(userStore::remove).collect(Collectors.toList());
+
+        getSender().tell(ResponseConfiguration.create(deleted), getSelf());
+    }
+
+    private void handleQuery(QueryConfiguration message) {
+        Map<String, Configuration> userStore = getUserStore(message.user());
+
+        List<Configuration> configurations;
+        if (message.resources().isEmpty())
+            configurations = ImmutableList.copyOf(userStore.values());
+        else
+            configurations = message.resources().stream().filter(userStore::containsKey)
+                    .map(userStore::get).collect(Collectors.toList());
+
+        ResponseConfiguration responseConfiguration = ResponseConfiguration.create(configurations);
+
+        getSender().tell(responseConfiguration, getSelf());
+    }
+
+    private void handleCreation(CreateConfiguration message) {
+        // this is a convoluted way to update the cost
+        // first find the provider in the list of all providers
+        // then find the resource.
+        double sum = message.configuration().resources().stream()
+                .mapToDouble(resourceDemand -> settings.getProviders().stream().filter(p -> p.provider()
+                        .equals(resourceDemand.resourceDescription().provider()))
+                        .findFirst()
+                        .map(providerDescription -> providerDescription.resources().stream()
+                                .filter(
+                                        resourceDescription -> resourceDescription.type().equals(resourceDemand.resourceDescription().type())
+                                )
+                                .mapToDouble(ResourceDescription::cost).findFirst().orElse(0.)
+                        ).orElse(0.)).sum();
+
+        Configuration configuration = message.configuration().withCost(sum);
+        getUserStore(message.user()).put(configuration.id(), configuration);
+        getSender().tell(configuration, getSelf());
     }
 
 }

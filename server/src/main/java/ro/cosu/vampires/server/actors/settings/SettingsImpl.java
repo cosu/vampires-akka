@@ -26,11 +26,9 @@
 
 package ro.cosu.vampires.server.actors.settings;
 
-import com.google.common.base.Enums;
 import com.google.common.collect.ImmutableList;
 
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigObject;
 import com.typesafe.config.ConfigValueType;
 
 import org.slf4j.Logger;
@@ -43,11 +41,7 @@ import java.util.stream.Collectors;
 
 import akka.actor.Extension;
 import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.schedulers.SamplingScheduler;
-import ro.cosu.vampires.server.schedulers.Scheduler;
-import ro.cosu.vampires.server.schedulers.SimpleScheduler;
 import ro.cosu.vampires.server.values.User;
-import ro.cosu.vampires.server.values.jobs.ExecutionMode;
 import ro.cosu.vampires.server.values.jobs.Job;
 import ro.cosu.vampires.server.values.jobs.JobUtil;
 import ro.cosu.vampires.server.values.resources.ProviderDescription;
@@ -102,15 +96,6 @@ public class SettingsImpl implements Extension {
         return JobUtil.fromConfig(vampires.getConfig("workload"));
     }
 
-    public Scheduler getScheduler() {
-        List<Job> workload = getWorkload();
-        if (getMode().equals(ExecutionMode.SAMPLE)) {
-            LOG.info("running in sampling mode : sampling from {} jobs", workload.size());
-            return new SamplingScheduler(workload, getJobDeadline(), getBackoffInterval(), getNumberOfJobsToSample());
-        } else
-            return new SimpleScheduler(workload, getJobDeadline(), getBackoffInterval());
-    }
-
     public int getNumberOfJobsToSample() {
         if (vampires.hasPath(SAMPLE_SIZE)) {
             return vampires.getInt(SAMPLE_SIZE);
@@ -161,52 +146,32 @@ public class SettingsImpl implements Extension {
     }
 
     public List<ProviderDescription> getProviders() {
-        Config config = vampires.getConfig("resources");
-
-        List<ProviderDescription> list = vampires.getStringList("enabled-resources").stream().map(
-                providerType -> {
-                    ConfigObject configObject = config.getObject(providerType);
-
-                    Config providerConfig = config.getConfig(providerType);
-
-                    List<ResourceDescription> collect = configObject.keySet().stream()
-                            .filter(key ->
-                                    // only objects are associated with providers.
-                                    // single values are overrides
-                                    providerConfig.getValue(key).valueType().equals(ConfigValueType.OBJECT)
-                            )
+        Config resourcesConfig = vampires.getConfig("resources");
+        return vampires.getStringList("enabled-resources").stream().map(
+                enabledProvider -> {
+                    Config providerConfig = resourcesConfig.getConfig(enabledProvider);
+                    String name = providerConfig.hasPath("name") ? providerConfig.getString("name") : enabledProvider;
+                    // iterate over the keys of resourcesConfig
+                    List<ResourceDescription> resourceDescriptions = resourcesConfig.getObject(enabledProvider).keySet().stream()
+                            // only objects are associated with providers.
+                            // single values are overrides
+                            .filter(key -> providerConfig.getValue(key).valueType().equals(ConfigValueType.OBJECT))
                             .map(key -> {
                                 Config resourceConfig = providerConfig.getConfig(key);
-                                double cost = 0;
-                                if (resourceConfig.hasPath("cost")) {
-                                    cost = resourceConfig.getDouble("cost");
-                                }
-                                Resource.ProviderType pt = Resource.ProviderType.valueOf(providerType.toUpperCase());
-
-                                return ResourceDescription.create(key, pt,cost);
+                                double cost = resourceConfig.hasPath("cost") ? resourceConfig.getDouble("cost") : 0.;
+                                Resource.ProviderType pt = Resource.ProviderType.valueOf(enabledProvider.toUpperCase());
+                                return
+                                        ResourceDescription.builder().provider(pt).type(key).cost(cost).build();
                             })
                             .collect(Collectors.toList());
-
-                    String name = providerConfig.hasPath("parameters") ? providerConfig.getString("parameters") : providerType;
-
                     return ProviderDescription.builder()
                             .description(name)
-                            .provider(Resource.ProviderType.valueOf(providerType.toUpperCase()))
-                            .resources(ImmutableList.copyOf(collect))
+                            .provider(Resource.ProviderType.valueOf(enabledProvider.toUpperCase()))
+                            .resources(ImmutableList.copyOf(resourceDescriptions))
                             .build();
 
                 }
         ).collect(Collectors.toList());
-        return list;
-    }
-
-    public ExecutionMode getMode() {
-        ExecutionMode executionMode = ExecutionMode.FULL;
-        if (vampires.hasPath(MODE)) {
-            executionMode = Enums.getIfPresent(ExecutionMode.class, vampires.getString(MODE).
-                    toUpperCase()).or(ExecutionMode.FULL);
-        }
-        return executionMode;
     }
 
     public User getDefaultUser() {

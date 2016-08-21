@@ -29,30 +29,22 @@ package ro.cosu.vampires.server.values.resources;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.util.gson.AutoGson;
+import ro.cosu.vampires.server.values.Id;
 
 @AutoValue
 @AutoGson
 
-public abstract class ProviderDescription {
-//    "provider": "ec2",
-//            "name" : "Amazon EC2",
-//            "resources": [
-//    {
-//        "type": "eu-west1.t2.nano",
-//            "cost": 10
-//    }, {
-//        "type": "eu-west1.t2.micro",
-//                "cost": 100
-//    }, {
-//        "type": "eu-west1.t3.micro",
-//                "cost": 110
-//    }
-//},
+public abstract class ProviderDescription implements Id {
 
-    public static Builder builder() {
-        return new AutoValue_ProviderDescription.Builder();
+    public static ProviderDescription.Builder builder() {
+        return new AutoValue_ProviderDescription.Builder()
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now());
     }
 
     public abstract Resource.ProviderType provider();
@@ -61,14 +53,34 @@ public abstract class ProviderDescription {
 
     public abstract ImmutableList<ResourceDescription> resources();
 
+    public abstract String id();
+
+    public abstract LocalDateTime createdAt();
+
+    public abstract LocalDateTime updatedAt();
+
     @AutoValue.Builder
     public static abstract class Builder {
         public abstract Builder provider(Resource.ProviderType provider);
+
+        public abstract Resource.ProviderType provider();
 
         public abstract Builder description(String name);
 
         public abstract Builder resources(ImmutableList<ResourceDescription> resourceDescriptions);
 
-        public abstract ProviderDescription build();
+        public abstract Builder id(String id);
+
+        public abstract Builder createdAt(LocalDateTime createdAt);
+
+        public abstract Builder updatedAt(LocalDateTime createdAt);
+
+        abstract ProviderDescription autoBuild();
+
+        public ProviderDescription build() {
+            String result = UUID.nameUUIDFromBytes(provider().toString().getBytes()).toString();
+            id(result);
+            return autoBuild();
+        }
     }
 }

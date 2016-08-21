@@ -24,41 +24,17 @@
  *
  */
 
-package ro.cosu.vampires.server.rest.controllers;
+package ro.cosu.vampires.server.estimators;
+
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+public class ParetoTest {
+
+    @Test
+    public void pareto() throws Exception {
 
 
-import com.google.common.collect.Maps;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-
-import ro.cosu.vampires.server.rest.JsonTransformer;
-import spark.ExceptionHandler;
-import spark.Request;
-import spark.Response;
-import spark.Spark;
-
-import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
-
-public class ExceptionMapper {
-    private static final Logger LOG = LoggerFactory.getLogger(ExceptionMapper.class);
-
-    ExceptionMapper() {
-        Spark.exception(RuntimeException.class, new BadRequestJson());
-        Spark.exception(NullPointerException.class, new BadRequestJson());
-    }
-
-    private static class BadRequestJson implements ExceptionHandler {
-
-        @Override
-        public void handle(Exception exception, Request request, Response response) {
-            LOG.error("Error for client {} path {} body {}", request.ip(), request.url(), request.body(), exception);
-            response.status(HTTP_BAD_REQUEST);
-            HashMap<Object, Object> map = Maps.newHashMap();
-            map.put("error", exception.getMessage());
-            response.body(JsonTransformer.get().getGson().toJson(map));
-        }
     }
 }

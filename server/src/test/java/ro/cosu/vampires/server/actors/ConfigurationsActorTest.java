@@ -57,7 +57,10 @@ public class ConfigurationsActorTest extends AbstractActorTest {
         Configuration localResource = Configuration.builder().description("localResource")
                 .resources(ImmutableList.of(
                         ResourceDemand.builder().count(1)
-                                .resourceDescription(ResourceDescription.create("local", Resource.ProviderType.LOCAL, 0L))
+                                .resourceDescription(
+                                        ResourceDescription.builder()
+                                                .provider(Resource.ProviderType.LOCAL).type("local").cost(0).build()
+                                )
                                 .build()
                 )).build();
         return CreateConfiguration.create(localResource, User.admin());

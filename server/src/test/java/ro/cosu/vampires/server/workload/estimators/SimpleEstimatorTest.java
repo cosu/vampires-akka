@@ -53,7 +53,7 @@ public class SimpleEstimatorTest {
         Map<ResourceDescription, Double> durations = Maps.newHashMap();
 
         List<ResourceDemand> demand = Collections.singletonList(ResourceDemand.builder().count(1).resourceDescription(
-                ResourceDescription.create("mock", Resource.ProviderType.MOCK, 1L)
+                ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("small").cost(10).build()
                 ).build()
         );
 
@@ -73,7 +73,7 @@ public class SimpleEstimatorTest {
         Map<ResourceDescription, Double> durations = Maps.newHashMap();
 
         List<ResourceDemand> demand = Collections.singletonList(ResourceDemand.builder().count(1).resourceDescription(
-                ResourceDescription.create("mock", Resource.ProviderType.MOCK, 1L)
+                ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("small").cost(10).build()
                 ).build()
         );
 
@@ -92,7 +92,7 @@ public class SimpleEstimatorTest {
         Map<ResourceDescription, Double> durations = Maps.newHashMap();
 
         List<ResourceDemand> demand = Collections.singletonList(ResourceDemand.builder().count(2).resourceDescription(
-                ResourceDescription.create("mock", Resource.ProviderType.MOCK, 1L)
+                ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("small").cost(10).build()
                 ).build()
         );
 
@@ -112,7 +112,7 @@ public class SimpleEstimatorTest {
         Map<ResourceDescription, Double> durations = Maps.newHashMap();
 
         List<ResourceDemand> demand = Collections.singletonList(ResourceDemand.builder().count(50).resourceDescription(
-                ResourceDescription.create("mock", Resource.ProviderType.MOCK, 1L)
+                ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("small").cost(10).build()
                 ).build()
         );
 

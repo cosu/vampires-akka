@@ -88,8 +88,9 @@ public class SettingsImplTest {
 
     @Test
     public void getResources() {
-        SettingsImpl settings = new SettingsImpl(ConfigFactory.load(CONF_FILE));
+        SettingsImpl settings = new SettingsImpl(devConfig);
         assertThat(settings.getProviders().size(), not(0));
+        System.out.println(settings.getProviders());
 
     }
 }

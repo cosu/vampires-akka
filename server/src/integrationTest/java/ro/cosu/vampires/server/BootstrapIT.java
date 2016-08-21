@@ -72,15 +72,20 @@ public class BootstrapIT {
         ActorRef terminator = system.actorOf(Terminator.props(), "terminator");
         ActorRef bootstrap = system.actorOf(BootstrapActor.props(terminator), "bootstrap");
 
+        ImmutableList<ResourceDemand> resources = ImmutableList.of(ResourceDemand.builder().count(1)
+                .resourceDescription(
+                        ResourceDescription.builder()
+                                .provider(Resource.ProviderType.LOCAL)
+                                .type("local")
+                                .cost(0)
+                                .build()
+                ).build());
 
         Configuration configuration = Configuration
                 .fromPayload(
-                        ConfigurationPayload.create("integration test",
-                                ImmutableList.of(ResourceDemand.builder().count(1)
-                                        .resourceDescription(
-                                                ResourceDescription.create("local", Resource.ProviderType.LOCAL, 0))
-                                        .build())
-                        )
+                        ConfigurationPayload.builder().description("integration testt")
+                                .resources(resources)
+                                .build()
                 );
 
         Workload workload = Workload

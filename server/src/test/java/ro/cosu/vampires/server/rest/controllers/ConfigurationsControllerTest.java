@@ -74,9 +74,11 @@ public class ConfigurationsControllerTest extends AbstractControllerTest<Configu
         ImmutableList<ResourceDemand> resourceDemands = ImmutableList.of(
                 ResourceDemand.builder()
                         .count(1)
-                        .resourceDescription(ResourceDescription.create("bar", Resource.ProviderType.MOCK, 0L))
+                        .resourceDescription(
+                                ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("bar").cost(0).build()
+                                )
                         .build());
-        return ConfigurationPayload.create("foo", resourceDemands);
+        return ConfigurationPayload.builder().description("foo").resources(resourceDemands).build();
     }
 
     @Override
