@@ -26,6 +26,7 @@ package ro.cosu.vampires.client.executors.docker;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.model.Info;
+import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.google.common.base.Preconditions;
@@ -73,7 +74,7 @@ public class DockerModule extends AbstractModule {
 //                .withMaxTotalConnections(100)
 //                .withMaxPerRouteConnections(10);
 
-        DockerClientConfig dockerClientConfig = DockerClientConfig.createDefaultConfigBuilder()
+        DockerClientConfig dockerClientConfig = DefaultDockerClientConfig.createDefaultConfigBuilder()
                 .withDockerHost(uri)
 //                .withDockerCertPath(certPath)
                 .build();
