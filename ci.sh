@@ -24,16 +24,15 @@ exec_id=$(./server/scripts/all.sh  |grep execution | awk ' {print $2}')
 
 ./server/scripts/monitorExec.sh ${exec_id}
 
-status=$(./server/scripts/getStatus.sh ${exec_id})
+job_status=$(./server/scripts/getStatus.sh ${exec_id})
 
 
-if [[ ${status} == "finished" ]]; then
+jps | grep Server | awk '{print $1}' | xargs kill
+
+if [[ ${job_status} == "finished" ]]; then
     echo "Success!"
-    jps | grep Server | awk '{print $1}' | xargs kill -SIGINT
     exit 0
 else
-    jps | grep Server | awk '{print $1}' | xargs kill
-
     echo "Failed!"
     exit 1
 fi

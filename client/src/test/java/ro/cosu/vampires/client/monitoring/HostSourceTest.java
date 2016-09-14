@@ -47,10 +47,7 @@ public class HostSourceTest {
 
         hs.register();
 
-        mr.getGauges().entrySet().stream().forEach(e -> {
-            System.out.println(e.getKey());
-
-            System.out.println(e.getValue().getValue());
+        mr.getGauges().entrySet().forEach(e -> {
             assertThat(e.getValue().getValue(), not(0));
         });
 

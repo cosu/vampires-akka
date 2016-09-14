@@ -73,7 +73,6 @@ public class WorkloadsService implements Service<Workload, WorkloadPayload> {
 
     @Override
     public Workload create(WorkloadPayload payload, User user) {
-
         Workload created = Workload.fromPayload(payload);
 
         Optional<Workload> ask = ActorUtil.ask(CreateWorkload.create(created, user), actorRef);

@@ -31,9 +31,10 @@ import com.google.inject.Provides;
 
 import com.typesafe.config.Config;
 
-import java.util.List;
+import java.util.Map;
 
 import akka.actor.ActorRef;
+import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.rest.controllers.ControllersModule;
 import ro.cosu.vampires.server.rest.services.ServicesModule;
 import ro.cosu.vampires.server.values.resources.ProviderDescription;
@@ -44,9 +45,9 @@ public class RestModule extends AbstractModule {
 
 
     private final Config config;
-    private List<ProviderDescription> providers;
+    private Map<Resource.ProviderType, ProviderDescription> providers;
 
-    public RestModule(ActorRef actorRef, List<ProviderDescription> providers, Config config) {
+    public RestModule(ActorRef actorRef, Map<Resource.ProviderType, ProviderDescription> providers, Config config) {
         this.actorRef = actorRef;
         this.providers = providers;
         this.config = config;
@@ -59,7 +60,7 @@ public class RestModule extends AbstractModule {
     }
 
     @Provides
-    public List<ProviderDescription> getProviders() {
+    public Map<Resource.ProviderType, ProviderDescription> getProviders() {
         return providers;
     }
 

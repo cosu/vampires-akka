@@ -24,6 +24,8 @@ ${curl} --request POST \
 }" \
 ${api_server}/configurations | jq -r '.id')
 
+
+#\"task\": \"wget -O /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip\",
 #create workload
 workload_id=$(
 ${curl} --request POST \
@@ -31,7 +33,9 @@ ${curl} --request POST \
     --data-binary "{
     \"sequence_start\": \"0\",
     \"sequence_stop\": \"9\",
-    \"task\": \"wget -O /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip\",
+    \"task\": \"ping -c 10 google.com\",
+
+
     \"description\": \"a new description\"
 }" \
 ${api_server}/workloads | jq -r '.id')

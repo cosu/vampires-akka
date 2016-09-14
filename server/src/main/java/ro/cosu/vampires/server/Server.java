@@ -40,19 +40,15 @@ import scala.concurrent.duration.Duration;
 
 public class Server {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Server.class);
-
     public static void main(String[] args) throws Exception {
-
         final ActorSystem system = ActorSystem.create("ServerSystem");
         LoggingAdapter log = Logging.getLogger(system, Server.class);
 
         ActorRef terminator = system.actorOf(Terminator.props(), "terminator");
         system.actorOf(BootstrapActor.props(terminator), "bootstrap");
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
+        Runtime.getRuntime().addShutdownHook(new Thread(
+            () -> {
                 terminator.tell(new ResourceControl.Shutdown(), ActorRef.noSender());
                 try {
                     log.info("waiting 15 seconds for shutdown");
@@ -61,7 +57,7 @@ public class Server {
                     log.error("error during shutdown hook {}", e);
                 }
             }
-        });
+        ));
 
         Await.result(system.whenTerminated(), Duration.Inf());
     }

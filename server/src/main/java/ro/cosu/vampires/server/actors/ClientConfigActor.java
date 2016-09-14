@@ -26,8 +26,6 @@
 
 package ro.cosu.vampires.server.actors;
 
-import java.util.Optional;
-
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
@@ -61,23 +59,22 @@ public class ClientConfigActor extends UntypedActor {
 
     private ClientConfig getConfigFor(ClientInfo clientInfo) {
         //take the first executor defined in the config
-        final Optional<String> firstAvailableExecutor = settings
+        return settings
                 .getExecutors().stream()
                 .filter(ex -> clientInfo.executors().containsKey(ex))
-                .findFirst();
+                .findFirst()
+                .map(executor -> getConfig(executor, clientInfo))
+                .orElseGet(() -> {
+                    log.error("client has reported unsupported executors: {} ", clientInfo.executors());
+                    return ClientConfig.empty();
+                });
 
+    }
 
-        if (!firstAvailableExecutor.isPresent()) {
-            log.error("client has reported unsupported executors: {} ", clientInfo.executors());
-            return ClientConfig.empty();
-        }
-
-        final String executor = firstAvailableExecutor.get();
+    private ClientConfig getConfig(String executor, ClientInfo clientInfo) {
         int executorCpuCount = clientInfo.executors().get(executor);
-
         int cpuSetSize = Math.min(executorCpuCount, settings.getCpuSetSize());
         //this happens if the config says use 2 cpus but the machine has only 1.
-
         if (executorCpuCount < settings.getCpuSetSize()) {
             log.warning("Client reported less cpus ({}) than CPU_SET_SIZE ({})", executorCpuCount,
                     settings.getCpuSetSize());

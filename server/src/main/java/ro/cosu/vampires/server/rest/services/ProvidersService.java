@@ -29,17 +29,19 @@ package ro.cosu.vampires.server.rest.services;
 
 import com.google.inject.Inject;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
+import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.values.resources.ProviderDescription;
 
 public class ProvidersService {
 
     @Inject
-    private List<ProviderDescription> providers;
+    private Map<Resource.ProviderType, ProviderDescription> providers;
 
-    public List<ProviderDescription> list() {
-        return providers;
+    public Collection<ProviderDescription> list() {
+        return providers.values();
     }
 
 }

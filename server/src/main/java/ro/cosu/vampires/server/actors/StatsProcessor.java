@@ -74,25 +74,25 @@ public class StatsProcessor {
         Map<String, ValueSnapshot> values = Maps.newHashMap();
 
 
-        metricRegistry.getHistograms().entrySet().stream().forEach(m -> {
+        metricRegistry.getHistograms().entrySet().forEach(m -> {
             String name = m.getKey();
             Histogram value = m.getValue();
             histograms.put(name, HistogramSnapshot.fromHistogram(name, value));
         });
 
-        metricRegistry.getMeters().entrySet().stream().forEach(m -> {
+        metricRegistry.getMeters().entrySet().forEach(m -> {
             String name = m.getKey();
             Meter value = m.getValue();
             meters.put(name, MeterSnapshot.fromMeter(name, value));
         });
 
-        metricRegistry.getCounters().entrySet().stream().forEach(m -> {
+        metricRegistry.getCounters().entrySet().forEach(m -> {
             String name = m.getKey();
             Counter value = m.getValue();
             counters.put(name, CounterSnapshot.fromCounter(name, value));
         });
 
-        metricRegistry.getGauges().entrySet().stream().forEach(m -> {
+        metricRegistry.getGauges().entrySet().forEach(m -> {
             String name = m.getKey();
             Gauge value = m.getValue();
             values.put(name, ValueSnapshot.fromGauge(name, value));

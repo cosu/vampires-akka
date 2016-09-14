@@ -81,12 +81,15 @@ public abstract class AbstractRestController<T extends Id, P> implements Control
     }
 
     public Route list() {
-        return (request, response) -> service.list(getUser(request));
+        return (request, response) -> {
+            logRequest("list", request);
+            return service.list(getUser(request));
+        };
     }
 
     public Route create() {
         return (request, response) -> {
-            getLogger().debug("got request {}", request.url());
+            logRequest("create", request);
             User user = getUser(request);
             Gson gson = JsonTransformer.get().getGson();
             P fromJson = gson.fromJson(request.body(), payloadType);
@@ -97,6 +100,7 @@ public abstract class AbstractRestController<T extends Id, P> implements Control
 
     public Route get() {
         return (request, response) -> {
+            logRequest("get", request);
             String id = request.params(":id");
             Optional<T> optional = service.get(id, getUser(request));
             if (optional.isPresent()) {
@@ -109,6 +113,7 @@ public abstract class AbstractRestController<T extends Id, P> implements Control
 
     public Route delete() {
         return ((request, response) -> {
+            logRequest("delete", request);
             String id = request.params(":id");
             Preconditions.checkNotNull(id, "id missing");
             service.delete(id, getUser(request));
@@ -119,10 +124,15 @@ public abstract class AbstractRestController<T extends Id, P> implements Control
 
     public Route update() {
         return (request, response) -> {
+            logRequest("update", request);
             Gson gson = JsonTransformer.get().getGson();
             P fromJson = gson.fromJson(request.body(), payloadType);
             response.status(HTTP_CREATED);
             return service.update(fromJson, getUser(request));
         };
+    }
+
+    private void logRequest(String type, Request request) {
+        getLogger().debug("User:{} action:{} url: {}", request.session().attribute("user"), type, request.url());
     }
 }

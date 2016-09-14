@@ -83,7 +83,7 @@ public class SimpleScheduler implements Scheduler {
     @Override
     public void markDone(Job receivedJob) {
         LOG.debug("Work result from {}. pending {} remaining {}",
-                receivedJob.hostMetrics().metadata().get("host-hostname"), pendingJobs.size(), workQueue.size());
+                receivedJob.from(), pendingJobs.size(), workQueue.size());
         pendingJobs.invalidate(receivedJob.id());
     }
 

@@ -27,6 +27,7 @@
 package ro.cosu.vampires.server.actors.settings;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValueType;
@@ -37,6 +38,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import akka.actor.Extension;
@@ -53,13 +56,13 @@ import ro.cosu.vampires.server.writers.mongo.MongoWriter;
 public class SettingsImpl implements Extension {
 
     public static final String SAMPLING_MODE = "sampling";
-    public static final String SAMPLE_SIZE = "sample-size";
-    public static final String EXECUTORS = "executors";
-    public static final String CPU_SET_SIZE = "cpu-set-size";
+    private static final String SAMPLE_SIZE = "sample-size";
+    private static final String EXECUTORS = "executors";
+    private static final String CPU_SET_SIZE = "cpu-set-size";
     public static final String MODE = "mode";
-    public static final String JOB_DEADLINE_SECONDS = "job-deadline-seconds";
-    public static final String ENABLED_WRITERS = "enabled-writers";
-    public static final String BACKOFF_INTERVAL_SECONDS = "backoff-interval-seconds";
+    private static final String JOB_DEADLINE_SECONDS = "job-deadline-seconds";
+    private static final String ENABLED_WRITERS = "enabled-writers";
+    private static final String BACKOFF_INTERVAL_SECONDS = "backoff-interval-seconds";
     private static final int DEFAULT_CPU_SET_SIZE = 1;
     private static final Logger LOG = LoggerFactory.getLogger(Settings.class);
     private final static int DEFAULT_MAX_JOB_DEADLINE = 60;
@@ -145,14 +148,14 @@ public class SettingsImpl implements Extension {
         return maxJobSeconds;
     }
 
-    public List<ProviderDescription> getProviders() {
+    public Map<Resource.ProviderType, ProviderDescription> getProviders() {
         Config resourcesConfig = vampires.getConfig("resources");
         return vampires.getStringList("enabled-resources").stream().map(
                 enabledProvider -> {
                     Config providerConfig = resourcesConfig.getConfig(enabledProvider);
                     String name = providerConfig.hasPath("name") ? providerConfig.getString("name") : enabledProvider;
                     // iterate over the keys of resourcesConfig
-                    List<ResourceDescription> resourceDescriptions = resourcesConfig.getObject(enabledProvider).keySet().stream()
+                    Map<String, ResourceDescription> resourceDescriptions = resourcesConfig.getObject(enabledProvider).keySet().stream()
                             // only objects are associated with providers.
                             // single values are overrides
                             .filter(key -> providerConfig.getValue(key).valueType().equals(ConfigValueType.OBJECT))
@@ -163,16 +166,17 @@ public class SettingsImpl implements Extension {
                                 return
                                         ResourceDescription.builder().provider(pt).type(key).cost(cost).build();
                             })
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toMap(ResourceDescription::type,Function.identity()));
                     return ProviderDescription.builder()
                             .description(name)
                             .provider(Resource.ProviderType.valueOf(enabledProvider.toUpperCase()))
-                            .resources(ImmutableList.copyOf(resourceDescriptions))
+                            .resourceDescriptions(ImmutableMap.copyOf(resourceDescriptions))
                             .build();
 
                 }
-        ).collect(Collectors.toList());
+        ).collect(Collectors.toMap(ProviderDescription::provider, Function.identity()));
     }
+
 
     public User getDefaultUser() {
         return User.admin();

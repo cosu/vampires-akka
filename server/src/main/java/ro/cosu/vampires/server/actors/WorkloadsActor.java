@@ -48,7 +48,6 @@ import ro.cosu.vampires.server.values.jobs.Workload;
 
 public class WorkloadsActor extends UntypedActor {
 
-    private final SettingsImpl settings = Settings.SettingsProvider.get(getContext().system());
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     private HashBasedTable<User, String, Workload> table = HashBasedTable.create();
@@ -64,38 +63,44 @@ public class WorkloadsActor extends UntypedActor {
     @Override
     public void onReceive(Object message) throws Exception {
         if (message instanceof CreateWorkload) {
-            CreateWorkload createWorkload = (CreateWorkload) message;
-            Workload workload = createWorkload.workload();
-            getUserStore(createWorkload.user()).put(workload.id(), workload);
-            getSender().tell(workload, getSelf());
+            createWorkload((CreateWorkload) message);
         } else if (message instanceof QueryWorkload) {
-
-            QueryWorkload queryWorkload = (QueryWorkload) message;
-            Map<String, Workload> userStore = getUserStore(queryWorkload.user());
-
-            List<Workload> workloads;
-            if (queryWorkload.resources().isEmpty())
-                workloads = ImmutableList.copyOf(userStore.values());
-            else
-                workloads = queryWorkload.resources().stream().filter(userStore::containsKey)
-                        .map(userStore::get).collect(Collectors.toList());
-
-            ResponseWorkload responseWorkload = ResponseWorkload.create(workloads);
-
-            getSender().tell(responseWorkload, getSelf());
+            sendResponse((QueryWorkload) message);
         } else if (message instanceof DeleteWorkload) {
-            DeleteWorkload deleteWorkload = (DeleteWorkload) message;
-
-            Map<String, Workload> userStore = getUserStore(deleteWorkload.user());
-
-            List<Workload> deleted = deleteWorkload.configurations().stream().filter(userStore::containsKey)
-                    .map(userStore::remove).collect(Collectors.toList());
-
-            getSender().tell(ResponseWorkload.create(deleted), getSelf());
-
+            deleteWorkload((DeleteWorkload) message);
         } else {
             log.error("unhandled {}", message);
             unhandled(message);
         }
+    }
+
+    private void createWorkload(CreateWorkload message) {
+        CreateWorkload createWorkload = message;
+        Workload workload = createWorkload.workload();
+        getUserStore(createWorkload.user()).put(workload.id(), workload);
+        getSender().tell(workload, getSelf());
+    }
+
+    private void deleteWorkload(DeleteWorkload message) {
+        Map<String, Workload> userStore = getUserStore(message.user());
+
+        List<Workload> deleted = message.configurations().stream().filter(userStore::containsKey)
+                .map(userStore::remove).collect(Collectors.toList());
+
+        getSender().tell(ResponseWorkload.create(deleted), getSelf());
+    }
+
+    private void sendResponse(QueryWorkload message) {
+        Map<String, Workload> userStore = getUserStore(message.user());
+
+        List<Workload> workloads;
+        if (message.resources().isEmpty())
+            workloads = ImmutableList.copyOf(userStore.values());
+        else
+            workloads = message.resources().stream().filter(userStore::containsKey)
+                    .map(userStore::get).collect(Collectors.toList());
+
+        ResponseWorkload responseWorkload = ResponseWorkload.create(workloads);
+        getSender().tell(responseWorkload, getSelf());
     }
 }

@@ -91,22 +91,12 @@ public class BootstrapActor extends UntypedActor {
     public void preStart() {
         terminator.tell(ResourceControl.Up.create(), getSelf());
         startWebserver();
-        loadFromConfig();
     }
 
     private void startWebserver() {
         Spark.port(settings.vampires.getInt("rest.port"));
         Spark.init();
         injector = Guice.createInjector(restModule);
-    }
-
-    private void loadFromConfig() {
-        if (settings.vampires.hasPath("workloads")) {
-            WorkloadsService workloadsService = injector.getInstance(WorkloadsService.class);
-            settings.vampires.getConfigList("workloads").stream()
-                    .map(WorkloadPayload::fromConfig)
-                    .forEach(p -> workloadsService.create(p, getUser()));
-        }
     }
 
 

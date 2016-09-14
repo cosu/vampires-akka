@@ -31,6 +31,7 @@ import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import akka.actor.Props;
@@ -43,8 +44,10 @@ import ro.cosu.vampires.server.actors.messages.configuration.QueryConfiguration;
 import ro.cosu.vampires.server.actors.messages.configuration.ResponseConfiguration;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
+import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.resources.Configuration;
+import ro.cosu.vampires.server.values.resources.ProviderDescription;
 import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 public class ConfigurationsActor extends UntypedActor {
@@ -102,23 +105,21 @@ public class ConfigurationsActor extends UntypedActor {
     }
 
     private void handleCreation(CreateConfiguration message) {
-        // this is a convoluted way to update the cost
-        // first find the provider in the list of all providers
-        // then find the resource.
-        double sum = message.configuration().resources().stream()
-                .mapToDouble(resourceDemand -> settings.getProviders().stream().filter(p -> p.provider()
-                        .equals(resourceDemand.resourceDescription().provider()))
-                        .findFirst()
-                        .map(providerDescription -> providerDescription.resources().stream()
-                                .filter(
-                                        resourceDescription -> resourceDescription.type().equals(resourceDemand.resourceDescription().type())
-                                )
-                                .mapToDouble(ResourceDescription::cost).findFirst().orElse(0.)
-                        ).orElse(0.)).sum();
+        double sum = getCost(message.configuration(), settings.getProviders());
 
         Configuration configuration = message.configuration().withCost(sum);
         getUserStore(message.user()).put(configuration.id(), configuration);
         getSender().tell(configuration, getSelf());
+    }
+
+    private static double getCost(Configuration configuration, Map<Resource.ProviderType, ProviderDescription> providers) {
+
+        return configuration.resources().stream().map(resource -> Optional
+                .ofNullable(providers.get(resource.resourceDescription().provider()))
+                .map(provider -> provider.resourceDescriptions().get(resource.resourceDescription().type()))
+                .map(ResourceDescription::cost)
+                .orElse(0.))
+                .collect(Collectors.summingDouble(Double::doubleValue));
     }
 
 }
