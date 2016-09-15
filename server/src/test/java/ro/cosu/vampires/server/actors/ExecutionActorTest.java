@@ -37,6 +37,7 @@ import akka.actor.ActorRef;
 import akka.actor.Terminated;
 import akka.testkit.JavaTestKit;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
+import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.values.ClientConfig;
 import ro.cosu.vampires.server.values.ClientInfo;
 import ro.cosu.vampires.server.values.jobs.Computation;
@@ -48,8 +49,11 @@ import ro.cosu.vampires.server.values.jobs.Job;
 import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 import ro.cosu.vampires.server.values.jobs.Result;
 import ro.cosu.vampires.server.values.jobs.Workload;
+import ro.cosu.vampires.server.values.resources.ResourceDemand;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
 import scala.concurrent.duration.Duration;
 
+import static com.google.common.collect.ImmutableList.of;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
@@ -57,7 +61,15 @@ import static org.junit.Assert.assertThat;
 public class ExecutionActorTest extends AbstractActorTest {
 
     private Execution getExec() {
-        Configuration configuration = Configuration.builder().resources(ImmutableList.of()).description("foo").build();
+
+        ImmutableList<ResourceDemand> resourceDemands = of(
+                ResourceDemand.builder().count(1).resourceDescription(ResourceDescription.builder()
+                        .provider(Resource.ProviderType.MOCK).type("foo")
+                        .cost(0.1)
+                        .build()).build()
+        );
+
+        Configuration configuration = Configuration.builder().resources(resourceDemands).description("foo").build();
         Workload workload = Workload.builder()
                 .format("%d")
                 .url("")
