@@ -46,7 +46,6 @@ public class ControllersModule extends AbstractModule{
         bind(WorkloadsController.class).asEagerSingleton();
         bind(ExceptionMapper.class).asEagerSingleton();
         bind(CorsFilter.class).asEagerSingleton();
-
         bind(FilesController.class).asEagerSingleton();
         if (withAuth) {
             bind(AuthenticationFilter.class).asEagerSingleton();

@@ -86,8 +86,6 @@ public class FilesController {
         Spark.get("/upload/:id", get());
         Spark.delete("/upload/:id", delete(), JsonTransformer.get());
 
-
-
     }
 
 
@@ -173,13 +171,8 @@ public class FilesController {
 
     }
 
-
     public Route list() {
-        return (request, response) -> {
-            return getAllFilesInfo().values();
-        };
+        return (request, response) -> getAllFilesInfo().values();
 
     }
-
-
 }

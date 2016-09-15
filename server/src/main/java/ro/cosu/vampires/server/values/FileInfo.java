@@ -37,13 +37,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
-import ro.cosu.vampires.server.rest.controllers.FilesController;
 import ro.cosu.vampires.server.util.gson.AutoGson;
 
 @AutoValue
 @AutoGson
 public abstract class FileInfo {
-    private static final Logger LOG = LoggerFactory.getLogger(FilesController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FileInfo.class);
 
     public static Optional<FileInfo> fromFile(File file) {
         String hash = null;
