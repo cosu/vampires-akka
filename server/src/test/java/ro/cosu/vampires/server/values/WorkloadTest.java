@@ -24,7 +24,7 @@
  *
  */
 
-package ro.cosu.vampires.server.workload;
+package ro.cosu.vampires.server.values;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;

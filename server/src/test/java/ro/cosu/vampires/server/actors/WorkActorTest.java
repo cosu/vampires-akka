@@ -30,21 +30,23 @@ import com.google.common.collect.ImmutableList;
 
 import org.junit.Test;
 
+import java.util.concurrent.TimeUnit;
+
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.Terminated;
 import akka.testkit.JavaTestKit;
+import ro.cosu.vampires.server.schedulers.Scheduler;
+import ro.cosu.vampires.server.schedulers.SimpleScheduler;
 import ro.cosu.vampires.server.values.jobs.Computation;
-import ro.cosu.vampires.server.values.resources.Configuration;
 import ro.cosu.vampires.server.values.jobs.Execution;
 import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
 import ro.cosu.vampires.server.values.jobs.ExecutionMode;
 import ro.cosu.vampires.server.values.jobs.Job;
-import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 import ro.cosu.vampires.server.values.jobs.Result;
 import ro.cosu.vampires.server.values.jobs.Workload;
-import ro.cosu.vampires.server.schedulers.Scheduler;
-import ro.cosu.vampires.server.schedulers.SimpleScheduler;
+import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
+import ro.cosu.vampires.server.values.resources.Configuration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -61,7 +63,7 @@ public class WorkActorTest extends AbstractActorTest {
     }
 
     private Scheduler getScheduler() {
-        return new SimpleScheduler(getExecution().workload().jobs(), 100, backOffinterval);
+        return new SimpleScheduler(getExecution().workload().jobs(), 100, TimeUnit.SECONDS, backOffinterval);
     }
     @Test
     public void testWork() {

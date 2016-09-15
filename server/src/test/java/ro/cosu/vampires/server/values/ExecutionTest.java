@@ -24,41 +24,35 @@
  *
  */
 
-package ro.cosu.vampires.server.workload;
+package ro.cosu.vampires.server.values;
 
 import com.google.common.collect.ImmutableList;
 
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
-
 import org.junit.Test;
 
-import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.values.jobs.Execution;
+import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
+import ro.cosu.vampires.server.values.jobs.ExecutionMode;
+import ro.cosu.vampires.server.values.jobs.Workload;
 import ro.cosu.vampires.server.values.resources.Configuration;
-import ro.cosu.vampires.server.values.resources.ConfigurationPayload;
-import ro.cosu.vampires.server.values.resources.ResourceDemand;
-import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
-import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
 
-public class ConfigurationTest {
-    @Test
-    public void builder() throws Exception {
-        Configuration foo = Configuration.builder().description("foo")
-                .resources(ImmutableList.of(
-                        ResourceDemand.builder().count(1)
-                                .resourceDescription(
-                                        ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("bar").cost(0).build()
-                                )
-                                .build()
-                )).build();
-        assertThat(foo.id(), not(isEmptyOrNullString()));
+public class ExecutionTest {
 
-        assertThat(foo.resources().size(), not(0));
+    @Test
+    public void build() throws Exception {
+
+        Configuration configuration = Configuration.builder().resources(ImmutableList.of()).description("foo").build();
+        Workload workload = Workload.builder().format("foo").sequenceStart(0).sequenceStop(10).task("bar").build();
+
+        Execution build = Execution.builder().configuration(configuration)
+                .info(ExecutionInfo.empty())
+                .type(ExecutionMode.FULL).workload(workload).build();
+
+        assertThat(build.info().status(), is(ExecutionInfo.Status.STARTING));
     }
 
 }

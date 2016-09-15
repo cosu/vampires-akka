@@ -24,21 +24,38 @@
  *
  */
 
-package ro.cosu.vampires.server.workload;
+package ro.cosu.vampires.server.values;
 
 import org.junit.Test;
 
-import ro.cosu.vampires.server.values.jobs.metrics.Metric;
+import ro.cosu.vampires.server.values.jobs.Workload;
+import ro.cosu.vampires.server.values.jobs.WorkloadPayload;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertThat;
 
 
-public class MetricTest {
-
+public class AutoValueUtilTest {
     @Test
-    public void testBuilder() throws Exception {
-        Metric empty = Metric.empty();
-        assertThat(empty.values().size(), is(0));
+    public void buildFrom() throws Exception {
+        WorkloadPayload foo = WorkloadPayload.builder().format("foo")
+                .sequenceStop(0).sequenceStart(1).task("10").url("100").build();
+
+        Workload.Builder builder = Workload.builder();
+
+        Workload build = new AutoValueUtil<WorkloadPayload, Workload.Builder>() {
+        }
+                .builderFromPayload(foo, builder).build();
+
+        assertThat(build.id(), not(isEmptyOrNullString()));
+        assertThat(build.format(), is(foo.format()));
+        assertThat(build.sequenceStart(), is(foo.sequenceStart()));
+        assertThat(build.sequenceStop(), is(foo.sequenceStop()));
+        assertThat(build.task(), is(foo.task()));
+
+
     }
+
 }

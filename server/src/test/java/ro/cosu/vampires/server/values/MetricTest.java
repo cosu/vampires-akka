@@ -24,35 +24,21 @@
  *
  */
 
-package ro.cosu.vampires.server.workload;
-
-import com.google.common.collect.ImmutableList;
+package ro.cosu.vampires.server.values;
 
 import org.junit.Test;
 
-import ro.cosu.vampires.server.values.resources.Configuration;
-import ro.cosu.vampires.server.values.jobs.Execution;
-import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
-import ro.cosu.vampires.server.values.jobs.ExecutionMode;
-import ro.cosu.vampires.server.values.jobs.Workload;
+import ro.cosu.vampires.server.values.jobs.metrics.Metric;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 
-public class ExecutionTest {
+public class MetricTest {
 
     @Test
-    public void build() throws Exception {
-
-        Configuration configuration = Configuration.builder().resources(ImmutableList.of()).description("foo").build();
-        Workload workload = Workload.builder().format("foo").sequenceStart(0).sequenceStop(10).task("bar").build();
-
-        Execution build = Execution.builder().configuration(configuration)
-                .info(ExecutionInfo.empty())
-                .type(ExecutionMode.FULL).workload(workload).build();
-
-        assertThat(build.info().status(), is(ExecutionInfo.Status.STARTING));
+    public void testBuilder() throws Exception {
+        Metric empty = Metric.empty();
+        assertThat(empty.values().size(), is(0));
     }
-
 }

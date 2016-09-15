@@ -24,39 +24,63 @@
  *
  */
 
-package ro.cosu.vampires.server.workload.schedulers;
+package ro.cosu.vampires.server.schedulers;
 
 import org.junit.Before;
 import org.junit.Test;
-import ro.cosu.vampires.server.values.jobs.Job;
-import ro.cosu.vampires.server.schedulers.SamplingScheduler;
-import ro.cosu.vampires.server.schedulers.Scheduler;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import ro.cosu.vampires.server.values.jobs.Computation;
+import ro.cosu.vampires.server.values.jobs.Job;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 
 
-public class SamplingSchedulerTest {
+public class SimpleSchedulerTest {
 
-    private Scheduler scheduler;
+    private SimpleScheduler scheduler;
 
     @Before
     public void setUp() throws Exception {
-        List<Job> jobs = Arrays.asList(Job.empty().withCommand("foo"), Job.empty().withCommand("bar"));
-        scheduler = new SamplingScheduler(jobs, 1, 1, 10);
+        List<Job> jobs = Collections.singletonList(Job.empty());
+        scheduler = new SimpleScheduler(jobs, 10, TimeUnit.MILLISECONDS, 1);
     }
 
     @Test
     public void testGetJob() throws Exception {
-        List<Job> jobsClient1 = Arrays.asList(scheduler.getJob("client1"), scheduler.getJob("client1"));
-        List<Job> jobsClient2 = Arrays.asList(scheduler.getJob("client2"), scheduler.getJob("client2"));
-        assertThat(scheduler.isDone(), is(false));
+        Job foo = scheduler.getJob("foo");
+        assertThat(foo, notNullValue());
+    }
 
-        jobsClient1.stream().map(job -> job.from("client1")).forEach(scheduler::markDone);
-        jobsClient2.stream().map(job -> job.from("client2")).forEach(scheduler::markDone);
+    @Test
+    public void testMarkDone() throws Exception {
+        Job foo = scheduler.getJob("foo");
+        scheduler.markDone(foo);
         assertThat(scheduler.isDone(), is(true));
     }
+
+    @Test
+    public void testGetBackoff() throws Exception {
+        scheduler.getJob("foo");
+        Job foo = scheduler.getJob("foo");
+        assertThat(foo.computation().id(), is(Computation.BACKOFF));
+    }
+
+    @Test
+    public void testEviction() throws Exception {
+        Job first = scheduler.getJob("foo");
+        Thread.sleep(200);
+
+        scheduler.getPendingJobs().cleanUp();
+        Job second = scheduler.getJob("bar");
+
+        assertThat(first.id(), is(second.id()));
+
+    }
+
 }

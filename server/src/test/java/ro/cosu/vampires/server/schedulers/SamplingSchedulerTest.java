@@ -24,31 +24,38 @@
  *
  */
 
-package ro.cosu.vampires.server.workload;
+package ro.cosu.vampires.server.schedulers;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.util.collections.Sets;
 
-import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
-import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
-import ro.cosu.vampires.server.values.jobs.metrics.Trace;
+import ro.cosu.vampires.server.values.jobs.Job;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 
-public class TraceTest {
 
-    @Test
-    public void testWithNoMetrics() {
-        Trace trace = Trace.withNoMetrics()
-                .start(LocalDateTime.now())
-                .stop(LocalDateTime.now())
-                .cpuSet(Sets.newSet(1))
-                .totalCpuCount(1)
-                .executor("foo")
-                .build();
-        assertThat(trace.executorMetrics(), is(Metrics.empty()));
+public class SamplingSchedulerTest {
+
+    private Scheduler scheduler;
+
+    @Before
+    public void setUp() throws Exception {
+        List<Job> jobs = Arrays.asList(Job.empty().withCommand("foo"), Job.empty().withCommand("bar"));
+        scheduler = new SamplingScheduler(jobs, 1, 1, 10);
     }
 
+    @Test
+    public void testGetJob() throws Exception {
+        List<Job> jobsClient1 = Arrays.asList(scheduler.getJob("client1"), scheduler.getJob("client1"));
+        List<Job> jobsClient2 = Arrays.asList(scheduler.getJob("client2"), scheduler.getJob("client2"));
+        assertThat(scheduler.isDone(), is(false));
+
+        jobsClient1.stream().map(job -> job.from("client1")).forEach(scheduler::markDone);
+        jobsClient2.stream().map(job -> job.from("client2")).forEach(scheduler::markDone);
+        assertThat(scheduler.isDone(), is(true));
+    }
 }

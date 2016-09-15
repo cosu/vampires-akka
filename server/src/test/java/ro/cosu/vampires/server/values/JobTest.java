@@ -24,52 +24,51 @@
  *
  */
 
-package ro.cosu.vampires.server.workload;
+package ro.cosu.vampires.server.values;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import ro.cosu.vampires.server.values.jobs.Computation;
 import ro.cosu.vampires.server.values.jobs.Job;
-import ro.cosu.vampires.server.schedulers.Scheduler;
-import ro.cosu.vampires.server.schedulers.SimpleScheduler;
+import ro.cosu.vampires.server.values.jobs.JobStatus;
+import ro.cosu.vampires.server.values.jobs.Result;
+import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 
-import java.util.Collections;
-import java.util.List;
-
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
 
+public class JobTest {
+    @Test
+    public void testWorkloadBuilder() throws Exception {
 
-public class SimpleSchedulerTest {
+        Job build = getJob();
+        assertThat(build.computation().id(), is("10"));
+    }
 
-    private Scheduler scheduler;
-
-    @Before
-    public void setUp() throws Exception {
-        List<Job> jobs = Collections.singletonList(Job.empty());
-        scheduler = new SimpleScheduler(jobs, 1, 1);
+    private Job getJob() {
+        return Job.builder()
+                .computation(Computation.builder().command("test").id("10").build())
+                .hostMetrics(Metrics.empty())
+                .result(Result.empty())
+                .build();
     }
 
     @Test
-    public void testGetJob() throws Exception {
-        Job foo = scheduler.getJob("foo");
-        assertThat(foo, notNullValue());
+    public void testWithResult() throws Exception {
+        Job job = getJob().withResult(Result.empty());
+        assertThat(job.status(), is(JobStatus.EXECUTED));
     }
 
     @Test
-    public void testMarkDone() throws Exception {
-        Job foo = scheduler.getJob("foo");
-        scheduler.markDone(foo);
-        assertThat(scheduler.isDone(), is(true));
+    public void testWithMetrics() throws Exception {
+        Job job = getJob().withHostMetrics(Metrics.empty());
+        assertThat(job.status(), is(JobStatus.COMPLETE));
     }
 
     @Test
-    public void testGetBackoff() throws Exception {
-        scheduler.getJob("foo");
-        Job foo = scheduler.getJob("foo");
-        assertThat(foo.computation().id(), is(Computation.BACKOFF));
+    public void testWithBackoff() throws Exception {
+        Job job = Job.backoff(5);
+        assertThat(job.computation().command(), containsString("sleep 5"));
     }
-
 }

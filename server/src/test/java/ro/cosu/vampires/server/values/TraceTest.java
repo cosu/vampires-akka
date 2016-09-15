@@ -24,51 +24,31 @@
  *
  */
 
-package ro.cosu.vampires.server.workload;
+package ro.cosu.vampires.server.values;
 
 import org.junit.Test;
+import org.mockito.internal.util.collections.Sets;
 
-import ro.cosu.vampires.server.values.jobs.Computation;
-import ro.cosu.vampires.server.values.jobs.Job;
-import ro.cosu.vampires.server.values.jobs.JobStatus;
+import java.time.LocalDateTime;
+
 import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
-import ro.cosu.vampires.server.values.jobs.Result;
+import ro.cosu.vampires.server.values.jobs.metrics.Trace;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-public class JobTest {
+public class TraceTest {
+
     @Test
-    public void testWorkloadBuilder() throws Exception {
-
-        Job build = getJob();
-        assertThat(build.computation().id(), is("10"));
-    }
-
-    private Job getJob() {
-        return Job.builder()
-                .computation(Computation.builder().command("test").id("10").build())
-                .hostMetrics(Metrics.empty())
-                .result(Result.empty())
+    public void testWithNoMetrics() {
+        Trace trace = Trace.withNoMetrics()
+                .start(LocalDateTime.now())
+                .stop(LocalDateTime.now())
+                .cpuSet(Sets.newSet(1))
+                .totalCpuCount(1)
+                .executor("foo")
                 .build();
+        assertThat(trace.executorMetrics(), is(Metrics.empty()));
     }
 
-    @Test
-    public void testWithResult() throws Exception {
-        Job job = getJob().withResult(Result.empty());
-        assertThat(job.status(), is(JobStatus.EXECUTED));
-    }
-
-    @Test
-    public void testWithMetrics() throws Exception {
-        Job job = getJob().withHostMetrics(Metrics.empty());
-        assertThat(job.status(), is(JobStatus.COMPLETE));
-    }
-
-    @Test
-    public void testWithBackoff() throws Exception {
-        Job job = Job.backoff(5);
-        assertThat(job.computation().command(), containsString("sleep 5"));
-    }
 }

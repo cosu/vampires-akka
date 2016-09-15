@@ -24,39 +24,44 @@
  *
  */
 
-package ro.cosu.vampires.server.workload;
+package ro.cosu.vampires.server.estimators;
+
+import com.google.common.collect.Maps;
 
 import org.junit.Test;
 
-import ro.cosu.vampires.server.values.AutoValueUtil;
-import ro.cosu.vampires.server.values.jobs.Workload;
-import ro.cosu.vampires.server.values.jobs.WorkloadPayload;
+import java.util.Map;
+import java.util.stream.StreamSupport;
 
-import static org.hamcrest.Matchers.isEmptyOrNullString;
+import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.values.resources.ConfigurationIterable;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
+
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
-
-public class AutoValueUtilTest {
+public class ConfigurationIterableTest {
     @Test
-    public void buildFrom() throws Exception {
-        WorkloadPayload foo = WorkloadPayload.builder().format("foo")
-                .sequenceStop(0).sequenceStart(1).task("10").url("100").build();
+    public void getNextSchedule() throws Exception {
 
-        Workload.Builder builder = Workload.builder();
+        Map<ResourceDescription, Integer> resourceDescriptionLongMap = Maps.newHashMap();
 
-        Workload build = new AutoValueUtil<WorkloadPayload, Workload.Builder>() {
-        }
-                .builderFromPayload(foo, builder).build();
+        resourceDescriptionLongMap.put(
 
-        assertThat(build.id(), not(isEmptyOrNullString()));
-        assertThat(build.format(), is(foo.format()));
-        assertThat(build.sequenceStart(), is(foo.sequenceStart()));
-        assertThat(build.sequenceStop(), is(foo.sequenceStop()));
-        assertThat(build.task(), is(foo.task()));
+                ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("small").cost(10).build(), 3);
 
+        resourceDescriptionLongMap.put(
+                ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("medium").cost(10).build(), 3);
+
+        resourceDescriptionLongMap.put(
+                ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("large").cost(10).build(), 3);
+
+        ConfigurationIterable configurations = new ConfigurationIterable(resourceDescriptionLongMap);
+
+        assertThat(StreamSupport.stream(configurations.spliterator(), false).count(), is(9L));
+
+        configurations.forEach(c -> assertThat(c.resources().size() , not(0)));
 
     }
-
 }

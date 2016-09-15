@@ -24,7 +24,7 @@
  *
  */
 
-package ro.cosu.vampires.server.workload.estimators;
+package ro.cosu.vampires.server.estimators;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
@@ -39,11 +39,9 @@ import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.values.resources.Configuration;
 import ro.cosu.vampires.server.values.resources.ResourceDemand;
 import ro.cosu.vampires.server.values.resources.ResourceDescription;
-import ro.cosu.vampires.server.estimators.SimpleEstimator;
 
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class SimpleEstimatorTest {
 

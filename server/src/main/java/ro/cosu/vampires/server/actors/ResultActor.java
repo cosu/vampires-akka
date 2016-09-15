@@ -30,6 +30,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import akka.actor.ActorRef;
 import akka.actor.Cancellable;
@@ -102,14 +103,12 @@ public class ResultActor extends UntypedActor {
         workActor = getContext().actorOf(WorkActor.props(scheduler), "workActor");
 
         logSchedule = getContext().system().scheduler().schedule(scala.concurrent.duration.Duration.Zero(),
-                scala.concurrent.duration.Duration.create(30, SECONDS), () -> {
-                    log.info("results so far: {}/{}", results.size(), totalSize);
-                }, getContext().system().dispatcher());
+                scala.concurrent.duration.Duration.create(30, SECONDS),
+                () -> log.info("results so far: {}/{}", results.size(), totalSize), getContext().system().dispatcher());
 
         statsSchedule = getContext().system().scheduler().schedule(scala.concurrent.duration.Duration.Zero(),
-                scala.concurrent.duration.Duration.create(500, MILLISECONDS), () -> {
-                    statsProcessor.flush();
-                }, getContext().system().dispatcher());
+                scala.concurrent.duration.Duration.create(500, MILLISECONDS),
+                () -> statsProcessor.flush(), getContext().system().dispatcher());
 
     }
 
@@ -195,6 +194,7 @@ public class ResultActor extends UntypedActor {
             return new SamplingScheduler(jobs, settings.getJobDeadline(),
                     settings.getBackoffInterval(), settings.getNumberOfJobsToSample());
         } else
-            return new SimpleScheduler(jobs, settings.getJobDeadline(), settings.getBackoffInterval());
+            return new SimpleScheduler(jobs, settings.getJobDeadline(), TimeUnit.SECONDS,
+                    settings.getBackoffInterval());
     }
 }

@@ -24,11 +24,12 @@
  *
  */
 
-package ro.cosu.vampires.server.workload;
+package ro.cosu.vampires.server.values;
 
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+
 import org.junit.Test;
 
 import java.io.File;

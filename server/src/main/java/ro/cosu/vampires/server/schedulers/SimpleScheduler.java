@@ -43,16 +43,16 @@ public class SimpleScheduler implements Scheduler {
 
     private static final Logger LOG = LoggerFactory.getLogger(SimpleScheduler.class);
 
-    protected final ConcurrentLinkedQueue<Job> workQueue = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<Job> workQueue = new ConcurrentLinkedQueue<>();
     private final int backOffInterval;
     private Cache<String, Job> pendingJobs;
     private List<Job> jobList;
 
-    public SimpleScheduler(List<Job> jobList, long jobDeadline, int backOffInterval) {
+    public SimpleScheduler(List<Job> jobList, long jobDeadline, TimeUnit timeUnit, int backOffInterval) {
         this.jobList = jobList;
         this.backOffInterval = backOffInterval;
         workQueue.addAll(jobList);
-        pendingJobs = CacheBuilder.newBuilder().expireAfterWrite(jobDeadline, TimeUnit.SECONDS)
+        pendingJobs = CacheBuilder.newBuilder().expireAfterWrite(jobDeadline, timeUnit)
                 .removalListener(notification -> {
                     if (!notification.wasEvicted()) {
                         return;
@@ -69,15 +69,11 @@ public class SimpleScheduler implements Scheduler {
 
     @Override
     public Job getJob(String from) {
-        Optional<Job> work = Optional.ofNullable(workQueue.poll());
-        Job job;
-        if (work.isPresent()) {
-            job = work.get();
-            pendingJobs.put(job.id(), job);
-        } else {
-            job = Job.backoff(backOffInterval);
-        }
-        return job;
+        return Optional.ofNullable(workQueue.poll())
+                .map(job -> {
+                    pendingJobs.put(job.id(), job);
+                    return job;
+                }).orElseGet(() -> Job.backoff(backOffInterval));
     }
 
     @Override
@@ -97,5 +93,8 @@ public class SimpleScheduler implements Scheduler {
         return jobList.size();
     }
 
+    Cache getPendingJobs() {
+        return pendingJobs;
+    }
 
 }

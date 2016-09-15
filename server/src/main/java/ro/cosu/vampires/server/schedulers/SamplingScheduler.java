@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import ro.cosu.vampires.server.values.jobs.Job;
 
@@ -62,7 +63,7 @@ public class SamplingScheduler implements Scheduler {
     @Override
     public Job getJob(String from) {
         Scheduler scheduler = schedulerMap.getOrDefault(from,
-                new SimpleScheduler(jobList, jobDeadline, backOffInterval));
+                new SimpleScheduler(jobList, jobDeadline, TimeUnit.SECONDS, backOffInterval));
 
         schedulerMap.put(from, scheduler);
 
