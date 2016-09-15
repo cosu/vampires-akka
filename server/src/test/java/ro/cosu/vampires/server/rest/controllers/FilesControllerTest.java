@@ -11,6 +11,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -39,6 +40,13 @@ public class FilesControllerTest {
     @AfterClass
     public static void tearDown() throws Exception {
         Spark.stop();
+    }
+
+
+    @Before
+    public void setUp() throws Exception {
+        Spark.awaitInitialization();
+
     }
 
     @Test
