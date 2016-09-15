@@ -115,11 +115,9 @@ public class BootstrapIT {
 
         Timeout timeout = new Timeout(Duration.create(100, "milliseconds"));
 
-        Thread.sleep(1000);
-
         while (running && count < maxCount) {
 
-            Thread.sleep(1000);
+            Thread.sleep(2000);
             count++;
 
             Future<Object> ask = Patterns.ask(bootstrap,
