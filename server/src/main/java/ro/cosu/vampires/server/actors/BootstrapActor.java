@@ -50,11 +50,9 @@ import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
 import ro.cosu.vampires.server.rest.RestModule;
-import ro.cosu.vampires.server.rest.services.WorkloadsService;
 import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.jobs.Execution;
 import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
-import ro.cosu.vampires.server.values.jobs.WorkloadPayload;
 import spark.Spark;
 
 public class BootstrapActor extends UntypedActor {
@@ -76,15 +74,10 @@ public class BootstrapActor extends UntypedActor {
         this.terminator = terminator;
         configurationsActor = getContext().actorOf(ConfigurationsActor.props(), "configurations");
         workloadsActor = getContext().actorOf(WorkloadsActor.props(), "workloads");
-
     }
 
     public static Props props(ActorRef terminator) {
         return Props.create(BootstrapActor.class, terminator);
-    }
-
-    private User getUser() {
-        return User.admin();
     }
 
     @Override

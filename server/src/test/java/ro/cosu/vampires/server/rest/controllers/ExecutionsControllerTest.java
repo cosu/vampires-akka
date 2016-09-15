@@ -34,10 +34,12 @@ import com.google.inject.Module;
 
 import com.typesafe.config.ConfigFactory;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
@@ -92,6 +94,7 @@ public class ExecutionsControllerTest {
             protected void configure() {
                 bind(ExecutionsController.class).asEagerSingleton();
                 bind(AuthenticationFilter.class).asEagerSingleton();
+                bind(CorsFilter.class).asEagerSingleton();
                 install(new ServicesTestModule(system));
             }
         };
@@ -183,6 +186,21 @@ public class ExecutionsControllerTest {
         assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_NO_CONTENT));
 
         assertThat(execute.getEntity(), nullValue());
+    }
+
+    @Test
+    public void options() throws Exception {
+
+        HttpOptions httpOptions = new HttpOptions(url + "/");
+
+        HttpClient httpClient  = getHttpClient();
+
+        HttpResponse response = httpClient.execute(httpOptions);
+
+        assertThat(response.getStatusLine().getStatusCode(), is(HTTP_OK));
+        Header[] originHeaders = response.getHeaders("Access-Control-Allow-Origin");
+        assertThat(originHeaders.length, is(1));
+        assertThat(originHeaders[0].getValue(), is("*"));
 
     }
 }
