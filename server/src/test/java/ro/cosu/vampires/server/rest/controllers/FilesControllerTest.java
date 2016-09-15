@@ -37,7 +37,7 @@ public class FilesControllerTest {
     }
 
     @AfterClass
-    public void tearDown() throws Exception {
+    public static void tearDown() throws Exception {
         Spark.stop();
     }
 
