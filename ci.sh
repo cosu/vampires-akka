@@ -2,7 +2,7 @@
 
 set -ev
 # run tests
-./gradlew check --parallel
+./gradlew check
 
 
 #nstall the client locally
