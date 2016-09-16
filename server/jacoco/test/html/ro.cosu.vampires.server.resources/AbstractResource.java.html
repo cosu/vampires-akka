@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractResource.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.server.resources</a> &gt; <span class="el_source">AbstractResource.java</span></div><h1>AbstractResource.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.server.resources;
+
+import org.slf4j.Logger;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+
+public abstract class AbstractResource implements Resource {
+
+    private final Parameters parameters;
+<span class="fc" id="L37">    private Resource.Status status = Status.UNKNOWN;</span>
+<span class="fc" id="L38">    public AbstractResource(Resource.Parameters parameters) {</span>
+<span class="fc" id="L39">        this.parameters = parameters;</span>
+<span class="fc" id="L40">        setStatus(Status.SLEEPING);</span>
+<span class="fc" id="L41">    }</span>
+
+    protected abstract Logger getLogger();
+
+    public CompletableFuture&lt;Resource&gt; start() {
+<span class="fc" id="L46">        return CompletableFuture.supplyAsync(this::startCall)</span>
+<span class="fc" id="L47">                .exceptionally(this::fail);</span>
+    }
+
+    public CompletableFuture&lt;Resource&gt; stop() {
+<span class="fc" id="L51">        return CompletableFuture.supplyAsync(this::stopCall)</span>
+<span class="fc" id="L52">                .exceptionally(this::fail);</span>
+
+    }
+
+    public Resource startCall() {
+<span class="fc" id="L57">        setStatus(Status.STARTING);</span>
+        try {
+<span class="fc" id="L59">            this.onStart();</span>
+<span class="fc" id="L60">        } catch (Exception e) {</span>
+<span class="fc" id="L61">            throw new CompletionException(e);</span>
+<span class="fc" id="L62">        }</span>
+<span class="fc" id="L63">        setStatus(Status.RUNNING);</span>
+<span class="fc" id="L64">        return this;</span>
+    }
+
+    public Resource fail(Throwable ex) {
+<span class="fc" id="L68">        getLogger().debug(&quot;failed resource&quot;, ex);</span>
+        try {
+<span class="fc" id="L70">            this.onFail();</span>
+<span class="nc" id="L71">        } catch (Exception e) {</span>
+<span class="nc" id="L72">            throw new CompletionException(e);</span>
+        } finally {
+<span class="pc" id="L74">            setStatus(Status.FAILED);</span>
+<span class="fc" id="L75">        }</span>
+<span class="fc" id="L76">        return this;</span>
+    }
+
+    public Resource stopCall() {
+<span class="pc bpc" id="L80" title="1 of 4 branches missed.">        if (status.equals(Status.STOPPED) || status.equals(Status.STOPPING))</span>
+<span class="fc" id="L81">            return this;</span>
+<span class="fc" id="L82">        setStatus(Status.STOPPING);</span>
+        try {
+<span class="fc" id="L84">            this.onStop();</span>
+<span class="nc" id="L85">        } catch (Exception e) {</span>
+<span class="nc" id="L86">            throw new CompletionException(e);</span>
+<span class="fc" id="L87">        }</span>
+<span class="fc" id="L88">        setStatus(Status.STOPPED);</span>
+<span class="fc" id="L89">        return this;</span>
+    }
+
+
+    @Override
+    public void connected() {
+<span class="fc" id="L95">        setStatus(Status.CONNECTED);</span>
+<span class="fc" id="L96">    }</span>
+
+    @Override
+    public Parameters parameters() {
+<span class="fc" id="L100">        return parameters;</span>
+    }
+
+
+    @Override
+    public Status status() {
+<span class="fc" id="L106">        return status;</span>
+    }
+
+    public void setStatus(Status status) {
+<span class="fc" id="L110">        getLogger().debug(&quot;{} =&gt; {}&quot;, toString(), status);</span>
+        //TODO check for illegal state transition
+<span class="fc" id="L112">        this.status = status;</span>
+<span class="fc" id="L113">    }</span>
+
+    @Override
+    public String toString() {
+<span class="fc" id="L117">        return String.format(&quot;%s %s %s = %s&quot;, parameters.providerType(), parameters.instanceType(), parameters.id(), status);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

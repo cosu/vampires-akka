@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClientConfigActor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.server.actors</a> &gt; <span class="el_source">ClientConfigActor.java</span></div><h1>ClientConfigActor.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.server.actors;
+
+import akka.actor.Props;
+import akka.actor.UntypedActor;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
+import ro.cosu.vampires.server.actors.settings.Settings;
+import ro.cosu.vampires.server.actors.settings.SettingsImpl;
+import ro.cosu.vampires.server.values.ClientConfig;
+import ro.cosu.vampires.server.values.ClientInfo;
+
+<span class="fc" id="L38">public class ClientConfigActor extends UntypedActor {</span>
+<span class="fc" id="L39">    private final SettingsImpl settings =</span>
+<span class="fc" id="L40">            Settings.SettingsProvider.get(getContext().system());</span>
+<span class="fc" id="L41">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
+
+    public static Props props() {
+<span class="fc" id="L44">        return Props.create(ClientConfigActor.class);</span>
+    }
+
+    @Override
+    public void onReceive(Object message) throws Exception {
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">        if (message instanceof ClientInfo) {</span>
+<span class="fc" id="L50">            ClientInfo clientInfo = (ClientInfo) message;</span>
+<span class="fc" id="L51">            final ClientConfig configFor = getConfigFor(clientInfo);</span>
+<span class="fc" id="L52">            log.debug(&quot;config for client {} {} {}&quot;, clientInfo.id(),</span>
+<span class="fc" id="L53">                    clientInfo.metrics().metadata().get(&quot;host-hostname&quot;), configFor);</span>
+<span class="fc" id="L54">            getSender().tell(configFor, getSelf());</span>
+<span class="fc" id="L55">        } else {</span>
+<span class="nc" id="L56">            unhandled(message);</span>
+        }
+<span class="fc" id="L58">    }</span>
+
+    private ClientConfig getConfigFor(ClientInfo clientInfo) {
+        //take the first executor defined in the config
+<span class="fc" id="L62">        return settings</span>
+<span class="fc" id="L63">                .getExecutors().stream()</span>
+<span class="fc" id="L64">                .filter(ex -&gt; clientInfo.executors().containsKey(ex))</span>
+<span class="fc" id="L65">                .findFirst()</span>
+<span class="fc" id="L66">                .map(executor -&gt; getConfig(executor, clientInfo))</span>
+<span class="fc" id="L67">                .orElseGet(() -&gt; {</span>
+<span class="fc" id="L68">                    log.error(&quot;client has reported unsupported executors: {} &quot;, clientInfo.executors());</span>
+<span class="fc" id="L69">                    return ClientConfig.empty();</span>
+                });
+
+    }
+
+    private ClientConfig getConfig(String executor, ClientInfo clientInfo) {
+<span class="fc" id="L75">        int executorCpuCount = clientInfo.executors().get(executor);</span>
+<span class="fc" id="L76">        int cpuSetSize = Math.min(executorCpuCount, settings.getCpuSetSize());</span>
+        //this happens if the config says use 2 cpus but the machine has only 1.
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">        if (executorCpuCount &lt; settings.getCpuSetSize()) {</span>
+<span class="nc" id="L79">            log.warning(&quot;Client reported less cpus ({}) than CPU_SET_SIZE ({})&quot;, executorCpuCount,</span>
+<span class="nc" id="L80">                    settings.getCpuSetSize());</span>
+        }
+<span class="fc" id="L82">        int numberOfExecutors = executorCpuCount / cpuSetSize;</span>
+
+<span class="fc" id="L84">        return ClientConfig.builder()</span>
+<span class="fc" id="L85">                .cpuSetSize(cpuSetSize)</span>
+<span class="fc" id="L86">                .executor(executor)</span>
+<span class="fc" id="L87">                .numberOfExecutors(numberOfExecutors)</span>
+<span class="fc" id="L88">                .build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

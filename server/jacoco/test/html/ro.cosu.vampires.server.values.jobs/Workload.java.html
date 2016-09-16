@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Workload.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.server.values.jobs</a> &gt; <span class="el_source">Workload.java</span></div><h1>Workload.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.server.values.jobs;
+
+
+import com.google.auto.value.AutoValue;
+import com.google.common.base.Splitter;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import ro.cosu.vampires.server.util.gson.AutoGson;
+import ro.cosu.vampires.server.values.AutoValueUtil;
+import ro.cosu.vampires.server.values.Id;
+
+@AutoValue
+@AutoGson
+
+<span class="fc" id="L46">public abstract class Workload implements Id {</span>
+
+    public static Workload.Builder builder() {
+<span class="fc" id="L49">        return new AutoValue_Workload.Builder().id(UUID.randomUUID().toString())</span>
+<span class="fc" id="L50">                .createdAt(LocalDateTime.now())</span>
+<span class="fc" id="L51">                .updatedAt(LocalDateTime.now())</span>
+<span class="fc" id="L52">                .format(&quot;&quot;)</span>
+<span class="fc" id="L53">                .task(&quot;&quot;)</span>
+<span class="fc" id="L54">                .description(&quot;&quot;)</span>
+<span class="fc" id="L55">                .url(&quot;&quot;)</span>
+<span class="fc" id="L56">                .file(&quot;&quot;)</span>
+<span class="fc" id="L57">                .sequenceStart(0)</span>
+<span class="fc" id="L58">                .sequenceStop(0);</span>
+    }
+
+
+    public static Workload fromPayload(WorkloadPayload payload) {
+<span class="fc" id="L63">        return new AutoValueUtil&lt;WorkloadPayload, Builder&gt;() {</span>
+        }
+<span class="fc" id="L65">                .builderFromPayload(payload, builder()).build();</span>
+    }
+
+
+    public Workload updateFromPayload(WorkloadPayload payload) {
+<span class="fc" id="L70">        return new AutoValueUtil&lt;WorkloadPayload, Workload.Builder&gt;() {</span>
+        }
+<span class="fc" id="L72">                .builderFromPayload(payload, toBuilder()).build();</span>
+    }
+
+
+    public abstract String id();
+
+    public abstract LocalDateTime createdAt();
+
+    public abstract LocalDateTime updatedAt();
+
+    public abstract int sequenceStart();
+
+    public abstract int sequenceStop();
+
+    public abstract String task();
+
+    public abstract String format();
+
+    public abstract String url();
+
+    public abstract String file();
+
+    public abstract String description();
+
+    public abstract Builder toBuilder();
+
+    public Builder update() {
+<span class="fc" id="L99">        return toBuilder()</span>
+<span class="fc" id="L100">                .updatedAt(LocalDateTime.now());</span>
+    }
+
+    public int size() {
+<span class="fc" id="L104">        return jobs().size();</span>
+    }
+
+    public List&lt;Job&gt; jobs() {
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (!file().equals(&quot;&quot;)) {</span>
+<span class="fc" id="L109">            return getJobsFromFile();</span>
+        } else {
+<span class="fc" id="L111">            return getJobsFromSequence();</span>
+        }
+    }
+
+
+    private List&lt;Job&gt; getJobsFromFile() {
+<span class="fc" id="L117">        return Splitter.on(&quot;\n&quot;).splitToList(file()).stream()</span>
+<span class="fc" id="L118">                .map(Job.empty()::withCommand)</span>
+<span class="fc" id="L119">                .collect(Collectors.toList());</span>
+    }
+
+    private List&lt;Job&gt; getJobsFromSequence() {
+<span class="fc" id="L123">        final String finalUrl = url();</span>
+<span class="fc" id="L124">        final String finalFormat = format();</span>
+<span class="fc" id="L125">        return IntStream.rangeClosed(sequenceStart(), sequenceStop()).mapToObj(i -&gt; String.format(finalFormat, i))</span>
+<span class="fc" id="L126">                .map(f -&gt; String.format(&quot;%s %s%s&quot;, task(), finalUrl, f).trim())</span>
+<span class="fc" id="L127">                .map(command -&gt; Job.empty().withCommand(command))</span>
+<span class="fc" id="L128">                .collect(Collectors.toList());</span>
+    }
+
+<span class="fc" id="L131">    @AutoValue.Builder</span>
+<span class="fc" id="L132">    public abstract static class Builder {</span>
+
+        public abstract Builder id(String id);
+
+        public abstract Builder sequenceStart(int sequenceStrat);
+
+        public abstract Builder createdAt(LocalDateTime createdAt);
+
+        public abstract Builder updatedAt(LocalDateTime createdAt);
+
+        public abstract Builder sequenceStop(int sequenceStop);
+
+        public abstract Builder task(String task);
+
+        public abstract Builder format(String format);
+
+        public abstract Builder file(String file);
+
+        public abstract Builder url(String format);
+
+        public abstract Builder description(String description);
+
+        public abstract Workload build();
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

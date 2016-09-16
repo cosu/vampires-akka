@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FilesController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.server.rest.controllers</a> &gt; <span class="el_source">FilesController.java</span></div><h1>FilesController.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.server.rest.controllers;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
+import com.google.inject.Inject;
+
+import com.typesafe.config.Config;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
+
+import ro.cosu.vampires.server.rest.JsonTransformer;
+import ro.cosu.vampires.server.values.FileInfo;
+import spark.Route;
+import spark.Spark;
+
+import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
+
+public class FilesController {
+
+<span class="fc" id="L64">    private static final Logger LOG = LoggerFactory.getLogger(FilesController.class);</span>
+<span class="fc" id="L65">    private static long maxFileSize = 100000000;  // the maximum size allowed for uploaded files</span>
+<span class="fc" id="L66">    private static long maxRequestSize = 100000000;  // the maximum size allowed for multipart/form-data requests</span>
+<span class="fc" id="L67">    private static int fileSizeThreshold = 1024;  // the size threshold after which files will be written to disk</span>
+    private Map&lt;String, FileInfo&gt; files;
+    private File uploadDir;
+
+    @Inject
+<span class="fc" id="L72">    FilesController(Config config) {</span>
+<span class="fc" id="L73">        uploadDir = new File(Paths.get(config.getString(&quot;uploadDir&quot;), &quot;/vampires&quot;).toUri());</span>
+<span class="fc" id="L74">        uploadDir.mkdir();</span>
+
+        try {
+<span class="fc" id="L77">            files = getAllFilesInfo();</span>
+<span class="nc" id="L78">        } catch (IOException e) {</span>
+<span class="nc" id="L79">            LOG.error(&quot;can not read files&quot;);</span>
+<span class="nc" id="L80">            files = Maps.newConcurrentMap();</span>
+<span class="fc" id="L81">        }</span>
+
+<span class="fc" id="L83">        LOG.debug(&quot;Upload dir {}&quot;, uploadDir);</span>
+<span class="fc" id="L84">        Spark.post(&quot;/upload&quot;, upload(), JsonTransformer.get());</span>
+<span class="fc" id="L85">        Spark.get(&quot;/upload&quot;, list(), JsonTransformer.get());</span>
+<span class="fc" id="L86">        Spark.get(&quot;/upload/:id&quot;, get());</span>
+<span class="fc" id="L87">        Spark.delete(&quot;/upload/:id&quot;, delete(), JsonTransformer.get());</span>
+
+<span class="fc" id="L89">    }</span>
+
+
+    public Route upload() {
+<span class="fc" id="L93">        return (request, response) -&gt; {</span>
+
+<span class="fc" id="L95">            Path uploads = Files.createTempDirectory(&quot;uploads&quot;);</span>
+
+<span class="fc" id="L97">            MultipartConfigElement multipartConfigElement = new MultipartConfigElement(</span>
+<span class="fc" id="L98">                    uploads.toAbsolutePath().toString(), maxFileSize, maxRequestSize,</span>
+                    fileSizeThreshold);
+
+<span class="fc" id="L101">            request.raw().setAttribute(&quot;org.eclipse.jetty.multipartConfig&quot;, multipartConfigElement);</span>
+<span class="fc" id="L102">            String fileName = request.raw().getPart(&quot;file&quot;).getSubmittedFileName();</span>
+
+<span class="fc" id="L104">            Part uploadedFilePart = request.raw().getPart(&quot;file&quot;);</span>
+
+<span class="fc" id="L106">            Path filePath = Paths.get(uploadDir.getAbsolutePath(), fileName);</span>
+
+<span class="pc" id="L108">            try (final InputStream input = uploadedFilePart.getInputStream()) {</span>
+<span class="fc" id="L109">                Files.copy(input, filePath, StandardCopyOption.REPLACE_EXISTING);</span>
+<span class="pc bpc" id="L110" title="6 of 8 branches missed.">            }</span>
+
+<span class="fc" id="L112">            FileInfo fileInfo = FileInfo.fromFile(filePath.toFile())</span>
+<span class="pc" id="L113">                    .orElseThrow(() -&gt; new IOException(&quot;failed to upload file&quot;));</span>
+
+<span class="fc" id="L115">            files.put(fileInfo.id(), fileInfo);</span>
+<span class="fc" id="L116">            LOG.debug(&quot;added file: {}&quot;, fileInfo);</span>
+<span class="fc" id="L117">            response.status(HTTP_CREATED);</span>
+<span class="fc" id="L118">            return &quot;OK&quot;;</span>
+        };
+    }
+
+
+    private Map&lt;String, FileInfo&gt; getAllFilesInfo() throws IOException {
+<span class="fc" id="L124">        return Files.walk(Paths.get(uploadDir.getAbsolutePath())).filter(Files::isRegularFile)</span>
+<span class="fc" id="L125">                .filter(Files::isReadable)</span>
+<span class="fc" id="L126">                .map(Path::toFile)</span>
+<span class="fc" id="L127">                .map(FileInfo::fromFile)</span>
+<span class="fc" id="L128">                .filter(Optional::isPresent)</span>
+<span class="fc" id="L129">                .map(Optional::get)</span>
+<span class="fc" id="L130">                .collect(Collectors.toConcurrentMap(FileInfo::id, Function.identity()));</span>
+    }
+
+    public Route get() {
+<span class="fc" id="L134">        return (request, response) -&gt; {</span>
+<span class="fc" id="L135">            String id = request.params(&quot;id&quot;);</span>
+<span class="fc" id="L136">            Preconditions.checkNotNull(id, &quot;file id missing&quot;);</span>
+
+<span class="fc" id="L138">            FileInfo fileInfo = files.get(id);</span>
+<span class="fc" id="L139">            Preconditions.checkNotNull(fileInfo, &quot;invalid file&quot;);</span>
+
+<span class="fc" id="L141">            response.type(&quot;text/plain&quot;);</span>
+
+<span class="fc" id="L143">            HttpServletResponse raw = response.raw();</span>
+
+<span class="fc" id="L145">            raw.getOutputStream().write(Files.readAllBytes(</span>
+<span class="fc" id="L146">                    Paths.get(uploadDir.getAbsolutePath(), fileInfo.name())));</span>
+<span class="fc" id="L147">            raw.getOutputStream().flush();</span>
+<span class="fc" id="L148">            raw.getOutputStream().close();</span>
+
+<span class="fc" id="L150">            return response.raw();</span>
+        };
+    }
+
+    public Route delete() {
+<span class="fc" id="L155">        return (request, response) -&gt; {</span>
+<span class="fc" id="L156">            String id = request.params(&quot;id&quot;);</span>
+<span class="fc" id="L157">            Preconditions.checkNotNull(id, &quot;file id missing&quot;);</span>
+
+<span class="fc" id="L159">            FileInfo fileInfo = files.get(id);</span>
+<span class="fc" id="L160">            Preconditions.checkNotNull(fileInfo, &quot;invalid file&quot;);</span>
+<span class="fc" id="L161">            Path path = Paths.get(uploadDir.getAbsolutePath(), fileInfo.name());</span>
+<span class="fc" id="L162">            LOG.debug(&quot;delete file: {}&quot;, fileInfo);</span>
+
+<span class="fc" id="L164">            boolean deleted = path.toFile().delete();</span>
+
+<span class="fc" id="L166">            Preconditions.checkArgument(deleted, &quot;could not delete file&quot;);</span>
+<span class="fc" id="L167">            response.status(HTTP_NO_CONTENT);</span>
+
+<span class="fc" id="L169">            return null;</span>
+        };
+
+    }
+
+    public Route list() {
+<span class="fc" id="L175">        return (request, response) -&gt; getAllFilesInfo().values();</span>
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

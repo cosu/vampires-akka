@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MonitoringActor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">client</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.client.actors</a> &gt; <span class="el_source">MonitoringActor.java</span></div><h1>MonitoringActor.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.client.actors;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.SortedMap;
+
+import akka.actor.Props;
+import akka.actor.UntypedActor;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
+import ro.cosu.vampires.client.monitoring.MetricsWindow;
+import ro.cosu.vampires.server.values.jobs.Job;
+import ro.cosu.vampires.server.values.jobs.JobStatus;
+import ro.cosu.vampires.server.values.jobs.metrics.Metric;
+import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
+import scala.concurrent.duration.Duration;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+
+public class MonitoringActor extends UntypedActor {
+    private static final int MONITORING_INTERVAL_MILLIS = 1000;
+    private final MetricRegistry metricRegistry;
+<span class="fc" id="L56">    private final MetricsWindow metricsWindow = new MetricsWindow();</span>
+<span class="fc" id="L57">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
+    private SortedMap&lt;String, Gauge&gt; gauges;
+
+<span class="fc" id="L60">    MonitoringActor(MetricRegistry metricRegistry) {</span>
+<span class="fc" id="L61">        this.metricRegistry = metricRegistry;</span>
+
+        // getting the gauges early
+<span class="pc bnc" id="L64" title="All 4 branches missed.">        gauges = metricRegistry.getGauges((name, metric) -&gt; name.startsWith(&quot;cpu&quot;) || name.startsWith(&quot;network&quot;));</span>
+
+<span class="fc" id="L66">        recordMetrics();</span>
+<span class="fc" id="L67">    }</span>
+
+    public static Props props(MetricRegistry registry) {
+
+<span class="fc" id="L71">        return Props.create(MonitoringActor.class, registry);</span>
+    }
+
+    @Override
+    public void preStart() {
+<span class="fc" id="L76">        getContext().system().scheduler().schedule(Duration.Zero(),</span>
+<span class="fc" id="L77">                Duration.create(MONITORING_INTERVAL_MILLIS, MILLISECONDS),</span>
+                this::recordMetrics,
+<span class="fc" id="L79">                getContext().system().dispatcher());</span>
+<span class="fc" id="L80">    }</span>
+
+    private void recordMetrics() {
+<span class="fc" id="L83">        LocalDateTime now = LocalDateTime.now();</span>
+<span class="fc" id="L84">        metricsWindow.add(now, gauges);</span>
+<span class="fc" id="L85">    }</span>
+
+    @Override
+    public void onReceive(Object message) throws Exception {
+<span class="fc" id="L89">        log.debug(&quot;{} from {}&quot;, message, getSender());</span>
+
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if (message instanceof Job) {</span>
+<span class="fc" id="L92">            Job job = (Job) message;</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">            if (JobStatus.EXECUTED.equals(job.status())) {</span>
+<span class="fc" id="L94">                log.info(&quot;id: {} -&gt; info:{} duration: {}&quot;, job.id(), job.status(), job.result().duration());</span>
+<span class="fc" id="L95">                job = getJobWithMetrics(job);</span>
+<span class="fc" id="L96">                getSender().tell(job, getSelf());</span>
+            } else {
+<span class="nc" id="L98">                log.error(&quot;received workload result not present&quot;);</span>
+            }
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">        } else if (message instanceof Metrics) {</span>
+            // the client will ask for metrics to send to the server at boot time
+<span class="fc" id="L102">            log.debug(&quot;got metrics request &quot;);</span>
+<span class="fc" id="L103">            ImmutableList&lt;Metric&gt; interval = metricsWindow.getInterval(</span>
+<span class="fc" id="L104">                    LocalDateTime.now().minus(MONITORING_INTERVAL_MILLIS, ChronoUnit.MILLIS), LocalDateTime.now());</span>
+<span class="fc" id="L105">            Metrics metrics = Metrics.builder().metadata(getHostMetrics()).metrics(interval).build();</span>
+<span class="fc" id="L106">            getSender().tell(metrics, getSelf());</span>
+<span class="fc" id="L107">        } else {</span>
+<span class="nc" id="L108">            log.error(&quot;received unknown type of message&quot;);</span>
+<span class="nc" id="L109">            unhandled(message);</span>
+        }
+<span class="fc" id="L111">    }</span>
+
+    private Job getJobWithMetrics(Job job) {
+<span class="fc" id="L114">        ImmutableList&lt;Metric&gt; metricsWindowInterval = metricsWindow.getInterval</span>
+<span class="fc" id="L115">                (job.result().trace().start(), job.result().trace().stop());</span>
+<span class="fc" id="L116">        ImmutableMap&lt;String, String&gt; hostValues = getHostMetrics();</span>
+<span class="fc" id="L117">        Metrics metrics = Metrics.builder().metadata(hostValues).metrics(metricsWindowInterval).build();</span>
+<span class="fc" id="L118">        Job withHostMetrics = job.withHostMetrics(metrics);</span>
+<span class="fc" id="L119">        return withHostMetrics;</span>
+    }
+
+    private ImmutableMap&lt;String, String&gt; getHostMetrics() {
+<span class="fc" id="L123">        SortedMap&lt;String, Gauge&gt; hostGauges = metricRegistry.getGauges(</span>
+<span class="nc" id="L124">                (name, metric) -&gt; name.startsWith(&quot;host&quot;));</span>
+
+<span class="fc" id="L126">        return MetricsWindow.convertGaugesToString(hostGauges);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

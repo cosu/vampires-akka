@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MockResourceParameters.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.server.resources.mock</a> &gt; <span class="el_source">MockResourceParameters.java</span></div><h1>MockResourceParameters.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.server.resources.mock;
+
+import com.google.auto.value.AutoValue;
+
+import com.typesafe.config.Config;
+
+import java.util.UUID;
+
+import ro.cosu.vampires.server.resources.Resource;
+
+
+@AutoValue
+<span class="fc" id="L39">public abstract class MockResourceParameters implements Resource.Parameters {</span>
+
+
+    public static Builder builder() {
+<span class="fc" id="L43">        return new AutoValue_MockResourceParameters.Builder().providerType(Resource.ProviderType.MOCK)</span>
+<span class="fc" id="L44">                .id(UUID.randomUUID().toString())</span>
+<span class="fc" id="L45">                .cost(0)</span>
+<span class="fc" id="L46">                .serverId(&quot;&quot;);</span>
+    }
+
+    public abstract String command();
+
+    public abstract Resource.ProviderType providerType();
+
+    public abstract String serverId();
+
+    public abstract Builder toBuilder();
+
+    public abstract String instanceType();
+
+    public abstract String id();
+
+
+    public abstract double cost();
+
+    public MockResourceParameters withServerId(String serverId) {
+<span class="fc" id="L65">        return toBuilder().serverId(&quot;&quot;).build();</span>
+    }
+
+    public Resource.Parameters withId(String id) {
+<span class="fc" id="L69">        return toBuilder().id(id).build();</span>
+    }
+
+<span class="fc" id="L72">    @AutoValue.Builder</span>
+<span class="fc" id="L73">    public abstract static class Builder implements Resource.Parameters.Builder {</span>
+        public Builder fromConfig(Config config) {
+<span class="fc" id="L75">            this.command(config.getString(&quot;command&quot;));</span>
+<span class="fc" id="L76">            return this;</span>
+        }
+
+
+        public abstract Builder providerType(Resource.ProviderType providerType);
+
+        public abstract Builder command(String command);
+
+        public abstract Builder serverId(String serverId);
+
+        public abstract Builder instanceType(String instanceType);
+
+        public abstract Builder id(String id);
+
+        public abstract Builder cost(double cost);
+
+        public abstract MockResourceParameters build();
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

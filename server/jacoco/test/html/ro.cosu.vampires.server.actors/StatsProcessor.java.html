@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StatsProcessor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.server.actors</a> &gt; <span class="el_source">StatsProcessor.java</span></div><h1>StatsProcessor.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.server.actors;
+
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
+import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.resources.ResourceInfo;
+import ro.cosu.vampires.server.values.ClientInfo;
+import ro.cosu.vampires.server.values.jobs.Job;
+import ro.cosu.vampires.server.values.jobs.metrics.CounterSnapshot;
+import ro.cosu.vampires.server.values.jobs.metrics.HistogramSnapshot;
+import ro.cosu.vampires.server.values.jobs.metrics.MeterSnapshot;
+import ro.cosu.vampires.server.values.jobs.metrics.Stats;
+import ro.cosu.vampires.server.values.jobs.metrics.ValueSnapshot;
+
+<span class="fc" id="L58">public class StatsProcessor {</span>
+
+<span class="fc" id="L60">    private static final Logger LOG = LoggerFactory.getLogger(StatsProcessor.class);</span>
+
+<span class="fc" id="L62">    private MetricRegistry metricRegistry = new MetricRegistry();</span>
+
+<span class="fc" id="L64">    private Map&lt;String, LocalDateTime&gt; clientsCreatedAt= Maps.newHashMap();</span>
+<span class="fc" id="L65">    private Map&lt;String, ClientInfo&gt; clientsInfo = Maps.newHashMap();</span>
+<span class="fc" id="L66">    private Map&lt;String, ResourceInfo&gt; resourcesInfo = Maps.newHashMap();</span>
+
+<span class="fc" id="L68">    private Stats latestStats = Stats.empty();</span>
+
+    public void flush() {
+<span class="fc" id="L71">        Map&lt;String, HistogramSnapshot&gt; histograms = Maps.newHashMap();</span>
+<span class="fc" id="L72">        Map&lt;String, MeterSnapshot&gt; meters = Maps.newHashMap();</span>
+<span class="fc" id="L73">        Map&lt;String, CounterSnapshot&gt; counters = Maps.newHashMap();</span>
+<span class="fc" id="L74">        Map&lt;String, ValueSnapshot&gt; values = Maps.newHashMap();</span>
+
+
+<span class="fc" id="L77">        metricRegistry.getHistograms().entrySet().forEach(m -&gt; {</span>
+<span class="nc" id="L78">            String name = m.getKey();</span>
+<span class="nc" id="L79">            Histogram value = m.getValue();</span>
+<span class="nc" id="L80">            histograms.put(name, HistogramSnapshot.fromHistogram(name, value));</span>
+<span class="nc" id="L81">        });</span>
+
+<span class="fc" id="L83">        metricRegistry.getMeters().entrySet().forEach(m -&gt; {</span>
+<span class="nc" id="L84">            String name = m.getKey();</span>
+<span class="nc" id="L85">            Meter value = m.getValue();</span>
+<span class="nc" id="L86">            meters.put(name, MeterSnapshot.fromMeter(name, value));</span>
+<span class="nc" id="L87">        });</span>
+
+<span class="fc" id="L89">        metricRegistry.getCounters().entrySet().forEach(m -&gt; {</span>
+<span class="nc" id="L90">            String name = m.getKey();</span>
+<span class="nc" id="L91">            Counter value = m.getValue();</span>
+<span class="nc" id="L92">            counters.put(name, CounterSnapshot.fromCounter(name, value));</span>
+<span class="nc" id="L93">        });</span>
+
+<span class="fc" id="L95">        metricRegistry.getGauges().entrySet().forEach(m -&gt; {</span>
+<span class="nc" id="L96">            String name = m.getKey();</span>
+<span class="nc" id="L97">            Gauge value = m.getValue();</span>
+<span class="nc" id="L98">            values.put(name, ValueSnapshot.fromGauge(name, value));</span>
+<span class="nc" id="L99">        });</span>
+
+<span class="fc" id="L101">        latestStats = Stats.builder()</span>
+<span class="fc" id="L102">                .counters(ImmutableMap.copyOf(counters))</span>
+<span class="fc" id="L103">                .values(ImmutableMap.copyOf(values))</span>
+<span class="fc" id="L104">                .meters(ImmutableMap.copyOf(meters))</span>
+<span class="fc" id="L105">                .histograms(ImmutableMap.copyOf(histograms)).build();</span>
+<span class="fc" id="L106">    }</span>
+
+    public Stats getStats() {
+<span class="fc" id="L109">        return latestStats;</span>
+    }
+
+    public void process(ClientInfo message) {
+<span class="fc" id="L113">        String from = message.id();</span>
+<span class="fc" id="L114">        clientsInfo.put(from, message);</span>
+<span class="fc" id="L115">    }</span>
+
+    public void process(ResourceInfo message) {
+<span class="fc" id="L118">        String from = message.parameters().id();</span>
+
+<span class="fc" id="L120">        clientsCreatedAt.put(from, message.createdAt());</span>
+<span class="fc" id="L121">        resourcesInfo.put(from, message);</span>
+
+        // node count
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        for (String key : getKeysForMetric(from, &quot;resources&quot;)) {</span>
+<span class="fc" id="L125">            metricRegistry.counter(key).inc();</span>
+<span class="fc" id="L126">        }</span>
+
+<span class="fc" id="L128">        List&lt;String&gt; costMetricKeys = getKeysForMetric(from, &quot;cost&quot;);</span>
+        // remove the client key from the keys. this will provide the actual value
+
+<span class="fc" id="L131">        String clientCostMetricKey = costMetricKeys.get(0);</span>
+
+        // register a cost gauge for this client
+<span class="pc" id="L134">        metricRegistry.register(clientCostMetricKey, (Gauge&lt;Double&gt;) () -&gt; getCostForClient(from));</span>
+
+        // cost gauges for the rest
+
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        for (String key: costMetricKeys) {</span>
+            // key not registered yet
+<span class="fc bfc" id="L140" title="All 2 branches covered.">            if (!metricRegistry.getGauges().containsKey(key)) {</span>
+
+<span class="fc" id="L142">                metricRegistry.register(key, (Gauge&lt;Double&gt;) () -&gt;</span>
+                        // get all the sibling gauges (but not the current gauge - nudge it with a :)
+<span class="nc bnc" id="L144" title="All 2 branches missed.">                        metricRegistry.getGauges((name, metric) -&gt; name.startsWith(key + &quot;:&quot;) &amp;&amp;</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">                                name.split(&quot;:&quot;).length - key.split(&quot;:&quot;).length == 1)</span>
+<span class="nc" id="L146">                                .values().stream()</span>
+<span class="nc" id="L147">                                .mapToDouble(g -&gt; (Double) g.getValue())</span>
+<span class="nc" id="L148">                                .sum());</span>
+            }
+<span class="fc" id="L150">        }</span>
+<span class="fc" id="L151">    }</span>
+
+    public void process(Job job) {
+
+<span class="fc" id="L155">        String from = job.from();</span>
+        // do not process jobs from strangers
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        if (!resourcesInfo.containsKey(from)){</span>
+<span class="fc" id="L158">            LOG.warn(&quot;client {} not registered. skipping processing&quot;, from);</span>
+<span class="fc" id="L159">            return;</span>
+        }
+
+<span class="pc" id="L162">        job.hostMetrics().metrics().stream().flatMap(m -&gt; m.values().entrySet().stream())</span>
+<span class="fc" id="L163">                .forEach(e -&gt; {</span>
+                    // converts doubles to longs
+<span class="nc" id="L165">                    Double value = e.getValue();</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">                    if (value &lt; 100) {</span>
+<span class="nc" id="L167">                        value = 1000. * value;</span>
+                    }
+<span class="nc" id="L169">                    long rounded = Math.round(value);</span>
+<span class="nc" id="L170">                    String key = e.getKey();</span>
+<span class="nc" id="L171">                    updateMetric(from, key, rounded);</span>
+<span class="nc" id="L172">                });</span>
+
+<span class="fc" id="L174">        updateMetric(from, &quot;duration&quot;, job.result().duration());</span>
+<span class="fc" id="L175">        updateMetric(from, &quot;job&quot;, 0);</span>
+
+<span class="fc" id="L177">    }</span>
+
+    private void updateMetric(String clientId, String metric, long value) {
+
+<span class="fc bfc" id="L181" title="All 2 branches covered.">        for (String key : getKeysForMetric(clientId, metric)) {</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">            if (metric.equals(&quot;job&quot;)) {</span>
+<span class="fc" id="L183">                metricRegistry.meter(key).mark();</span>
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">            } else if (metric.contains(&quot;bytes&quot;)) {</span>
+<span class="nc" id="L185">                metricRegistry.counter(key).inc(value);</span>
+            } else {
+<span class="fc" id="L187">                metricRegistry.histogram(key).update(value);</span>
+            }
+<span class="fc" id="L189">        }</span>
+<span class="fc" id="L190">    }</span>
+
+    private double getCostForClient(String id) {
+
+<span class="nc" id="L194">        long billedHours = getDurationForClient(id).toHours()+ 1;</span>
+<span class="nc" id="L195">        double cost = resourcesInfo.get(id).parameters().cost();</span>
+<span class="nc" id="L196">        return billedHours * cost;</span>
+    }
+
+    private Duration getDurationForClient(String id){
+<span class="nc" id="L200">        LocalDateTime createdAt = clientsCreatedAt.get(id);</span>
+<span class="nc" id="L201">        LocalDateTime now = LocalDateTime.now();</span>
+
+<span class="nc" id="L203">        return Duration.between(createdAt, now);</span>
+    }
+
+    private String getInstanceType(String from){
+<span class="fc" id="L207">        return resourcesInfo.get(from).parameters().instanceType();</span>
+    }
+
+    private Resource.ProviderType getProviderType (String from) {
+<span class="fc" id="L211">        return  resourcesInfo.get(from).parameters().providerType();</span>
+    }
+
+    private List&lt;String&gt; getKeysForMetric(String clientId, String metric) {
+
+<span class="fc" id="L216">        String instanceType = getInstanceType(clientId);</span>
+<span class="fc" id="L217">        Resource.ProviderType providerType = getProviderType(clientId);</span>
+
+        // return the keys in reverse order: most specific (longest) first
+<span class="fc" id="L220">        return Lists.reverse(Lists.newArrayList(metric,</span>
+<span class="fc" id="L221">                Joiner.on(&quot;:&quot;).join(metric, providerType),</span>
+<span class="fc" id="L222">                Joiner.on(&quot;:&quot;).join(metric, providerType, instanceType),</span>
+<span class="fc" id="L223">                Joiner.on(&quot;:&quot;).join(metric, providerType, instanceType, clientId)));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

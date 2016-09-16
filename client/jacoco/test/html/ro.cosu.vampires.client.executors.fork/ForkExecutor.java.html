@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ForkExecutor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">client</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.client.executors.fork</a> &gt; <span class="el_source">ForkExecutor.java</span></div><h1>ForkExecutor.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.client.executors.fork;
+
+import com.google.common.base.Joiner;
+import com.google.inject.Inject;
+
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecuteResultHandler;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.Executor;
+import org.apache.commons.exec.LogOutputStream;
+import org.apache.commons.exec.PumpStreamHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+
+import ro.cosu.vampires.client.allocation.CpuAllocator;
+import ro.cosu.vampires.client.allocation.CpuSet;
+import ro.cosu.vampires.server.values.jobs.Computation;
+import ro.cosu.vampires.server.values.jobs.Result;
+import ro.cosu.vampires.server.values.jobs.metrics.Trace;
+
+
+<span class="fc" id="L56">public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor {</span>
+
+    public static final int TIMEOUT_IN_MILIS = 600000;
+<span class="fc" id="L59">    private static final Logger LOG = LoggerFactory.getLogger(ForkExecutor.class);</span>
+    @Inject
+    private CpuAllocator cpuAllocator;
+
+    @Inject
+    private Executor executor;
+
+    private Optional&lt;CpuSet&gt; cpuSet;
+
+    private CommandLine getCommandLine(String command) {
+
+<span class="fc" id="L70">        LOG.debug(&quot;cpuset {}&quot;, cpuSet);</span>
+<span class="fc" id="L71">        String newCommand = command;</span>
+<span class="pc bpc" id="L72" title="2 of 4 branches missed.">        if (cpuSet.isPresent() &amp;&amp; isNumaEnabled()) {</span>
+<span class="nc" id="L73">            final String cpus = Joiner.on(&quot;,&quot;).join(cpuSet.get().getCpuSet());</span>
+<span class="nc" id="L74">            newCommand = &quot;numactl --physcpubind=&quot; + cpus + &quot; &quot; + command;</span>
+        }
+
+<span class="fc" id="L77">        LOG.info(&quot;executing {} with timeout {} minutes&quot;, newCommand, TIMEOUT_IN_MILIS / 1000 / 60);</span>
+<span class="fc" id="L78">        return CommandLine.parse(newCommand);</span>
+    }
+
+    @Override
+    public Result execute(Computation computation) {
+
+<span class="fc" id="L84">        acquireResources();</span>
+
+<span class="fc" id="L86">        CommandLine commandLine = getCommandLine(computation.command());</span>
+
+<span class="fc" id="L88">        CollectingLogOutputStream collectingLogOutputStream = new CollectingLogOutputStream();</span>
+<span class="fc" id="L89">        PumpStreamHandler handler = new PumpStreamHandler(collectingLogOutputStream);</span>
+<span class="fc" id="L90">        executor.setStreamHandler(handler);</span>
+<span class="fc" id="L91">        executor.setWatchdog(new ExecuteWatchdog(TIMEOUT_IN_MILIS));</span>
+<span class="fc" id="L92">        executor.setWorkingDirectory(Paths.get(&quot;&quot;).toAbsolutePath().toFile());</span>
+
+<span class="fc" id="L94">        DefaultExecuteResultHandler resultHandler = new DefaultExecuteResultHandler();</span>
+
+<span class="fc" id="L96">        LocalDateTime start = LocalDateTime.now();</span>
+        int exitCode;
+        try {
+<span class="fc" id="L99">            executor.execute(commandLine, resultHandler);</span>
+<span class="nc" id="L100">        } catch (IOException e) {</span>
+<span class="nc" id="L101">            LOG.error(&quot;failed to exec&quot;, resultHandler.getException());</span>
+<span class="fc" id="L102">        }</span>
+
+        try {
+<span class="fc" id="L105">            resultHandler.waitFor();</span>
+<span class="nc" id="L106">        } catch (InterruptedException e) {</span>
+<span class="nc" id="L107">            LOG.error(&quot;failed to exec&quot;, resultHandler.getException());</span>
+<span class="fc" id="L108">        }</span>
+
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">        exitCode = resultHandler.hasResult() ? resultHandler.getExitValue() : -1;</span>
+
+        //TODO take different action for failed commands so we can collect the output (stderr or java exception)
+
+
+<span class="fc" id="L115">        LocalDateTime stop = LocalDateTime.now();</span>
+
+<span class="fc" id="L117">        long duration = Duration.between(start, stop).toMillis();</span>
+
+<span class="fc" id="L119">        releaseResources();</span>
+<span class="fc" id="L120">        return Result.builder()</span>
+<span class="fc" id="L121">                .duration(duration)</span>
+<span class="fc" id="L122">                .exitCode(exitCode)</span>
+<span class="fc" id="L123">                .trace(getTrace(start, stop))</span>
+
+<span class="fc" id="L125">                .output(collectingLogOutputStream.getLines())</span>
+<span class="fc" id="L126">                .build();</span>
+
+    }
+
+    @Override
+    public void acquireResources() {
+<span class="fc" id="L132">        cpuSet = cpuAllocator.acquireCpuSet();</span>
+<span class="fc" id="L133">    }</span>
+
+    @Override
+    public void releaseResources() {
+<span class="fc" id="L137">        cpuSet.ifPresent(c -&gt; cpuAllocator.releaseCpuSets(c));</span>
+<span class="fc" id="L138">    }</span>
+
+    @Override
+    public Type getType() {
+<span class="fc" id="L142">        return Type.FORK;</span>
+    }
+
+    private Trace getTrace(LocalDateTime start, LocalDateTime stop) {
+        final Trace.Builder builder = Trace
+<span class="fc" id="L147">                .withNoMetrics()</span>
+<span class="fc" id="L148">                .executor(getType().toString())</span>
+<span class="fc" id="L149">                .start(start)</span>
+<span class="fc" id="L150">                .stop(stop)</span>
+<span class="fc" id="L151">                .totalCpuCount(cpuAllocator.totalCpuCount());</span>
+
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">        if (cpuSet.isPresent()) {</span>
+<span class="fc" id="L154">            builder.cpuSet(cpuSet.get().getCpuSet());</span>
+        }
+<span class="fc" id="L156">        final Trace trace = builder.build();</span>
+
+<span class="fc" id="L158">        LOG.debug(&quot;{}&quot;, trace);</span>
+<span class="fc" id="L159">        return trace;</span>
+    }
+
+    @Override
+    public int getNCpu() {
+        // this uses jvm info. We could use sigar to create this also but it adds a weird dependency here
+<span class="fc" id="L165">        return Runtime.getRuntime().availableProcessors();</span>
+    }
+
+    private boolean isNumaEnabled() {
+        int exitCode;
+        try {
+<span class="fc" id="L171">            executor.setStreamHandler(new PumpStreamHandler(new CollectingLogOutputStream()));</span>
+<span class="nc" id="L172">            exitCode = executor.execute(CommandLine.parse(&quot;numactl --hardware&quot;));</span>
+
+<span class="fc" id="L174">        } catch (IOException e) {</span>
+<span class="fc" id="L175">            exitCode = -1;</span>
+<span class="nc" id="L176">        }</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">        return (exitCode == 0);</span>
+
+    }
+
+<span class="fc" id="L181">    private static class CollectingLogOutputStream extends LogOutputStream {</span>
+<span class="fc" id="L182">        private final List&lt;String&gt; lines = new LinkedList&lt;&gt;();</span>
+
+        @Override
+        protected void processLine(String line, int level) {
+<span class="fc" id="L186">            lines.add(line);</span>
+<span class="fc" id="L187">        }</span>
+
+        public List&lt;String&gt; getLines() {
+<span class="fc" id="L190">            return lines;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

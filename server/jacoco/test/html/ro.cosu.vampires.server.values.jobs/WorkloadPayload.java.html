@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WorkloadPayload.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.server.values.jobs</a> &gt; <span class="el_source">WorkloadPayload.java</span></div><h1>WorkloadPayload.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.server.values.jobs;
+
+
+import com.google.auto.value.AutoValue;
+
+import com.typesafe.config.Config;
+
+import javax.annotation.Nullable;
+
+import ro.cosu.vampires.server.util.gson.AutoGson;
+
+@AutoValue
+@AutoGson
+<span class="fc" id="L40">public abstract class WorkloadPayload {</span>
+
+    public static Builder builder() {
+<span class="fc" id="L43">        return new AutoValue_WorkloadPayload.Builder()</span>
+<span class="fc" id="L44">                .format(&quot;%s&quot;)</span>
+<span class="fc" id="L45">                .url(&quot;&quot;)</span>
+<span class="fc" id="L46">                .sequenceStart(0)</span>
+<span class="fc" id="L47">                .sequenceStop(0);</span>
+    }
+
+    public static WorkloadPayload fromConfig(Config config) {
+<span class="fc" id="L51">        String format = &quot;&quot;;</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">        if (config.hasPath(&quot;format&quot;)) {</span>
+<span class="fc" id="L53">            format = config.getString(&quot;format&quot;);</span>
+        }
+
+<span class="fc" id="L56">        String url = &quot;&quot;;</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">        if (config.hasPath(&quot;url&quot;)) {</span>
+<span class="fc" id="L58">            url = config.getString(&quot;url&quot;);</span>
+        }
+
+<span class="fc" id="L61">        String description = &quot;&quot;;</span>
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">        if (config.hasPath(&quot;parameters&quot;)) {</span>
+<span class="nc" id="L63">            url = config.getString(&quot;parameters&quot;);</span>
+        }
+
+<span class="fc" id="L66">        String file = &quot;&quot;;</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">        if (config.hasPath(&quot;file&quot;)) {</span>
+<span class="nc" id="L68">            file = config.getString(&quot;file&quot;);</span>
+        }
+
+<span class="fc" id="L71">        int sequenceStart = config.getInt(&quot;sequenceStart&quot;);</span>
+<span class="fc" id="L72">        int sequenceStop = config.getInt(&quot;sequenceStop&quot;);</span>
+<span class="fc" id="L73">        String task = config.getString(&quot;task&quot;);</span>
+
+<span class="fc" id="L75">        return builder().format(format)</span>
+<span class="fc" id="L76">                .task(task)</span>
+<span class="fc" id="L77">                .url(url)</span>
+<span class="fc" id="L78">                .file(file)</span>
+<span class="fc" id="L79">                .description(description)</span>
+<span class="fc" id="L80">                .sequenceStart(sequenceStart)</span>
+<span class="fc" id="L81">                .sequenceStop(sequenceStop)</span>
+<span class="fc" id="L82">                .build();</span>
+    }
+
+    @Nullable
+    public abstract String id();
+
+    public abstract int sequenceStart();
+
+    public abstract int sequenceStop();
+
+    @Nullable
+    public abstract String task();
+
+    @Nullable
+    public abstract String format();
+
+    @Nullable
+    public abstract String url();
+
+    @Nullable
+    public abstract String description();
+
+    @Nullable
+    public abstract String file();
+
+
+    public abstract Builder toBuilder();
+
+<span class="fc" id="L110">    @AutoValue.Builder</span>
+<span class="fc" id="L111">    public abstract static class Builder {</span>
+
+        public abstract Builder sequenceStart(int sequenceStrat);
+
+        public abstract Builder sequenceStop(int sequenceStop);
+
+        public abstract Builder task(String task);
+
+        public abstract Builder format(String format);
+
+        public abstract Builder url(String format);
+
+        public abstract Builder description(String description);
+
+        public abstract Builder file(String file);
+
+        public abstract Builder id(String id);
+
+        public abstract WorkloadPayload build();
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

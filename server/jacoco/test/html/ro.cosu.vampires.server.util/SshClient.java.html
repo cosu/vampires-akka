@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SshClient.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.server.util</a> &gt; <span class="el_source">SshClient.java</span></div><h1>SshClient.java</h1><pre class="source lang-java linenums">/*
+ * The MIT License (MIT)
+ * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the “Software”), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
+
+package ro.cosu.vampires.server.util;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Properties;
+
+<span class="fc" id="L41">public class SshClient {</span>
+
+<span class="fc" id="L43">    private static final Logger LOG = LoggerFactory.getLogger(SshClient.class);</span>
+<span class="fc" id="L44">    private JSch jsch = new JSch();</span>
+
+    @VisibleForTesting
+    protected void setJsch(JSch jsch) {
+<span class="fc" id="L48">        this.jsch = jsch;</span>
+<span class="fc" id="L49">    }</span>
+
+    public String runCommand(String user, String privateKey, String address, String command, int port) throws JSchException,
+            IOException {
+<span class="fc" id="L53">        LOG.debug(&quot;SSH: {}@{}:{}({}) command: {}&quot;, user, address, port, privateKey, command);</span>
+
+<span class="fc" id="L55">        Session session = getSession(user, privateKey, address, port);</span>
+
+<span class="fc" id="L57">        ChannelExec channel = getChannelExec(session, command);</span>
+<span class="fc" id="L58">        BufferedReader in = new BufferedReader(new InputStreamReader(channel.getInputStream(), StandardCharsets.UTF_8));</span>
+
+        String msg;
+<span class="fc" id="L61">        StringBuilder sb = new StringBuilder();</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        while ((msg = in.readLine()) != null) {</span>
+<span class="fc" id="L63">            sb.append(msg);</span>
+        }
+
+<span class="fc" id="L66">        in.close();</span>
+<span class="fc" id="L67">        channel.disconnect();</span>
+<span class="fc" id="L68">        session.disconnect();</span>
+<span class="fc" id="L69">        return sb.toString();</span>
+
+    }
+
+    private ChannelExec getChannelExec(Session session, String command) throws JSchException, IOException {
+<span class="fc" id="L74">        ChannelExec channel = (ChannelExec) session.openChannel(&quot;exec&quot;);</span>
+<span class="fc" id="L75">        channel.setCommand(command);</span>
+<span class="fc" id="L76">        channel.connect();</span>
+<span class="fc" id="L77">        return channel;</span>
+    }
+
+    private Session getSession(String user, String privateKey, String address, int port) throws JSchException {
+<span class="fc" id="L81">        JSch.setLogger(new JSCHLogger());</span>
+<span class="fc" id="L82">        Session session = jsch.getSession(user, address, port);</span>
+<span class="fc" id="L83">        jsch.addIdentity(privateKey);</span>
+
+<span class="fc" id="L85">        Properties config = new Properties();</span>
+<span class="fc" id="L86">        config.put(&quot;StrictHostKeyChecking&quot;, &quot;no&quot;);</span>
+<span class="fc" id="L87">        session.setConfig(config);</span>
+<span class="fc" id="L88">        session.connect();</span>
+<span class="fc" id="L89">        return session;</span>
+    }
+
+<span class="fc" id="L92">    private static class JSCHLogger implements com.jcraft.jsch.Logger {</span>
+
+<span class="fc" id="L94">        public static java.util.Hashtable&lt;Integer, String&gt; name = new java.util.Hashtable&lt;&gt;();</span>
+
+        static {
+<span class="fc" id="L97">            name.put(DEBUG, &quot;DEBUG: &quot;);</span>
+<span class="fc" id="L98">            name.put(INFO, &quot;INFO: &quot;);</span>
+<span class="fc" id="L99">            name.put(WARN, &quot;WARN: &quot;);</span>
+<span class="fc" id="L100">            name.put(ERROR, &quot;ERROR: &quot;);</span>
+<span class="fc" id="L101">            name.put(FATAL, &quot;FATAL: &quot;);</span>
+<span class="fc" id="L102">        }</span>
+
+        public boolean isEnabled(int level) {
+<span class="nc" id="L105">            return true;</span>
+        }
+
+        public void log(int level, String message) {
+<span class="nc bnc" id="L109" title="All 2 branches missed.">            if (level == DEBUG) {</span>
+<span class="nc" id="L110">                LOG.debug(message);</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">            } else if (level == INFO) {</span>
+<span class="nc" id="L112">                LOG.info(message);</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">            } else if (level == WARN) {</span>
+<span class="nc" id="L114">                LOG.warn(message);</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">            } else if (level == ERROR) {</span>
+<span class="nc" id="L116">                LOG.error(message);</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">            } else if (level == FATAL) {</span>
+<span class="nc" id="L118">                LOG.error(message);</span>
+            }
+<span class="nc" id="L120">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - Class ro.cosu.vampires.server.resources.local.LocalResourceTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>Class ro.cosu.vampires.server.resources.local.LocalResourceTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/ro.cosu.vampires.server.resources.local.html">ro.cosu.vampires.server.resources.local</a> &gt; LocalResourceTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">3</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.133s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs">
+<ul class="tabLinks">
+<li>
+<a href="#tab0">Tests</a>
+</li>
+<li>
+<a href="#tab1">Standard output</a>
+</li>
+</ul>
+<div id="tab0" class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">testCreateInstanceConfig</td>
+<td>0.014s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testStartStopLocalResource</td>
+<td>0.028s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testStartStopLocalResourceFail</td>
+<td>0.091s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div id="tab1" class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>2016-09-16 19:36:45,502 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 4a748eca-2316-42c6-a7b5-3a5d10eeb627 = UNKNOWN =&gt; SLEEPING
+2016-09-16 19:36:45,503 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 4a748eca-2316-42c6-a7b5-3a5d10eeb627 = SLEEPING =&gt; STARTING
+2016-09-16 19:36:45,505 DEBUG r.c.v.s.r.local.LocalResource [] []- local starting [/bin/sh, -c, nohup foo  4a748eca-2316-42c6-a7b5-3a5d10eeb627 2&gt;&amp;1 0&lt;/dev/null &amp;]
+2016-09-16 19:36:45,507 DEBUG r.c.v.s.r.local.LocalResource [] []- execute [/bin/sh, -c, nohup foo  4a748eca-2316-42c6-a7b5-3a5d10eeb627 2&gt;&amp;1 0&lt;/dev/null &amp;]
+2016-09-16 19:36:45,514 ERROR r.c.v.s.r.local.LocalResource [] []- Output []
+2016-09-16 19:36:45,515 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 4a748eca-2316-42c6-a7b5-3a5d10eeb627 = STARTING has failed with error -1: {}
+java.io.IOException: Non zero exit code
+	at ro.cosu.vampires.server.resources.local.LocalResource.execute(LocalResource.java:83)
+	at ro.cosu.vampires.server.resources.local.LocalResource.onStart(LocalResource.java:68)
+	at ro.cosu.vampires.server.resources.AbstractResource.startCall(AbstractResource.java:59)
+	at ro.cosu.vampires.server.resources.AbstractResource$$Lambda$93/640523539.get(Unknown Source)
+	at java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:476)
+	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:289)
+	at java.util.concurrent.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:902)
+	at java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1689)
+	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1644)
+	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:157)
+2016-09-16 19:36:45,531 DEBUG r.c.v.s.r.local.LocalResource [] []- 
+2016-09-16 19:36:45,531 DEBUG r.c.v.s.r.local.LocalResource [] []- failed resource
+java.util.concurrent.CompletionException: java.io.IOException: Non zero exit code
+	at ro.cosu.vampires.server.resources.AbstractResource.startCall(AbstractResource.java:61)
+	at ro.cosu.vampires.server.resources.AbstractResource$$Lambda$93/640523539.get(Unknown Source)
+	at java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:476)
+	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:289)
+	at java.util.concurrent.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:902)
+	at java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1689)
+	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1644)
+	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:157)
+Caused by: java.io.IOException: Non zero exit code
+	at ro.cosu.vampires.server.resources.local.LocalResource.execute(LocalResource.java:83)
+	at ro.cosu.vampires.server.resources.local.LocalResource.onStart(LocalResource.java:68)
+	at ro.cosu.vampires.server.resources.AbstractResource.startCall(AbstractResource.java:59)
+	... 7 common frames omitted
+2016-09-16 19:36:45,532 DEBUG r.c.v.s.r.local.LocalResource [] []- local fail
+2016-09-16 19:36:45,533 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 4a748eca-2316-42c6-a7b5-3a5d10eeb627 = STARTING =&gt; FAILED
+2016-09-16 19:36:45,563 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 914174e0-8642-4eef-9c9a-7af60ccb49a1 = UNKNOWN =&gt; SLEEPING
+2016-09-16 19:36:45,572 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 4a0c89ca-fa9c-4524-a4dc-16e351cda5d8 = UNKNOWN =&gt; SLEEPING
+2016-09-16 19:36:45,573 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 4a0c89ca-fa9c-4524-a4dc-16e351cda5d8 = SLEEPING =&gt; STARTING
+2016-09-16 19:36:45,573 DEBUG r.c.v.s.r.local.LocalResource [] []- local starting [/bin/sh, -c, nohup foo  4a0c89ca-fa9c-4524-a4dc-16e351cda5d8 2&gt;&amp;1 0&lt;/dev/null &amp;]
+2016-09-16 19:36:45,574 DEBUG r.c.v.s.r.local.LocalResource [] []- execute [/bin/sh, -c, nohup foo  4a0c89ca-fa9c-4524-a4dc-16e351cda5d8 2&gt;&amp;1 0&lt;/dev/null &amp;]
+2016-09-16 19:36:45,574 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 4a0c89ca-fa9c-4524-a4dc-16e351cda5d8 = STARTING =&gt; RUNNING
+2016-09-16 19:36:45,591 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 4a0c89ca-fa9c-4524-a4dc-16e351cda5d8 = RUNNING =&gt; STOPPING
+2016-09-16 19:36:45,591 DEBUG r.c.v.s.r.local.LocalResource [] []- local  4a0c89ca-fa9c-4524-a4dc-16e351cda5d8 stopping
+2016-09-16 19:36:45,591 DEBUG r.c.v.s.r.local.LocalResource [] []- execute [/bin/sh, -c, pgrep 4a0c89ca-fa9c-4524-a4dc-16e351cda5d8; if [ $? -eq 0 ]; then pkill 4a0c89ca-fa9c-4524-a4dc-16e351cda5d8; fi]
+2016-09-16 19:36:45,591 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 4a0c89ca-fa9c-4524-a4dc-16e351cda5d8 = STOPPING =&gt; STOPPED
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="http://www.gradle.org">Gradle 3.0</a> at Sep 16, 2016 7:36:49 PM</p>
+</div>
+</div>
+</body>
+</html>

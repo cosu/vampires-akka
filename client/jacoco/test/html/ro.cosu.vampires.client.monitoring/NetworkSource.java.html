@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NetworkSource.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">client</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.client.monitoring</a> &gt; <span class="el_source">NetworkSource.java</span></div><h1>NetworkSource.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.client.monitoring;
+
+import com.google.inject.Inject;
+
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+
+import oshi.hardware.HardwareAbstractionLayer;
+import oshi.hardware.NetworkIF;
+import oshi.hardware.platform.linux.LinuxNetworks;
+
+import static com.codahale.metrics.MetricRegistry.name;
+
+public class NetworkSource implements Source {
+<span class="fc" id="L47">    private static final Logger LOG = LoggerFactory.getLogger(NetworkSource.class);</span>
+
+    private final static String NAME = &quot;network&quot;;
+
+
+    final private MetricRegistry metricRegistry;
+
+    private final HardwareAbstractionLayer hal;
+
+<span class="fc" id="L56">    LinuxNetworks linuxNetworks = new LinuxNetworks();</span>
+
+    @Inject
+<span class="fc" id="L59">    public NetworkSource(MetricRegistry metricRegistry, HardwareAbstractionLayer hal) {</span>
+<span class="fc" id="L60">        this.metricRegistry = metricRegistry;</span>
+<span class="fc" id="L61">        this.hal = hal;</span>
+
+
+<span class="fc" id="L64">    }</span>
+
+    public void register() {
+<span class="fc" id="L67">        NetworkIF[] netArray = hal.getNetworkIFs();</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        for (NetworkIF net : netArray) {</span>
+<span class="fc" id="L69">            metricRegistry.register(name(getName(), &quot;tx-bytes&quot;, net.getName()), this.txBytesGague(net));</span>
+<span class="fc" id="L70">            metricRegistry.register(name(getName(), &quot;rx-bytes&quot;, net.getName()), this.rxBytesGague(net));</span>
+<span class="fc" id="L71">            metricRegistry.register(name(getName(), &quot;rx-speed&quot;, net.getName()), this.rxBytesSpeedGauge(net));</span>
+<span class="fc" id="L72">            metricRegistry.register(name(getName(), &quot;tx-speed&quot;, net.getName()), this.txBytesSpeedGauge(net));</span>
+        }
+
+
+<span class="fc" id="L76">        LOG.debug(&quot;registered network source&quot;);</span>
+
+<span class="fc" id="L78">    }</span>
+
+    @Override
+    public String getName() {
+<span class="fc" id="L82">        return NAME;</span>
+    }
+
+
+    private Gauge&lt;Long&gt; txBytesGague(final NetworkIF iface) {
+<span class="fc" id="L87">        return () -&gt; {</span>
+<span class="fc" id="L88">            linuxNetworks.updateNetworkStats(iface);</span>
+<span class="fc" id="L89">            return iface.getBytesSent();</span>
+        };
+    }
+
+    private Gauge&lt;Long&gt; rxBytesGague(final NetworkIF iface) {
+
+<span class="fc" id="L95">        return () -&gt; {</span>
+<span class="fc" id="L96">            linuxNetworks.updateNetworkStats(iface);</span>
+<span class="fc" id="L97">            return iface.getBytesRecv();</span>
+        };
+    }
+
+    private Gauge&lt;Long&gt; txBytesSpeedGauge(final NetworkIF iface) {
+
+<span class="fc" id="L103">        return new Gauge&lt;Long&gt;() {</span>
+<span class="fc" id="L104">            long previousValue = iface.getBytesRecv();</span>
+<span class="fc" id="L105">            LocalDateTime previousSample = LocalDateTime.now();</span>
+
+            @Override
+            public Long getValue() {
+<span class="fc" id="L109">                linuxNetworks.updateNetworkStats(iface);</span>
+<span class="fc" id="L110">                previousValue = iface.getBytesSent();</span>
+<span class="fc" id="L111">                Duration between = Duration.between(previousSample, LocalDateTime.now());</span>
+<span class="fc" id="L112">                double delta = iface.getBytesSent() - previousValue;</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">                return (delta &gt; 0) ? Math.round(delta / between.toMillis() * 1000) : 0;</span>
+
+            }
+        };
+    }
+
+    private Gauge&lt;Long&gt; rxBytesSpeedGauge(final NetworkIF iface) {
+
+<span class="fc" id="L121">        return new Gauge&lt;Long&gt;() {</span>
+<span class="fc" id="L122">            long previousValue = iface.getBytesRecv();</span>
+<span class="fc" id="L123">            LocalDateTime previousSample = LocalDateTime.now();</span>
+
+            @Override
+            public Long getValue() {
+<span class="fc" id="L127">                linuxNetworks.updateNetworkStats(iface);</span>
+
+<span class="fc" id="L129">                Duration between = Duration.between(previousSample, LocalDateTime.now());</span>
+<span class="fc" id="L130">                double delta = iface.getBytesRecv() - previousValue;</span>
+<span class="fc" id="L131">                previousValue = iface.getBytesRecv();</span>
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">                return (delta &gt; 0) ? Math.round(delta / between.toMillis() * 1000) : 0;</span>
+
+            }
+        };
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

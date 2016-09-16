@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JobUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.server.values.jobs</a> &gt; <span class="el_source">JobUtil.java</span></div><h1>JobUtil.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.server.values.jobs;
+
+
+import com.google.common.base.Charsets;
+import com.google.common.base.Preconditions;
+import com.google.common.io.Files;
+
+import com.typesafe.config.Config;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+<span class="nc" id="L45">public class JobUtil {</span>
+<span class="fc" id="L46">    private static final Logger LOG = LoggerFactory.getLogger(JobUtil.class);</span>
+
+
+    public static List&lt;Job&gt; fromConfig(Config config) {
+<span class="fc" id="L50">        String format = &quot;&quot;;</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">        if (config.hasPath(&quot;format&quot;)) {</span>
+<span class="fc" id="L52">            format = config.getString(&quot;format&quot;);</span>
+        }
+
+<span class="fc" id="L55">        String url = &quot;&quot;;</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">        if (config.hasPath(&quot;url&quot;)) {</span>
+<span class="fc" id="L57">            url = config.getString(&quot;url&quot;);</span>
+        }
+
+<span class="fc" id="L60">        int sequenceStart = config.getInt(&quot;sequenceStart&quot;);</span>
+<span class="fc" id="L61">        int sequenceStop = config.getInt(&quot;sequenceStop&quot;);</span>
+<span class="fc" id="L62">        String task = config.getString(&quot;task&quot;);</span>
+
+
+<span class="fc" id="L65">        final String finalUrl = url;</span>
+<span class="fc" id="L66">        final String finalFormat = format;</span>
+<span class="fc" id="L67">        List&lt;Job&gt; jobs = IntStream.rangeClosed(sequenceStart, sequenceStop).mapToObj(i -&gt; String.format(finalFormat, i))</span>
+<span class="fc" id="L68">                .map(f -&gt; String.format(&quot;%s %s%s&quot;, task, finalUrl, f).trim())</span>
+<span class="fc" id="L69">                .map(command -&gt; Job.empty().withCommand(command))</span>
+<span class="fc" id="L70">                .collect(Collectors.toList());</span>
+
+<span class="fc" id="L72">        LOG.info(&quot;Build bag from params:{}:{}:{}:{}-{} - size {}&quot;, task, url, format, sequenceStart,</span>
+<span class="fc" id="L73">                sequenceStop, jobs.size());</span>
+
+<span class="fc" id="L75">        return jobs;</span>
+    }
+
+    public static List&lt;Job&gt; bagFromFile(String id, File file) {
+
+<span class="fc" id="L80">        Preconditions.checkArgument(file.exists(), &quot;File does not exist&quot;);</span>
+<span class="fc" id="L81">        Preconditions.checkArgument(file.isFile(), &quot;File is a directory&quot;);</span>
+
+        List&lt;Job&gt; jobs;
+        try {
+            List&lt;String&gt; lines;
+<span class="fc" id="L86">            lines = Files.readLines(file, Charsets.UTF_8);</span>
+
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">            jobs = lines.stream().filter(l -&gt; !l.isEmpty()).map(l -&gt; Job.empty().withCommand(l))</span>
+<span class="fc" id="L89">                    .collect(Collectors.toList());</span>
+
+<span class="nc" id="L91">        } catch (IOException e) {</span>
+<span class="nc" id="L92">            LOG.error(&quot;failed to read tasks from file&quot;, e);</span>
+<span class="nc" id="L93">            throw new IllegalArgumentException(&quot;failed to read tasks from file &quot;, e);</span>
+<span class="fc" id="L94">        }</span>
+<span class="fc" id="L95">        LOG.debug(String.format(&quot;bag-id: %1s, read %2s jobs from %3s&quot;, id, jobs.size(), file.getName()));</span>
+<span class="fc" id="L96">        return jobs;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

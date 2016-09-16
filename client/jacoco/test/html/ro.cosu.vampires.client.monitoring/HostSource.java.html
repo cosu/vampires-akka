@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HostSource.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">client</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.client.monitoring</a> &gt; <span class="el_source">HostSource.java</span></div><h1>HostSource.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.client.monitoring;
+
+import com.google.inject.Inject;
+
+import com.codahale.metrics.Gauge;
+import com.codahale.metrics.MetricRegistry;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import oshi.SystemInfo;
+import oshi.hardware.NetworkIF;
+
+import static com.codahale.metrics.MetricRegistry.name;
+
+public class HostSource implements Source {
+<span class="fc" id="L43">    private static final Logger LOG = LoggerFactory.getLogger(CpuSource.class);</span>
+
+    private final static String NAME = &quot;host&quot;;
+
+    private final MetricRegistry metricRegistry;
+
+    private final SystemInfo si;
+
+    @Inject
+<span class="fc" id="L52">    public HostSource(MetricRegistry metricRegistry, SystemInfo si) {</span>
+<span class="fc" id="L53">        this.metricRegistry = metricRegistry;</span>
+<span class="fc" id="L54">        this.si = si;</span>
+<span class="fc" id="L55">    }</span>
+
+
+    public void register() {
+<span class="fc" id="L59">        metricRegistry.register(name(getName(), &quot;ram&quot;), ramGauge());</span>
+<span class="fc" id="L60">        metricRegistry.register(name(getName(), &quot;cpu-vendor&quot;), cpuVendorGague());</span>
+<span class="fc" id="L61">        metricRegistry.register(name(getName(), &quot;cpu-model&quot;), cpuModelGague());</span>
+<span class="fc" id="L62">        metricRegistry.register(name(getName(), &quot;cpu-family&quot;), cpuFamily());</span>
+<span class="fc" id="L63">        metricRegistry.register(name(getName(), &quot;cpu-stepping&quot;), cpuStepping());</span>
+<span class="fc" id="L64">        metricRegistry.register(name(getName(), &quot;cpu-name&quot;), cpuNameGague());</span>
+<span class="fc" id="L65">        metricRegistry.register(name(getName(), &quot;cpu-logical-processors&quot;), cpuLogicalProcessorCount());</span>
+<span class="fc" id="L66">        metricRegistry.register(name(getName(), &quot;cpu-cores&quot;), cpuPhysicalProcessorCount());</span>
+<span class="fc" id="L67">        metricRegistry.register(name(getName(), &quot;cpu-frequency&quot;), cpuFrequencyGague());</span>
+
+<span class="fc" id="L69">        NetworkIF[] netArray = si.getHardware().getNetworkIFs();</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        for (NetworkIF iface : netArray) {</span>
+<span class="fc" id="L71">            metricRegistry.register(name(getName(), &quot;address&quot;, iface.getName()), getAddress(iface));</span>
+<span class="fc" id="L72">            metricRegistry.register(name(getName(), &quot;mac&quot;, iface.getName()), getHWAddress(iface));</span>
+        }
+
+<span class="fc" id="L75">        LOG.debug(&quot;host info source&quot;);</span>
+<span class="fc" id="L76">    }</span>
+
+    @Override
+    public String getName() {
+<span class="fc" id="L80">        return NAME;</span>
+    }
+
+    private Gauge&lt;Long&gt; ramGauge() {
+<span class="fc" id="L84">        return () -&gt; si.getHardware().getMemory().getAvailable();</span>
+    }
+
+    private Gauge&lt;String&gt; cpuVendorGague() {
+<span class="fc" id="L88">        return () -&gt; si.getHardware().getProcessor().getVendor();</span>
+    }
+
+    private Gauge&lt;String&gt; cpuFamily() {
+<span class="fc" id="L92">        return () -&gt; si.getHardware().getProcessor().getFamily();</span>
+    }
+
+    private Gauge&lt;String&gt; cpuStepping() {
+<span class="fc" id="L96">        return () -&gt; si.getHardware().getProcessor().getStepping();</span>
+    }
+
+    private Gauge&lt;String&gt; cpuModelGague() {
+<span class="fc" id="L100">        return () -&gt; si.getHardware().getProcessor().getModel();</span>
+    }
+
+
+    private Gauge&lt;String&gt; cpuNameGague() {
+<span class="fc" id="L105">        return () -&gt; si.getHardware().getProcessor().getName();</span>
+    }
+
+
+    private Gauge&lt;Integer&gt; cpuPhysicalProcessorCount() {
+<span class="fc" id="L110">        return () -&gt; si.getHardware().getProcessor().getPhysicalProcessorCount();</span>
+    }
+
+    private Gauge&lt;Integer&gt; cpuLogicalProcessorCount() {
+<span class="fc" id="L114">        return () -&gt; si.getHardware().getProcessor().getLogicalProcessorCount();</span>
+    }
+
+    private Gauge&lt;Long&gt; cpuFrequencyGague() {
+<span class="fc" id="L118">        return () -&gt; si.getHardware().getProcessor().getVendorFreq();</span>
+    }
+
+    private Gauge&lt;String&gt; getAddress(final NetworkIF iface) {
+<span class="fc" id="L122">        return () -&gt; iface.getIPv4addr()[0];</span>
+    }
+
+    private Gauge&lt;String&gt; getHWAddress(final NetworkIF iface) {
+<span class="fc" id="L126">        return iface::getMacaddr;</span>
+    }
+
+
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DockerExecutorMetricsCollector.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">client</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.client.executors.docker</a> &gt; <span class="el_source">DockerExecutorMetricsCollector.java</span></div><h1>DockerExecutorMetricsCollector.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.client.executors.docker;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.inject.Inject;
+
+import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.model.Statistics;
+import com.github.dockerjava.core.async.ResultCallbackTemplate;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.IntStream;
+
+import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
+import ro.cosu.vampires.server.values.jobs.metrics.Metric;
+import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
+
+<span class="fc" id="L55">public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector {</span>
+<span class="fc" id="L56">    private static final Logger LOG = LoggerFactory.getLogger(DockerExecutorMetricsCollector.class);</span>
+
+<span class="fc" id="L58">    private StatsCallback statsCallback = new StatsCallback();</span>
+
+    private String id;
+
+    @Inject
+    private DockerClient dockerClient;
+
+    private static Metric convertDockerStatsToMetrics(Statistics stat) {
+
+        // the current stat api makes the 'read' field private so we put our own timestamp
+        // future versions of the api will hopefully fix this
+<span class="nc" id="L69">        Map&lt;String, Double&gt; data = new HashMap&lt;&gt;();</span>
+
+<span class="nc" id="L71">        Optional.ofNullable(stat.getNetworks()).ifPresent(stats -&gt; {</span>
+<span class="nc" id="L72">            data.putAll(flattenMap(&quot;network&quot;, stats));</span>
+<span class="nc" id="L73">        });</span>
+<span class="nc" id="L74">        data.putAll(flattenMap(&quot;memory&quot;, stat.getMemoryStats()));</span>
+//        data.putAll(flattenMap(&quot;io&quot;, stat.getBlkioStats()));
+<span class="nc" id="L76">        data.putAll(flattenMap(&quot;cpu&quot;, stat.getCpuStats()));</span>
+
+<span class="nc" id="L78">        return Metric.builder().values(ImmutableMap.copyOf(data)).time(LocalDateTime.now()).build();</span>
+    }
+
+    @SuppressWarnings(&quot;unchecked&quot;)
+
+    @VisibleForTesting
+    protected static Map&lt;String, Double&gt; flattenMap(String prefix, Map&lt;String, Object&gt; stringMapMap) {
+        // the reason this  method exists is the lack of a provider safe way of getting nested metrics from
+        // the docker api. it concatenates the keys and converts all the values to doubles
+        // also if it encounters any list, it flattens it by appending the index of the value in the list to the key
+        // effectively a: [1,2,3] becomes a-0: 1, a-1:2, a-2:3
+        // it's ugly but it works (tm)
+<span class="fc" id="L90">        Map&lt;String, Double&gt; redata = new HashMap&lt;&gt;();</span>
+
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        for (Map.Entry&lt;String, Object&gt; entry : stringMapMap.entrySet()) {</span>
+<span class="fc" id="L93">            String key = Joiner.on(&quot;-&quot;).join(prefix, entry.getKey().replace(&quot;_&quot;, &quot;-&quot;));</span>
+<span class="fc" id="L94">            Object val = entry.getValue();</span>
+
+<span class="fc bfc" id="L96" title="All 2 branches covered.">            if (val instanceof Map) {</span>
+<span class="fc" id="L97">                redata.putAll(flattenMap(key, (Map&lt;String, Object&gt;) val));</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">            } else if (val instanceof List) {</span>
+<span class="fc" id="L99">                final List valAsList = (List) val;</span>
+
+<span class="fc" id="L101">                IntStream.range(0, valAsList.size())</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">                        .filter(i -&gt; valAsList.size() &gt;= i)</span>
+<span class="fc" id="L103">                        .forEach(i -&gt; Optional.ofNullable(getDoubleFrom(valAsList.get(i)))</span>
+<span class="fc" id="L104">                                .ifPresent(newValue -&gt; redata.put(key + &quot;-&quot; + i, newValue)));</span>
+
+
+<span class="fc" id="L107">            } else {</span>
+<span class="nc" id="L108">                Optional.ofNullable(getDoubleFrom(val)).ifPresent(newValue -&gt; redata.put(key,</span>
+                        newValue));
+            }
+<span class="fc" id="L111">        }</span>
+<span class="fc" id="L112">        return redata;</span>
+    }
+
+    private static Double getDoubleFrom(Object object) {
+<span class="fc" id="L116">        Double val = 0.;</span>
+        try {
+
+<span class="fc" id="L119">            val = Double.parseDouble(object.toString());</span>
+<span class="fc" id="L120">        } catch (Exception e) {</span>
+<span class="fc" id="L121">            LOG.warn(&quot;can't convert {} to double&quot;, object);</span>
+<span class="fc" id="L122">        }</span>
+<span class="fc" id="L123">        return val;</span>
+
+    }
+
+    @Override
+    public void startMonitoring(String id) {
+<span class="fc" id="L129">        this.id = id;</span>
+<span class="fc" id="L130">        dockerClient.statsCmd(id).exec(statsCallback);</span>
+<span class="fc" id="L131">    }</span>
+
+    @Override
+    public void stopMonitoring() {
+        try {
+<span class="fc" id="L136">            statsCallback.close();</span>
+<span class="nc" id="L137">        } catch (IOException e) {</span>
+<span class="nc" id="L138">            LOG.error(&quot;failed to close collector &quot;, e);</span>
+<span class="fc" id="L139">        }</span>
+<span class="fc" id="L140">    }</span>
+
+    @Override
+    public Metrics getMetrics() {
+<span class="fc" id="L144">        final ImmutableList&lt;Metric&gt; statisticsList = ImmutableList.copyOf(statsCallback.getStatisticsList());</span>
+<span class="fc" id="L145">        return Metrics.builder().id(id).metadata(ImmutableMap.of(&quot;docker&quot;, id)).metrics(statisticsList).build();</span>
+    }
+
+<span class="fc" id="L148">    private static class StatsCallback extends ResultCallbackTemplate&lt;StatsCallback, Statistics&gt; {</span>
+<span class="fc" id="L149">        private List&lt;Metric&gt; statisticsList = new LinkedList&lt;&gt;();</span>
+
+        @Override
+        public void onNext(Statistics stats) {
+            // NOTE: future versions of the docker api will break this
+
+<span class="nc" id="L155">            statisticsList.add(convertDockerStatsToMetrics(stats));</span>
+<span class="nc" id="L156">        }</span>
+
+        public List&lt;Metric&gt; getStatisticsList() {
+<span class="fc" id="L159">            return statisticsList;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

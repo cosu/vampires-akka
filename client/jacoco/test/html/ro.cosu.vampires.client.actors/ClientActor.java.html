@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClientActor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">client</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.client.actors</a> &gt; <span class="el_source">ClientActor.java</span></div><h1>ClientActor.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.client.actors;
+
+import java.util.Map;
+import java.util.stream.IntStream;
+
+import akka.actor.ActorIdentity;
+import akka.actor.ActorRef;
+import akka.actor.ActorSelection;
+import akka.actor.Identify;
+import akka.actor.Props;
+import akka.actor.ReceiveTimeout;
+import akka.actor.Terminated;
+import akka.actor.UntypedActor;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
+import akka.japi.Procedure;
+import akka.pattern.Patterns;
+import akka.util.Timeout;
+import ro.cosu.vampires.client.extension.ExecutorsExtension;
+import ro.cosu.vampires.client.extension.ExecutorsExtensionImpl;
+import ro.cosu.vampires.server.values.ClientConfig;
+import ro.cosu.vampires.server.values.ClientInfo;
+import ro.cosu.vampires.server.values.jobs.Job;
+import ro.cosu.vampires.server.values.jobs.JobStatus;
+import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
+import scala.concurrent.duration.Duration;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+
+
+public class ClientActor extends UntypedActor {
+
+    private final String serverPath;
+<span class="fc" id="L62">    private final ExecutorsExtensionImpl executors = ExecutorsExtension.ExecutorsProvider.get(getContext().system());</span>
+    private String clientId;
+<span class="fc" id="L64">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
+    private ActorRef server;
+<span class="fc" id="L66">    private Procedure&lt;Object&gt; active = message -&gt; {</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">        if (message instanceof Job) {</span>
+<span class="fc" id="L68">            Job job = (Job) message;</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">            if (JobStatus.COMPLETE.equals(job.status())) {</span>
+<span class="fc" id="L70">                server.tell(job.from(clientId), getSelf());</span>
+            } else {
+<span class="nc" id="L72">                log.debug(&quot;Execute {} -&gt; {} {}&quot;, getSelf().path(), job.computation(), getSender());</span>
+<span class="nc" id="L73">                execute(job);</span>
+            }
+<span class="pc bnc" id="L75" title="All 2 branches missed.">        } else if (message instanceof Terminated) {</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">            if (getSender().equals(server)) {</span>
+<span class="nc" id="L77">                log.info(&quot;server left. shutting down&quot;);</span>
+<span class="nc" id="L78">                getContext().stop(getSelf());</span>
+            }
+        } else {
+<span class="nc" id="L81">            log.error(&quot;Unhandled: {} -&gt; {} {}&quot;, getSelf().path(), message.toString(), getSender());</span>
+<span class="nc" id="L82">            unhandled(message);</span>
+        }
+<span class="fc" id="L84">    };</span>
+<span class="fc" id="L85">    private Procedure&lt;Object&gt; waitForConfig = messsage -&gt; {</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">        if (messsage instanceof ClientConfig) {</span>
+<span class="fc" id="L87">            ClientConfig config = (ClientConfig) messsage;</span>
+<span class="fc" id="L88">            executors.configure(config);</span>
+<span class="fc" id="L89">            log.info(&quot;starting {} workers&quot;, config.numberOfExecutors());</span>
+            //bootstrapping via an empty job
+<span class="fc" id="L91">            IntStream.range(0, config.numberOfExecutors()).forEach(i -&gt; execute(Job.empty()));</span>
+
+<span class="fc" id="L93">            getContext().become(active, true);</span>
+<span class="fc" id="L94">        } else {</span>
+<span class="nc" id="L95">            unhandled(messsage);</span>
+        }
+<span class="fc" id="L97">    };</span>
+
+<span class="fc" id="L99">    public ClientActor(String serverPath, String clientId) {</span>
+<span class="fc" id="L100">        this.serverPath = serverPath;</span>
+<span class="fc" id="L101">        this.clientId = clientId;</span>
+<span class="fc" id="L102">        sendIdentifyRequest();</span>
+<span class="fc" id="L103">    }</span>
+
+    public static Props props(String path, String clientId) {
+<span class="fc" id="L106">        return Props.create(ClientActor.class, path, clientId);</span>
+    }
+
+    private void sendIdentifyRequest() {
+
+<span class="fc" id="L111">        log.info(&quot;connecting to {}&quot;, serverPath);</span>
+<span class="fc" id="L112">        getContext().actorSelection(serverPath).tell(new Identify(serverPath), getSelf());</span>
+<span class="fc" id="L113">        getContext().system().scheduler()</span>
+<span class="fc" id="L114">                .scheduleOnce(</span>
+<span class="fc" id="L115">                        Duration.create(3, SECONDS), getSelf(),</span>
+<span class="fc" id="L116">                        ReceiveTimeout.getInstance(), getContext().dispatcher(), getSelf());</span>
+<span class="fc" id="L117">    }</span>
+
+    @Override
+    public void onReceive(Object message) throws Exception {
+
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">        if (message instanceof ActorIdentity) {</span>
+<span class="fc" id="L123">            server = ((ActorIdentity) message).getRef();</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">            if (server == null) {</span>
+<span class="fc" id="L125">                log.warning(&quot;Remote actor not available: {}&quot;, serverPath);</span>
+            } else {
+<span class="fc" id="L127">                getContext().watch(server);</span>
+<span class="fc" id="L128">                server.tell(getClientInfo(), getSelf());</span>
+<span class="fc" id="L129">                getContext().become(waitForConfig, true);</span>
+            }
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        } else if (message instanceof ReceiveTimeout) {</span>
+<span class="nc" id="L132">            sendIdentifyRequest();</span>
+        } else {
+<span class="nc" id="L134">            log.info(&quot;Not ready yet&quot;);</span>
+        }
+<span class="fc" id="L136">    }</span>
+
+    private void execute(Job job) {
+<span class="fc" id="L139">        ActorRef executorActor = getContext().actorOf(ExecutorActor.props());</span>
+<span class="fc" id="L140">        executorActor.tell(job, getSelf());</span>
+<span class="fc" id="L141">    }</span>
+
+    private ClientInfo getClientInfo() throws Exception {
+<span class="fc" id="L144">        final Map&lt;String, Integer&gt; executorInfo = executors.getExecutorInfo();</span>
+
+<span class="fc" id="L146">        final ActorSelection monitorActor = getContext().actorSelection(&quot;/user/monitor&quot;);</span>
+
+        // ugly but this is done only when the client boots
+<span class="fc" id="L149">        final Future&lt;Object&gt; metricsFuture = Patterns.ask(monitorActor, Metrics.empty(), Timeout.apply(1, SECONDS));</span>
+<span class="fc" id="L150">        Metrics metrics = (Metrics) Await.result(metricsFuture, Duration.create(&quot;2 seconds&quot;));</span>
+
+<span class="fc" id="L152">        return ClientInfo.builder().id(clientId).executors(executorInfo).metrics(metrics).build();</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

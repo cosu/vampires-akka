@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractRestController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.server.rest.controllers</a> &gt; <span class="el_source">AbstractRestController.java</span></div><h1>AbstractRestController.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.server.rest.controllers;
+
+import com.google.common.base.Preconditions;
+import com.google.gson.Gson;
+import com.google.inject.Inject;
+
+import org.slf4j.Logger;
+
+import java.io.FileNotFoundException;
+import java.nio.file.Paths;
+import java.util.Optional;
+
+import ro.cosu.vampires.server.rest.JsonTransformer;
+import ro.cosu.vampires.server.rest.services.Service;
+import ro.cosu.vampires.server.values.Id;
+import ro.cosu.vampires.server.values.User;
+import spark.Request;
+import spark.Route;
+import spark.Spark;
+
+import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
+
+public abstract class AbstractRestController&lt;T extends Id, P&gt; implements Controller {
+
+
+    private final Class&lt;T&gt; valueType;
+    private final Class&lt;P&gt; payloadType;
+    private final String path;
+
+    @Inject
+    private Service&lt;T, P&gt; service;
+
+<span class="fc" id="L60">    AbstractRestController(Class&lt;T&gt; valueType, Class&lt;P&gt; payloadType, String path) {</span>
+<span class="fc" id="L61">        this.valueType = valueType;</span>
+<span class="fc" id="L62">        this.payloadType = payloadType;</span>
+<span class="fc" id="L63">        this.path = Paths.get(path).toAbsolutePath().toString();</span>
+<span class="fc" id="L64">        loadRoutes();</span>
+<span class="fc" id="L65">    }</span>
+
+
+    private User getUser(Request request) {
+<span class="fc" id="L69">        Preconditions.checkNotNull(request.session().attribute(&quot;user&quot;), &quot;invalid user provided&quot;);</span>
+<span class="fc" id="L70">        return User.create(request.session().attribute(&quot;user&quot;));</span>
+    }
+    protected abstract Logger getLogger();
+
+    private void loadRoutes() {
+<span class="fc" id="L75">        String idPath = Paths.get(path, &quot;/:id&quot;).toString();</span>
+<span class="fc" id="L76">        Spark.get(path, list(), JsonTransformer.get());</span>
+<span class="fc" id="L77">        Spark.get(idPath, get(), JsonTransformer.get());</span>
+<span class="fc" id="L78">        Spark.delete(idPath, delete(), JsonTransformer.get());</span>
+<span class="fc" id="L79">        Spark.post(path, create(), JsonTransformer.get());</span>
+<span class="fc" id="L80">        Spark.post(idPath, update(), JsonTransformer.get());</span>
+<span class="fc" id="L81">    }</span>
+
+    public Route list() {
+<span class="fc" id="L84">        return (request, response) -&gt; {</span>
+<span class="fc" id="L85">            logRequest(&quot;list&quot;, request);</span>
+<span class="fc" id="L86">            return service.list(getUser(request));</span>
+        };
+    }
+
+    public Route create() {
+<span class="fc" id="L91">        return (request, response) -&gt; {</span>
+<span class="fc" id="L92">            logRequest(&quot;create&quot;, request);</span>
+<span class="fc" id="L93">            User user = getUser(request);</span>
+<span class="fc" id="L94">            Gson gson = JsonTransformer.get().getGson();</span>
+<span class="fc" id="L95">            P fromJson = gson.fromJson(request.body(), payloadType);</span>
+<span class="fc" id="L96">            response.status(HTTP_CREATED);</span>
+<span class="fc" id="L97">            return service.create(fromJson, user);</span>
+        };
+    }
+
+    public Route get() {
+<span class="fc" id="L102">        return (request, response) -&gt; {</span>
+<span class="fc" id="L103">            logRequest(&quot;get&quot;, request);</span>
+<span class="fc" id="L104">            String id = request.params(&quot;:id&quot;);</span>
+<span class="fc" id="L105">            Optional&lt;T&gt; optional = service.get(id, getUser(request));</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">            if (optional.isPresent()) {</span>
+<span class="fc" id="L107">                return optional.get();</span>
+            } else {
+<span class="nc" id="L109">                throw new FileNotFoundException(&quot;could not find resource &quot; + id);</span>
+            }
+        };
+    }
+
+    public Route delete() {
+<span class="fc" id="L115">        return ((request, response) -&gt; {</span>
+<span class="fc" id="L116">            logRequest(&quot;delete&quot;, request);</span>
+<span class="fc" id="L117">            String id = request.params(&quot;:id&quot;);</span>
+<span class="fc" id="L118">            Preconditions.checkNotNull(id, &quot;id missing&quot;);</span>
+<span class="fc" id="L119">            service.delete(id, getUser(request));</span>
+<span class="fc" id="L120">            response.status(HTTP_NO_CONTENT);</span>
+<span class="fc" id="L121">            return null;</span>
+        });
+    }
+
+    public Route update() {
+<span class="fc" id="L126">        return (request, response) -&gt; {</span>
+<span class="fc" id="L127">            logRequest(&quot;update&quot;, request);</span>
+<span class="fc" id="L128">            Gson gson = JsonTransformer.get().getGson();</span>
+<span class="fc" id="L129">            P fromJson = gson.fromJson(request.body(), payloadType);</span>
+<span class="fc" id="L130">            response.status(HTTP_CREATED);</span>
+<span class="fc" id="L131">            return service.update(fromJson, getUser(request));</span>
+        };
+    }
+
+    private void logRequest(String type, Request request) {
+<span class="fc" id="L136">        getLogger().debug(&quot;User:{} action:{} url: {}&quot;, request.session().attribute(&quot;user&quot;), type, request.url());</span>
+<span class="fc" id="L137">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

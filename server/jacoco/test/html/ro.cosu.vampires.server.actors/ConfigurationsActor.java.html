@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConfigurationsActor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.server.actors</a> &gt; <span class="el_source">ConfigurationsActor.java</span></div><h1>ConfigurationsActor.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.server.actors;
+
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.ImmutableList;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import akka.actor.Props;
+import akka.actor.UntypedActor;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
+import ro.cosu.vampires.server.actors.messages.configuration.CreateConfiguration;
+import ro.cosu.vampires.server.actors.messages.configuration.DeleteConfiguration;
+import ro.cosu.vampires.server.actors.messages.configuration.QueryConfiguration;
+import ro.cosu.vampires.server.actors.messages.configuration.ResponseConfiguration;
+import ro.cosu.vampires.server.actors.settings.Settings;
+import ro.cosu.vampires.server.actors.settings.SettingsImpl;
+import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.values.User;
+import ro.cosu.vampires.server.values.resources.Configuration;
+import ro.cosu.vampires.server.values.resources.ProviderDescription;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
+
+<span class="fc" id="L53">public class ConfigurationsActor extends UntypedActor {</span>
+
+<span class="fc" id="L55">    private final SettingsImpl settings = Settings.SettingsProvider.get(getContext().system());</span>
+<span class="fc" id="L56">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
+
+<span class="fc" id="L58">    private HashBasedTable&lt;User, String, Configuration&gt; table = HashBasedTable.create();</span>
+
+    public static Props props() {
+<span class="fc" id="L61">        return Props.create(ConfigurationsActor.class);</span>
+    }
+
+    private Map&lt;String, Configuration&gt; getUserStore(User user) {
+<span class="fc" id="L65">        return table.row(user);</span>
+    }
+
+    @Override
+    public void onReceive(Object message) throws Exception {
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        if (message instanceof CreateConfiguration) {</span>
+<span class="fc" id="L71">            handleCreation((CreateConfiguration) message);</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        } else if (message instanceof QueryConfiguration) {</span>
+<span class="fc" id="L73">            handleQuery((QueryConfiguration) message);</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">        } else if (message instanceof DeleteConfiguration) {</span>
+<span class="fc" id="L75">            handleDeletion((DeleteConfiguration) message);</span>
+        } else {
+<span class="nc" id="L77">            log.error(&quot;unhandled {}&quot;, message);</span>
+<span class="nc" id="L78">            unhandled(message);</span>
+        }
+<span class="fc" id="L80">    }</span>
+
+    private void handleDeletion(DeleteConfiguration deleteConfiguration) {
+
+<span class="fc" id="L84">        Map&lt;String, Configuration&gt; userStore = getUserStore(deleteConfiguration.user());</span>
+
+<span class="fc" id="L86">        List&lt;Configuration&gt; deleted = deleteConfiguration.configurations().stream().filter(userStore::containsKey)</span>
+<span class="fc" id="L87">                .map(userStore::remove).collect(Collectors.toList());</span>
+
+<span class="fc" id="L89">        getSender().tell(ResponseConfiguration.create(deleted), getSelf());</span>
+<span class="fc" id="L90">    }</span>
+
+    private void handleQuery(QueryConfiguration message) {
+<span class="fc" id="L93">        Map&lt;String, Configuration&gt; userStore = getUserStore(message.user());</span>
+
+        List&lt;Configuration&gt; configurations;
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        if (message.resources().isEmpty())</span>
+<span class="fc" id="L97">            configurations = ImmutableList.copyOf(userStore.values());</span>
+        else
+<span class="fc" id="L99">            configurations = message.resources().stream().filter(userStore::containsKey)</span>
+<span class="fc" id="L100">                    .map(userStore::get).collect(Collectors.toList());</span>
+
+<span class="fc" id="L102">        ResponseConfiguration responseConfiguration = ResponseConfiguration.create(configurations);</span>
+
+<span class="fc" id="L104">        getSender().tell(responseConfiguration, getSelf());</span>
+<span class="fc" id="L105">    }</span>
+
+    private void handleCreation(CreateConfiguration message) {
+<span class="fc" id="L108">        double sum = getCost(message.configuration(), settings.getProviders());</span>
+
+<span class="fc" id="L110">        Configuration configuration = message.configuration().withCost(sum);</span>
+<span class="fc" id="L111">        getUserStore(message.user()).put(configuration.id(), configuration);</span>
+<span class="fc" id="L112">        getSender().tell(configuration, getSelf());</span>
+<span class="fc" id="L113">    }</span>
+
+    private static double getCost(Configuration configuration, Map&lt;Resource.ProviderType, ProviderDescription&gt; providers) {
+
+<span class="fc" id="L117">        return configuration.resources().stream().map(resource -&gt; Optional</span>
+<span class="fc" id="L118">                .ofNullable(providers.get(resource.resourceDescription().provider()))</span>
+<span class="fc" id="L119">                .map(provider -&gt; provider.resourceDescriptions().get(resource.resourceDescription().type()))</span>
+<span class="fc" id="L120">                .map(ResourceDescription::cost)</span>
+<span class="fc" id="L121">                .orElse(0.))</span>
+<span class="fc" id="L122">                .collect(Collectors.summingDouble(Double::doubleValue));</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

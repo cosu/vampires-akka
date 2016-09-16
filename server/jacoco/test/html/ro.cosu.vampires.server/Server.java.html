@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Server.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.server</a> &gt; <span class="el_source">Server.java</span></div><h1>Server.java</h1><pre class="source lang-java linenums">/*
+ * The MIT License (MIT)
+ * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the “Software”), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
+
+package ro.cosu.vampires.server;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
+import ro.cosu.vampires.server.actors.BootstrapActor;
+import ro.cosu.vampires.server.actors.Terminator;
+import ro.cosu.vampires.server.actors.resource.ResourceControl;
+import scala.concurrent.Await;
+import scala.concurrent.duration.Duration;
+
+
+<span class="nc" id="L41">public class Server {</span>
+
+    public static void main(String[] args) throws Exception {
+<span class="nc" id="L44">        final ActorSystem system = ActorSystem.create(&quot;ServerSystem&quot;);</span>
+<span class="nc" id="L45">        LoggingAdapter log = Logging.getLogger(system, Server.class);</span>
+
+<span class="nc" id="L47">        ActorRef terminator = system.actorOf(Terminator.props(), &quot;terminator&quot;);</span>
+<span class="nc" id="L48">        system.actorOf(BootstrapActor.props(terminator), &quot;bootstrap&quot;);</span>
+
+<span class="nc" id="L50">        Runtime.getRuntime().addShutdownHook(new Thread(</span>
+            () -&gt; {
+<span class="nc" id="L52">                terminator.tell(new ResourceControl.Shutdown(), ActorRef.noSender());</span>
+                try {
+<span class="nc" id="L54">                    log.info(&quot;waiting 15 seconds for shutdown&quot;);</span>
+<span class="nc" id="L55">                    Await.result(system.whenTerminated(), Duration.create(&quot;15 seconds&quot;));</span>
+<span class="nc" id="L56">                } catch (Exception e) {</span>
+<span class="nc" id="L57">                    log.error(&quot;error during shutdown hook {}&quot;, e);</span>
+<span class="nc" id="L58">                }</span>
+<span class="nc" id="L59">            }</span>
+        ));
+
+<span class="nc" id="L62">        Await.result(system.whenTerminated(), Duration.Inf());</span>
+<span class="nc" id="L63">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

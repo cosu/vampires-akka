@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BootstrapActor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.server.actors</a> &gt; <span class="el_source">BootstrapActor.java</span></div><h1>BootstrapActor.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.server.actors;
+
+
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Maps;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
+import java.util.Map;
+import java.util.Optional;
+
+import akka.actor.ActorRef;
+import akka.actor.Props;
+import akka.actor.Terminated;
+import akka.actor.UntypedActor;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
+import ro.cosu.vampires.server.actors.messages.configuration.ConfigurationMessage;
+import ro.cosu.vampires.server.actors.messages.execution.QueryExecution;
+import ro.cosu.vampires.server.actors.messages.execution.StartExecution;
+import ro.cosu.vampires.server.actors.messages.resource.ShutdownResource;
+import ro.cosu.vampires.server.actors.messages.workload.WorkloadMessage;
+import ro.cosu.vampires.server.actors.resource.ResourceControl;
+import ro.cosu.vampires.server.actors.settings.Settings;
+import ro.cosu.vampires.server.actors.settings.SettingsImpl;
+import ro.cosu.vampires.server.rest.RestModule;
+import ro.cosu.vampires.server.values.User;
+import ro.cosu.vampires.server.values.jobs.Execution;
+import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
+import spark.Spark;
+
+public class BootstrapActor extends UntypedActor {
+
+    private final ActorRef terminator;
+    private final ActorRef configurationsActor;
+    private final ActorRef workloadsActor;
+<span class="fc" id="L63">    private final SettingsImpl settings = Settings.SettingsProvider.get(getContext().system());</span>
+<span class="fc" id="L64">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
+<span class="fc" id="L65">    private Map&lt;String, ActorRef&gt; executionsToActors = Maps.newHashMap();</span>
+<span class="fc" id="L66">    private HashBasedTable&lt;User, String, Execution&gt; executionHashBasedTable = HashBasedTable.create();</span>
+
+
+<span class="fc" id="L69">    private RestModule restModule = new RestModule(getSelf(), settings.getProviders(), settings.vampires.getConfig(&quot;rest&quot;));</span>
+    private Injector injector;
+
+
+<span class="fc" id="L73">    BootstrapActor(ActorRef terminator) {</span>
+<span class="fc" id="L74">        this.terminator = terminator;</span>
+<span class="fc" id="L75">        configurationsActor = getContext().actorOf(ConfigurationsActor.props(), &quot;configurations&quot;);</span>
+<span class="fc" id="L76">        workloadsActor = getContext().actorOf(WorkloadsActor.props(), &quot;workloads&quot;);</span>
+<span class="fc" id="L77">    }</span>
+
+    public static Props props(ActorRef terminator) {
+<span class="fc" id="L80">        return Props.create(BootstrapActor.class, terminator);</span>
+    }
+
+    @Override
+    public void preStart() {
+<span class="fc" id="L85">        terminator.tell(ResourceControl.Up.create(), getSelf());</span>
+<span class="fc" id="L86">        startWebserver();</span>
+<span class="fc" id="L87">    }</span>
+
+    private void startWebserver() {
+<span class="fc" id="L90">        Spark.port(settings.vampires.getInt(&quot;rest.port&quot;));</span>
+<span class="fc" id="L91">        Spark.init();</span>
+<span class="fc" id="L92">        injector = Guice.createInjector(restModule);</span>
+<span class="fc" id="L93">    }</span>
+
+
+    @Override
+    public void postStop() {
+<span class="fc" id="L98">        Spark.stop();</span>
+<span class="fc" id="L99">    }</span>
+
+    @Override
+    public void onReceive(Object message) throws Exception {
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        if (message instanceof StartExecution) {</span>
+<span class="fc" id="L104">            StartExecution startExecution = (StartExecution) message;</span>
+<span class="fc" id="L105">            handleStartExecution(startExecution);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        } else if (message instanceof Execution) {</span>
+<span class="fc" id="L107">            Execution execution = (Execution) message;</span>
+<span class="fc" id="L108">            handleExecution(execution);</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        } else if (message instanceof QueryExecution) {</span>
+<span class="fc" id="L110">            QueryExecution info = (QueryExecution) message;</span>
+<span class="fc" id="L111">            queryResource(info);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        } else if (message instanceof ShutdownResource) {</span>
+<span class="fc" id="L113">            ShutdownResource shutdownResource = (ShutdownResource) message;</span>
+<span class="fc" id="L114">            handleShutdown(shutdownResource);</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">        } else if (message instanceof ConfigurationMessage) {</span>
+<span class="nc" id="L116">            configurationsActor.forward(message, getContext());</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">        } else if (message instanceof WorkloadMessage) {</span>
+<span class="nc" id="L118">            workloadsActor.forward(message, getContext());</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">        } else if (message instanceof Terminated) {</span>
+<span class="fc" id="L120">            handleTerminated();</span>
+        } else {
+<span class="nc" id="L122">            unhandled(message);</span>
+        }
+<span class="fc" id="L124">    }</span>
+
+
+    private void handleShutdown(ShutdownResource shutdownResource) {
+<span class="fc" id="L128">        User user = shutdownResource.user();</span>
+
+<span class="fc" id="L130">        boolean userHasExecution = getResultsMap(user).containsKey(shutdownResource.resourceId());</span>
+<span class="fc" id="L131">        boolean executionHasActor = executionsToActors.containsKey(shutdownResource.resourceId());</span>
+
+<span class="pc bpc" id="L133" title="2 of 4 branches missed.">        if (userHasExecution &amp;&amp; executionHasActor) {</span>
+<span class="fc" id="L134">            Execution execution = getResultsMap(user).get(shutdownResource.resourceId());</span>
+<span class="fc" id="L135">            boolean executionCanShutdown = ExecutionInfo.isActiveStatus(execution.info().status());</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">            if (executionCanShutdown) {</span>
+<span class="fc" id="L137">                ActorRef executionActor = executionsToActors.get(shutdownResource.resourceId());</span>
+<span class="fc" id="L138">                executionActor.tell(ResourceControl.Shutdown.create(), getSelf());</span>
+
+                // update the current view of the execution
+<span class="fc" id="L141">                execution = execution.withInfo(execution.info()</span>
+<span class="fc" id="L142">                        .updateStatus(ExecutionInfo.Status.STOPPING));</span>
+<span class="fc" id="L143">                getResultsMap(user).put(execution.id(), execution);</span>
+<span class="fc" id="L144">            } else {</span>
+<span class="nc" id="L145">                log.warning(&quot;shutting down a non-running execution {}&quot;, execution);</span>
+            }
+<span class="fc" id="L147">            getSender().tell(execution, getSelf());</span>
+        }
+<span class="fc" id="L149">    }</span>
+
+    private void handleTerminated() {
+<span class="fc" id="L152">        Optional&lt;String&gt; execId =</span>
+<span class="fc" id="L153">                executionsToActors.entrySet().stream()</span>
+<span class="fc" id="L154">                        .filter(e -&gt; e.getValue().equals(getSender()))</span>
+<span class="fc" id="L155">                        .map(Map.Entry::getKey).findFirst();</span>
+
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">        if (execId.isPresent()) {</span>
+<span class="fc" id="L158">            String id = execId.get();</span>
+<span class="fc" id="L159">            executionsToActors.remove(id);</span>
+<span class="fc" id="L160">            log.info(&quot;{} terminated &quot;, id);</span>
+        }
+<span class="fc" id="L162">    }</span>
+
+    private void handleStartExecution(StartExecution startExecution) {
+<span class="fc" id="L165">        Execution execution = startExecution.execution();</span>
+
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">        if (!executionsToActors.containsKey(execution.id())) {</span>
+<span class="fc" id="L168">            ActorRef executionActor = getContext().actorOf(ExecutionActor.props(execution), execution.id());</span>
+<span class="fc" id="L169">            executionsToActors.put(execution.id(), executionActor);</span>
+<span class="fc" id="L170">            executionActor.tell(execution, getSelf());</span>
+<span class="fc" id="L171">            getContext().watch(executionActor);</span>
+<span class="fc" id="L172">            getResultsMap(startExecution.user()).put(execution.id(), execution);</span>
+        }
+<span class="fc" id="L174">    }</span>
+
+    private void handleExecution(Execution execution) {
+        //lsupdate or finished execution
+<span class="fc" id="L178">        User user = executionHashBasedTable.column(execution.id()).keySet().iterator().next();</span>
+<span class="fc" id="L179">        getResultsMap(user).put(execution.id(), execution);</span>
+<span class="fc" id="L180">    }</span>
+
+    private Map&lt;String, Execution&gt; getResultsMap(User user) {
+<span class="fc" id="L183">        return executionHashBasedTable.row(user);</span>
+    }
+
+
+    private void queryResource(QueryExecution info) {
+<span class="fc" id="L188">        User user = info.user();</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">        if (info.equals(QueryExecution.all(info.user()))) {</span>
+<span class="nc" id="L190">            getSender().tell(getResultsMap(user).values(), getSelf());</span>
+        } else {
+<span class="pc bpc" id="L192" title="1 of 2 branches missed.">            if (getResultsMap(user).containsKey(info.resourceId())) {</span>
+<span class="fc" id="L193">                getSender().tell(getResultsMap(user).get(info.resourceId()), getSelf());</span>
+            } else {
+<span class="nc" id="L195">                log.error(&quot;Invalid query for execution id {}&quot;, info.resourceId());</span>
+            }
+        }
+<span class="fc" id="L198">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
