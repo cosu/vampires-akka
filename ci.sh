@@ -2,11 +2,11 @@
 
 set -ev
 # run tests
-./gradlew check
+./gradlew check --parallel --parallel-threads=4
 
 
 #nstall the client locally
-./gradlew installDist
+./gradlew installDist 
 
 ./gradlew integrationTest
 
