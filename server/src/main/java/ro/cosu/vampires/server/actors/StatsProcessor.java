@@ -161,6 +161,7 @@ public class StatsProcessor {
 
         job.hostMetrics().metrics().stream().flatMap(m -> m.values().entrySet().stream())
                 .forEach(e -> {
+                    // converts doubles to longs
                     Double value = e.getValue();
                     if (value < 100) {
                         value = 1000. * value;
