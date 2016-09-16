@@ -11,6 +11,10 @@ import ro.cosu.vampires.server.values.ClientInfo;
 import ro.cosu.vampires.server.values.jobs.Job;
 import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+
+
 public class StatsProcessorTest {
     @Test
     public void process() throws Exception {
@@ -22,22 +26,18 @@ public class StatsProcessorTest {
         StatsProcessor processor = new StatsProcessor();
         processor.process(clientInfo);
         MockResourceParameters mock = MockResourceParameters.builder().instanceType("mock")
+                .cost(10)
                 .command("mock").build();
         ResourceInfo resourceInfo = ResourceInfo.create(mock, Resource.Status.CONNECTED);
         processor.process(resourceInfo);
 
         Job job = Job.empty().from(mock.id());
         processor.process(job);
+        processor.flush();
+
+        assertThat(processor.getStats().values().get("cost").value(), is(10.0));
+        assertThat(processor.getStats().counters().get("resources").count(), is(1L));
     }
 
-    @Test
-    public void process1() throws Exception {
-
-    }
-
-    @Test
-    public void process2() throws Exception {
-
-    }
 
 }
