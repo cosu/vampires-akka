@@ -3,6 +3,9 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
   echo -e "Starting to update gh-pages\n"
 
   #copy data we're interested in to other place
+  mkdir ${HOME}/client
+  mkdir ${HOME}/server
+
   cp -R ./client/build/reports/* ${HOME}/client
   cp -R ./server/build/reports/* ${HOME}/server
 
