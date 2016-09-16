@@ -3,7 +3,9 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
   echo -e "Starting to update gh-pages\n"
 
   #copy data we're interested in to other place
-  cp -R coverage $HOME/coverage
+  cp -R ./client/build/reports/* ${HOME}/client
+  cp -R ./server/build/reports/* ${HOME}/server
+
 
   #go to home and setup git
   cd $HOME
@@ -17,8 +19,8 @@ if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
   cd gh-pages
   mkdir client
   mkdir server
-  cp -Rf $HOME/client/build/reports/* client
-  cp -Rf $HOME/server/build/reports/* server
+  cp -Rf $HOME/client/* client
+  cp -Rf $HOME/server/* server
 
   #add, commit and push files
   git add -f .
