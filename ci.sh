@@ -2,7 +2,7 @@
 
 set -ev
 # run tests
-./gradlew check --parallel --parallel-threads=4
+./gradlew check --parallel
 
 
 #nstall the client locally
