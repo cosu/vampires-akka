@@ -128,7 +128,8 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
     @Override
     public Optional<Execution> delete(String id, User user) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(id), "id must not be empty");
-        return sendMessage(ShutdownResource.create(id, user));
+
+        return ActorUtil.ask(ShutdownResource.create(id, user), actorRef);
     }
 
     @Override
@@ -136,23 +137,10 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
         throw new IllegalArgumentException("not implemented");
     }
 
-    private Optional<Execution> sendMessage(Object message) {
-        Timeout timeout = new Timeout(Duration.create(100, "milliseconds"));
-
-        Future<Object> ask = Patterns.ask(actorRef, message, timeout);
-
-        try {
-            Execution execution = (Execution) Await.result(ask, timeout.duration());
-            return Optional.ofNullable(execution);
-        } catch (Exception e) {
-            LOG.error("Failed to get execution {}", e);
-            throw new RuntimeException(e);
-        }
-    }
 
     @Override
     public Optional<Execution> get(String id, User user) {
-        return sendMessage(QueryExecution.create(id, user));
+        return ActorUtil.ask(QueryExecution.create(id, user), actorRef);
     }
 
 

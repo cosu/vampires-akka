@@ -74,5 +74,4 @@ public class ExecutionsServiceTest extends AbstractServiceTest<Execution, Execut
     public void update() throws Exception {
         //
     }
-
 }

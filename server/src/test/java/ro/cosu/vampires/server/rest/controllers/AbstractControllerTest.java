@@ -67,6 +67,7 @@ import spark.Spark;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
@@ -167,6 +168,15 @@ public abstract class AbstractControllerTest<T extends Id, P> {
     }
 
     @Test
+    public void getUnknown() throws Exception {
+        HttpClient client = getHttpClient();
+        String getUrl = url + Paths.get(getPath(), "foo");
+        HttpGet httpGet = new HttpGet(getUrl);
+        HttpResponse execute = client.execute(httpGet);
+        assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_NOT_FOUND));
+    }
+
+    @Test
     public void create() throws Exception {
         P payload = getPayload();
 
@@ -177,10 +187,8 @@ public abstract class AbstractControllerTest<T extends Id, P> {
         httpPost.setHeader("Content-type", "application/json");
 
         HttpClient client = getHttpClient();
-
         HttpResponse execute = client.execute(httpPost);
         assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_CREATED));
-
         checkResponseContainsItem(EntityUtils.toString(execute.getEntity()));
     }
 
@@ -190,13 +198,9 @@ public abstract class AbstractControllerTest<T extends Id, P> {
         String deleteUrl = url + Paths.get(getPath(), item.id()).toString();
 
         HttpDelete httpDelete = new HttpDelete(deleteUrl);
-
         HttpClient httpClient = getHttpClient();
-
         HttpResponse execute = httpClient.execute(httpDelete);
-
         assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_NO_CONTENT));
-
         assertThat(execute.getEntity(), nullValue());
     }
 
@@ -232,28 +236,19 @@ public abstract class AbstractControllerTest<T extends Id, P> {
         HttpPost httpPost = new HttpPost(url + Paths.get(getPath(), firstItem.id()).toString());
         httpPost.setEntity(new StringEntity(""));
         httpPost.setHeader("Content-type", "application/json");
-
         HttpClient client = getHttpClient();
-
         HttpResponse execute = client.execute(httpPost);
-
         assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_BAD_REQUEST));
-
     }
 
 
     @Test
     public void unauthorized() throws Exception {
-
         HttpPost httpPost = new HttpPost(url + getPath());
         httpPost.setEntity(new StringEntity(""));
         httpPost.setHeader("Content-type", "application/json");
-
         HttpClient client = HttpClientBuilder.create().build();
-
         HttpResponse execute = client.execute(httpPost);
-
         assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_UNAUTHORIZED));
-
     }
 }

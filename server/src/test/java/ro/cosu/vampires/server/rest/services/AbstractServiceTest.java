@@ -114,4 +114,16 @@ public abstract class AbstractServiceTest<T extends Id, P> {
         assertThat(optional.isPresent(), is(true));
     }
 
+
+    @Test
+    public void deleteUnknown() throws Exception {
+        Optional<T> foo = instance.delete("foo", getUser());
+        assertThat(foo.isPresent(), is(false));
+    }
+
+    @Test
+    public void getUnknown() throws Exception {
+        Optional<T> foo = instance.get("foo", getUser());
+        assertThat(foo.isPresent(), is(false));
+    }
 }

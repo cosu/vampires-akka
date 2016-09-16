@@ -32,6 +32,7 @@ import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 
 import ro.cosu.vampires.server.rest.JsonTransformer;
@@ -41,21 +42,42 @@ import spark.Response;
 import spark.Spark;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 
 public class ExceptionMapper {
     private static final Logger LOG = LoggerFactory.getLogger(ExceptionMapper.class);
 
     ExceptionMapper() {
-        Spark.exception(RuntimeException.class, new BadRequestJson());
-        Spark.exception(NullPointerException.class, new BadRequestJson());
+        Spark.exception(RuntimeException.class, JsonResponse.internalServerError());
+        Spark.exception(NullPointerException.class, JsonResponse.badRequest());
+        Spark.exception(FileNotFoundException.class, JsonResponse.fileNotFound());
     }
 
-    private static class BadRequestJson implements ExceptionHandler {
+
+    private static class JsonResponse implements ExceptionHandler {
+        private final int status;
+
+        JsonResponse(int status) {
+            this.status = status;
+        }
+
+        static JsonResponse badRequest() {
+            return new JsonResponse(HTTP_BAD_REQUEST);
+        }
+
+        static JsonResponse fileNotFound() {
+            return new JsonResponse(HTTP_NOT_FOUND);
+        }
+
+        static JsonResponse internalServerError() {
+            return new JsonResponse(HTTP_INTERNAL_ERROR);
+        }
 
         @Override
         public void handle(Exception exception, Request request, Response response) {
             LOG.error("Error for client {} path {} body {}", request.ip(), request.url(), request.body(), exception);
-            response.status(HTTP_BAD_REQUEST);
+            response.status(status);
             HashMap<Object, Object> map = Maps.newHashMap();
             map.put("error", exception.getMessage());
             response.body(JsonTransformer.get().getGson().toJson(map));

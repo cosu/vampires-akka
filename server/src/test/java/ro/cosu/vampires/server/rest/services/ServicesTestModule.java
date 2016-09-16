@@ -45,15 +45,15 @@ import ro.cosu.vampires.server.actors.messages.execution.QueryExecution;
 import ro.cosu.vampires.server.actors.messages.execution.StartExecution;
 import ro.cosu.vampires.server.actors.messages.resource.ShutdownResource;
 import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.values.resources.Configuration;
-import ro.cosu.vampires.server.values.resources.ConfigurationPayload;
+import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.jobs.Execution;
 import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
-import ro.cosu.vampires.server.values.resources.ResourceDemand;
-import ro.cosu.vampires.server.values.resources.ResourceDescription;
-import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.jobs.Workload;
 import ro.cosu.vampires.server.values.jobs.WorkloadPayload;
+import ro.cosu.vampires.server.values.resources.Configuration;
+import ro.cosu.vampires.server.values.resources.ConfigurationPayload;
+import ro.cosu.vampires.server.values.resources.ResourceDemand;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
@@ -83,14 +83,20 @@ public class ServicesTestModule extends AbstractModule {
                     if (info.equals(QueryExecution.all(info.user()))) {
                         sender.tell(executionMap.values(), actorRef);
                     } else {
-                        sender.tell(executionMap.get(info.resourceId()), actorRef);
+                        Optional.ofNullable(executionMap.get(info.resourceId()))
+                                .ifPresent(execution ->
+                                        sender.tell(executionMap.get(info.resourceId()), actorRef));
                     }
                 } else if (msg instanceof ShutdownResource) {
-                    Execution execution = executionMap.get(((ShutdownResource) msg).resourceId());
-                    ExecutionInfo executionInfo = execution.info().updateStatus(ExecutionInfo.Status.CANCELED);
-                    execution = execution.withInfo(executionInfo);
-                    executionMap.put(execution.id(), execution.withInfo(executionInfo));
-                    sender.tell(execution, actorRef);
+                    Optional<Execution> executionOptional = Optional.ofNullable(executionMap.get(((ShutdownResource) msg).resourceId()));
+
+                    executionOptional.ifPresent(execution -> {
+                        ExecutionInfo executionInfo = execution.info().updateStatus(ExecutionInfo.Status.CANCELED);
+                        execution = execution.withInfo(executionInfo);
+                        executionMap.put(execution.id(), execution.withInfo(executionInfo));
+                        sender.tell(execution, actorRef);
+                    });
+
                 } else {
                     fail();
                 }
