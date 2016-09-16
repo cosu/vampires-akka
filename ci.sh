@@ -2,13 +2,13 @@
 
 set -ev
 # run tests
-./gradlew check --info
+./gradlew check
 
 
 #nstall the client locally
 ./gradlew installDist
 
-./gradlew integrationTest --info
+./gradlew integrationTest
 
 # run the server
 
@@ -28,6 +28,13 @@ job_status=$(./server/scripts/getStatus.sh ${exec_id})
 
 
 jps | grep Server | awk '{print $1}' | xargs kill
+
+
+echo "http://cosu.github.io/vampires-akka/server/tests/test/"
+echo "http://cosu.github.io/vampires-akka/client/tests/test/"
+echo "http://cosu.github.io/vampires-akka/server/tests/integrationTest/"
+echo "http://cosu.github.io/vampires-akka/server/jacoco/test/html/"
+echo "http://cosu.github.io/vampires-akka/client/jacoco/test/html/"
 
 if [[ ${job_status} == "finished" ]]; then
     echo "Success!"
