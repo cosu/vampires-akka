@@ -31,7 +31,6 @@ import com.codahale.metrics.MetricRegistry;
 import org.junit.Test;
 
 import oshi.SystemInfo;
-import oshi.util.ParseUtil;
 
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
@@ -47,7 +46,7 @@ public class NetworkSourceTest {
 
         ns.register();
 
-        mr.getGauges().entrySet().stream().forEach(e -> {
+        mr.getGauges().entrySet().forEach(e -> {
             assertThat(e.getValue().getValue(), not(0));
         });
 

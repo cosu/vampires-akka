@@ -53,9 +53,6 @@ import ro.cosu.vampires.server.values.jobs.ExecutionMode;
 import ro.cosu.vampires.server.values.jobs.Job;
 import ro.cosu.vampires.server.writers.ResultsWriter;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
 
 public class ResultActor extends UntypedActor {
     private final SettingsImpl settings =
@@ -103,11 +100,11 @@ public class ResultActor extends UntypedActor {
         workActor = getContext().actorOf(WorkActor.props(scheduler), "workActor");
 
         logSchedule = getContext().system().scheduler().schedule(scala.concurrent.duration.Duration.Zero(),
-                scala.concurrent.duration.Duration.create(30, SECONDS),
+                scala.concurrent.duration.Duration.create(30, TimeUnit.SECONDS),
                 () -> log.info("results so far: {}/{}", results.size(), totalSize), getContext().system().dispatcher());
 
         statsSchedule = getContext().system().scheduler().schedule(scala.concurrent.duration.Duration.Zero(),
-                scala.concurrent.duration.Duration.create(500, MILLISECONDS),
+                scala.concurrent.duration.Duration.create(500, TimeUnit.MILLISECONDS),
                 () -> statsProcessor.flush(), getContext().system().dispatcher());
 
     }
@@ -129,8 +126,7 @@ public class ResultActor extends UntypedActor {
         } else if (message instanceof ResourceInfo) {
             ResourceInfo resourceInfo = (ResourceInfo) message;
             handleResourceInfo(resourceInfo);
-        }
-        else if (message instanceof ResourceControl.Shutdown) {
+        } else if (message instanceof ResourceControl.Shutdown) {
             shutdown(ExecutionInfo.Status.CANCELED);
         } else {
             unhandled(message);

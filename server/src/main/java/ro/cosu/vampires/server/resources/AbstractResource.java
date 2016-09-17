@@ -35,6 +35,7 @@ public abstract class AbstractResource implements Resource {
 
     private final Parameters parameters;
     private Resource.Status status = Status.UNKNOWN;
+
     public AbstractResource(Resource.Parameters parameters) {
         this.parameters = parameters;
         setStatus(Status.SLEEPING);

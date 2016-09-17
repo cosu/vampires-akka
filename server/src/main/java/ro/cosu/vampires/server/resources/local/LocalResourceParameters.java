@@ -33,7 +33,6 @@ import com.typesafe.config.Config;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.resources.ec2.EC2ResourceParameters;
 
 @AutoValue
 public abstract class LocalResourceParameters implements Resource.Parameters {

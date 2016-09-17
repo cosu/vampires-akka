@@ -51,7 +51,7 @@ public class SimpleEstimator implements Estimator {
                     int count = rd.count();
                     Double duration = durationsPerInstanceType.get(rd.resourceDescription());
                     return count / duration;
-        }).sum();
+                }).sum();
 
         return numberOfJobs / ratesSum;
     }

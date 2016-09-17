@@ -29,7 +29,7 @@ package ro.cosu.vampires.server.rest.controllers;
 
 import com.google.inject.AbstractModule;
 
-public class ControllersModule extends AbstractModule{
+public class ControllersModule extends AbstractModule {
 
 
     private final boolean withAuth;

@@ -69,6 +69,7 @@ public abstract class AbstractRestController<T extends Id, P> implements Control
         Preconditions.checkNotNull(request.session().attribute("user"), "invalid user provided");
         return User.create(request.session().attribute("user"));
     }
+
     protected abstract Logger getLogger();
 
     private void loadRoutes() {

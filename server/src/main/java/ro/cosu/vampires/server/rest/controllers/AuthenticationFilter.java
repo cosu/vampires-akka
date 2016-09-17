@@ -43,6 +43,7 @@ public class AuthenticationFilter {
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationFilter.class);
 
     private static Set<String> storedCredentials = Sets.newHashSet();
+
     {
         // lame static store for now
         storedCredentials.add("admin:admin");
@@ -57,7 +58,7 @@ public class AuthenticationFilter {
             boolean authenticated = !request.session().isNew();
             String auth = request.headers("Authorization");
 
-            if( request.requestMethod().equals("OPTIONS"))
+            if (request.requestMethod().equals("OPTIONS"))
                 authenticated = true;
 
             if (!authenticated) {

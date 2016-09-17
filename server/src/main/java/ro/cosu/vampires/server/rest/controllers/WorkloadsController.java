@@ -37,6 +37,7 @@ public class WorkloadsController extends AbstractRestController<Workload, Worklo
     private static final Logger LOG = LoggerFactory.getLogger(WorkloadsController.class);
 
     private static final String path = "/workloads";
+
     WorkloadsController() {
         super(Workload.class, WorkloadPayload.class, path);
     }

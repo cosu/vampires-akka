@@ -62,7 +62,7 @@ public abstract class Execution implements Id {
 
     public abstract LocalDateTime updatedAt();
 
-    public  abstract Builder toBuilder();
+    public abstract Builder toBuilder();
 
     public Execution withInfo(ExecutionInfo info) {
         return toBuilder()

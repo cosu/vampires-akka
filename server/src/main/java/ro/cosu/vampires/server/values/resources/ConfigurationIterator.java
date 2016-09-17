@@ -72,5 +72,4 @@ public class ConfigurationIterator implements Iterator<Configuration> {
     }
 
 
-
 }

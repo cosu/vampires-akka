@@ -40,6 +40,7 @@ public abstract class QueryExecution implements ExecutionMessage {
     public static QueryExecution all(User user) {
         return new AutoValue_QueryExecution("all", user);
     }
+
     public abstract String resourceId();
 
     public abstract User user();

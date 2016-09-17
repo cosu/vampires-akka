@@ -61,7 +61,7 @@ public class StatsProcessor {
 
     private MetricRegistry metricRegistry = new MetricRegistry();
 
-    private Map<String, LocalDateTime> clientsCreatedAt= Maps.newHashMap();
+    private Map<String, LocalDateTime> clientsCreatedAt = Maps.newHashMap();
     private Map<String, ClientInfo> clientsInfo = Maps.newHashMap();
     private Map<String, ResourceInfo> resourcesInfo = Maps.newHashMap();
 
@@ -135,7 +135,7 @@ public class StatsProcessor {
 
         // cost gauges for the rest
 
-        for (String key: costMetricKeys) {
+        for (String key : costMetricKeys) {
             // key not registered yet
             if (!metricRegistry.getGauges().containsKey(key)) {
 
@@ -154,7 +154,7 @@ public class StatsProcessor {
 
         String from = job.from();
         // do not process jobs from strangers
-        if (!resourcesInfo.containsKey(from)){
+        if (!resourcesInfo.containsKey(from)) {
             LOG.warn("client {} not registered. skipping processing", from);
             return;
         }
@@ -191,24 +191,24 @@ public class StatsProcessor {
 
     private double getCostForClient(String id) {
 
-        long billedHours = getDurationForClient(id).toHours()+ 1;
+        long billedHours = getDurationForClient(id).toHours() + 1;
         double cost = resourcesInfo.get(id).parameters().cost();
         return billedHours * cost;
     }
 
-    private Duration getDurationForClient(String id){
+    private Duration getDurationForClient(String id) {
         LocalDateTime createdAt = clientsCreatedAt.get(id);
         LocalDateTime now = LocalDateTime.now();
 
         return Duration.between(createdAt, now);
     }
 
-    private String getInstanceType(String from){
+    private String getInstanceType(String from) {
         return resourcesInfo.get(from).parameters().instanceType();
     }
 
-    private Resource.ProviderType getProviderType (String from) {
-        return  resourcesInfo.get(from).parameters().providerType();
+    private Resource.ProviderType getProviderType(String from) {
+        return resourcesInfo.get(from).parameters().providerType();
     }
 
     private List<String> getKeysForMetric(String clientId, String metric) {

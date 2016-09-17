@@ -93,6 +93,7 @@ public abstract class SshResourceParameters implements Resource.Parameters {
         }
 
         public abstract Builder cost(double cost);
+
         public abstract Builder providerType(Resource.ProviderType providerType);
 
         public abstract Builder command(String s);

@@ -24,9 +24,6 @@
 
 package ro.cosu.vampires.server;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.event.Logging;
@@ -48,15 +45,15 @@ public class Server {
         system.actorOf(BootstrapActor.props(terminator), "bootstrap");
 
         Runtime.getRuntime().addShutdownHook(new Thread(
-            () -> {
-                terminator.tell(new ResourceControl.Shutdown(), ActorRef.noSender());
-                try {
-                    log.info("waiting 15 seconds for shutdown");
-                    Await.result(system.whenTerminated(), Duration.create("15 seconds"));
-                } catch (Exception e) {
-                    log.error("error during shutdown hook {}", e);
+                () -> {
+                    terminator.tell(new ResourceControl.Shutdown(), ActorRef.noSender());
+                    try {
+                        log.info("waiting 15 seconds for shutdown");
+                        Await.result(system.whenTerminated(), Duration.create("15 seconds"));
+                    } catch (Exception e) {
+                        log.error("error during shutdown hook {}", e);
+                    }
                 }
-            }
         ));
 
         Await.result(system.whenTerminated(), Duration.Inf());

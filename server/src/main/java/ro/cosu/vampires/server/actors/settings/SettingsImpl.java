@@ -26,7 +26,6 @@
 
 package ro.cosu.vampires.server.actors.settings;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import com.typesafe.config.Config;
@@ -56,10 +55,10 @@ import ro.cosu.vampires.server.writers.mongo.MongoWriter;
 public class SettingsImpl implements Extension {
 
     public static final String SAMPLING_MODE = "sampling";
+    public static final String MODE = "mode";
     private static final String SAMPLE_SIZE = "sample-size";
     private static final String EXECUTORS = "executors";
     private static final String CPU_SET_SIZE = "cpu-set-size";
-    public static final String MODE = "mode";
     private static final String JOB_DEADLINE_SECONDS = "job-deadline-seconds";
     private static final String ENABLED_WRITERS = "enabled-writers";
     private static final String BACKOFF_INTERVAL_SECONDS = "backoff-interval-seconds";
@@ -166,7 +165,7 @@ public class SettingsImpl implements Extension {
                                 return
                                         ResourceDescription.builder().provider(pt).type(key).cost(cost).build();
                             })
-                            .collect(Collectors.toMap(ResourceDescription::type,Function.identity()));
+                            .collect(Collectors.toMap(ResourceDescription::type, Function.identity()));
                     return ProviderDescription.builder()
                             .description(name)
                             .provider(Resource.ProviderType.valueOf(enabledProvider.toUpperCase()))
