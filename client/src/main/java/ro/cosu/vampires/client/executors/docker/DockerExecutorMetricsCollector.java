@@ -48,6 +48,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
+import javax.ws.rs.ProcessingException;
+
 import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
 import ro.cosu.vampires.server.values.jobs.metrics.Metric;
 import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
@@ -129,7 +131,7 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
     public void stopMonitoring() {
         try {
             statsCallback.close();
-        } catch (IOException e) {
+        } catch (IOException | ProcessingException e) {
             LOG.error("failed to close collector ", e);
         }
     }

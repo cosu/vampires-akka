@@ -119,7 +119,12 @@ public class HostSource implements Source {
     }
 
     private Gauge<String> getAddress(final NetworkIF iface) {
-        return () -> iface.getIPv4addr()[0];
+        String addr = "unknown";
+        if (iface.getIPv4addr().length > 0) {
+            addr = iface.getIPv4addr()[0];
+        }
+        String finalAddr = addr;
+        return () -> finalAddr;
     }
 
     private Gauge<String> getHWAddress(final NetworkIF iface) {
