@@ -126,8 +126,6 @@ public class ClientActor extends UntypedActor {
             server = ((ActorIdentity) message).getRef();
             if (server == null) {
                 log.warning("Remote actor not available: {}", serverPath);
-                log.info("shutting down");
-                getContext().stop(getSelf());
             } else {
                 getContext().watch(server);
                 server.tell(getClientInfo(), getSelf());
