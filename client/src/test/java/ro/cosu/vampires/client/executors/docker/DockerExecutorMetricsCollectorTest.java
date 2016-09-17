@@ -54,9 +54,9 @@ import ro.cosu.vampires.server.values.jobs.metrics.Metric;
 import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 
@@ -124,6 +124,6 @@ public class DockerExecutorMetricsCollectorTest {
         Statistics statistics = gson.fromJson(read, Statistics.class);
 
         Metric metric = DockerExecutorMetricsCollector.convertDockerStatsToMetrics(statistics);
-        assertThat(metric.values().size(), is(not(0)));
+        assertThat(metric.values().size(), not(0));
     }
 }
