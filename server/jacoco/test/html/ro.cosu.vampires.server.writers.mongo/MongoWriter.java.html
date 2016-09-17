@@ -37,34 +37,41 @@ import ro.cosu.vampires.server.writers.ResultsWriter;
 
 public class MongoWriter implements ResultsWriter {
     private final Datastore datastore;
-<span class="fc" id="L40">    private Morphia morphia = new Morphia();</span>
 
-<span class="fc" id="L42">    public MongoWriter() {</span>
-<span class="fc" id="L43">        morphia.mapPackage(&quot;ro.cosu.vampires.server.writers.mongo&quot;);</span>
-<span class="fc" id="L44">        morphia.getMapper().getConverters().addConverter(LocalDateTimeConverter.class);</span>
+<span class="fc" id="L41">    public MongoWriter(Morphia morphia, MongoClient mongoClient) {</span>
+<span class="fc" id="L42">        datastore = morphia.createDatastore(mongoClient, &quot;vampires&quot;);</span>
+<span class="fc" id="L43">        datastore.ensureIndexes();</span>
+<span class="fc" id="L44">    }</span>
 
-<span class="fc" id="L46">        datastore = morphia.createDatastore(getMongoClient(), &quot;vampires&quot;);</span>
-<span class="fc" id="L47">        datastore.ensureIndexes();</span>
+    @SuppressWarnings(&quot;unused&quot;)
+    protected static Morphia getMorphia() {
+<span class="fc" id="L48">        Morphia morphia = new Morphia();</span>
+<span class="fc" id="L49">        morphia.mapPackage(&quot;ro.cosu.vampires.server.writers.mongo&quot;);</span>
+<span class="fc" id="L50">        morphia.getMapper().getConverters().addConverter(LocalDateTimeConverter.class);</span>
+<span class="fc" id="L51">        return morphia;</span>
+    }
 
-<span class="fc" id="L49">    }</span>
+    public static MongoWriter newDefaultWriter() {
+<span class="fc" id="L55">        return new MongoWriter(getMorphia(), getMongoClient());</span>
+    }
 
-    private MongoClient getMongoClient() {
-<span class="fc" id="L52">        return new MongoClient();</span>
+    protected static MongoClient getMongoClient() {
+<span class="fc" id="L59">        return new MongoClient();</span>
     }
 
     @Override
     public void addResult(Job result) {
-<span class="nc" id="L57">        datastore.save(result);</span>
-<span class="nc" id="L58">    }</span>
+<span class="fc" id="L64">        datastore.save(result);</span>
+<span class="fc" id="L65">    }</span>
 
     @Override
     public void addClient(ClientInfo clientInfo) {
-<span class="nc" id="L62">        datastore.save(clientInfo);</span>
-<span class="nc" id="L63">    }</span>
+<span class="fc" id="L69">        datastore.save(clientInfo);</span>
+<span class="fc" id="L70">    }</span>
 
     @Override
     public void close() {
         // nothing
-<span class="nc" id="L68">    }</span>
+<span class="nc" id="L75">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
