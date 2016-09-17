@@ -81,6 +81,7 @@ public class DockerExecutor implements Executor {
     private CpuSet cpuSet;
 
     private void createContainer(String[] command) {
+        LOG.debug("docker CPUset {}", cpuSet);
         final String containerName = "vampires-" + new SecureRandom().nextInt(Integer.MAX_VALUE);
 
         final String containerImage = config.getString("docker.image");
@@ -89,7 +90,6 @@ public class DockerExecutor implements Executor {
                 .createContainerCmd(containerImage).withCmd(command)
                 .withName(containerName);
 
-        LOG.debug("docker cpuset {}", cpuSet);
         createContainerCmd.withCpusetCpus(Joiner.on(",").join(cpuSet.getCpuSet()));
         CreateContainerResponse container = createContainerCmd.exec();
         containerId = container.getId();
@@ -99,17 +99,11 @@ public class DockerExecutor implements Executor {
     public Result execute(Computation computation) {
 
         acquireResources();
-
         createContainer(computation.command().split(" "));
-
         LOG.info("running docker job {}", computation);
-
         LocalDateTime start = LocalDateTime.now();
-
         dockerClient.startContainerCmd(containerId).exec();
-
         executorMetricsCollector.startMonitoring(containerId);
-
         int exitCode = dockerClient.waitContainerCmd(containerId).exec(new WaitContainerResultCallback())
                 .awaitStatusCode();
 
@@ -123,13 +117,9 @@ public class DockerExecutor implements Executor {
         }
 
         dockerClient.waitContainerCmd(containerId).exec(new WaitContainerResultCallback()).awaitStatusCode();
-
         executorMetricsCollector.stopMonitoring();
-
         dockerClient.removeContainerCmd(containerId).exec();
-
         long duration = Duration.between(start, stop).toMillis();
-
         releaseResources();
 
         return Result.builder()
@@ -172,14 +162,12 @@ public class DockerExecutor implements Executor {
 
     @Override
     public boolean isAvailable() {
-
         try {
             dockerClient.pingCmd().exec();
             LOG.info("docker is available");
-
             return true;
         } catch (DockerException | ProcessingException e) {
-            LOG.error("docker is not available: {}", e.getMessage());
+            LOG.info("docker is not available: {}", e.getMessage());
             return false;
         }
     }
@@ -199,7 +187,7 @@ public class DockerExecutor implements Executor {
         return Type.DOCKER;
     }
 
-    private static class DockerLogResultCallback extends LogContainerResultCallback {
+    static class DockerLogResultCallback extends LogContainerResultCallback {
         protected final StringBuffer log = new StringBuffer();
 
         @Override

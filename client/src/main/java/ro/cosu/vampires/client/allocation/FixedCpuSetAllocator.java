@@ -26,6 +26,7 @@ package ro.cosu.vampires.client.allocation;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,16 +50,17 @@ public class FixedCpuSetAllocator implements CpuAllocator {
 
 
     public FixedCpuSetAllocator(Builder builder) {
-        final List<Integer> integerList = IntStream.iterate(0, i -> i + 1)
-                .boxed().limit(builder.totalCpuCount)
+        final List<Integer> integerList = IntStream.iterate(0, i -> i + 1).boxed()
+                .limit(builder.totalCpuCount)
                 .collect(Collectors.toList());
 
-
-        Lists.partition(integerList, builder.cpuSetSize).stream().map(HashSet::new).map(CpuSet::new).forEach
-                (cpuList::addLast);
+        // partitions the list of cpus in [cpusetSize] sublists
+        Lists.partition(integerList, builder.cpuSetSize).stream()
+                .map(HashSet::new)
+                .map(CpuSet::new)
+                .forEach(cpuList::addLast);
 
         this.totalCpuCount = builder.totalCpuCount;
-
     }
 
     public static Builder builder() {
@@ -72,17 +74,15 @@ public class FixedCpuSetAllocator implements CpuAllocator {
             cpuSet = cpuList.takeFirst();
             LOG.debug("take {}", cpuSet);
         } catch (InterruptedException e) {
-            LOG.debug("{}");
+            LOG.debug("Error during CPU set acquire: {}", e);
         }
         return Optional.ofNullable(cpuSet);
-
     }
 
     @Override
     public void releaseCpuSets(CpuSet cpuSet) {
-        LOG.debug("put {}", cpuSet);
+        LOG.debug("release CPUset {}", cpuSet);
         cpuList.addLast(cpuSet);
-
     }
 
     @Override
@@ -107,6 +107,5 @@ public class FixedCpuSetAllocator implements CpuAllocator {
         public FixedCpuSetAllocator build() {
             return new FixedCpuSetAllocator(this);
         }
-
     }
 }
