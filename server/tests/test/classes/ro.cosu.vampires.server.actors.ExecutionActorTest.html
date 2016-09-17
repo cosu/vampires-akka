@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.195s</div>
+<div class="counter">0.179s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,17 +79,17 @@
 </thead>
 <tr>
 <td class="success">testDispatchOfConfig</td>
-<td>0.042s</td>
+<td>0.061s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">testDispatchOfJob</td>
-<td>0.034s</td>
+<td>0.043s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">testShutdown</td>
-<td>0.119s</td>
+<td>0.075s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -97,39 +97,40 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2016-09-17 15:25:11,280 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
-2016-09-17 15:25:11,289 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- logger log1-Slf4jLogger started
-2016-09-17 15:25:11,289 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- Default Loggers started
-2016-09-17 15:25:11,308 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
-2016-09-17 15:25:11,311 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
-2016-09-17 15:25:11,311 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
-2016-09-17 15:25:11,312 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-3] [akka://test/user/$a/resultActor]- results so far: 0/11
-2016-09-17 15:25:11,315 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-17 15:25:11,315 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 0 remaining 11
-2016-09-17 15:25:11,350 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
-2016-09-17 15:25:11,354 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
-2016-09-17 15:25:11,361 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
-2016-09-17 15:25:11,362 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$b/resultActor]- results so far: 0/11
-2016-09-17 15:25:11,364 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-4] [akka://test/user/$b/resultActor]- Total Duration: 0:00:00
-2016-09-17 15:25:11,365 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-4] [akka://test/user/$b/resultActor]- shutting down
-2016-09-17 15:25:11,405 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 0dc29a32-2617-4799-98a6-43eb20c7f594 = UNKNOWN =&gt; SLEEPING
-2016-09-17 15:25:11,434 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 0dc29a32-2617-4799-98a6-43eb20c7f594 = SLEEPING =&gt; STARTING
-2016-09-17 15:25:11,434 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=0dc29a32-2617-4799-98a6-43eb20c7f594, cost=0.0} 0dc29a32-2617-4799-98a6-43eb20c7f594
-2016-09-17 15:25:11,434 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 0dc29a32-2617-4799-98a6-43eb20c7f594 = STARTING =&gt; RUNNING
-2016-09-17 15:25:11,437 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-4] [akka://test/user/$b/resourceActor]- Message [ro.cosu.vampires.server.actors.messages.resource.AutoValue_BootstrapResource] from Actor[akka://test/user/$b#-241202494] to Actor[akka://test/user/$b/resourceActor#683031927] was not delivered. [1] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
-2016-09-17 15:25:11,438 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-5] [akka://test/user/$b/resourceActor]- Message [ro.cosu.vampires.server.actors.resource.ResourceControl$Shutdown] from Actor[akka://test/system/testProbe-12#-1933467425] to Actor[akka://test/user/$b/resourceActor#683031927] was not delivered. [2] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
-2016-09-17 15:25:11,449 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-6] [akka://test/user/$a/resourceActor]- resource register ResourceInfo{parameters=MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=0dc29a32-2617-4799-98a6-43eb20c7f594, cost=0.0}, status=RUNNING, createdAt=2016-09-17T15:25:11.446}
-2016-09-17 15:25:11,465 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
-2016-09-17 15:25:11,473 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
-2016-09-17 15:25:11,477 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
-2016-09-17 15:25:11,478 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-5] [akka://test/user/$c/resultActor]- results so far: 0/11
-2016-09-17 15:25:11,482 DEBUG r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-8] [akka://test/user/$c/resultActor]- got client info ClientInfo{id=foo, start=2016-09-17T15:25:11.461, executors={DOCKER=2, FORK=1}, metrics=Metrics{metrics=[], metadata={}, id=empty}}
-2016-09-17 15:25:11,485 DEBUG r.c.v.s.actors.ClientConfigActor [test-akka.actor.default-dispatcher-4] [akka://test/user/$c/resultActor/clientConfig-foo]- config for client foo null ClientConfig{executor=DOCKER, cpuSetSize=1, numberOfExecutors=2}
-2016-09-17 15:25:11,501 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-10] [akka://test/user/$c/resourceActor]- Message [ro.cosu.vampires.server.actors.messages.resource.AutoValue_BootstrapResource] from Actor[akka://test/user/$c#-1935371838] to Actor[akka://test/user/$c/resourceActor#1176065228] was not delivered. [3] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
-2016-09-17 15:25:11,501 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-10] [akka://test/user/$c/resourceActor]- Message [ro.cosu.vampires.server.values.AutoValue_ClientInfo] from Actor[akka://test/system/testProbe-14#-1063647324] to Actor[akka://test/user/$c/resourceActor#1176065228] was not delivered. [4] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
-2016-09-17 15:25:11,503 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 0dc29a32-2617-4799-98a6-43eb20c7f594 = RUNNING =&gt; STOPPING
-2016-09-17 15:25:11,503 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 0dc29a32-2617-4799-98a6-43eb20c7f594 = STOPPING =&gt; STOPPED
-2016-09-17 15:25:11,505 DEBUG akka.event.EventStream [test-akka.actor.default-dispatcher-7] [EventStream]- shutting down: StandardOutLogger started
+<pre>2016-09-17 16:16:36,316 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
+2016-09-17 16:16:36,320 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- logger log1-Slf4jLogger started
+2016-09-17 16:16:36,321 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- Default Loggers started
+2016-09-17 16:16:36,348 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
+2016-09-17 16:16:36,352 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
+2016-09-17 16:16:36,352 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
+2016-09-17 16:16:36,353 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-5] [akka://test/user/$a/resultActor]- results so far: 0/11
+2016-09-17 16:16:36,355 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
+2016-09-17 16:16:36,359 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 0 remaining 11
+2016-09-17 16:16:36,392 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
+2016-09-17 16:16:36,396 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
+2016-09-17 16:16:36,396 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
+2016-09-17 16:16:36,404 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$b/resultActor]- Total Duration: 0:00:00
+2016-09-17 16:16:36,405 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-5] [akka://test/user/$b/resultActor]- results so far: 0/11
+2016-09-17 16:16:36,413 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$b/resultActor]- shutting down
+2016-09-17 16:16:36,444 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-11] [akka://test/user/$b/resourceActor]- Message [ro.cosu.vampires.server.actors.messages.resource.AutoValue_BootstrapResource] from Actor[akka://test/user/$b#-108050080] to Actor[akka://test/user/$b/resourceActor#915012562] was not delivered. [1] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-17 16:16:36,444 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-11] [akka://test/user/$b/resourceActor]- Message [ro.cosu.vampires.server.actors.resource.ResourceControl$Shutdown] from Actor[akka://test/system/testProbe-12#3619537] to Actor[akka://test/user/$b/resourceActor#915012562] was not delivered. [2] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-17 16:16:36,461 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 58ea0105-1131-432f-acf9-db6c00d8c4c9 = UNKNOWN =&gt; SLEEPING
+2016-09-17 16:16:36,473 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
+2016-09-17 16:16:36,484 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
+2016-09-17 16:16:36,484 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
+2016-09-17 16:16:36,486 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$c/resultActor]- results so far: 0/11
+2016-09-17 16:16:36,489 DEBUG r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-6] [akka://test/user/$c/resultActor]- got client info ClientInfo{id=foo, start=2016-09-17T16:16:36.463, executors={DOCKER=2, FORK=1}, metrics=Metrics{metrics=[], metadata={}, id=empty}}
+2016-09-17 16:16:36,491 DEBUG r.c.v.s.actors.ClientConfigActor [test-akka.actor.default-dispatcher-6] [akka://test/user/$c/resultActor/clientConfig-foo]- config for client foo null ClientConfig{executor=DOCKER, cpuSetSize=1, numberOfExecutors=2}
+2016-09-17 16:16:36,507 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 58ea0105-1131-432f-acf9-db6c00d8c4c9 = SLEEPING =&gt; STARTING
+2016-09-17 16:16:36,508 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=58ea0105-1131-432f-acf9-db6c00d8c4c9, cost=0.0} 58ea0105-1131-432f-acf9-db6c00d8c4c9
+2016-09-17 16:16:36,508 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 58ea0105-1131-432f-acf9-db6c00d8c4c9 = STARTING =&gt; RUNNING
+2016-09-17 16:16:36,510 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 58ea0105-1131-432f-acf9-db6c00d8c4c9 = RUNNING =&gt; STOPPING
+2016-09-17 16:16:36,510 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 58ea0105-1131-432f-acf9-db6c00d8c4c9 = STOPPING =&gt; STOPPED
+2016-09-17 16:16:36,516 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-8] [akka://test/user/$a/resourceActor/MOCK-58ea0105-1131-432f-acf9-db6c00d8c4c9]- Message [ro.cosu.vampires.server.resources.AutoValue_ResourceInfo] from Actor[akka://test/user/$a/resourceActor/MOCK-58ea0105-1131-432f-acf9-db6c00d8c4c9#-2108839440] to Actor[akka://test/user/$a/resourceActor/MOCK-58ea0105-1131-432f-acf9-db6c00d8c4c9#-2108839440] was not delivered. [3] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-17 16:16:36,542 INFO  akka.actor.RepointableActorRef [test-akka.actor.default-dispatcher-8] [akka://test/user/$a]- Message [ro.cosu.vampires.server.resources.AutoValue_ResourceInfo] from Actor[akka://test/user/$a/resourceActor/MOCK-58ea0105-1131-432f-acf9-db6c00d8c4c9#-2108839440] to Actor[akka://test/user/$a#1807397196] was not delivered. [4] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-17 16:16:36,543 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-8] [akka://test/user/$c/resourceActor]- Message [ro.cosu.vampires.server.actors.messages.resource.AutoValue_BootstrapResource] from Actor[akka://test/user/$c#-2014626874] to Actor[akka://test/user/$c/resourceActor#2100351330] was not delivered. [5] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-17 16:16:36,543 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-8] [akka://test/user/$c/resourceActor]- Message [ro.cosu.vampires.server.values.AutoValue_ClientInfo] from Actor[akka://test/system/testProbe-14#-2000471290] to Actor[akka://test/user/$c/resourceActor#2100351330] was not delivered. [6] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-17 16:16:36,551 DEBUG akka.event.EventStream [test-akka.actor.default-dispatcher-2] [EventStream]- shutting down: StandardOutLogger started
 </pre>
 </span>
 </div>
@@ -141,7 +142,7 @@
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 3.0</a> at Sep 17, 2016 3:25:19 PM</p>
+<a href="http://www.gradle.org">Gradle 3.0</a> at Sep 17, 2016 4:16:45 PM</p>
 </div>
 </div>
 </body>
