@@ -2,10 +2,9 @@
 
 set -ev
 # run tests
+./gradlew clean
 ./gradlew check
-
-
-#nstall the client locally
+#install the client locally
 ./gradlew installDist 
 
 ./gradlew integrationTest
