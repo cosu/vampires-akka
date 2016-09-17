@@ -179,7 +179,7 @@ import ro.cosu.vampires.server.values.jobs.metrics.ValueSnapshot;
     private void updateMetric(String clientId, String metric, long value) {
 
 <span class="fc bfc" id="L181" title="All 2 branches covered.">        for (String key : getKeysForMetric(clientId, metric)) {</span>
-<span class="fc bfc" id="L182" title="All 2 branches covered.">            if (metric.equals(&quot;job&quot;)) {</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">            if (&quot;job&quot;.equals(metric)) {</span>
 <span class="fc" id="L183">                metricRegistry.meter(key).mark();</span>
 <span class="pc bpc" id="L184" title="1 of 2 branches missed.">            } else if (metric.contains(&quot;bytes&quot;)) {</span>
 <span class="nc" id="L185">                metricRegistry.counter(key).inc(value);</span>
