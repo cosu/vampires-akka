@@ -39,7 +39,7 @@ public class MongoWriterIT {
     @Test
     @Ignore
     public void testWriteResult() throws Exception {
-        MongoWriter writer = new MongoWriter(MongoWriter.getMorphia());
+        MongoWriter writer = MongoWriter.newDefaultWriter();
         Job job = Job.builder()
                 .computation(Computation.builder().command("test").id("10").build())
                 .hostMetrics(Metrics.empty())
