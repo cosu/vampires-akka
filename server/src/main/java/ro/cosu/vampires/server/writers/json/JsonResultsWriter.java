@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -61,8 +62,11 @@ public class JsonResultsWriter implements ResultsWriter {
     public JsonResultsWriter(Config config) {
         Preconditions.checkArgument(config.hasPath("writers.json.dir"), "missing  config key writers.json.dir");
         uploadDirName = config.getString("writers.json.dir");
-        boolean created = Paths.get(uploadDirName).toFile().mkdir();
-        Preconditions.checkArgument(created, "could not create upload dir");
+        File file = Paths.get(uploadDirName).toFile();
+        if (!file.exists())
+            Preconditions.checkArgument(file.mkdir(), "could not create output directory: " + file.getAbsolutePath());
+        Preconditions.checkArgument(file.canWrite(), "output dir " + file.getAbsolutePath() +
+                " is not writable");
     }
 
     private Path getPath(String prefix) {
