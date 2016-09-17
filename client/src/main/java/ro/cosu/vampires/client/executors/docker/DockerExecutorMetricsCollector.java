@@ -63,14 +63,12 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
     private DockerClient dockerClient;
 
     protected static Metric convertDockerStatsToMetrics(Statistics stat) {
-
         // the current stat api makes the 'read' field private so we put our own timestamp
         // future versions of the api will hopefully fix this
         Map<String, Double> data = new HashMap<>();
 
-        Optional.ofNullable(stat.getNetworks()).ifPresent(stats -> {
-            data.putAll(flattenMap("network", stats));
-        });
+        Optional.ofNullable(stat.getNetworks())
+                .ifPresent(stats -> data.putAll(flattenMap("network", stats)));
         data.putAll(flattenMap("memory", stat.getMemoryStats()));
 //        data.putAll(flattenMap("io", stat.getBlkioStats()));
         data.putAll(flattenMap("cpu", stat.getCpuStats()));
@@ -79,7 +77,6 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
     }
 
     @SuppressWarnings("unchecked")
-
     @VisibleForTesting
     protected static Map<String, Double> flattenMap(String prefix, Map<String, Object> stringMapMap) {
         // the reason this  method exists is the lack of a provider safe way of getting nested metrics from
@@ -87,29 +84,27 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
         // also if it encounters any list, it flattens it by appending the index of the value in the list to the key
         // effectively a: [1,2,3] becomes a-0: 1, a-1:2, a-2:3
         // it's ugly but it works (tm)
-        Map<String, Double> redata = new HashMap<>();
+        Map<String, Double> result = new HashMap<>();
 
         for (Map.Entry<String, Object> entry : stringMapMap.entrySet()) {
             String key = Joiner.on("-").join(prefix, entry.getKey().replace("_", "-"));
             Object val = entry.getValue();
 
             if (val instanceof Map) {
-                redata.putAll(flattenMap(key, (Map<String, Object>) val));
+                result.putAll(flattenMap(key, (Map<String, Object>) val));
             } else if (val instanceof List) {
                 final List valAsList = (List) val;
 
                 IntStream.range(0, valAsList.size())
                         .filter(i -> valAsList.size() >= i)
                         .forEach(i -> Optional.ofNullable(getDoubleFrom(valAsList.get(i)))
-                                .ifPresent(newValue -> redata.put(key + "-" + i, newValue)));
-
-
+                                .ifPresent(newValue -> result.put(key + "-" + i, newValue)));
             } else {
-                Optional.ofNullable(getDoubleFrom(val)).ifPresent(newValue -> redata.put(key,
+                Optional.ofNullable(getDoubleFrom(val)).ifPresent(newValue -> result.put(key,
                         newValue));
             }
         }
-        return redata;
+        return result;
     }
 
     private static Double getDoubleFrom(Object object) {

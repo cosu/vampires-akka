@@ -71,7 +71,6 @@ public class ExecutorsExtensionImpl implements Extension {
         } catch (Exception e) {
             LOG.info("fork executor not available");
         }
-
         LOG.info("available executors: {}", executorInfo);
 
     }
@@ -81,23 +80,17 @@ public class ExecutorsExtensionImpl implements Extension {
     }
 
     public void configure(ClientConfig config) {
-
         final Executor.Type executor = Executor.Type.valueOf(config.executor());
 
         vampires = ConfigFactory.parseString("cpuSetSize=" + config.cpuSetSize()).withFallback(vampires);
-
         if (executor.equals(Executor.Type.DOCKER)) {
             injector = Guice.createInjector(new DockerExecutorModule(vampires));
         }
-
         if (executor.equals(Executor.Type.FORK)) {
             injector = Guice.createInjector(new ForkExecutorModule(vampires));
         }
-
         LOG.info("configured {}", config);
-
         Preconditions.checkArgument(getExecutor().isAvailable());
-
     }
 
     public Map<String, Integer> getExecutorInfo() {

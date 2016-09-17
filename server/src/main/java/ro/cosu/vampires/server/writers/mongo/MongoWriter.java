@@ -37,18 +37,25 @@ import ro.cosu.vampires.server.writers.ResultsWriter;
 
 public class MongoWriter implements ResultsWriter {
     private final Datastore datastore;
-    private Morphia morphia = new Morphia();
 
-    public MongoWriter() {
-        morphia.mapPackage("ro.cosu.vampires.server.writers.mongo");
-        morphia.getMapper().getConverters().addConverter(LocalDateTimeConverter.class);
-
-        datastore = morphia.createDatastore(getMongoClient(), "vampires");
+    public MongoWriter(Morphia morphia, MongoClient mongoClient) {
+        datastore = morphia.createDatastore(mongoClient, "vampires");
         datastore.ensureIndexes();
-
     }
 
-    private MongoClient getMongoClient() {
+    @SuppressWarnings("unused")
+    protected static Morphia getMorphia() {
+        Morphia morphia = new Morphia();
+        morphia.mapPackage("ro.cosu.vampires.server.writers.mongo");
+        morphia.getMapper().getConverters().addConverter(LocalDateTimeConverter.class);
+        return morphia;
+    }
+
+    public static MongoWriter newDefaultWriter() {
+        return new MongoWriter(getMorphia(), getMongoClient());
+    }
+
+    protected static MongoClient getMongoClient() {
         return new MongoClient();
     }
 

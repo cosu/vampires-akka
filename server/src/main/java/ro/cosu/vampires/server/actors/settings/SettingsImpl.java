@@ -83,7 +83,7 @@ public class SettingsImpl implements Extension {
         }
 
         if (enabledWriters.contains("mongo")) {
-            writers.add(new MongoWriter());
+            writers.add(MongoWriter.newDefaultWriter());
         }
 
         if (writers.isEmpty()) {
