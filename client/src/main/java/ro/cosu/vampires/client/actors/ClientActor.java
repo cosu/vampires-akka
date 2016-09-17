@@ -27,6 +27,7 @@
 package ro.cosu.vampires.client.actors;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import akka.actor.ActorIdentity;
@@ -83,7 +84,7 @@ public class ClientActor extends UntypedActor {
             log.info("starting {} workers", config.numberOfExecutors());
             //bootstrapping via an empty job
             IntStream.range(0, config.numberOfExecutors()).forEach(i -> execute(Job.empty()));
-
+            getContext().setReceiveTimeout(Duration.create(1, TimeUnit.SECONDS));
             getContext().become(active, true);
         } else {
             unhandled(message);
