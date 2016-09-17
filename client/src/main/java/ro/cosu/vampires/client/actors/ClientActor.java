@@ -65,13 +65,7 @@ public class ClientActor extends UntypedActor {
     private ActorRef server;
     private Procedure<Object> active = message -> {
         if (message instanceof Job) {
-            Job job = (Job) message;
-            if (JobStatus.COMPLETE.equals(job.status())) {
-                server.tell(job.from(clientId), getSelf());
-            } else {
-                log.debug("Execute {} -> {} {}", getSelf().path(), job.computation(), getSender());
-                execute(job);
-            }
+            handleJob((Job) message);
         } else if (message instanceof Terminated) {
             if (getSender().equals(server)) {
                 log.info("server left. shutting down");
@@ -82,9 +76,9 @@ public class ClientActor extends UntypedActor {
             unhandled(message);
         }
     };
-    private Procedure<Object> waitForConfig = messsage -> {
-        if (messsage instanceof ClientConfig) {
-            ClientConfig config = (ClientConfig) messsage;
+    private Procedure<Object> waitForConfig = message -> {
+        if (message instanceof ClientConfig) {
+            ClientConfig config = (ClientConfig) message;
             executors.configure(config);
             log.info("starting {} workers", config.numberOfExecutors());
             //bootstrapping via an empty job
@@ -92,7 +86,7 @@ public class ClientActor extends UntypedActor {
 
             getContext().become(active, true);
         } else {
-            unhandled(messsage);
+            unhandled(message);
         }
     };
 
@@ -104,6 +98,15 @@ public class ClientActor extends UntypedActor {
 
     public static Props props(String path, String clientId) {
         return Props.create(ClientActor.class, path, clientId);
+    }
+
+    private void handleJob(Job job) {
+        if (JobStatus.COMPLETE.equals(job.status())) {
+            server.tell(job.from(clientId), getSelf());
+        } else {
+            log.debug("Execute {} -> {} {}", getSelf().path(), job.computation(), getSender());
+            execute(job);
+        }
     }
 
     private void sendIdentifyRequest() {

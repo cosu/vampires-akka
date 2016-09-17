@@ -26,21 +26,23 @@
 
 package ro.cosu.vampires.client;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import akka.actor.ActorIdentity;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.japi.Option;
 import akka.testkit.JavaTestKit;
 import akka.testkit.TestActorRef;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import ro.cosu.vampires.client.actors.ClientActor;
 import ro.cosu.vampires.client.actors.MonitoringActor;
 import ro.cosu.vampires.server.values.ClientConfig;
 import ro.cosu.vampires.server.values.ClientInfo;
 import ro.cosu.vampires.server.values.jobs.Computation;
 import ro.cosu.vampires.server.values.jobs.Job;
+import ro.cosu.vampires.server.values.jobs.JobStatus;
 import scala.concurrent.duration.Duration;
 
 import static org.hamcrest.CoreMatchers.not;
@@ -72,15 +74,28 @@ public class ClientActorTest {
 
         final JavaTestKit remoteProbe = new JavaTestKit(system);
 
+        // tell the client that the server is up
         scala.Option<ActorRef> actorRefOption = Option.Some.option(remoteProbe.getRef()).asScala();
         client.tell(new ActorIdentity(null, actorRefOption), ActorRef.noSender());
 
+        // client responds with client Info
         ClientInfo clientInfo = (ClientInfo) remoteProbe.receiveOne(Duration.create("500 milliseconds"));
         assertThat(clientInfo.executors().size(), not(0));
+
+        // Server responds with ClientConfig
         ClientConfig clientConfig = ClientConfig.withDefaults().numberOfExecutors(1).build();
         client.tell(clientConfig, remoteProbe.getRef());
+
+        // Client responds with an empty Job
         Job job = (Job) remoteProbe.receiveOne(Duration.create("500 milliseconds"));
         assertThat(job.computation(), is(Computation.empty()));
 
+        // send a job to the client
+        job = Job.backoff(0.1);
+        client.tell(job, remoteProbe.getRef());
+
+        job = (Job) remoteProbe.receiveOne(Duration.create("500 milliseconds"));
+
+        assertThat(job.status(), is(JobStatus.COMPLETE));
     }
 }

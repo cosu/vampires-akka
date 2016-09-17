@@ -45,7 +45,7 @@ public abstract class Computation implements Serializable {
         return new AutoValue_Computation.Builder().id(UUID.randomUUID().toString());
     }
 
-    public static Computation backoff(int backoffInterval) {
+    public static Computation backoff(double backoffInterval) {
         return new AutoValue_Computation.Builder()
                 .id(BACKOFF)
                 .command("sleep " + backoffInterval)
