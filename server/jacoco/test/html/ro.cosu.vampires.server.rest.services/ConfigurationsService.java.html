@@ -31,9 +31,6 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.TypeLiteral;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -47,74 +44,73 @@ import ro.cosu.vampires.server.values.resources.Configuration;
 import ro.cosu.vampires.server.values.resources.ConfigurationPayload;
 
 
-<span class="fc" id="L50">public class ConfigurationsService implements Service&lt;Configuration, ConfigurationPayload&gt; {</span>
+<span class="fc" id="L47">public class ConfigurationsService implements Service&lt;Configuration, ConfigurationPayload&gt; {</span>
 
-<span class="fc" id="L52">    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationsService.class);</span>
     @Inject
     private ActorRef actorRef;
 
     public static TypeLiteral&lt;Service&lt;Configuration, ConfigurationPayload&gt;&gt; getTypeTokenService() {
-<span class="nc" id="L57">        return new TypeLiteral&lt;Service&lt;Configuration, ConfigurationPayload&gt;&gt;() {</span>
+<span class="nc" id="L53">        return new TypeLiteral&lt;Service&lt;Configuration, ConfigurationPayload&gt;&gt;() {</span>
         };
     }
 
     @Override
     public List&lt;Configuration&gt; list(User user) {
-<span class="fc" id="L63">        QueryConfiguration queryConfiguration = QueryConfiguration.all(user);</span>
-<span class="fc" id="L64">        return getConfigurations(queryConfiguration);</span>
+<span class="fc" id="L59">        QueryConfiguration queryConfiguration = QueryConfiguration.all(user);</span>
+<span class="fc" id="L60">        return getConfigurations(queryConfiguration);</span>
     }
 
     private List&lt;Configuration&gt; getConfigurations(QueryConfiguration queryConfiguration) {
-<span class="fc" id="L68">        Optional&lt;ResponseConfiguration&gt; ask = ActorUtil.ask(queryConfiguration, actorRef);</span>
-<span class="pc" id="L69">        ResponseConfiguration responseConfiguration = ask.orElseThrow(() -&gt; new RuntimeException(&quot;failed to get&quot;));</span>
-<span class="fc" id="L70">        return responseConfiguration.configurations();</span>
+<span class="fc" id="L64">        Optional&lt;ResponseConfiguration&gt; ask = ActorUtil.ask(queryConfiguration, actorRef);</span>
+<span class="pc" id="L65">        ResponseConfiguration responseConfiguration = ask.orElseThrow(() -&gt; new RuntimeException(&quot;failed to get&quot;));</span>
+<span class="fc" id="L66">        return responseConfiguration.configurations();</span>
     }
 
     @Override
     public Configuration create(ConfigurationPayload payload, User user) {
-<span class="fc" id="L75">        Configuration created = Configuration.fromPayload(payload);</span>
+<span class="fc" id="L71">        Configuration created = Configuration.fromPayload(payload);</span>
 
-<span class="fc" id="L77">        Optional&lt;Configuration&gt; ask = ActorUtil.ask(CreateConfiguration.create(created, user), actorRef);</span>
+<span class="fc" id="L73">        Optional&lt;Configuration&gt; ask = ActorUtil.ask(CreateConfiguration.create(created, user), actorRef);</span>
 
-<span class="pc" id="L79">        return ask.orElseThrow(() -&gt; new RuntimeException(&quot;failed to create&quot;));</span>
+<span class="pc" id="L75">        return ask.orElseThrow(() -&gt; new RuntimeException(&quot;failed to create&quot;));</span>
     }
 
     @Override
     public Optional&lt;Configuration&gt; delete(String id, User user) {
-<span class="fc" id="L84">        DeleteConfiguration deleteConfiguration = DeleteConfiguration.create(Lists.newArrayList(id), user);</span>
-<span class="fc" id="L85">        Optional&lt;ResponseConfiguration&gt; ask = ActorUtil.ask(deleteConfiguration, actorRef);</span>
-<span class="pc" id="L86">        ResponseConfiguration responseConfiguration = ask.orElseThrow(() -&gt; new RuntimeException(&quot;failed to delete&quot;));</span>
-<span class="fc" id="L87">        List&lt;Configuration&gt; configurations = responseConfiguration.configurations();</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">        if (configurations.isEmpty()) {</span>
-<span class="fc" id="L89">            return Optional.empty();</span>
+<span class="fc" id="L80">        DeleteConfiguration deleteConfiguration = DeleteConfiguration.create(Lists.newArrayList(id), user);</span>
+<span class="fc" id="L81">        Optional&lt;ResponseConfiguration&gt; ask = ActorUtil.ask(deleteConfiguration, actorRef);</span>
+<span class="pc" id="L82">        ResponseConfiguration responseConfiguration = ask.orElseThrow(() -&gt; new RuntimeException(&quot;failed to delete&quot;));</span>
+<span class="fc" id="L83">        List&lt;Configuration&gt; configurations = responseConfiguration.configurations();</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        if (configurations.isEmpty()) {</span>
+<span class="fc" id="L85">            return Optional.empty();</span>
         } else
-<span class="fc" id="L91">            return Optional.of(configurations.get(0));</span>
+<span class="fc" id="L87">            return Optional.of(configurations.get(0));</span>
     }
 
     @Override
     public Optional&lt;Configuration&gt; update(ConfigurationPayload payload, User user) {
-<span class="fc" id="L96">        Preconditions.checkNotNull(payload, &quot;empty payload&quot;);</span>
-<span class="fc" id="L97">        Preconditions.checkNotNull(payload.id(), &quot;id must not be empty&quot;);</span>
+<span class="fc" id="L92">        Preconditions.checkNotNull(payload, &quot;empty payload&quot;);</span>
+<span class="fc" id="L93">        Preconditions.checkNotNull(payload.id(), &quot;id must not be empty&quot;);</span>
 
-<span class="fc" id="L99">        Optional&lt;Configuration&gt; currentOptional = get(payload.id(), user);</span>
+<span class="fc" id="L95">        Optional&lt;Configuration&gt; currentOptional = get(payload.id(), user);</span>
 
-<span class="pc bpc" id="L101" title="1 of 2 branches missed.">        if (currentOptional.isPresent()) {</span>
-<span class="fc" id="L102">            Configuration configuration = currentOptional.get();</span>
-<span class="fc" id="L103">            configuration = configuration.updateFromPayload(payload);</span>
-<span class="fc" id="L104">            CreateConfiguration createConfiguration = CreateConfiguration.create(configuration, user);</span>
-<span class="fc" id="L105">            return ActorUtil.ask(createConfiguration, actorRef);</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">        if (currentOptional.isPresent()) {</span>
+<span class="fc" id="L98">            Configuration configuration = currentOptional.get();</span>
+<span class="fc" id="L99">            configuration = configuration.updateFromPayload(payload);</span>
+<span class="fc" id="L100">            CreateConfiguration createConfiguration = CreateConfiguration.create(configuration, user);</span>
+<span class="fc" id="L101">            return ActorUtil.ask(createConfiguration, actorRef);</span>
         }
-<span class="nc" id="L107">        return Optional.empty();</span>
+<span class="nc" id="L103">        return Optional.empty();</span>
     }
 
     @Override
     public Optional&lt;Configuration&gt; get(String id, User user) {
-<span class="fc" id="L112">        QueryConfiguration queryConfiguration = QueryConfiguration.create(id, user);</span>
-<span class="fc" id="L113">        List&lt;Configuration&gt; configurations = getConfigurations(queryConfiguration);</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">        if (configurations.isEmpty()) {</span>
-<span class="fc" id="L115">            return Optional.empty();</span>
+<span class="fc" id="L108">        QueryConfiguration queryConfiguration = QueryConfiguration.create(id, user);</span>
+<span class="fc" id="L109">        List&lt;Configuration&gt; configurations = getConfigurations(queryConfiguration);</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        if (configurations.isEmpty()) {</span>
+<span class="fc" id="L111">            return Optional.empty();</span>
         } else
-<span class="fc" id="L117">            return Optional.of(configurations.get(0));</span>
+<span class="fc" id="L113">            return Optional.of(configurations.get(0));</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
