@@ -34,6 +34,9 @@ import org.slf4j.LoggerFactory;
 import java.util.Base64;
 import java.util.Set;
 
+import spark.Request;
+import spark.Response;
+
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import static spark.Spark.before;
 import static spark.Spark.halt;
@@ -51,39 +54,46 @@ public class AuthenticationFilter {
     }
 
     public AuthenticationFilter() {
-
         // stupid authentication
         before((request, response) -> {
-
             boolean authenticated = !request.session().isNew();
             String auth = request.headers("Authorization");
-
+            // options calls are allowed unauthenticated
             if (request.requestMethod().equals("OPTIONS"))
                 authenticated = true;
 
             if (!authenticated) {
                 // try to authenticate
                 if (auth != null && auth.startsWith("Basic")) {
-                    String b64Credentials = auth.substring("Basic".length()).trim();
-                    String credentials = new String(Base64.getDecoder().decode(b64Credentials));
+                    String credentials = getCredentialsFromHeader(auth);
                     if (storedCredentials.contains(credentials)) {
                         authenticated = true;
                         // store the user in the session
                         request.session().attribute("user", credentials.split(":")[0]);
                         // 10 min sessions
                         request.session().maxInactiveInterval(600);
-
                     }
+                } else {
+                    LOG.error("Missing or Incomplete Authorization Header");
+                    unauthorized(request, response);
                 }
             }
             // check result
             if (!authenticated) {
-                LOG.warn("unauthorized client {} url {} headers {}", request.ip(), request.url(), request.headers("Authorization"));
-                response.header("WWW-Authenticate", "Basic realm=\"Restricted\"");
-                halt(HTTP_UNAUTHORIZED);
+                unauthorized(request, response);
             }
         });
-
         LOG.info("Authentication filter enabled");
+    }
+
+    private static String getCredentialsFromHeader(String auth) {
+        String b64Credentials = auth.substring("Basic".length()).trim();
+        return new String(Base64.getDecoder().decode(b64Credentials));
+    }
+
+    private void unauthorized(Request request, Response response) {
+        LOG.warn("unauthorized client {} url {} headers {}", request.ip(), request.url(), request.headers("Authorization"));
+        response.header("WWW-Authenticate", "Basic realm=\"Restricted\"");
+        halt(HTTP_UNAUTHORIZED);
     }
 }
