@@ -62,7 +62,7 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
     @Inject
     private DockerClient dockerClient;
 
-    private static Metric convertDockerStatsToMetrics(Statistics stat) {
+    protected static Metric convertDockerStatsToMetrics(Statistics stat) {
 
         // the current stat api makes the 'read' field private so we put our own timestamp
         // future versions of the api will hopefully fix this
@@ -150,8 +150,6 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
 
         @Override
         public void onNext(Statistics stats) {
-            // NOTE: future versions of the docker api will break this
-
             statisticsList.add(convertDockerStatsToMetrics(stats));
         }
 

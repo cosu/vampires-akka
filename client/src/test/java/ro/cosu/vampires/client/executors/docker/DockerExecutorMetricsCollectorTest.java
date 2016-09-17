@@ -27,27 +27,36 @@
 package ro.cosu.vampires.client.executors.docker;
 
 import com.google.common.collect.Maps;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.model.Statistics;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
+import ro.cosu.vampires.server.values.jobs.metrics.Metric;
 import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 
@@ -104,5 +113,17 @@ public class DockerExecutorMetricsCollectorTest {
         assertThat(stringDoubleMap.values().toArray(), equalTo(new Double[]{0., 0., 0.}));
     }
 
+    @Test
+    public void testConvert() throws Exception {
+        Gson gson = new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .create();
 
+        InputStream resourceAsStream = this.getClass().getResourceAsStream("/statistics.json");
+        JsonReader read = new JsonReader(new InputStreamReader(resourceAsStream));
+        Statistics statistics = gson.fromJson(read, Statistics.class);
+
+        Metric metric = DockerExecutorMetricsCollector.convertDockerStatsToMetrics(statistics);
+        assertThat(metric.values().size(), is(not(0)));
+    }
 }
