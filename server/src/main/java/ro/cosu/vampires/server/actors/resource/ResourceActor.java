@@ -79,21 +79,23 @@ public class ResourceActor extends UntypedActorWithStash {
     public void onReceive(Object message) throws Exception {
         ActorRef sender = getSender();
         if (message instanceof CreateResource) {
-            CreateResource create = (CreateResource) message;
-            createResource(create, sender);
+            createResource((CreateResource) message, sender);
         } else if (message instanceof QueryResource) {
             sendResourceInfo(sender);
         } else if (message instanceof ResourceInfo) {
-            ResourceInfo resourceInfo = (ResourceInfo) message;
-            if (Resource.Status.RUNNING.equals(resourceInfo.status())) {
-                activate();
-            } else {
-                log.error("got resource info {}. deactivating actor", resourceInfo);
-                fail();
-            }
+            handleResourceInfo((ResourceInfo) message);
         } else {
             log.debug("stash {}", message);
             stash();
+        }
+    }
+
+    private void handleResourceInfo(ResourceInfo message) {
+        if (Resource.Status.RUNNING.equals(message.status())) {
+            activate();
+        } else {
+            log.error("got resource info {}. deactivating actor", message);
+            fail();
         }
     }
 
@@ -102,7 +104,6 @@ public class ResourceActor extends UntypedActorWithStash {
             log.warning("Attempting to start an already started resource. doing nothing");
             return;
         }
-
         parameters = createResource.parameters();
 
         Optional<Resource> resourceOptional = resourceProvider.create(parameters);
@@ -114,6 +115,10 @@ public class ResourceActor extends UntypedActorWithStash {
             this.resource.start().thenAccept(started -> {
                 sendResourceInfo(sender);
                 sendResourceInfo(getSelf());
+            }).exceptionally(e -> {
+                sendResourceInfo(sender);
+                sendResourceInfo(getSelf());
+                return null;
             });
         } else {
             getSelf().tell(Resource.Status.FAILED, sender);

@@ -5,7 +5,7 @@ set -o nounset
 
 source $(dirname $0)/common.sh
 
-states="running starting canceled finished"
+states="running starting canceled finished failed"
 
 execs=$(${curl} ${api_server}/executions)
 for state in ${states}; do

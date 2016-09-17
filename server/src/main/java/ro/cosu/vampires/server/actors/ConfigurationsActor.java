@@ -61,6 +61,16 @@ public class ConfigurationsActor extends UntypedActor {
         return Props.create(ConfigurationsActor.class);
     }
 
+    private static double getCost(Configuration configuration, Map<Resource.ProviderType, ProviderDescription> providers) {
+
+        return configuration.resources().stream().map(resource -> Optional
+                .ofNullable(providers.get(resource.resourceDescription().provider()))
+                .map(provider -> provider.resourceDescriptions().get(resource.resourceDescription().type()))
+                .map(ResourceDescription::cost)
+                .orElse(0.))
+                .collect(Collectors.summingDouble(Double::doubleValue));
+    }
+
     private Map<String, Configuration> getUserStore(User user) {
         return table.row(user);
     }
@@ -109,17 +119,8 @@ public class ConfigurationsActor extends UntypedActor {
 
         Configuration configuration = message.configuration().withCost(sum);
         getUserStore(message.user()).put(configuration.id(), configuration);
+        log.debug("Created configuration {}", configuration);
         getSender().tell(configuration, getSelf());
-    }
-
-    private static double getCost(Configuration configuration, Map<Resource.ProviderType, ProviderDescription> providers) {
-
-        return configuration.resources().stream().map(resource -> Optional
-                .ofNullable(providers.get(resource.resourceDescription().provider()))
-                .map(provider -> provider.resourceDescriptions().get(resource.resourceDescription().type()))
-                .map(ResourceDescription::cost)
-                .orElse(0.))
-                .collect(Collectors.summingDouble(Double::doubleValue));
     }
 
 }

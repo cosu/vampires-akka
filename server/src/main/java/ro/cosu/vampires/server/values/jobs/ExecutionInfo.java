@@ -117,11 +117,12 @@ public abstract class ExecutionInfo {
 
 
     public enum Status {
-
         STARTING,
         RUNNING,
         CANCELED,
-        STOPPING, FINISHED
+        STOPPING,
+        FAILED,
+        FINISHED
     }
 
     @AutoValue.Builder

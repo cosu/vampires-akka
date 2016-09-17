@@ -75,6 +75,7 @@ public class WorkloadsActor extends UntypedActor {
     private void createWorkload(CreateWorkload message) {
         Workload workload = message.workload();
         getUserStore(message.user()).put(workload.id(), workload);
+        log.debug("Created workload {}", workload);
         getSender().tell(workload, getSelf());
     }
 

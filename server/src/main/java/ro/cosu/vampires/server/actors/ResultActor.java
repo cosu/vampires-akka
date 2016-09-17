@@ -128,6 +128,9 @@ public class ResultActor extends UntypedActor {
             handleResourceInfo(resourceInfo);
         } else if (message instanceof ResourceControl.Shutdown) {
             shutdown(ExecutionInfo.Status.CANCELED);
+        } else if (message instanceof ResourceControl.Fail) {
+            shutdown(ExecutionInfo.Status.FAILED);
+
         } else {
             unhandled(message);
         }

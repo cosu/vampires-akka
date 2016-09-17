@@ -26,11 +26,14 @@ package ro.cosu.vampires.server.util;
 
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,6 +45,21 @@ public class SshClientTest {
 
     @Test
     public void testRunCommand() throws Exception {
+        SshClient sshClient = getSshClient(0);
+
+        String result = sshClient.runCommand("user", "privateKey", "address", "cmd", 1);
+        assertThat(result, is("resulterror"));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testRunCommandFail() throws Exception {
+        SshClient sshClient = getSshClient(1);
+        String result = sshClient.runCommand("user", "privateKey", "address", "cmd", 1);
+
+        assertThat(result, is("resulterror"));
+    }
+
+    private SshClient getSshClient(int value) throws JSchException, IOException {
         SshClient sshClient = new SshClient();
         JSch jschMock = Mockito.mock(JSch.class);
         sshClient.setJsch(jschMock);
@@ -52,10 +70,9 @@ public class SshClientTest {
         when(jschMock.getSession("user", "address", 1)).thenReturn(session);
         when(session.openChannel("exec")).thenReturn(channelExec);
         when(channelExec.getInputStream()).thenReturn(new ByteArrayInputStream("result".getBytes(StandardCharsets.UTF_8)));
-
-        String result = sshClient.runCommand("user", "privateKey", "address", "cmd", 1);
-
-        assertThat(result, is("result"));
-
+        when(channelExec.getErrStream()).thenReturn(new ByteArrayInputStream("error".getBytes(StandardCharsets.UTF_8)));
+        when(channelExec.getExitStatus()).thenReturn(value);
+        when(channelExec.isClosed()).thenReturn(true);
+        return sshClient;
     }
 }

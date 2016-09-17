@@ -105,6 +105,9 @@ class ExecutionActor extends UntypedActor {
             if (getSender().equals(resultActor)) {
                 getContext().stop(getSelf());
             }
+            if (getSender().equals(resourceManagerActor)) {
+                resultActor.tell(ResourceControl.Fail.create(), getContext().parent());
+            }
         } else if (message instanceof QueryStats) {
             resultActor.forward(message, getContext());
         } else {

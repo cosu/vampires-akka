@@ -58,16 +58,25 @@ public class SshClient {
 
         ChannelExec channel = getChannelExec(session, command);
         BufferedReader in = new BufferedReader(new InputStreamReader(channel.getInputStream(), StandardCharsets.UTF_8));
+        BufferedReader err = new BufferedReader(new InputStreamReader(channel.getErrStream(), StandardCharsets.UTF_8));
 
         String msg;
         StringBuilder sb = new StringBuilder();
         while ((msg = in.readLine()) != null) {
             sb.append(msg);
         }
+        while ((msg = err.readLine()) != null) {
+            sb.append(msg);
+        }
 
+        err.close();
         in.close();
+        if (channel.isClosed() && channel.getExitStatus() > 0) {
+            throw new RuntimeException("SSH returned non-zero exit code: " + channel.getExitStatus());
+        }
         channel.disconnect();
         session.disconnect();
+
         return sb.toString();
 
     }
@@ -92,16 +101,6 @@ public class SshClient {
     }
 
     private static class JSCHLogger implements com.jcraft.jsch.Logger {
-
-        public static java.util.Hashtable<Integer, String> name = new java.util.Hashtable<>();
-
-        static {
-            name.put(DEBUG, "DEBUG: ");
-            name.put(INFO, "INFO: ");
-            name.put(WARN, "WARN: ");
-            name.put(ERROR, "ERROR: ");
-            name.put(FATAL, "FATAL: ");
-        }
 
         public boolean isEnabled(int level) {
             return true;

@@ -26,8 +26,11 @@
 
 package ro.cosu.vampires.server.resources;
 
+import com.google.common.collect.Sets;
+
 import org.slf4j.Logger;
 
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
@@ -78,7 +81,9 @@ public abstract class AbstractResource implements Resource {
     }
 
     public Resource stopCall() {
-        if (status.equals(Status.STOPPED) || status.equals(Status.STOPPING))
+        Set<Status> invalidStatus = Sets.immutableEnumSet(Status.STOPPED,
+                Status.FAILED, Status.STOPPING, Status.UNKNOWN);
+        if (invalidStatus.contains(status))
             return this;
         setStatus(Status.STOPPING);
         try {

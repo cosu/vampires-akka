@@ -41,5 +41,11 @@ public class ResourceControl {
         }
     }
 
+    public static class Fail implements Serializable {
+        public static Fail create() {
+            return new Fail();
+        }
+    }
+
 
 }
