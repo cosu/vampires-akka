@@ -32,6 +32,7 @@ import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 
 import ro.cosu.vampires.server.rest.JsonTransformer;
@@ -41,25 +42,46 @@ import spark.Response;
 import spark.Spark;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
+import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
 
 public class ExceptionMapper {
-<span class="fc" id="L46">    private static final Logger LOG = LoggerFactory.getLogger(ExceptionMapper.class);</span>
+<span class="fc" id="L49">    private static final Logger LOG = LoggerFactory.getLogger(ExceptionMapper.class);</span>
 
-<span class="fc" id="L48">    ExceptionMapper() {</span>
-<span class="fc" id="L49">        Spark.exception(RuntimeException.class, new BadRequestJson());</span>
-<span class="fc" id="L50">        Spark.exception(NullPointerException.class, new BadRequestJson());</span>
-<span class="fc" id="L51">    }</span>
+<span class="fc" id="L51">    ExceptionMapper() {</span>
+<span class="fc" id="L52">        Spark.exception(RuntimeException.class, JsonResponse.internalServerError());</span>
+<span class="fc" id="L53">        Spark.exception(NullPointerException.class, JsonResponse.badRequest());</span>
+<span class="fc" id="L54">        Spark.exception(FileNotFoundException.class, JsonResponse.fileNotFound());</span>
+<span class="fc" id="L55">    }</span>
 
-<span class="fc" id="L53">    private static class BadRequestJson implements ExceptionHandler {</span>
+
+    private static class JsonResponse implements ExceptionHandler {
+        private final int status;
+
+<span class="fc" id="L61">        JsonResponse(int status) {</span>
+<span class="fc" id="L62">            this.status = status;</span>
+<span class="fc" id="L63">        }</span>
+
+        static JsonResponse badRequest() {
+<span class="fc" id="L66">            return new JsonResponse(HTTP_BAD_REQUEST);</span>
+        }
+
+        static JsonResponse fileNotFound() {
+<span class="fc" id="L70">            return new JsonResponse(HTTP_NOT_FOUND);</span>
+        }
+
+        static JsonResponse internalServerError() {
+<span class="fc" id="L74">            return new JsonResponse(HTTP_INTERNAL_ERROR);</span>
+        }
 
         @Override
         public void handle(Exception exception, Request request, Response response) {
-<span class="fc" id="L57">            LOG.error(&quot;Error for client {} path {} body {}&quot;, request.ip(), request.url(), request.body(), exception);</span>
-<span class="fc" id="L58">            response.status(HTTP_BAD_REQUEST);</span>
-<span class="fc" id="L59">            HashMap&lt;Object, Object&gt; map = Maps.newHashMap();</span>
-<span class="fc" id="L60">            map.put(&quot;error&quot;, exception.getMessage());</span>
-<span class="fc" id="L61">            response.body(JsonTransformer.get().getGson().toJson(map));</span>
-<span class="fc" id="L62">        }</span>
+<span class="fc" id="L79">            LOG.error(&quot;Error for client {} path {} body {}&quot;, request.ip(), request.url(), request.body(), exception);</span>
+<span class="fc" id="L80">            response.status(status);</span>
+<span class="fc" id="L81">            HashMap&lt;Object, Object&gt; map = Maps.newHashMap();</span>
+<span class="fc" id="L82">            map.put(&quot;error&quot;, exception.getMessage());</span>
+<span class="fc" id="L83">            response.body(JsonTransformer.get().getGson().toJson(map));</span>
+<span class="fc" id="L84">        }</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

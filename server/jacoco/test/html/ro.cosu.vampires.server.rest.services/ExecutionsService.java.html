@@ -29,133 +29,105 @@ package ro.cosu.vampires.server.rest.services;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.TypeLiteral;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import akka.actor.ActorRef;
-import akka.pattern.Patterns;
-import akka.util.Timeout;
 import ro.cosu.vampires.server.actors.messages.execution.QueryExecution;
+import ro.cosu.vampires.server.actors.messages.execution.ResponseExecution;
 import ro.cosu.vampires.server.actors.messages.execution.StartExecution;
-import ro.cosu.vampires.server.actors.messages.resource.ShutdownResource;
+import ro.cosu.vampires.server.actors.messages.resource.DeleteExecution;
 import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.jobs.Execution;
 import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
 import ro.cosu.vampires.server.values.jobs.ExecutionPayload;
 import ro.cosu.vampires.server.values.jobs.Workload;
 import ro.cosu.vampires.server.values.resources.Configuration;
-import scala.concurrent.Await;
-import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
 
-<span class="fc" id="L60">public class ExecutionsService implements Service&lt;Execution, ExecutionPayload&gt; {</span>
+<span class="fc" id="L53">public class ExecutionsService implements Service&lt;Execution, ExecutionPayload&gt; {</span>
 
-<span class="fc" id="L62">    private static final Logger LOG = LoggerFactory.getLogger(ExecutionsService.class);</span>
+<span class="fc" id="L55">    private static final Logger LOG = LoggerFactory.getLogger(ExecutionsService.class);</span>
 
     @Inject
     private ConfigurationsService configurationsService;
 
     @Inject
-    private WorkloadsService workloadsService;
+    private WorkloadsService wService;
 
     @Inject
     private ActorRef actorRef;
 
     public static TypeLiteral&lt;Service&lt;Execution, ExecutionPayload&gt;&gt; getTypeTokenService() {
-<span class="fc" id="L74">        return new TypeLiteral&lt;Service&lt;Execution, ExecutionPayload&gt;&gt;() {</span>
+<span class="fc" id="L67">        return new TypeLiteral&lt;Service&lt;Execution, ExecutionPayload&gt;&gt;() {</span>
         };
     }
 
-    @SuppressWarnings(&quot;unchecked&quot;)
     @Override
     public List&lt;Execution&gt; list(User user) {
+<span class="fc" id="L73">        return getExecutions(QueryExecution.all(user));</span>
+    }
 
-<span class="fc" id="L82">        Collection&lt;Execution&gt; executions = Lists.newArrayList();</span>
-
-<span class="fc" id="L84">        Timeout timeout = new Timeout(Duration.create(100, &quot;milliseconds&quot;));</span>
-
-<span class="fc" id="L86">        Future&lt;Object&gt; ask = Patterns.ask(actorRef, QueryExecution.all(user), timeout);</span>
-
-        try {
-<span class="fc" id="L89">            Object result = Await.result(ask, timeout.duration());</span>
-<span class="pc bpc" id="L90" title="1 of 2 branches missed.">            if (result instanceof Collection) {</span>
-                // silly java types
-<span class="fc" id="L92">                executions = (Collection&lt;Execution&gt;) result;</span>
-            }
-<span class="fc" id="L94">            return ImmutableList.copyOf(executions);</span>
-<span class="nc" id="L95">        } catch (Exception e) {</span>
-<span class="nc" id="L96">            LOG.error(&quot;Failed to get execution&quot;, e);</span>
-<span class="nc" id="L97">            throw new RuntimeException(e);</span>
-        }
+    private List&lt;Execution&gt; getExecutions(QueryExecution queryConfiguration) {
+<span class="fc" id="L77">        Optional&lt;ResponseExecution&gt; ask = ActorUtil.ask(queryConfiguration, actorRef);</span>
+<span class="pc" id="L78">        ResponseExecution responseExecution = ask.orElseThrow(() -&gt; new RuntimeException(&quot;timed out on get&quot;));</span>
+<span class="fc" id="L79">        return responseExecution.values();</span>
     }
 
     @Override
     public Execution create(ExecutionPayload executionPayload, User user) {
 
-<span class="fc" id="L104">        Configuration configuration = configurationsService.get(executionPayload.configuration(), user).orElseThrow(() -&gt;</span>
-<span class="nc" id="L105">                new IllegalArgumentException(&quot;could not find configuration with id &quot; + executionPayload.configuration()));</span>
+<span class="fc" id="L85">        Configuration configuration = configurationsService.get(executionPayload.configuration(), user).orElseThrow(() -&gt;</span>
+<span class="nc" id="L86">                new IllegalArgumentException(&quot;could not find configuration with id &quot; + executionPayload.configuration()));</span>
 
-<span class="fc" id="L107">        Workload workload = workloadsService.get(executionPayload.workload(), user).orElseThrow(()</span>
-<span class="nc" id="L108">                -&gt; new IllegalArgumentException(&quot;could not find workload with id &quot; + executionPayload.workload()));</span>
+<span class="fc" id="L88">        Workload workload = wService.get(executionPayload.workload(), user).orElseThrow(()</span>
+<span class="nc" id="L89">                -&gt; new IllegalArgumentException(&quot;could not find workload with id &quot; + executionPayload.workload()));</span>
 
-<span class="fc" id="L110">        Execution execution = Execution.builder().workload(workload)</span>
-<span class="fc" id="L111">                .configuration(configuration)</span>
-<span class="fc" id="L112">                .type(executionPayload.type())</span>
-<span class="fc" id="L113">                .info(ExecutionInfo.empty().updateRemaining(workload.size()))</span>
-<span class="fc" id="L114">                .build();</span>
-<span class="fc" id="L115">        LOG.info(&quot;user {} starting execution: {}&quot;, user, execution.id());</span>
-<span class="fc" id="L116">        LOG.debug(&quot;Execution:\n{}&quot;, execution);</span>
+<span class="fc" id="L91">        Execution execution = Execution.builder().workload(workload)</span>
+<span class="fc" id="L92">                .configuration(configuration)</span>
+<span class="fc" id="L93">                .type(executionPayload.type())</span>
+<span class="fc" id="L94">                .info(ExecutionInfo.empty().updateRemaining(workload.size()))</span>
+<span class="fc" id="L95">                .build();</span>
+<span class="fc" id="L96">        LOG.info(&quot;user {} starting execution: {}&quot;, user, execution.id());</span>
+<span class="fc" id="L97">        LOG.debug(&quot;Execution:\n{}&quot;, execution);</span>
 
-<span class="fc" id="L118">        actorRef.tell(StartExecution.create(user, execution), ActorRef.noSender());</span>
-<span class="fc" id="L119">        startExecution(execution);</span>
-<span class="fc" id="L120">        return execution;</span>
+<span class="fc" id="L99">        actorRef.tell(StartExecution.create(user, execution), ActorRef.noSender());</span>
+<span class="fc" id="L100">        return execution;</span>
     }
 
-    private void startExecution(Execution execution) {
-
-
-<span class="fc" id="L126">    }</span>
 
     @Override
     public Optional&lt;Execution&gt; delete(String id, User user) {
-<span class="pc bpc" id="L130" title="1 of 2 branches missed.">        Preconditions.checkArgument(!Strings.isNullOrEmpty(id), &quot;id must not be empty&quot;);</span>
-<span class="fc" id="L131">        return sendMessage(ShutdownResource.create(id, user));</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        Preconditions.checkArgument(!Strings.isNullOrEmpty(id), &quot;id must not be empty&quot;);</span>
+
+<span class="fc" id="L108">        Optional&lt;ResponseExecution&gt; ask = ActorUtil.ask(DeleteExecution.create(id, user), actorRef);</span>
+<span class="pc" id="L109">        ResponseExecution responseExecution = ask.orElseThrow(() -&gt; new RuntimeException(&quot;failed to delete&quot;));</span>
+<span class="fc" id="L110">        List&lt;Execution&gt; configurations = responseExecution.values();</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        if (configurations.isEmpty()) {</span>
+<span class="fc" id="L112">            return Optional.empty();</span>
+        } else
+<span class="fc" id="L114">            return Optional.of(configurations.get(0));</span>
+
     }
 
     @Override
     public Optional&lt;Execution&gt; update(ExecutionPayload updated, User user) {
-<span class="nc" id="L136">        throw new IllegalArgumentException(&quot;not implemented&quot;);</span>
+<span class="nc" id="L120">        throw new IllegalArgumentException(&quot;not implemented&quot;);</span>
     }
 
-    private Optional&lt;Execution&gt; sendMessage(Object message) {
-<span class="fc" id="L140">        Timeout timeout = new Timeout(Duration.create(100, &quot;milliseconds&quot;));</span>
-
-<span class="fc" id="L142">        Future&lt;Object&gt; ask = Patterns.ask(actorRef, message, timeout);</span>
-
-        try {
-<span class="fc" id="L145">            Execution execution = (Execution) Await.result(ask, timeout.duration());</span>
-<span class="fc" id="L146">            return Optional.ofNullable(execution);</span>
-<span class="nc" id="L147">        } catch (Exception e) {</span>
-<span class="nc" id="L148">            LOG.error(&quot;Failed to get execution {}&quot;, e);</span>
-<span class="nc" id="L149">            throw new RuntimeException(e);</span>
-        }
-    }
 
     @Override
     public Optional&lt;Execution&gt; get(String id, User user) {
-<span class="fc" id="L155">        return sendMessage(QueryExecution.create(id, user));</span>
+<span class="fc" id="L126">        List&lt;Execution&gt; executions = getExecutions(QueryExecution.create(id, user));</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">        if (executions.isEmpty()) {</span>
+<span class="fc" id="L128">            return Optional.empty();</span>
+        } else
+<span class="fc" id="L130">            return Optional.of(executions.get(0));</span>
     }
-
-
-
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

@@ -103,10 +103,10 @@ public abstract class AbstractRestController&lt;T extends Id, P&gt; implements C
 <span class="fc" id="L103">            logRequest(&quot;get&quot;, request);</span>
 <span class="fc" id="L104">            String id = request.params(&quot;:id&quot;);</span>
 <span class="fc" id="L105">            Optional&lt;T&gt; optional = service.get(id, getUser(request));</span>
-<span class="pc bpc" id="L106" title="1 of 2 branches missed.">            if (optional.isPresent()) {</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">            if (optional.isPresent()) {</span>
 <span class="fc" id="L107">                return optional.get();</span>
             } else {
-<span class="nc" id="L109">                throw new FileNotFoundException(&quot;could not find resource &quot; + id);</span>
+<span class="fc" id="L109">                throw new FileNotFoundException(&quot;could not find resource &quot; + id);</span>
             }
         };
     }

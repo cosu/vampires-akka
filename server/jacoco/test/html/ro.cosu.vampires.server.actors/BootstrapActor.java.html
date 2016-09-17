@@ -28,10 +28,14 @@ package ro.cosu.vampires.server.actors;
 
 
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -43,8 +47,9 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.configuration.ConfigurationMessage;
 import ro.cosu.vampires.server.actors.messages.execution.QueryExecution;
+import ro.cosu.vampires.server.actors.messages.execution.ResponseExecution;
 import ro.cosu.vampires.server.actors.messages.execution.StartExecution;
-import ro.cosu.vampires.server.actors.messages.resource.ShutdownResource;
+import ro.cosu.vampires.server.actors.messages.resource.DeleteExecution;
 import ro.cosu.vampires.server.actors.messages.workload.WorkloadMessage;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.settings.Settings;
@@ -60,141 +65,142 @@ public class BootstrapActor extends UntypedActor {
     private final ActorRef terminator;
     private final ActorRef configurationsActor;
     private final ActorRef workloadsActor;
-<span class="fc" id="L63">    private final SettingsImpl settings = Settings.SettingsProvider.get(getContext().system());</span>
-<span class="fc" id="L64">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
-<span class="fc" id="L65">    private Map&lt;String, ActorRef&gt; executionsToActors = Maps.newHashMap();</span>
-<span class="fc" id="L66">    private HashBasedTable&lt;User, String, Execution&gt; executionHashBasedTable = HashBasedTable.create();</span>
+<span class="fc" id="L68">    private final SettingsImpl settings = Settings.SettingsProvider.get(getContext().system());</span>
+<span class="fc" id="L69">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
+<span class="fc" id="L70">    private Map&lt;String, ActorRef&gt; executionsToActors = Maps.newHashMap();</span>
+<span class="fc" id="L71">    private HashBasedTable&lt;User, String, Execution&gt; executionHashBasedTable = HashBasedTable.create();</span>
 
 
-<span class="fc" id="L69">    private RestModule restModule = new RestModule(getSelf(), settings.getProviders(), settings.vampires.getConfig(&quot;rest&quot;));</span>
+<span class="fc" id="L74">    private RestModule restModule = new RestModule(getSelf(), settings.getProviders(), settings.vampires.getConfig(&quot;rest&quot;));</span>
     private Injector injector;
 
 
-<span class="fc" id="L73">    BootstrapActor(ActorRef terminator) {</span>
-<span class="fc" id="L74">        this.terminator = terminator;</span>
-<span class="fc" id="L75">        configurationsActor = getContext().actorOf(ConfigurationsActor.props(), &quot;configurations&quot;);</span>
-<span class="fc" id="L76">        workloadsActor = getContext().actorOf(WorkloadsActor.props(), &quot;workloads&quot;);</span>
-<span class="fc" id="L77">    }</span>
+<span class="fc" id="L78">    BootstrapActor(ActorRef terminator) {</span>
+<span class="fc" id="L79">        this.terminator = terminator;</span>
+<span class="fc" id="L80">        configurationsActor = getContext().actorOf(ConfigurationsActor.props(), &quot;configurations&quot;);</span>
+<span class="fc" id="L81">        workloadsActor = getContext().actorOf(WorkloadsActor.props(), &quot;workloads&quot;);</span>
+<span class="fc" id="L82">    }</span>
 
     public static Props props(ActorRef terminator) {
-<span class="fc" id="L80">        return Props.create(BootstrapActor.class, terminator);</span>
+<span class="fc" id="L85">        return Props.create(BootstrapActor.class, terminator);</span>
     }
 
     @Override
     public void preStart() {
-<span class="fc" id="L85">        terminator.tell(ResourceControl.Up.create(), getSelf());</span>
-<span class="fc" id="L86">        startWebserver();</span>
-<span class="fc" id="L87">    }</span>
+<span class="fc" id="L90">        terminator.tell(ResourceControl.Up.create(), getSelf());</span>
+<span class="fc" id="L91">        startWebserver();</span>
+<span class="fc" id="L92">    }</span>
 
     private void startWebserver() {
-<span class="fc" id="L90">        Spark.port(settings.vampires.getInt(&quot;rest.port&quot;));</span>
-<span class="fc" id="L91">        Spark.init();</span>
-<span class="fc" id="L92">        injector = Guice.createInjector(restModule);</span>
-<span class="fc" id="L93">    }</span>
+<span class="fc" id="L95">        Spark.port(settings.vampires.getInt(&quot;rest.port&quot;));</span>
+<span class="fc" id="L96">        Spark.init();</span>
+<span class="fc" id="L97">        injector = Guice.createInjector(restModule);</span>
+<span class="fc" id="L98">    }</span>
 
 
     @Override
     public void postStop() {
-<span class="fc" id="L98">        Spark.stop();</span>
-<span class="fc" id="L99">    }</span>
+<span class="fc" id="L103">        Spark.stop();</span>
+<span class="fc" id="L104">    }</span>
 
     @Override
     public void onReceive(Object message) throws Exception {
-<span class="fc bfc" id="L103" title="All 2 branches covered.">        if (message instanceof StartExecution) {</span>
-<span class="fc" id="L104">            StartExecution startExecution = (StartExecution) message;</span>
-<span class="fc" id="L105">            handleStartExecution(startExecution);</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">        } else if (message instanceof Execution) {</span>
-<span class="fc" id="L107">            Execution execution = (Execution) message;</span>
-<span class="fc" id="L108">            handleExecution(execution);</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">        } else if (message instanceof QueryExecution) {</span>
-<span class="fc" id="L110">            QueryExecution info = (QueryExecution) message;</span>
-<span class="fc" id="L111">            queryResource(info);</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">        } else if (message instanceof ShutdownResource) {</span>
-<span class="fc" id="L113">            ShutdownResource shutdownResource = (ShutdownResource) message;</span>
-<span class="fc" id="L114">            handleShutdown(shutdownResource);</span>
-<span class="pc bpc" id="L115" title="1 of 2 branches missed.">        } else if (message instanceof ConfigurationMessage) {</span>
-<span class="nc" id="L116">            configurationsActor.forward(message, getContext());</span>
-<span class="pc bpc" id="L117" title="1 of 2 branches missed.">        } else if (message instanceof WorkloadMessage) {</span>
-<span class="nc" id="L118">            workloadsActor.forward(message, getContext());</span>
-<span class="pc bpc" id="L119" title="1 of 2 branches missed.">        } else if (message instanceof Terminated) {</span>
-<span class="fc" id="L120">            handleTerminated();</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (message instanceof StartExecution) {</span>
+<span class="fc" id="L109">            StartExecution startExecution = (StartExecution) message;</span>
+<span class="fc" id="L110">            handleStartExecution(startExecution);</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        } else if (message instanceof Execution) {</span>
+<span class="fc" id="L112">            Execution execution = (Execution) message;</span>
+<span class="fc" id="L113">            handleExecution(execution);</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        } else if (message instanceof QueryExecution) {</span>
+<span class="fc" id="L115">            QueryExecution queryExecution = (QueryExecution) message;</span>
+<span class="fc" id="L116">            queryExecution(queryExecution);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">        } else if (message instanceof DeleteExecution) {</span>
+<span class="fc" id="L118">            DeleteExecution shutdownResource = (DeleteExecution) message;</span>
+<span class="fc" id="L119">            handleShutdown(shutdownResource);</span>
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">        } else if (message instanceof ConfigurationMessage) {</span>
+<span class="nc" id="L121">            configurationsActor.forward(message, getContext());</span>
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">        } else if (message instanceof WorkloadMessage) {</span>
+<span class="nc" id="L123">            workloadsActor.forward(message, getContext());</span>
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">        } else if (message instanceof Terminated) {</span>
+<span class="fc" id="L125">            handleTerminated();</span>
         } else {
-<span class="nc" id="L122">            unhandled(message);</span>
+<span class="nc" id="L127">            unhandled(message);</span>
         }
-<span class="fc" id="L124">    }</span>
+<span class="fc" id="L129">    }</span>
 
 
-    private void handleShutdown(ShutdownResource shutdownResource) {
-<span class="fc" id="L128">        User user = shutdownResource.user();</span>
+    private void handleShutdown(DeleteExecution deleteExecution) {
+<span class="fc" id="L133">        User user = deleteExecution.user();</span>
 
-<span class="fc" id="L130">        boolean userHasExecution = getResultsMap(user).containsKey(shutdownResource.resourceId());</span>
-<span class="fc" id="L131">        boolean executionHasActor = executionsToActors.containsKey(shutdownResource.resourceId());</span>
+<span class="fc" id="L135">        boolean userHasExecution = getResultsMap(user).containsKey(deleteExecution.resourceId());</span>
+<span class="fc" id="L136">        boolean executionHasActor = executionsToActors.containsKey(deleteExecution.resourceId());</span>
 
-<span class="pc bpc" id="L133" title="2 of 4 branches missed.">        if (userHasExecution &amp;&amp; executionHasActor) {</span>
-<span class="fc" id="L134">            Execution execution = getResultsMap(user).get(shutdownResource.resourceId());</span>
-<span class="fc" id="L135">            boolean executionCanShutdown = ExecutionInfo.isActiveStatus(execution.info().status());</span>
-<span class="pc bpc" id="L136" title="1 of 2 branches missed.">            if (executionCanShutdown) {</span>
-<span class="fc" id="L137">                ActorRef executionActor = executionsToActors.get(shutdownResource.resourceId());</span>
-<span class="fc" id="L138">                executionActor.tell(ResourceControl.Shutdown.create(), getSelf());</span>
+<span class="pc bpc" id="L138" title="2 of 4 branches missed.">        if (userHasExecution &amp;&amp; executionHasActor) {</span>
+<span class="fc" id="L139">            Execution execution = getResultsMap(user).get(deleteExecution.resourceId());</span>
+<span class="fc" id="L140">            boolean executionCanShutdown = ExecutionInfo.isActiveStatus(execution.info().status());</span>
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">            if (executionCanShutdown) {</span>
+<span class="fc" id="L142">                ActorRef executionActor = executionsToActors.get(deleteExecution.resourceId());</span>
+<span class="fc" id="L143">                executionActor.tell(ResourceControl.Shutdown.create(), getSelf());</span>
 
                 // update the current view of the execution
-<span class="fc" id="L141">                execution = execution.withInfo(execution.info()</span>
-<span class="fc" id="L142">                        .updateStatus(ExecutionInfo.Status.STOPPING));</span>
-<span class="fc" id="L143">                getResultsMap(user).put(execution.id(), execution);</span>
-<span class="fc" id="L144">            } else {</span>
-<span class="nc" id="L145">                log.warning(&quot;shutting down a non-running execution {}&quot;, execution);</span>
+<span class="fc" id="L146">                execution = execution.withInfo(execution.info()</span>
+<span class="fc" id="L147">                        .updateStatus(ExecutionInfo.Status.STOPPING));</span>
+<span class="fc" id="L148">                getResultsMap(user).put(execution.id(), execution);</span>
+<span class="fc" id="L149">            } else {</span>
+<span class="nc" id="L150">                log.warning(&quot;shutting down a non-running execution {}&quot;, execution);</span>
             }
-<span class="fc" id="L147">            getSender().tell(execution, getSelf());</span>
+<span class="fc" id="L152">            getSender().tell(ResponseExecution.create(ImmutableList.of(execution)), getSelf());</span>
         }
-<span class="fc" id="L149">    }</span>
+<span class="fc" id="L154">    }</span>
 
     private void handleTerminated() {
-<span class="fc" id="L152">        Optional&lt;String&gt; execId =</span>
-<span class="fc" id="L153">                executionsToActors.entrySet().stream()</span>
-<span class="fc" id="L154">                        .filter(e -&gt; e.getValue().equals(getSender()))</span>
-<span class="fc" id="L155">                        .map(Map.Entry::getKey).findFirst();</span>
+<span class="fc" id="L157">        Optional&lt;String&gt; execId =</span>
+<span class="fc" id="L158">                executionsToActors.entrySet().stream()</span>
+<span class="fc" id="L159">                        .filter(e -&gt; e.getValue().equals(getSender()))</span>
+<span class="fc" id="L160">                        .map(Map.Entry::getKey).findFirst();</span>
 
-<span class="pc bpc" id="L157" title="1 of 2 branches missed.">        if (execId.isPresent()) {</span>
-<span class="fc" id="L158">            String id = execId.get();</span>
-<span class="fc" id="L159">            executionsToActors.remove(id);</span>
-<span class="fc" id="L160">            log.info(&quot;{} terminated &quot;, id);</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">        if (execId.isPresent()) {</span>
+<span class="fc" id="L163">            String id = execId.get();</span>
+<span class="fc" id="L164">            executionsToActors.remove(id);</span>
+<span class="fc" id="L165">            log.info(&quot;{} terminated &quot;, id);</span>
         }
-<span class="fc" id="L162">    }</span>
+<span class="fc" id="L167">    }</span>
 
     private void handleStartExecution(StartExecution startExecution) {
-<span class="fc" id="L165">        Execution execution = startExecution.execution();</span>
+<span class="fc" id="L170">        Execution execution = startExecution.execution();</span>
 
-<span class="pc bpc" id="L167" title="1 of 2 branches missed.">        if (!executionsToActors.containsKey(execution.id())) {</span>
-<span class="fc" id="L168">            ActorRef executionActor = getContext().actorOf(ExecutionActor.props(execution), execution.id());</span>
-<span class="fc" id="L169">            executionsToActors.put(execution.id(), executionActor);</span>
-<span class="fc" id="L170">            executionActor.tell(execution, getSelf());</span>
-<span class="fc" id="L171">            getContext().watch(executionActor);</span>
-<span class="fc" id="L172">            getResultsMap(startExecution.user()).put(execution.id(), execution);</span>
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">        if (!executionsToActors.containsKey(execution.id())) {</span>
+<span class="fc" id="L173">            ActorRef executionActor = getContext().actorOf(ExecutionActor.props(execution), execution.id());</span>
+<span class="fc" id="L174">            executionsToActors.put(execution.id(), executionActor);</span>
+<span class="fc" id="L175">            executionActor.tell(execution, getSelf());</span>
+<span class="fc" id="L176">            getContext().watch(executionActor);</span>
+<span class="fc" id="L177">            getResultsMap(startExecution.user()).put(execution.id(), execution);</span>
         }
-<span class="fc" id="L174">    }</span>
+<span class="fc" id="L179">    }</span>
 
     private void handleExecution(Execution execution) {
         //lsupdate or finished execution
-<span class="fc" id="L178">        User user = executionHashBasedTable.column(execution.id()).keySet().iterator().next();</span>
-<span class="fc" id="L179">        getResultsMap(user).put(execution.id(), execution);</span>
-<span class="fc" id="L180">    }</span>
+<span class="fc" id="L183">        User user = executionHashBasedTable.column(execution.id()).keySet().iterator().next();</span>
+<span class="fc" id="L184">        getResultsMap(user).put(execution.id(), execution);</span>
+<span class="fc" id="L185">    }</span>
 
     private Map&lt;String, Execution&gt; getResultsMap(User user) {
-<span class="fc" id="L183">        return executionHashBasedTable.row(user);</span>
+<span class="fc" id="L188">        return executionHashBasedTable.row(user);</span>
     }
 
 
-    private void queryResource(QueryExecution info) {
-<span class="fc" id="L188">        User user = info.user();</span>
-<span class="pc bpc" id="L189" title="1 of 2 branches missed.">        if (info.equals(QueryExecution.all(info.user()))) {</span>
-<span class="nc" id="L190">            getSender().tell(getResultsMap(user).values(), getSelf());</span>
+    private void queryExecution(QueryExecution info) {
+<span class="fc" id="L193">        User user = info.user();</span>
+        List&lt;Execution&gt; executionList;
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">        if (info.equals(QueryExecution.all(info.user()))) {</span>
+<span class="nc" id="L196">            executionList = new ArrayList&lt;&gt;(getResultsMap(user).values());</span>
         } else {
-<span class="pc bpc" id="L192" title="1 of 2 branches missed.">            if (getResultsMap(user).containsKey(info.resourceId())) {</span>
-<span class="fc" id="L193">                getSender().tell(getResultsMap(user).get(info.resourceId()), getSelf());</span>
-            } else {
-<span class="nc" id="L195">                log.error(&quot;Invalid query for execution id {}&quot;, info.resourceId());</span>
-            }
+<span class="fc" id="L198">            executionList = Optional.ofNullable(getResultsMap(user).get(info.resourceId()))</span>
+<span class="fc" id="L199">                    .map(Lists::newArrayList)</span>
+<span class="fc" id="L200">                    .orElse(Lists.newArrayList());</span>
         }
-<span class="fc" id="L198">    }</span>
+<span class="fc" id="L202">        getSender().tell(ResponseExecution.create(executionList), getSelf());</span>
+
+<span class="fc" id="L204">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
