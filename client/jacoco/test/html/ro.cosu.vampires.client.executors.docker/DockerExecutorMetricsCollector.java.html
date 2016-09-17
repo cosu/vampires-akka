@@ -48,14 +48,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
+import javax.ws.rs.ProcessingException;
+
 import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
 import ro.cosu.vampires.server.values.jobs.metrics.Metric;
 import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 
-<span class="fc" id="L55">public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector {</span>
-<span class="fc" id="L56">    private static final Logger LOG = LoggerFactory.getLogger(DockerExecutorMetricsCollector.class);</span>
+<span class="fc" id="L57">public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector {</span>
+<span class="fc" id="L58">    private static final Logger LOG = LoggerFactory.getLogger(DockerExecutorMetricsCollector.class);</span>
 
-<span class="fc" id="L58">    private StatsCallback statsCallback = new StatsCallback();</span>
+<span class="fc" id="L60">    private StatsCallback statsCallback = new StatsCallback();</span>
 
     private String id;
 
@@ -65,15 +67,15 @@ import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
     protected static Metric convertDockerStatsToMetrics(Statistics stat) {
         // the current stat api makes the 'read' field private so we put our own timestamp
         // future versions of the api will hopefully fix this
-<span class="fc" id="L68">        Map&lt;String, Double&gt; data = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L70">        Map&lt;String, Double&gt; data = new HashMap&lt;&gt;();</span>
 
-<span class="fc" id="L70">        Optional.ofNullable(stat.getNetworks())</span>
-<span class="fc" id="L71">                .ifPresent(stats -&gt; data.putAll(flattenMap(&quot;network&quot;, stats)));</span>
-<span class="fc" id="L72">        data.putAll(flattenMap(&quot;memory&quot;, stat.getMemoryStats()));</span>
+<span class="fc" id="L72">        Optional.ofNullable(stat.getNetworks())</span>
+<span class="fc" id="L73">                .ifPresent(stats -&gt; data.putAll(flattenMap(&quot;network&quot;, stats)));</span>
+<span class="fc" id="L74">        data.putAll(flattenMap(&quot;memory&quot;, stat.getMemoryStats()));</span>
 //        data.putAll(flattenMap(&quot;io&quot;, stat.getBlkioStats()));
-<span class="fc" id="L74">        data.putAll(flattenMap(&quot;cpu&quot;, stat.getCpuStats()));</span>
+<span class="fc" id="L76">        data.putAll(flattenMap(&quot;cpu&quot;, stat.getCpuStats()));</span>
 
-<span class="fc" id="L76">        return Metric.builder().values(ImmutableMap.copyOf(data)).time(LocalDateTime.now()).build();</span>
+<span class="fc" id="L78">        return Metric.builder().values(ImmutableMap.copyOf(data)).time(LocalDateTime.now()).build();</span>
     }
 
     @SuppressWarnings(&quot;unchecked&quot;)
@@ -84,72 +86,72 @@ import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
         // also if it encounters any list, it flattens it by appending the index of the value in the list to the key
         // effectively a: [1,2,3] becomes a-0: 1, a-1:2, a-2:3
         // it's ugly but it works (tm)
-<span class="fc" id="L87">        Map&lt;String, Double&gt; result = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L89">        Map&lt;String, Double&gt; result = new HashMap&lt;&gt;();</span>
 
-<span class="fc bfc" id="L89" title="All 2 branches covered.">        for (Map.Entry&lt;String, Object&gt; entry : stringMapMap.entrySet()) {</span>
-<span class="fc" id="L90">            String key = Joiner.on(&quot;-&quot;).join(prefix, entry.getKey().replace(&quot;_&quot;, &quot;-&quot;));</span>
-<span class="fc" id="L91">            Object val = entry.getValue();</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        for (Map.Entry&lt;String, Object&gt; entry : stringMapMap.entrySet()) {</span>
+<span class="fc" id="L92">            String key = Joiner.on(&quot;-&quot;).join(prefix, entry.getKey().replace(&quot;_&quot;, &quot;-&quot;));</span>
+<span class="fc" id="L93">            Object val = entry.getValue();</span>
 
-<span class="fc bfc" id="L93" title="All 2 branches covered.">            if (val instanceof Map) {</span>
-<span class="fc" id="L94">                result.putAll(flattenMap(key, (Map&lt;String, Object&gt;) val));</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">            } else if (val instanceof List) {</span>
-<span class="fc" id="L96">                final List valAsList = (List) val;</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">            if (val instanceof Map) {</span>
+<span class="fc" id="L96">                result.putAll(flattenMap(key, (Map&lt;String, Object&gt;) val));</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">            } else if (val instanceof List) {</span>
+<span class="fc" id="L98">                final List valAsList = (List) val;</span>
 
-<span class="fc" id="L98">                IntStream.range(0, valAsList.size())</span>
-<span class="pc bpc" id="L99" title="1 of 2 branches missed.">                        .filter(i -&gt; valAsList.size() &gt;= i)</span>
-<span class="fc" id="L100">                        .forEach(i -&gt; Optional.ofNullable(getDoubleFrom(valAsList.get(i)))</span>
-<span class="fc" id="L101">                                .ifPresent(newValue -&gt; result.put(key + &quot;-&quot; + i, newValue)));</span>
-<span class="fc" id="L102">            } else {</span>
-<span class="fc" id="L103">                Optional.ofNullable(getDoubleFrom(val)).ifPresent(newValue -&gt; result.put(key,</span>
+<span class="fc" id="L100">                IntStream.range(0, valAsList.size())</span>
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">                        .filter(i -&gt; valAsList.size() &gt;= i)</span>
+<span class="fc" id="L102">                        .forEach(i -&gt; Optional.ofNullable(getDoubleFrom(valAsList.get(i)))</span>
+<span class="fc" id="L103">                                .ifPresent(newValue -&gt; result.put(key + &quot;-&quot; + i, newValue)));</span>
+<span class="fc" id="L104">            } else {</span>
+<span class="fc" id="L105">                Optional.ofNullable(getDoubleFrom(val)).ifPresent(newValue -&gt; result.put(key,</span>
                         newValue));
             }
-<span class="fc" id="L106">        }</span>
-<span class="fc" id="L107">        return result;</span>
+<span class="fc" id="L108">        }</span>
+<span class="fc" id="L109">        return result;</span>
     }
 
     private static Double getDoubleFrom(Object object) {
-<span class="fc" id="L111">        Double val = 0.;</span>
+<span class="fc" id="L113">        Double val = 0.;</span>
         try {
 
-<span class="fc" id="L114">            val = Double.parseDouble(object.toString());</span>
-<span class="fc" id="L115">        } catch (Exception e) {</span>
-<span class="fc" id="L116">            LOG.warn(&quot;can't convert {} to double&quot;, object);</span>
-<span class="fc" id="L117">        }</span>
-<span class="fc" id="L118">        return val;</span>
+<span class="fc" id="L116">            val = Double.parseDouble(object.toString());</span>
+<span class="fc" id="L117">        } catch (Exception e) {</span>
+<span class="fc" id="L118">            LOG.warn(&quot;can't convert {} to double&quot;, object);</span>
+<span class="fc" id="L119">        }</span>
+<span class="fc" id="L120">        return val;</span>
 
     }
 
     @Override
     public void startMonitoring(String id) {
-<span class="fc" id="L124">        this.id = id;</span>
-<span class="fc" id="L125">        dockerClient.statsCmd(id).exec(statsCallback);</span>
-<span class="fc" id="L126">    }</span>
+<span class="fc" id="L126">        this.id = id;</span>
+<span class="fc" id="L127">        dockerClient.statsCmd(id).exec(statsCallback);</span>
+<span class="fc" id="L128">    }</span>
 
     @Override
     public void stopMonitoring() {
         try {
-<span class="fc" id="L131">            statsCallback.close();</span>
-<span class="nc" id="L132">        } catch (IOException e) {</span>
-<span class="nc" id="L133">            LOG.error(&quot;failed to close collector &quot;, e);</span>
-<span class="fc" id="L134">        }</span>
-<span class="fc" id="L135">    }</span>
+<span class="fc" id="L133">            statsCallback.close();</span>
+<span class="nc" id="L134">        } catch (IOException | ProcessingException e) {</span>
+<span class="nc" id="L135">            LOG.error(&quot;failed to close collector &quot;, e);</span>
+<span class="fc" id="L136">        }</span>
+<span class="fc" id="L137">    }</span>
 
     @Override
     public Metrics getMetrics() {
-<span class="fc" id="L139">        final ImmutableList&lt;Metric&gt; statisticsList = ImmutableList.copyOf(statsCallback.getStatisticsList());</span>
-<span class="fc" id="L140">        return Metrics.builder().id(id).metadata(ImmutableMap.of(&quot;docker&quot;, id)).metrics(statisticsList).build();</span>
+<span class="fc" id="L141">        final ImmutableList&lt;Metric&gt; statisticsList = ImmutableList.copyOf(statsCallback.getStatisticsList());</span>
+<span class="fc" id="L142">        return Metrics.builder().id(id).metadata(ImmutableMap.of(&quot;docker&quot;, id)).metrics(statisticsList).build();</span>
     }
 
-<span class="fc" id="L143">    private static class StatsCallback extends ResultCallbackTemplate&lt;StatsCallback, Statistics&gt; {</span>
-<span class="fc" id="L144">        private List&lt;Metric&gt; statisticsList = new LinkedList&lt;&gt;();</span>
+<span class="fc" id="L145">    private static class StatsCallback extends ResultCallbackTemplate&lt;StatsCallback, Statistics&gt; {</span>
+<span class="fc" id="L146">        private List&lt;Metric&gt; statisticsList = new LinkedList&lt;&gt;();</span>
 
         @Override
         public void onNext(Statistics stats) {
-<span class="nc" id="L148">            statisticsList.add(convertDockerStatsToMetrics(stats));</span>
-<span class="nc" id="L149">        }</span>
+<span class="nc" id="L150">            statisticsList.add(convertDockerStatsToMetrics(stats));</span>
+<span class="nc" id="L151">        }</span>
 
         public List&lt;Metric&gt; getStatisticsList() {
-<span class="fc" id="L152">            return statisticsList;</span>
+<span class="fc" id="L154">            return statisticsList;</span>
         }
     }
 }

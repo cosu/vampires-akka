@@ -119,11 +119,16 @@ public class HostSource implements Source {
     }
 
     private Gauge&lt;String&gt; getAddress(final NetworkIF iface) {
-<span class="fc" id="L122">        return () -&gt; iface.getIPv4addr()[0];</span>
+<span class="fc" id="L122">        String addr = &quot;unknown&quot;;</span>
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">        if (iface.getIPv4addr().length &gt; 0) {</span>
+<span class="fc" id="L124">            addr = iface.getIPv4addr()[0];</span>
+        }
+<span class="fc" id="L126">        String finalAddr = addr;</span>
+<span class="fc" id="L127">        return () -&gt; finalAddr;</span>
     }
 
     private Gauge&lt;String&gt; getHWAddress(final NetworkIF iface) {
-<span class="fc" id="L126">        return iface::getMacaddr;</span>
+<span class="fc" id="L131">        return iface::getMacaddr;</span>
     }
 
 
