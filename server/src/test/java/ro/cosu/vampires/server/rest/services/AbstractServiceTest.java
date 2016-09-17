@@ -117,13 +117,14 @@ public abstract class AbstractServiceTest<T extends Id, P> {
 
     @Test
     public void deleteUnknown() throws Exception {
-        Optional<T> foo = instance.delete("foo", getUser());
+        Optional<T> foo = instance.delete("foo123", getUser());
         assertThat(foo.isPresent(), is(false));
     }
 
     @Test
     public void getUnknown() throws Exception {
-        Optional<T> foo = instance.get("foo", getUser());
+        Optional<T> foo = instance.get("foo123", getUser());
+        System.out.println(foo);
         assertThat(foo.isPresent(), is(false));
     }
 }

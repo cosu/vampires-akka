@@ -41,6 +41,7 @@ import ro.cosu.vampires.server.actors.BootstrapActor;
 import ro.cosu.vampires.server.actors.Terminator;
 import ro.cosu.vampires.server.actors.messages.configuration.CreateConfiguration;
 import ro.cosu.vampires.server.actors.messages.execution.QueryExecution;
+import ro.cosu.vampires.server.actors.messages.execution.ResponseExecution;
 import ro.cosu.vampires.server.actors.messages.execution.StartExecution;
 import ro.cosu.vampires.server.actors.messages.workload.CreateWorkload;
 import ro.cosu.vampires.server.resources.Resource;
@@ -122,10 +123,10 @@ public class BootstrapIT {
 
             Future<Object> ask = Patterns.ask(bootstrap,
                     QueryExecution.create(execution.id(), User.admin()), timeout);
-            execution = (Execution) Await.result(ask, timeout.duration());
+            ResponseExecution responseExecution = (ResponseExecution) Await.result(ask, timeout.duration());
+            execution = responseExecution.values().get(0);
             System.out.println(execution.info().status());
             running = ExecutionInfo.isActiveStatus(execution.info().status());
-
         }
 
         assertThat(execution.info().status(), is(ExecutionInfo.Status.FINISHED));

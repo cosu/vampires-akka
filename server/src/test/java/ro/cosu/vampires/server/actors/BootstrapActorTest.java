@@ -34,14 +34,15 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.testkit.JavaTestKit;
 import ro.cosu.vampires.server.actors.messages.execution.QueryExecution;
+import ro.cosu.vampires.server.actors.messages.execution.ResponseExecution;
 import ro.cosu.vampires.server.actors.messages.execution.StartExecution;
-import ro.cosu.vampires.server.actors.messages.resource.ShutdownResource;
-import ro.cosu.vampires.server.values.resources.Configuration;
+import ro.cosu.vampires.server.actors.messages.resource.DeleteExecution;
+import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.jobs.Execution;
 import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
 import ro.cosu.vampires.server.values.jobs.ExecutionMode;
-import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.jobs.Workload;
+import ro.cosu.vampires.server.values.resources.Configuration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -74,14 +75,17 @@ public class BootstrapActorTest extends AbstractActorTest {
 
                 // query the state
                 bootstrapActor.tell(QueryExecution.create(execution.id(), User.admin()), restService.getRef());
-                Execution startedExecution = restService.expectMsgClass(Execution.class);
+                ResponseExecution responseExecution = restService.expectMsgClass(ResponseExecution.class);
+                Execution startedExecution = responseExecution.values().get(0);
                 assertThat(startedExecution.id(), is(execution.id()));
                 assertThat(startedExecution.info().status(), is(ExecutionInfo.Status.STARTING));
 
                 // shutdown
-                bootstrapActor.tell(ShutdownResource.create(execution.id(), User.admin()), restService.getRef());
+                bootstrapActor.tell(DeleteExecution.create(execution.id(), User.admin()), restService.getRef());
 
-                Execution stoppingExecution = restService.expectMsgClass(Execution.class);
+                responseExecution = restService.expectMsgClass(ResponseExecution.class);
+
+                Execution stoppingExecution = responseExecution.values().get(0);
 
                 assertThat(stoppingExecution.id(), is(execution.id()));
                 assertThat(stoppingExecution.info().status(), is(ExecutionInfo.Status.STOPPING));
@@ -89,7 +93,8 @@ public class BootstrapActorTest extends AbstractActorTest {
 
                 // ask for the status
                 bootstrapActor.tell(QueryExecution.create(execution.id(), User.admin()), restService.getRef());
-                Execution canceledExecution = restService.expectMsgClass(Execution.class);
+                responseExecution = restService.expectMsgClass(ResponseExecution.class);
+                Execution canceledExecution = responseExecution.values().get(0);
 
                 // retry a bit (actors comms is async)
                 int count = 0;
@@ -97,7 +102,8 @@ public class BootstrapActorTest extends AbstractActorTest {
                     Thread.sleep(2000);
                     count++;
                     bootstrapActor.tell(QueryExecution.create(execution.id(), User.admin()), restService.getRef());
-                    canceledExecution = restService.expectMsgClass(Execution.class);
+                    responseExecution = restService.expectMsgClass(ResponseExecution.class);
+                    canceledExecution = responseExecution.values().get(0);
                 }
                 assertThat(canceledExecution.id(), is(execution.id()));
                 assertThat(canceledExecution.info().status(), is(ExecutionInfo.Status.CANCELED));

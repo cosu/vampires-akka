@@ -29,33 +29,26 @@ package ro.cosu.vampires.server.rest.services;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.TypeLiteral;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import akka.actor.ActorRef;
-import akka.pattern.Patterns;
-import akka.util.Timeout;
 import ro.cosu.vampires.server.actors.messages.execution.QueryExecution;
+import ro.cosu.vampires.server.actors.messages.execution.ResponseExecution;
 import ro.cosu.vampires.server.actors.messages.execution.StartExecution;
-import ro.cosu.vampires.server.actors.messages.resource.ShutdownResource;
+import ro.cosu.vampires.server.actors.messages.resource.DeleteExecution;
 import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.jobs.Execution;
 import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
 import ro.cosu.vampires.server.values.jobs.ExecutionPayload;
 import ro.cosu.vampires.server.values.jobs.Workload;
 import ro.cosu.vampires.server.values.resources.Configuration;
-import scala.concurrent.Await;
-import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
 
 public class ExecutionsService implements Service<Execution, ExecutionPayload> {
 
@@ -65,7 +58,7 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
     private ConfigurationsService configurationsService;
 
     @Inject
-    private WorkloadsService workloadsService;
+    private WorkloadsService wService;
 
     @Inject
     private ActorRef actorRef;
@@ -75,27 +68,15 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
         };
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<Execution> list(User user) {
+        return getExecutions(QueryExecution.all(user));
+    }
 
-        Collection<Execution> executions = Lists.newArrayList();
-
-        Timeout timeout = new Timeout(Duration.create(100, "milliseconds"));
-
-        Future<Object> ask = Patterns.ask(actorRef, QueryExecution.all(user), timeout);
-
-        try {
-            Object result = Await.result(ask, timeout.duration());
-            if (result instanceof Collection) {
-                // silly java types
-                executions = (Collection<Execution>) result;
-            }
-            return ImmutableList.copyOf(executions);
-        } catch (Exception e) {
-            LOG.error("Failed to get execution", e);
-            throw new RuntimeException(e);
-        }
+    private List<Execution> getExecutions(QueryExecution queryConfiguration) {
+        Optional<ResponseExecution> ask = ActorUtil.ask(queryConfiguration, actorRef);
+        ResponseExecution responseExecution = ask.orElseThrow(() -> new RuntimeException("timed out on get"));
+        return responseExecution.values();
     }
 
     @Override
@@ -104,7 +85,7 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
         Configuration configuration = configurationsService.get(executionPayload.configuration(), user).orElseThrow(() ->
                 new IllegalArgumentException("could not find configuration with id " + executionPayload.configuration()));
 
-        Workload workload = workloadsService.get(executionPayload.workload(), user).orElseThrow(()
+        Workload workload = wService.get(executionPayload.workload(), user).orElseThrow(()
                 -> new IllegalArgumentException("could not find workload with id " + executionPayload.workload()));
 
         Execution execution = Execution.builder().workload(workload)
@@ -116,20 +97,22 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
         LOG.debug("Execution:\n{}", execution);
 
         actorRef.tell(StartExecution.create(user, execution), ActorRef.noSender());
-        startExecution(execution);
         return execution;
     }
 
-    private void startExecution(Execution execution) {
-
-
-    }
 
     @Override
     public Optional<Execution> delete(String id, User user) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(id), "id must not be empty");
 
-        return ActorUtil.ask(ShutdownResource.create(id, user), actorRef);
+        Optional<ResponseExecution> ask = ActorUtil.ask(DeleteExecution.create(id, user), actorRef);
+        ResponseExecution responseExecution = ask.orElseThrow(() -> new RuntimeException("failed to delete"));
+        List<Execution> configurations = responseExecution.values();
+        if (configurations.isEmpty()) {
+            return Optional.empty();
+        } else
+            return Optional.of(configurations.get(0));
+
     }
 
     @Override
@@ -140,9 +123,10 @@ public class ExecutionsService implements Service<Execution, ExecutionPayload> {
 
     @Override
     public Optional<Execution> get(String id, User user) {
-        return ActorUtil.ask(QueryExecution.create(id, user), actorRef);
+        List<Execution> executions = getExecutions(QueryExecution.create(id, user));
+        if (executions.isEmpty()) {
+            return Optional.empty();
+        } else
+            return Optional.of(executions.get(0));
     }
-
-
-
 }

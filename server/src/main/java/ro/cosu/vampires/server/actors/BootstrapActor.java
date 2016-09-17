@@ -28,10 +28,14 @@ package ro.cosu.vampires.server.actors;
 
 
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -43,8 +47,9 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.configuration.ConfigurationMessage;
 import ro.cosu.vampires.server.actors.messages.execution.QueryExecution;
+import ro.cosu.vampires.server.actors.messages.execution.ResponseExecution;
 import ro.cosu.vampires.server.actors.messages.execution.StartExecution;
-import ro.cosu.vampires.server.actors.messages.resource.ShutdownResource;
+import ro.cosu.vampires.server.actors.messages.resource.DeleteExecution;
 import ro.cosu.vampires.server.actors.messages.workload.WorkloadMessage;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.settings.Settings;
@@ -107,10 +112,10 @@ public class BootstrapActor extends UntypedActor {
             Execution execution = (Execution) message;
             handleExecution(execution);
         } else if (message instanceof QueryExecution) {
-            QueryExecution info = (QueryExecution) message;
-            queryResource(info);
-        } else if (message instanceof ShutdownResource) {
-            ShutdownResource shutdownResource = (ShutdownResource) message;
+            QueryExecution queryExecution = (QueryExecution) message;
+            queryExecution(queryExecution);
+        } else if (message instanceof DeleteExecution) {
+            DeleteExecution shutdownResource = (DeleteExecution) message;
             handleShutdown(shutdownResource);
         } else if (message instanceof ConfigurationMessage) {
             configurationsActor.forward(message, getContext());
@@ -124,17 +129,17 @@ public class BootstrapActor extends UntypedActor {
     }
 
 
-    private void handleShutdown(ShutdownResource shutdownResource) {
-        User user = shutdownResource.user();
+    private void handleShutdown(DeleteExecution deleteExecution) {
+        User user = deleteExecution.user();
 
-        boolean userHasExecution = getResultsMap(user).containsKey(shutdownResource.resourceId());
-        boolean executionHasActor = executionsToActors.containsKey(shutdownResource.resourceId());
+        boolean userHasExecution = getResultsMap(user).containsKey(deleteExecution.resourceId());
+        boolean executionHasActor = executionsToActors.containsKey(deleteExecution.resourceId());
 
         if (userHasExecution && executionHasActor) {
-            Execution execution = getResultsMap(user).get(shutdownResource.resourceId());
+            Execution execution = getResultsMap(user).get(deleteExecution.resourceId());
             boolean executionCanShutdown = ExecutionInfo.isActiveStatus(execution.info().status());
             if (executionCanShutdown) {
-                ActorRef executionActor = executionsToActors.get(shutdownResource.resourceId());
+                ActorRef executionActor = executionsToActors.get(deleteExecution.resourceId());
                 executionActor.tell(ResourceControl.Shutdown.create(), getSelf());
 
                 // update the current view of the execution
@@ -144,7 +149,7 @@ public class BootstrapActor extends UntypedActor {
             } else {
                 log.warning("shutting down a non-running execution {}", execution);
             }
-            getSender().tell(execution, getSelf());
+            getSender().tell(ResponseExecution.create(ImmutableList.of(execution)), getSelf());
         }
     }
 
@@ -184,16 +189,17 @@ public class BootstrapActor extends UntypedActor {
     }
 
 
-    private void queryResource(QueryExecution info) {
+    private void queryExecution(QueryExecution info) {
         User user = info.user();
+        List<Execution> executionList;
         if (info.equals(QueryExecution.all(info.user()))) {
-            getSender().tell(getResultsMap(user).values(), getSelf());
+            executionList = new ArrayList<>(getResultsMap(user).values());
         } else {
-            if (getResultsMap(user).containsKey(info.resourceId())) {
-                getSender().tell(getResultsMap(user).get(info.resourceId()), getSelf());
-            } else {
-                log.error("Invalid query for execution id {}", info.resourceId());
-            }
+            executionList = Optional.ofNullable(getResultsMap(user).get(info.resourceId()))
+                    .map(Lists::newArrayList)
+                    .orElse(Lists.newArrayList());
         }
+        getSender().tell(ResponseExecution.create(executionList), getSelf());
+
     }
 }

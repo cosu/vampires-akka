@@ -27,6 +27,7 @@
 package ro.cosu.vampires.server.rest.services;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -34,6 +35,8 @@ import com.google.inject.TypeLiteral;
 
 import com.typesafe.config.ConfigFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -42,8 +45,9 @@ import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
 import akka.testkit.TestActor;
 import ro.cosu.vampires.server.actors.messages.execution.QueryExecution;
+import ro.cosu.vampires.server.actors.messages.execution.ResponseExecution;
 import ro.cosu.vampires.server.actors.messages.execution.StartExecution;
-import ro.cosu.vampires.server.actors.messages.resource.ShutdownResource;
+import ro.cosu.vampires.server.actors.messages.resource.DeleteExecution;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.jobs.Execution;
@@ -80,22 +84,28 @@ public class ServicesTestModule extends AbstractModule {
                     executionMap.put(startExecution.execution().id(), startExecution.execution());
                 } else if (msg instanceof QueryExecution) {
                     QueryExecution info = (QueryExecution) msg;
-                    if (info.equals(QueryExecution.all(info.user()))) {
-                        sender.tell(executionMap.values(), actorRef);
-                    } else {
-                        Optional.ofNullable(executionMap.get(info.resourceId()))
-                                .ifPresent(execution ->
-                                        sender.tell(executionMap.get(info.resourceId()), actorRef));
-                    }
-                } else if (msg instanceof ShutdownResource) {
-                    Optional<Execution> executionOptional = Optional.ofNullable(executionMap.get(((ShutdownResource) msg).resourceId()));
 
-                    executionOptional.ifPresent(execution -> {
+                    List<Execution> executionList;
+                    if (info.equals(QueryExecution.all(info.user()))) {
+                        executionList = new ArrayList<>(executionMap.values());
+                    } else {
+                        executionList = Optional.ofNullable(executionMap.get(info.resourceId()))
+                                .map(Lists::newArrayList)
+                                .orElse(Lists.newArrayList());
+                    }
+                    sender.tell(ResponseExecution.create(executionList), actorRef);
+
+                } else if (msg instanceof DeleteExecution) {
+                    Optional<Execution> executionOptional = Optional.ofNullable(executionMap.get(((DeleteExecution) msg).resourceId()));
+
+                    ResponseExecution responseExecution = executionOptional.map(execution -> {
                         ExecutionInfo executionInfo = execution.info().updateStatus(ExecutionInfo.Status.CANCELED);
                         execution = execution.withInfo(executionInfo);
                         executionMap.put(execution.id(), execution.withInfo(executionInfo));
-                        sender.tell(execution, actorRef);
-                    });
+                        return ResponseExecution.create(ImmutableList.of(execution));
+                    }).orElse(ResponseExecution.create(ImmutableList.of()));
+
+                    sender.tell(responseExecution, actorRef);
 
                 } else {
                     fail();

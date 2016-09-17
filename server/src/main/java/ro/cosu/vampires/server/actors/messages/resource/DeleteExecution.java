@@ -31,9 +31,9 @@ import com.google.auto.value.AutoValue;
 import ro.cosu.vampires.server.values.User;
 
 @AutoValue
-public abstract class ShutdownResource {
-    public static ShutdownResource create(String resourceId, User user) {
-        return new AutoValue_ShutdownResource(resourceId, user);
+public abstract class DeleteExecution {
+    public static DeleteExecution create(String resourceId, User user) {
+        return new AutoValue_DeleteExecution(resourceId, user);
     }
 
     public abstract String resourceId();

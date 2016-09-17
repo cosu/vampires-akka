@@ -41,8 +41,6 @@ import ro.cosu.vampires.server.actors.messages.workload.CreateWorkload;
 import ro.cosu.vampires.server.actors.messages.workload.DeleteWorkload;
 import ro.cosu.vampires.server.actors.messages.workload.QueryWorkload;
 import ro.cosu.vampires.server.actors.messages.workload.ResponseWorkload;
-import ro.cosu.vampires.server.actors.settings.Settings;
-import ro.cosu.vampires.server.actors.settings.SettingsImpl;
 import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.jobs.Workload;
 
@@ -84,8 +82,10 @@ public class WorkloadsActor extends UntypedActor {
     private void deleteWorkload(DeleteWorkload message) {
         Map<String, Workload> userStore = getUserStore(message.user());
 
-        List<Workload> deleted = message.configurations().stream().filter(userStore::containsKey)
-                .map(userStore::remove).collect(Collectors.toList());
+        List<Workload> deleted = message.configurations().stream()
+                .filter(userStore::containsKey)
+                .map(userStore::remove)
+                .collect(Collectors.toList());
 
         getSender().tell(ResponseWorkload.create(deleted), getSelf());
     }
