@@ -48,7 +48,6 @@ import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Optional;
 
 import javax.ws.rs.ProcessingException;
 
@@ -79,7 +78,7 @@ public class DockerExecutor implements Executor {
 
     private String containerId;
 
-    private Optional<CpuSet> cpuSet;
+    private CpuSet cpuSet;
 
     private void createContainer(String[] command) {
         final String containerName = "vampires-" + new SecureRandom().nextInt(Integer.MAX_VALUE);
@@ -90,10 +89,8 @@ public class DockerExecutor implements Executor {
                 .createContainerCmd(containerImage).withCmd(command)
                 .withName(containerName);
 
-        if (cpuSet.isPresent()) {
-            LOG.debug("docker cpuset {}", cpuSet);
-            createContainerCmd.withCpusetCpus(Joiner.on(",").join(cpuSet.get().getCpuSet()));
-        }
+        LOG.debug("docker cpuset {}", cpuSet);
+        createContainerCmd.withCpusetCpus(Joiner.on(",").join(cpuSet.getCpuSet()));
         CreateContainerResponse container = createContainerCmd.exec();
         containerId = container.getId();
     }
@@ -161,9 +158,7 @@ public class DockerExecutor implements Executor {
                 .stop(stop)
                 .totalCpuCount(cpuAllocator.totalCpuCount());
 
-        if (cpuSet.isPresent()) {
-            builder.cpuSet(cpuSet.get().getCpuSet());
-        }
+        builder.cpuSet(cpuSet.getCpuSet());
         final Trace trace = builder.build();
 
         LOG.debug("Trace: {}", trace);
@@ -191,12 +186,12 @@ public class DockerExecutor implements Executor {
 
     @Override
     public void acquireResources() {
-        cpuSet = cpuAllocator.acquireCpuSet();
+        cpuSet = cpuAllocator.acquireCpuSet().orElseThrow(() -> new RuntimeException("Unable to acquire CPUs"));
     }
 
     @Override
     public void releaseResources() {
-        cpuSet.ifPresent(c -> cpuAllocator.releaseCpuSets(c));
+        cpuAllocator.releaseCpuSets(cpuSet);
     }
 
     @Override
@@ -204,7 +199,7 @@ public class DockerExecutor implements Executor {
         return Type.DOCKER;
     }
 
-    public static class DockerLogResultCallback extends LogContainerResultCallback {
+    private static class DockerLogResultCallback extends LogContainerResultCallback {
         protected final StringBuffer log = new StringBuffer();
 
         @Override

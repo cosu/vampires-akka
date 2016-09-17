@@ -44,7 +44,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 import ro.cosu.vampires.client.allocation.CpuAllocator;
 import ro.cosu.vampires.client.allocation.CpuSet;
@@ -55,7 +54,7 @@ import ro.cosu.vampires.server.values.jobs.metrics.Trace;
 
 public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor {
 
-    public static final int TIMEOUT_IN_MILIS = 600000;
+    private static final int TIMEOUT_IN_MILIS = 600000;
     private static final Logger LOG = LoggerFactory.getLogger(ForkExecutor.class);
     @Inject
     private CpuAllocator cpuAllocator;
@@ -63,14 +62,12 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
     @Inject
     private Executor executor;
 
-    private Optional<CpuSet> cpuSet;
+    private CpuSet cpuSet;
 
     private CommandLine getCommandLine(String command) {
-
-        LOG.debug("cpuset {}", cpuSet);
         String newCommand = command;
-        if (cpuSet.isPresent() && isNumaEnabled()) {
-            final String cpus = Joiner.on(",").join(cpuSet.get().getCpuSet());
+        if (isNumaEnabled()) {
+            final String cpus = Joiner.on(",").join(cpuSet.getCpuSet());
             newCommand = "numactl --physcpubind=" + cpus + " " + command;
         }
 
@@ -111,7 +108,6 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
 
         //TODO take different action for failed commands so we can collect the output (stderr or java exception)
 
-
         LocalDateTime stop = LocalDateTime.now();
 
         long duration = Duration.between(start, stop).toMillis();
@@ -129,12 +125,13 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
 
     @Override
     public void acquireResources() {
-        cpuSet = cpuAllocator.acquireCpuSet();
+        cpuSet = cpuAllocator.acquireCpuSet().orElseThrow(() -> new RuntimeException("Unable to acquire cpus"));
+        LOG.debug("Acquired cpus {}", cpuSet);
     }
 
     @Override
     public void releaseResources() {
-        cpuSet.ifPresent(c -> cpuAllocator.releaseCpuSets(c));
+        cpuAllocator.releaseCpuSets(cpuSet);
     }
 
     @Override
@@ -150,9 +147,7 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
                 .stop(stop)
                 .totalCpuCount(cpuAllocator.totalCpuCount());
 
-        if (cpuSet.isPresent()) {
-            builder.cpuSet(cpuSet.get().getCpuSet());
-        }
+        builder.cpuSet(cpuSet.getCpuSet());
         final Trace trace = builder.build();
 
         LOG.debug("{}", trace);
