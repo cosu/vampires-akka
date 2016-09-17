@@ -40,7 +40,7 @@ public class ConfigurationsController extends AbstractRestController<Configurati
     private final static String path = "/configurations";
 
     ConfigurationsController() {
-        super(Configuration.class, ConfigurationPayload.class, path);
+        super(ConfigurationPayload.class, path);
     }
 
     @Override

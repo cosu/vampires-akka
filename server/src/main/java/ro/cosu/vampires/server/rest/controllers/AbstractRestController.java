@@ -50,15 +50,13 @@ import static java.net.HttpURLConnection.HTTP_NO_CONTENT;
 public abstract class AbstractRestController<T extends Id, P> implements Controller {
 
 
-    private final Class<T> valueType;
     private final Class<P> payloadType;
     private final String path;
 
     @Inject
     private Service<T, P> service;
 
-    AbstractRestController(Class<T> valueType, Class<P> payloadType, String path) {
-        this.valueType = valueType;
+    AbstractRestController(Class<P> payloadType, String path) {
         this.payloadType = payloadType;
         this.path = Paths.get(path).toAbsolutePath().toString();
         loadRoutes();
@@ -103,7 +101,7 @@ public abstract class AbstractRestController<T extends Id, P> implements Control
         return (request, response) -> {
             logRequest("get", request);
             String id = request.params(":id");
-            Optional<T> optional = service.get(id, getUser(request));
+            Optional optional = service.get(id, getUser(request));
             if (optional.isPresent()) {
                 return optional.get();
             } else {

@@ -32,7 +32,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Guice;
-import com.google.inject.Injector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +71,6 @@ public class BootstrapActor extends UntypedActor {
 
 
     private RestModule restModule = new RestModule(getSelf(), settings.getProviders(), settings.vampires.getConfig("rest"));
-    private Injector injector;
 
 
     BootstrapActor(ActorRef terminator) {
@@ -94,7 +92,7 @@ public class BootstrapActor extends UntypedActor {
     private void startWebserver() {
         Spark.port(settings.vampires.getInt("rest.port"));
         Spark.init();
-        injector = Guice.createInjector(restModule);
+        Guice.createInjector(restModule);
     }
 
 

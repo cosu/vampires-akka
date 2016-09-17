@@ -41,7 +41,7 @@ public class ExecutionsController extends AbstractRestController<Execution, Exec
 
 
     ExecutionsController() {
-        super(Execution.class, ExecutionPayload.class, path);
+        super(ExecutionPayload.class, path);
     }
 
     @Override

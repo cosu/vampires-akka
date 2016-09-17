@@ -62,15 +62,15 @@ public class ExceptionMapper {
             this.status = status;
         }
 
-        static JsonResponse badRequest() {
+        private static JsonResponse badRequest() {
             return new JsonResponse(HTTP_BAD_REQUEST);
         }
 
-        static JsonResponse fileNotFound() {
+        private static JsonResponse fileNotFound() {
             return new JsonResponse(HTTP_NOT_FOUND);
         }
 
-        static JsonResponse internalServerError() {
+        private static JsonResponse internalServerError() {
             return new JsonResponse(HTTP_INTERNAL_ERROR);
         }
 

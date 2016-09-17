@@ -39,7 +39,7 @@ public class WorkloadsController extends AbstractRestController<Workload, Worklo
     private static final String path = "/workloads";
 
     WorkloadsController() {
-        super(Workload.class, WorkloadPayload.class, path);
+        super(WorkloadPayload.class, path);
     }
 
     @Override
