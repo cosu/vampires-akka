@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.315s</div>
+<div class="counter">0.301s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,17 +79,17 @@
 </thead>
 <tr>
 <td class="success">testBootstrap</td>
-<td>0.080s</td>
+<td>0.040s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">testStartResourceFail</td>
-<td>0.078s</td>
+<td>0.091s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">testStartStopResource</td>
-<td>0.157s</td>
+<td>0.170s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -97,16 +97,16 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2016-09-17 13:52:41,760 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
-2016-09-17 13:52:41,775 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- logger log1-Slf4jLogger started
-2016-09-17 13:52:41,776 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- Default Loggers started
-2016-09-17 13:52:41,872 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK fail fe6bf384-02e2-42c5-b677-7b44380f5087 = UNKNOWN =&gt; SLEEPING
-2016-09-17 13:52:41,873 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK fail fe6bf384-02e2-42c5-b677-7b44380f5087 = SLEEPING =&gt; STARTING
-2016-09-17 13:52:41,873 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=fail, providerType=MOCK, serverId=, instanceType=fail, id=fe6bf384-02e2-42c5-b677-7b44380f5087, cost=0.0} fe6bf384-02e2-42c5-b677-7b44380f5087
-2016-09-17 13:52:41,873 DEBUG r.c.v.s.resources.mock.MockResource [] []- failed resource
+<pre>2016-09-17 14:16:37,875 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
+2016-09-17 14:16:37,878 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- logger log1-Slf4jLogger started
+2016-09-17 14:16:37,878 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- Default Loggers started
+2016-09-17 14:16:37,977 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK fail 288e31e5-124d-4e4b-b0ff-0addbf36aa7b = UNKNOWN =&gt; SLEEPING
+2016-09-17 14:16:37,977 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK fail 288e31e5-124d-4e4b-b0ff-0addbf36aa7b = SLEEPING =&gt; STARTING
+2016-09-17 14:16:37,977 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=fail, providerType=MOCK, serverId=, instanceType=fail, id=288e31e5-124d-4e4b-b0ff-0addbf36aa7b, cost=0.0} 288e31e5-124d-4e4b-b0ff-0addbf36aa7b
+2016-09-17 14:16:37,977 DEBUG r.c.v.s.resources.mock.MockResource [] []- failed resource
 java.util.concurrent.CompletionException: java.lang.IllegalStateException: fail
 	at ro.cosu.vampires.server.resources.AbstractResource.startCall(AbstractResource.java:62)
-	at ro.cosu.vampires.server.resources.AbstractResource$$Lambda$94/710835245.get(Unknown Source)
+	at ro.cosu.vampires.server.resources.AbstractResource$$Lambda$94/1899346353.get(Unknown Source)
 	at java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:476)
 	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:289)
 	at java.util.concurrent.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:902)
@@ -117,33 +117,33 @@ Caused by: java.lang.IllegalStateException: fail
 	at ro.cosu.vampires.server.resources.mock.MockResource.onStart(MockResource.java:55)
 	at ro.cosu.vampires.server.resources.AbstractResource.startCall(AbstractResource.java:60)
 	... 7 common frames omitted
-2016-09-17 13:52:41,873 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK fail fe6bf384-02e2-42c5-b677-7b44380f5087 = STARTING =&gt; FAILED
-2016-09-17 13:52:41,878 ERROR r.c.v.s.a.resource.ResourceActor [test-akka.actor.default-dispatcher-3] [akka://test/user/$$f/MOCK-fe6bf384-02e2-42c5-b677-7b44380f5087]- got resource info ResourceInfo{parameters=MockResourceParameters{command=fail, providerType=MOCK, serverId=, instanceType=fail, id=fe6bf384-02e2-42c5-b677-7b44380f5087, cost=0.0}, status=FAILED, createdAt=2016-09-17T13:52:41.877}. deactivating actor
-2016-09-17 13:52:41,878 ERROR r.c.v.s.a.resource.ResourceActor [test-akka.actor.default-dispatcher-3] [akka://test/user/$$f/MOCK-fe6bf384-02e2-42c5-b677-7b44380f5087]- actor failed to interact with resource 
-2016-09-17 13:52:41,892 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-3] [akka://test/user/$$f]- resource register ResourceInfo{parameters=MockResourceParameters{command=fail, providerType=MOCK, serverId=, instanceType=fail, id=fe6bf384-02e2-42c5-b677-7b44380f5087, cost=0.0}, status=FAILED, createdAt=2016-09-17T13:52:41.877}
-2016-09-17 13:52:41,892 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK fail fe6bf384-02e2-42c5-b677-7b44380f5087 = FAILED =&gt; STOPPING
-2016-09-17 13:52:41,893 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK fail fe6bf384-02e2-42c5-b677-7b44380f5087 = STOPPING =&gt; STOPPED
-2016-09-17 13:52:41,900 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-3] [akka://test/user/$$f]- terminated Actor[akka://test/user/$$f/MOCK-fe6bf384-02e2-42c5-b677-7b44380f5087#-212469239]
-2016-09-17 13:52:41,909 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-3] [akka://test/user/$$f]- shutting down resource manager
-2016-09-17 13:52:41,950 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 172d820a-4a8e-42d3-83b3-8a56774d4cf2 = UNKNOWN =&gt; SLEEPING
-2016-09-17 13:52:41,954 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 172d820a-4a8e-42d3-83b3-8a56774d4cf2 = SLEEPING =&gt; STARTING
-2016-09-17 13:52:41,954 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=172d820a-4a8e-42d3-83b3-8a56774d4cf2, cost=0.0} 172d820a-4a8e-42d3-83b3-8a56774d4cf2
-2016-09-17 13:52:41,954 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 172d820a-4a8e-42d3-83b3-8a56774d4cf2 = STARTING =&gt; RUNNING
-2016-09-17 13:52:41,961 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$$g]- resource register ResourceInfo{parameters=MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=172d820a-4a8e-42d3-83b3-8a56774d4cf2, cost=0.0}, status=RUNNING, createdAt=2016-09-17T13:52:41.955}
-2016-09-17 13:52:41,994 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo f3d8a9bf-c87e-418c-9645-a16c3dcdd896 = UNKNOWN =&gt; SLEEPING
-2016-09-17 13:52:41,995 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo f3d8a9bf-c87e-418c-9645-a16c3dcdd896 = SLEEPING =&gt; STARTING
-2016-09-17 13:52:41,995 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=f3d8a9bf-c87e-418c-9645-a16c3dcdd896, cost=0.0} f3d8a9bf-c87e-418c-9645-a16c3dcdd896
-2016-09-17 13:52:41,995 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo f3d8a9bf-c87e-418c-9645-a16c3dcdd896 = STARTING =&gt; RUNNING
-2016-09-17 13:52:42,006 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-3] [akka://test/user/$$h]- resource register ResourceInfo{parameters=MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=f3d8a9bf-c87e-418c-9645-a16c3dcdd896, cost=0.0}, status=RUNNING, createdAt=2016-09-17T13:52:41.999}
-2016-09-17 13:52:42,109 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo f3d8a9bf-c87e-418c-9645-a16c3dcdd896 = RUNNING =&gt; CONNECTED
-2016-09-17 13:52:42,109 INFO  r.c.v.s.a.resource.ResourceActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$$h/MOCK-f3d8a9bf-c87e-418c-9645-a16c3dcdd896]- Connected: MOCK foo
-2016-09-17 13:52:42,109 INFO  r.c.v.s.a.r.ResourceManagerActor [Test worker] [akka://test/user/$$h]- clients 1 / resourceActors 1 
-2016-09-17 13:52:42,117 DEBUG r.c.v.s.a.resource.ResourceActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$$h/MOCK-f3d8a9bf-c87e-418c-9645-a16c3dcdd896]- shutdown ro.cosu.vampires.server.actors.resource.ResourceControl$Shutdown@2a105890
-2016-09-17 13:52:42,117 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo f3d8a9bf-c87e-418c-9645-a16c3dcdd896 = CONNECTED =&gt; STOPPING
-2016-09-17 13:52:42,117 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo f3d8a9bf-c87e-418c-9645-a16c3dcdd896 = STOPPING =&gt; STOPPED
-2016-09-17 13:52:42,119 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 172d820a-4a8e-42d3-83b3-8a56774d4cf2 = RUNNING =&gt; STOPPING
-2016-09-17 13:52:42,119 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 172d820a-4a8e-42d3-83b3-8a56774d4cf2 = STOPPING =&gt; STOPPED
-2016-09-17 13:52:42,124 DEBUG akka.event.EventStream [test-akka.actor.default-dispatcher-4] [EventStream]- shutting down: StandardOutLogger started
+2016-09-17 14:16:37,977 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK fail 288e31e5-124d-4e4b-b0ff-0addbf36aa7b = STARTING =&gt; FAILED
+2016-09-17 14:16:37,980 ERROR r.c.v.s.a.resource.ResourceActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$$f/MOCK-288e31e5-124d-4e4b-b0ff-0addbf36aa7b]- got resource info ResourceInfo{parameters=MockResourceParameters{command=fail, providerType=MOCK, serverId=, instanceType=fail, id=288e31e5-124d-4e4b-b0ff-0addbf36aa7b, cost=0.0}, status=FAILED, createdAt=2016-09-17T14:16:37.980}. deactivating actor
+2016-09-17 14:16:37,981 ERROR r.c.v.s.a.resource.ResourceActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$$f/MOCK-288e31e5-124d-4e4b-b0ff-0addbf36aa7b]- actor failed to interact with resource 
+2016-09-17 14:16:37,983 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$$f]- resource register ResourceInfo{parameters=MockResourceParameters{command=fail, providerType=MOCK, serverId=, instanceType=fail, id=288e31e5-124d-4e4b-b0ff-0addbf36aa7b, cost=0.0}, status=FAILED, createdAt=2016-09-17T14:16:37.981}
+2016-09-17 14:16:37,983 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK fail 288e31e5-124d-4e4b-b0ff-0addbf36aa7b = FAILED =&gt; STOPPING
+2016-09-17 14:16:37,983 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK fail 288e31e5-124d-4e4b-b0ff-0addbf36aa7b = STOPPING =&gt; STOPPED
+2016-09-17 14:16:37,984 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$$f]- terminated Actor[akka://test/user/$$f/MOCK-288e31e5-124d-4e4b-b0ff-0addbf36aa7b#72289589]
+2016-09-17 14:16:37,986 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$$f]- shutting down resource manager
+2016-09-17 14:16:38,043 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 05107c12-2b49-4895-9cc4-a60ef70e728d = UNKNOWN =&gt; SLEEPING
+2016-09-17 14:16:38,043 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 05107c12-2b49-4895-9cc4-a60ef70e728d = SLEEPING =&gt; STARTING
+2016-09-17 14:16:38,043 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=05107c12-2b49-4895-9cc4-a60ef70e728d, cost=0.0} 05107c12-2b49-4895-9cc4-a60ef70e728d
+2016-09-17 14:16:38,043 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 05107c12-2b49-4895-9cc4-a60ef70e728d = STARTING =&gt; RUNNING
+2016-09-17 14:16:38,048 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-4] [akka://test/user/$$g]- resource register ResourceInfo{parameters=MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=05107c12-2b49-4895-9cc4-a60ef70e728d, cost=0.0}, status=RUNNING, createdAt=2016-09-17T14:16:38.044}
+2016-09-17 14:16:38,073 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo c21afa80-f71d-46d2-89ba-a9cf00d7a1b5 = UNKNOWN =&gt; SLEEPING
+2016-09-17 14:16:38,073 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo c21afa80-f71d-46d2-89ba-a9cf00d7a1b5 = SLEEPING =&gt; STARTING
+2016-09-17 14:16:38,073 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=c21afa80-f71d-46d2-89ba-a9cf00d7a1b5, cost=0.0} c21afa80-f71d-46d2-89ba-a9cf00d7a1b5
+2016-09-17 14:16:38,073 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo c21afa80-f71d-46d2-89ba-a9cf00d7a1b5 = STARTING =&gt; RUNNING
+2016-09-17 14:16:38,080 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$$h]- resource register ResourceInfo{parameters=MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=c21afa80-f71d-46d2-89ba-a9cf00d7a1b5, cost=0.0}, status=RUNNING, createdAt=2016-09-17T14:16:38.074}
+2016-09-17 14:16:38,200 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo c21afa80-f71d-46d2-89ba-a9cf00d7a1b5 = RUNNING =&gt; CONNECTED
+2016-09-17 14:16:38,201 INFO  r.c.v.s.a.resource.ResourceActor [test-akka.actor.default-dispatcher-4] [akka://test/user/$$h/MOCK-c21afa80-f71d-46d2-89ba-a9cf00d7a1b5]- Connected: MOCK foo
+2016-09-17 14:16:38,203 INFO  r.c.v.s.a.r.ResourceManagerActor [Test worker] [akka://test/user/$$h]- clients 1 / resourceActors 1 
+2016-09-17 14:16:38,211 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo c21afa80-f71d-46d2-89ba-a9cf00d7a1b5 = CONNECTED =&gt; STOPPING
+2016-09-17 14:16:38,211 DEBUG r.c.v.s.a.resource.ResourceActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$$h/MOCK-c21afa80-f71d-46d2-89ba-a9cf00d7a1b5]- shutdown ro.cosu.vampires.server.actors.resource.ResourceControl$Shutdown@3d656546
+2016-09-17 14:16:38,211 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo c21afa80-f71d-46d2-89ba-a9cf00d7a1b5 = STOPPING =&gt; STOPPED
+2016-09-17 14:16:38,215 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 05107c12-2b49-4895-9cc4-a60ef70e728d = RUNNING =&gt; STOPPING
+2016-09-17 14:16:38,215 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 05107c12-2b49-4895-9cc4-a60ef70e728d = STOPPING =&gt; STOPPED
+2016-09-17 14:16:38,217 DEBUG akka.event.EventStream [test-akka.actor.default-dispatcher-4] [EventStream]- shutting down: StandardOutLogger started
 </pre>
 </span>
 </div>
@@ -155,7 +155,7 @@ Caused by: java.lang.IllegalStateException: fail
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 3.0</a> at Sep 17, 2016 1:52:50 PM</p>
+<a href="http://www.gradle.org">Gradle 3.0</a> at Sep 17, 2016 2:16:46 PM</p>
 </div>
 </div>
 </body>
