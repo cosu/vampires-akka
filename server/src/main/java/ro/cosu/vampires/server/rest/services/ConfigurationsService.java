@@ -31,9 +31,6 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.TypeLiteral;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -49,7 +46,6 @@ import ro.cosu.vampires.server.values.resources.ConfigurationPayload;
 
 public class ConfigurationsService implements Service<Configuration, ConfigurationPayload> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationsService.class);
     @Inject
     private ActorRef actorRef;
 

@@ -37,15 +37,14 @@ import com.typesafe.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import ro.cosu.vampires.server.values.ClientInfo;
 import ro.cosu.vampires.server.values.jobs.Job;
@@ -62,9 +61,8 @@ public class JsonResultsWriter implements ResultsWriter {
     public JsonResultsWriter(Config config) {
         Preconditions.checkArgument(config.hasPath("writers.json.dir"), "missing  config key writers.json.dir");
         uploadDirName = config.getString("writers.json.dir");
-        Paths.get(uploadDirName).toFile().mkdir();
-        Preconditions.checkArgument(Paths.get(config.getString("writers.json.dir")).toFile().canWrite(), "output dir " +
-                "does not exist");
+        boolean created = Paths.get(uploadDirName).toFile().mkdir();
+        Preconditions.checkArgument(created, "could not create upload dir");
     }
 
     private Path getPath(String prefix) {
@@ -90,33 +88,20 @@ public class JsonResultsWriter implements ResultsWriter {
     }
 
     public void close() {
-        Writer fileWriter = null;
         //write results to disk
-        try {
-
-            GsonBuilder gsonBuilder = new GsonBuilder()
-                    .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer());
-
-            Gson gson = gsonBuilder.setPrettyPrinting().create();
-            Gson uglyGson = gsonBuilder.create();
+        try (BufferedWriter fileWriter = Files.newWriter(getPath("results-all").toFile(), Charsets.UTF_8)) {
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
+                    .setPrettyPrinting()
+                    .create();
 
             AllResults allResults = AllResults.builder().results(results).clients(clients).build();
-            String collect = results.stream().map(uglyGson::toJson).collect(Collectors.joining("\n"));
 
-            fileWriter = Files.newWriter(getPath("results-all").toFile(), Charsets.UTF_8);
             gson.toJson(allResults, fileWriter);
             fileWriter.close();
             LOG.info("wrote results to {}", getPath("results-all").toAbsolutePath());
-
         } catch (IOException e) {
             LOG.error("Error writing results to file", e);
-        } finally {
-            try {
-                if (fileWriter != null)
-                    fileWriter.close();
-            } catch (IOException e) {
-                LOG.error("Can not close writer", e);
-            }
         }
     }
 

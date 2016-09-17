@@ -31,18 +31,13 @@ import com.google.inject.Inject;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.stream.IntStream;
 
 import oshi.hardware.CentralProcessor;
 
 import static com.codahale.metrics.MetricRegistry.name;
 
-public class CpuSource implements Source {
-
-    private static final Logger LOG = LoggerFactory.getLogger(NetworkSource.class);
+class CpuSource implements Source {
 
     private final static String NAME = "cpu";
 

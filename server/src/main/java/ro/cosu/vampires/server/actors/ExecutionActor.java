@@ -38,8 +38,6 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.Terminated;
 import akka.actor.UntypedActor;
-import akka.event.Logging;
-import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.QueryStats;
 import ro.cosu.vampires.server.actors.messages.resource.BootstrapResource;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
@@ -50,13 +48,11 @@ import ro.cosu.vampires.server.values.jobs.Execution;
 import ro.cosu.vampires.server.values.jobs.Job;
 import ro.cosu.vampires.server.values.resources.ResourceDemand;
 
-public class ExecutionActor extends UntypedActor {
+class ExecutionActor extends UntypedActor {
 
     private Set<ActorRef> watchees = Sets.newLinkedHashSet();
     private ActorRef resourceManagerActor;
     private ActorRef resultActor;
-    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
-
 
     public ExecutionActor(Execution execution) {
         startExecution(execution);
