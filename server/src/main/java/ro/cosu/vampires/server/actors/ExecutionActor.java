@@ -53,6 +53,7 @@ class ExecutionActor extends UntypedActor {
     private Set<ActorRef> watchees = Sets.newLinkedHashSet();
     private ActorRef resourceManagerActor;
     private ActorRef resultActor;
+    private boolean successful = false;
 
     public ExecutionActor(Execution execution) {
         startExecution(execution);
@@ -103,9 +104,11 @@ class ExecutionActor extends UntypedActor {
             getContext().parent().forward(message, getContext());
         } else if (message instanceof Terminated) {
             if (getSender().equals(resultActor)) {
+                successful = true;
                 getContext().stop(getSelf());
             }
-            if (getSender().equals(resourceManagerActor)) {
+            
+            if (getSender().equals(resourceManagerActor) && !successful) {
                 resultActor.tell(ResourceControl.Fail.create(), getContext().parent());
             }
         } else if (message instanceof QueryStats) {

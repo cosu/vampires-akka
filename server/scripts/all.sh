@@ -15,7 +15,7 @@ ${curl} --request POST \
     {
         \"resource_description\":
         {
-            \"provider\": \"ssh\",
+            \"provider\": \"local\",
             \"type\": \"local\"
         },
         \"count\": \"1\"
