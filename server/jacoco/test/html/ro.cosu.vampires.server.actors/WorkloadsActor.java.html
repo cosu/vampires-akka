@@ -75,32 +75,33 @@ import ro.cosu.vampires.server.values.jobs.Workload;
     private void createWorkload(CreateWorkload message) {
 <span class="fc" id="L76">        Workload workload = message.workload();</span>
 <span class="fc" id="L77">        getUserStore(message.user()).put(workload.id(), workload);</span>
-<span class="fc" id="L78">        getSender().tell(workload, getSelf());</span>
-<span class="fc" id="L79">    }</span>
+<span class="fc" id="L78">        log.debug(&quot;Created workload {}&quot;, workload);</span>
+<span class="fc" id="L79">        getSender().tell(workload, getSelf());</span>
+<span class="fc" id="L80">    }</span>
 
     private void deleteWorkload(DeleteWorkload message) {
-<span class="fc" id="L82">        Map&lt;String, Workload&gt; userStore = getUserStore(message.user());</span>
+<span class="fc" id="L83">        Map&lt;String, Workload&gt; userStore = getUserStore(message.user());</span>
 
-<span class="fc" id="L84">        List&lt;Workload&gt; deleted = message.configurations().stream()</span>
-<span class="fc" id="L85">                .filter(userStore::containsKey)</span>
-<span class="fc" id="L86">                .map(userStore::remove)</span>
-<span class="fc" id="L87">                .collect(Collectors.toList());</span>
+<span class="fc" id="L85">        List&lt;Workload&gt; deleted = message.configurations().stream()</span>
+<span class="fc" id="L86">                .filter(userStore::containsKey)</span>
+<span class="fc" id="L87">                .map(userStore::remove)</span>
+<span class="fc" id="L88">                .collect(Collectors.toList());</span>
 
-<span class="fc" id="L89">        getSender().tell(ResponseWorkload.create(deleted), getSelf());</span>
-<span class="fc" id="L90">    }</span>
+<span class="fc" id="L90">        getSender().tell(ResponseWorkload.create(deleted), getSelf());</span>
+<span class="fc" id="L91">    }</span>
 
     private void sendResponse(QueryWorkload message) {
-<span class="fc" id="L93">        Map&lt;String, Workload&gt; userStore = getUserStore(message.user());</span>
+<span class="fc" id="L94">        Map&lt;String, Workload&gt; userStore = getUserStore(message.user());</span>
 
         List&lt;Workload&gt; workloads;
-<span class="fc bfc" id="L96" title="All 2 branches covered.">        if (message.resources().isEmpty())</span>
-<span class="fc" id="L97">            workloads = ImmutableList.copyOf(userStore.values());</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        if (message.resources().isEmpty())</span>
+<span class="fc" id="L98">            workloads = ImmutableList.copyOf(userStore.values());</span>
         else
-<span class="fc" id="L99">            workloads = message.resources().stream().filter(userStore::containsKey)</span>
-<span class="fc" id="L100">                    .map(userStore::get).collect(Collectors.toList());</span>
+<span class="fc" id="L100">            workloads = message.resources().stream().filter(userStore::containsKey)</span>
+<span class="fc" id="L101">                    .map(userStore::get).collect(Collectors.toList());</span>
 
-<span class="fc" id="L102">        ResponseWorkload responseWorkload = ResponseWorkload.create(workloads);</span>
-<span class="fc" id="L103">        getSender().tell(responseWorkload, getSelf());</span>
-<span class="fc" id="L104">    }</span>
+<span class="fc" id="L103">        ResponseWorkload responseWorkload = ResponseWorkload.create(workloads);</span>
+<span class="fc" id="L104">        getSender().tell(responseWorkload, getSelf());</span>
+<span class="fc" id="L105">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

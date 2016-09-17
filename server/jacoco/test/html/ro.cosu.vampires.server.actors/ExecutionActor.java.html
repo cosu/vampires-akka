@@ -105,12 +105,15 @@ class ExecutionActor extends UntypedActor {
 <span class="pc bpc" id="L105" title="1 of 2 branches missed.">            if (getSender().equals(resultActor)) {</span>
 <span class="fc" id="L106">                getContext().stop(getSelf());</span>
             }
-<span class="nc bnc" id="L108" title="All 2 branches missed.">        } else if (message instanceof QueryStats) {</span>
-<span class="nc" id="L109">            resultActor.forward(message, getContext());</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">            if (getSender().equals(resourceManagerActor)) {</span>
+<span class="nc" id="L109">                resultActor.tell(ResourceControl.Fail.create(), getContext().parent());</span>
+            }
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        } else if (message instanceof QueryStats) {</span>
+<span class="nc" id="L112">            resultActor.forward(message, getContext());</span>
         } else {
-<span class="nc" id="L111">            unhandled(message);</span>
+<span class="nc" id="L114">            unhandled(message);</span>
         }
-<span class="fc" id="L113">    }</span>
+<span class="fc" id="L116">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

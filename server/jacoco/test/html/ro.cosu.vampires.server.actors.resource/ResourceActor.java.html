@@ -79,89 +79,94 @@ public class ResourceActor extends UntypedActorWithStash {
     public void onReceive(Object message) throws Exception {
 <span class="fc" id="L80">        ActorRef sender = getSender();</span>
 <span class="fc bfc" id="L81" title="All 2 branches covered.">        if (message instanceof CreateResource) {</span>
-<span class="fc" id="L82">            CreateResource create = (CreateResource) message;</span>
-<span class="fc" id="L83">            createResource(create, sender);</span>
-<span class="pc bpc" id="L84" title="1 of 2 branches missed.">        } else if (message instanceof QueryResource) {</span>
-<span class="nc" id="L85">            sendResourceInfo(sender);</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">        } else if (message instanceof ResourceInfo) {</span>
-<span class="fc" id="L87">            ResourceInfo resourceInfo = (ResourceInfo) message;</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">            if (Resource.Status.RUNNING.equals(resourceInfo.status())) {</span>
-<span class="fc" id="L89">                activate();</span>
-            } else {
-<span class="fc" id="L91">                log.error(&quot;got resource info {}. deactivating actor&quot;, resourceInfo);</span>
-<span class="fc" id="L92">                fail();</span>
-            }
-<span class="fc" id="L94">        } else {</span>
-<span class="fc" id="L95">            log.debug(&quot;stash {}&quot;, message);</span>
-<span class="fc" id="L96">            stash();</span>
+<span class="fc" id="L82">            createResource((CreateResource) message, sender);</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        } else if (message instanceof QueryResource) {</span>
+<span class="nc" id="L84">            sendResourceInfo(sender);</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        } else if (message instanceof ResourceInfo) {</span>
+<span class="fc" id="L86">            handleResourceInfo((ResourceInfo) message);</span>
+        } else {
+<span class="fc" id="L88">            log.debug(&quot;stash {}&quot;, message);</span>
+<span class="fc" id="L89">            stash();</span>
         }
-<span class="fc" id="L98">    }</span>
+<span class="fc" id="L91">    }</span>
+
+    private void handleResourceInfo(ResourceInfo message) {
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        if (Resource.Status.RUNNING.equals(message.status())) {</span>
+<span class="fc" id="L95">            activate();</span>
+        } else {
+<span class="fc" id="L97">            log.error(&quot;got resource info {}. deactivating actor&quot;, message);</span>
+<span class="fc" id="L98">            fail();</span>
+        }
+<span class="fc" id="L100">    }</span>
 
     private void createResource(CreateResource createResource, ActorRef sender) {
-<span class="pc bpc" id="L101" title="3 of 4 branches missed.">        if (resource != null &amp;&amp; !resource.status().equals(Resource.Status.SLEEPING)) {</span>
-<span class="nc" id="L102">            log.warning(&quot;Attempting to start an already started resource. doing nothing&quot;);</span>
-<span class="nc" id="L103">            return;</span>
+<span class="pc bpc" id="L103" title="3 of 4 branches missed.">        if (resource != null &amp;&amp; !resource.status().equals(Resource.Status.SLEEPING)) {</span>
+<span class="nc" id="L104">            log.warning(&quot;Attempting to start an already started resource. doing nothing&quot;);</span>
+<span class="nc" id="L105">            return;</span>
         }
+<span class="fc" id="L107">        parameters = createResource.parameters();</span>
 
-<span class="fc" id="L106">        parameters = createResource.parameters();</span>
+<span class="fc" id="L109">        Optional&lt;Resource&gt; resourceOptional = resourceProvider.create(parameters);</span>
 
-<span class="fc" id="L108">        Optional&lt;Resource&gt; resourceOptional = resourceProvider.create(parameters);</span>
-
-<span class="pc bpc" id="L110" title="1 of 2 branches missed.">        if (resourceOptional.isPresent()) {</span>
-<span class="fc" id="L111">            this.resource = resourceOptional.get();</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">        if (resourceOptional.isPresent()) {</span>
+<span class="fc" id="L112">            this.resource = resourceOptional.get();</span>
             // do it async because activate needs a context
             // which is not available after the future completes
-<span class="fc" id="L114">            this.resource.start().thenAccept(started -&gt; {</span>
-<span class="fc" id="L115">                sendResourceInfo(sender);</span>
-<span class="fc" id="L116">                sendResourceInfo(getSelf());</span>
-<span class="fc" id="L117">            });</span>
+<span class="fc" id="L115">            this.resource.start().thenAccept(started -&gt; {</span>
+<span class="fc" id="L116">                sendResourceInfo(sender);</span>
+<span class="fc" id="L117">                sendResourceInfo(getSelf());</span>
+<span class="fc" id="L118">            }).exceptionally(e -&gt; {</span>
+<span class="nc" id="L119">                sendResourceInfo(sender);</span>
+<span class="nc" id="L120">                sendResourceInfo(getSelf());</span>
+<span class="nc" id="L121">                return null;</span>
+            });
         } else {
-<span class="nc" id="L119">            getSelf().tell(Resource.Status.FAILED, sender);</span>
+<span class="nc" id="L124">            getSelf().tell(Resource.Status.FAILED, sender);</span>
         }
-<span class="fc" id="L121">    }</span>
+<span class="fc" id="L126">    }</span>
 
     private Void fail() {
-<span class="fc" id="L124">        log.error(&quot;actor failed to interact with resource &quot;);</span>
-<span class="fc" id="L125">        sendInfoToParent();</span>
-<span class="fc" id="L126">        getContext().stop(getSelf());</span>
-<span class="fc" id="L127">        return null;</span>
+<span class="fc" id="L129">        log.error(&quot;actor failed to interact with resource &quot;);</span>
+<span class="fc" id="L130">        sendInfoToParent();</span>
+<span class="fc" id="L131">        getContext().stop(getSelf());</span>
+<span class="fc" id="L132">        return null;</span>
     }
 
     private void sendInfoToParent() {
-<span class="fc" id="L131">        sendResourceInfo(getContext().parent());</span>
-<span class="fc" id="L132">    }</span>
+<span class="fc" id="L136">        sendResourceInfo(getContext().parent());</span>
+<span class="fc" id="L137">    }</span>
 
     private void activate() {
-<span class="fc" id="L135">        sendInfoToParent();</span>
-<span class="fc" id="L136">        unstashAll();</span>
-<span class="fc" id="L137">        getContext().become(active);</span>
-<span class="fc" id="L138">    }</span>
+<span class="fc" id="L140">        sendInfoToParent();</span>
+<span class="fc" id="L141">        unstashAll();</span>
+<span class="fc" id="L142">        getContext().become(active);</span>
+<span class="fc" id="L143">    }</span>
 
     @Override
     public void postStop() {
-<span class="pc bpc" id="L142" title="1 of 2 branches missed.">        if (resource != null)</span>
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">        if (resource != null)</span>
             try {
-<span class="fc" id="L144">                resource.stop().get();</span>
-<span class="nc" id="L145">            } catch (InterruptedException | ExecutionException e) {</span>
-<span class="nc" id="L146">                log.error(e, &quot;failed to stop resource&quot;);</span>
-<span class="fc" id="L147">            }</span>
-<span class="fc" id="L148">    }</span>
+<span class="fc" id="L149">                resource.stop().get();</span>
+<span class="nc" id="L150">            } catch (InterruptedException | ExecutionException e) {</span>
+<span class="nc" id="L151">                log.error(e, &quot;failed to stop resource&quot;);</span>
+<span class="fc" id="L152">            }</span>
+<span class="fc" id="L153">    }</span>
 
     private void connectClient(ClientInfo clientInfo) {
-<span class="pc bpc" id="L151" title="1 of 2 branches missed.">        if (clientInfo.id().equals(resource.parameters().id())) {</span>
-<span class="fc" id="L152">            resource.connected();</span>
-<span class="fc" id="L153">            log.info(&quot;Connected: {} {}&quot;, resource.info().parameters().providerType(), resource.info().parameters().instanceType());</span>
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">        if (clientInfo.id().equals(resource.parameters().id())) {</span>
+<span class="fc" id="L157">            resource.connected();</span>
+<span class="fc" id="L158">            log.info(&quot;Connected: {} {}&quot;, resource.info().parameters().providerType(), resource.info().parameters().instanceType());</span>
         } else {
-<span class="nc" id="L155">            log.error(&quot;client info and resource info don't match {}, {}&quot;, clientInfo, resource.info());</span>
+<span class="nc" id="L160">            log.error(&quot;client info and resource info don't match {}, {}&quot;, clientInfo, resource.info());</span>
         }
-<span class="fc" id="L157">    }</span>
+<span class="fc" id="L162">    }</span>
 
     private void sendResourceInfo(ActorRef toActor) {
-<span class="fc" id="L160">        ResourceInfo info = Optional.ofNullable(this.resource)</span>
-<span class="fc" id="L161">                .map(Resource::info)</span>
-<span class="fc" id="L162">                .orElse(ResourceInfo.failed(parameters));</span>
-<span class="fc" id="L163">        toActor.tell(info, getSelf());</span>
-<span class="fc" id="L164">    }</span>
+<span class="fc" id="L165">        ResourceInfo info = Optional.ofNullable(this.resource)</span>
+<span class="fc" id="L166">                .map(Resource::info)</span>
+<span class="fc" id="L167">                .orElse(ResourceInfo.failed(parameters));</span>
+<span class="fc" id="L168">        toActor.tell(info, getSelf());</span>
+<span class="fc" id="L169">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

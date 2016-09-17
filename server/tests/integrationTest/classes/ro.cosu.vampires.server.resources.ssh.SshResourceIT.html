@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.101s</div>
+<div class="counter">0.760s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,7 +79,7 @@
 </thead>
 <tr>
 <td class="success">testSshResoure</td>
-<td>0.101s</td>
+<td>0.760s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -87,10 +87,22 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2016-09-17 17:08:20,322 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 5e292c51-9f26-494f-89de-e4dc4a412a9f = STOPPING =&gt; STOPPED
-2016-09-17 17:08:20,327 DEBUG a.s.Serialization(akka://ServerSystem) [ServerSystem-akka.remote.default-remote-dispatcher-6] [akka.serialization.Serialization(akka://ServerSystem)]- Using serializer[akka.serialization.JavaSerializer] for message [akka.dispatch.sysmsg.DeathWatchNotification]
-2016-09-17 17:08:20,327 INFO  r.c.v.server.actors.BootstrapActor [ServerSystem-akka.actor.default-dispatcher-17] [akka://ServerSystem/user/bootstrap]- 4cd1f79d-c388-4d09-b980-51657fa4f7a9 terminated 
-2016-09-17 17:08:20,378 DEBUG r.c.v.s.resources.ssh.SshResource [] []- SSH local f14231ed-cb3d-40ff-ae50-aabe1e857fae = UNKNOWN =&gt; SLEEPING
+<pre>2016-09-17 21:10:26,209 DEBUG r.c.v.s.r.c.FilesController [] []- Upload dir /tmp/vampires
+2016-09-17 21:10:26,219 DEBUG spark.route.Routes [] []- Adds route: post, /upload, spark.ResponseTransformerRouteImpl$1@13920ce2
+2016-09-17 21:10:26,238 DEBUG spark.route.Routes [] []- Adds route: get, /upload, spark.ResponseTransformerRouteImpl$1@71fbeba5
+2016-09-17 21:10:26,238 DEBUG spark.route.Routes [] []- Adds route: get, /upload/:id, spark.RouteImpl$1@52b2d5d
+2016-09-17 21:10:26,240 DEBUG spark.route.Routes [] []- Adds route: delete, /upload/:id, spark.ResponseTransformerRouteImpl$1@a4b1243
+2016-09-17 21:10:26,249 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@5eb521fc
+2016-09-17 21:10:26,253 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
+2016-09-17 21:10:26,282 DEBUG r.c.v.server.actors.WorkloadsActor [ServerSystem-akka.actor.default-dispatcher-3] [akka://ServerSystem/user/bootstrap/workloads]- Created workload Workload{id=f9ac264e-41c2-41be-afd5-6c230b0e943f, createdAt=2016-09-17T21:10:23.815, updatedAt=2016-09-17T21:10:23.815, sequenceStart=0, sequenceStop=5, task=sleep 1, format=%s, url=, file=, description=}
+2016-09-17 21:10:26,293 INFO  a.r.RemoteActorRefProvider$RemoteDeadLetterActorRef [ServerSystem-akka.actor.default-dispatcher-3] [akka://ServerSystem/deadLetters]- Message [ro.cosu.vampires.server.actors.messages.execution.AutoValue_ResponseExecution] from Actor[akka://ServerSystem/user/bootstrap#1814431013] to Actor[akka://ServerSystem/deadLetters] was not delivered. [1] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-17 21:10:26,295 INFO  a.r.RemoteActorRefProvider$RemoteDeadLetterActorRef [ServerSystem-akka.actor.default-dispatcher-3] [akka://ServerSystem/deadLetters]- Message [ro.cosu.vampires.server.values.jobs.AutoValue_Workload] from Actor[akka://ServerSystem/user/bootstrap/workloads#1888232096] to Actor[akka://ServerSystem/deadLetters] was not delivered. [2] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-17 21:10:26,295 DEBUG r.c.v.s.actors.ConfigurationsActor [ServerSystem-akka.actor.default-dispatcher-5] [akka://ServerSystem/user/bootstrap/configurations]- Created configuration Configuration{id=0a540610-d62d-4224-9eb2-68169819d69e, createdAt=2016-09-17T21:10:23.681, updatedAt=2016-09-17T21:10:23.681, description=integration testt, cost=1.0, resources=[ResourceDemand{resourceDescription=ResourceDescription{type=local, provider=LOCAL, cost=0.0, id=d278e656-1abf-3f00-8cee-bddc84d0445b, createdAt=2016-09-17T21:10:23.603, updatedAt=2016-09-17T21:10:23.604}, count=1}]}
+2016-09-17 21:10:26,333 INFO  a.r.RemoteActorRefProvider$RemoteDeadLetterActorRef [ServerSystem-akka.actor.default-dispatcher-15] [akka://ServerSystem/deadLetters]- Message [ro.cosu.vampires.server.values.resources.AutoValue_Configuration] from Actor[akka://ServerSystem/user/bootstrap/configurations#2037929808] to Actor[akka://ServerSystem/deadLetters] was not delivered. [3] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-17 21:10:26,752 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
+2016-09-17 21:10:26,753 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
+2016-09-17 21:10:26,793 INFO  r.c.v.server.actors.ResultActor [ServerSystem-akka.actor.default-dispatcher-2] [akka://ServerSystem/user/bootstrap/1f743c0c-866f-4815-a4b8-198de1b655de/resultActor]- results so far: 0/6
+2016-09-17 21:10:26,844 DEBUG r.c.v.s.resources.ssh.SshResource [] []- SSH local d6197862-f111-4c6d-a495-da66cb7df2be = UNKNOWN =&gt; SLEEPING
 </pre>
 </span>
 </div>
@@ -102,7 +114,7 @@
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 3.0</a> at Sep 17, 2016 5:08:20 PM</p>
+<a href="http://www.gradle.org">Gradle 3.0</a> at Sep 17, 2016 9:10:27 PM</p>
 </div>
 </div>
 </body>

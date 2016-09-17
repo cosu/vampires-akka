@@ -26,96 +26,101 @@
 
 package ro.cosu.vampires.server.resources;
 
+import com.google.common.collect.Sets;
+
 import org.slf4j.Logger;
 
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 public abstract class AbstractResource implements Resource {
 
     private final Parameters parameters;
-<span class="fc" id="L37">    private Resource.Status status = Status.UNKNOWN;</span>
+<span class="fc" id="L40">    private Resource.Status status = Status.UNKNOWN;</span>
 
-<span class="fc" id="L39">    public AbstractResource(Resource.Parameters parameters) {</span>
-<span class="fc" id="L40">        this.parameters = parameters;</span>
-<span class="fc" id="L41">        setStatus(Status.SLEEPING);</span>
-<span class="fc" id="L42">    }</span>
+<span class="fc" id="L42">    public AbstractResource(Resource.Parameters parameters) {</span>
+<span class="fc" id="L43">        this.parameters = parameters;</span>
+<span class="fc" id="L44">        setStatus(Status.SLEEPING);</span>
+<span class="fc" id="L45">    }</span>
 
     protected abstract Logger getLogger();
 
     public CompletableFuture&lt;Resource&gt; start() {
-<span class="fc" id="L47">        return CompletableFuture.supplyAsync(this::startCall)</span>
-<span class="fc" id="L48">                .exceptionally(this::fail);</span>
+<span class="fc" id="L50">        return CompletableFuture.supplyAsync(this::startCall)</span>
+<span class="fc" id="L51">                .exceptionally(this::fail);</span>
     }
 
     public CompletableFuture&lt;Resource&gt; stop() {
-<span class="fc" id="L52">        return CompletableFuture.supplyAsync(this::stopCall)</span>
-<span class="fc" id="L53">                .exceptionally(this::fail);</span>
+<span class="fc" id="L55">        return CompletableFuture.supplyAsync(this::stopCall)</span>
+<span class="fc" id="L56">                .exceptionally(this::fail);</span>
 
     }
 
     public Resource startCall() {
-<span class="fc" id="L58">        setStatus(Status.STARTING);</span>
+<span class="fc" id="L61">        setStatus(Status.STARTING);</span>
         try {
-<span class="fc" id="L60">            this.onStart();</span>
-<span class="fc" id="L61">        } catch (Exception e) {</span>
-<span class="fc" id="L62">            throw new CompletionException(e);</span>
-<span class="fc" id="L63">        }</span>
-<span class="fc" id="L64">        setStatus(Status.RUNNING);</span>
-<span class="fc" id="L65">        return this;</span>
+<span class="fc" id="L63">            this.onStart();</span>
+<span class="fc" id="L64">        } catch (Exception e) {</span>
+<span class="fc" id="L65">            throw new CompletionException(e);</span>
+<span class="fc" id="L66">        }</span>
+<span class="fc" id="L67">        setStatus(Status.RUNNING);</span>
+<span class="fc" id="L68">        return this;</span>
     }
 
     public Resource fail(Throwable ex) {
-<span class="fc" id="L69">        getLogger().debug(&quot;failed resource&quot;, ex);</span>
+<span class="fc" id="L72">        getLogger().debug(&quot;failed resource&quot;, ex);</span>
         try {
-<span class="fc" id="L71">            this.onFail();</span>
-<span class="nc" id="L72">        } catch (Exception e) {</span>
-<span class="nc" id="L73">            throw new CompletionException(e);</span>
+<span class="fc" id="L74">            this.onFail();</span>
+<span class="nc" id="L75">        } catch (Exception e) {</span>
+<span class="nc" id="L76">            throw new CompletionException(e);</span>
         } finally {
-<span class="pc" id="L75">            setStatus(Status.FAILED);</span>
-<span class="fc" id="L76">        }</span>
-<span class="fc" id="L77">        return this;</span>
+<span class="pc" id="L78">            setStatus(Status.FAILED);</span>
+<span class="fc" id="L79">        }</span>
+<span class="fc" id="L80">        return this;</span>
     }
 
     public Resource stopCall() {
-<span class="pc bpc" id="L81" title="1 of 4 branches missed.">        if (status.equals(Status.STOPPED) || status.equals(Status.STOPPING))</span>
-<span class="fc" id="L82">            return this;</span>
-<span class="fc" id="L83">        setStatus(Status.STOPPING);</span>
+<span class="fc" id="L84">        Set&lt;Status&gt; invalidStatus = Sets.immutableEnumSet(Status.STOPPED,</span>
+                Status.FAILED, Status.STOPPING, Status.UNKNOWN);
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        if (invalidStatus.contains(status))</span>
+<span class="fc" id="L87">            return this;</span>
+<span class="fc" id="L88">        setStatus(Status.STOPPING);</span>
         try {
-<span class="fc" id="L85">            this.onStop();</span>
-<span class="nc" id="L86">        } catch (Exception e) {</span>
-<span class="nc" id="L87">            throw new CompletionException(e);</span>
-<span class="fc" id="L88">        }</span>
-<span class="fc" id="L89">        setStatus(Status.STOPPED);</span>
-<span class="fc" id="L90">        return this;</span>
+<span class="fc" id="L90">            this.onStop();</span>
+<span class="nc" id="L91">        } catch (Exception e) {</span>
+<span class="nc" id="L92">            throw new CompletionException(e);</span>
+<span class="fc" id="L93">        }</span>
+<span class="fc" id="L94">        setStatus(Status.STOPPED);</span>
+<span class="fc" id="L95">        return this;</span>
     }
 
 
     @Override
     public void connected() {
-<span class="fc" id="L96">        setStatus(Status.CONNECTED);</span>
-<span class="fc" id="L97">    }</span>
+<span class="fc" id="L101">        setStatus(Status.CONNECTED);</span>
+<span class="fc" id="L102">    }</span>
 
     @Override
     public Parameters parameters() {
-<span class="fc" id="L101">        return parameters;</span>
+<span class="fc" id="L106">        return parameters;</span>
     }
 
 
     @Override
     public Status status() {
-<span class="fc" id="L107">        return status;</span>
+<span class="fc" id="L112">        return status;</span>
     }
 
     public void setStatus(Status status) {
-<span class="fc" id="L111">        getLogger().debug(&quot;{} =&gt; {}&quot;, toString(), status);</span>
+<span class="fc" id="L116">        getLogger().debug(&quot;{} =&gt; {}&quot;, toString(), status);</span>
         //TODO check for illegal state transition
-<span class="fc" id="L113">        this.status = status;</span>
-<span class="fc" id="L114">    }</span>
+<span class="fc" id="L118">        this.status = status;</span>
+<span class="fc" id="L119">    }</span>
 
     @Override
     public String toString() {
-<span class="fc" id="L118">        return String.format(&quot;%s %s %s = %s&quot;, parameters.providerType(), parameters.instanceType(), parameters.id(), status);</span>
+<span class="fc" id="L123">        return String.format(&quot;%s %s %s = %s&quot;, parameters.providerType(), parameters.instanceType(), parameters.id(), status);</span>
     }
 
 }
