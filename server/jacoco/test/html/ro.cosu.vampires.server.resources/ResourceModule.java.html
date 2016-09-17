@@ -27,7 +27,9 @@ package ro.cosu.vampires.server.resources;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Named;
+
 import com.typesafe.config.Config;
+
 import ro.cosu.vampires.server.resources.das5.Das5ResourceModule;
 import ro.cosu.vampires.server.resources.ec2.EC2ResourceModule;
 import ro.cosu.vampires.server.resources.local.LocalResourceModule;
@@ -37,25 +39,25 @@ import ro.cosu.vampires.server.resources.ssh.SshResourceModule;
 public class ResourceModule extends AbstractModule {
     private Config config;
 
-<span class="fc" id="L40">    public ResourceModule(Config config) {</span>
-<span class="fc" id="L41">        this.config = config;</span>
-<span class="fc" id="L42">    }</span>
+<span class="fc" id="L42">    public ResourceModule(Config config) {</span>
+<span class="fc" id="L43">        this.config = config;</span>
+<span class="fc" id="L44">    }</span>
 
     @Override
     protected void configure() {
 
-<span class="fc" id="L47">        install(new Das5ResourceModule());</span>
-<span class="fc" id="L48">        install(new LocalResourceModule());</span>
-<span class="fc" id="L49">        install(new EC2ResourceModule());</span>
-<span class="fc" id="L50">        install(new SshResourceModule());</span>
-<span class="fc" id="L51">        install(new MockResourceModule());</span>
+<span class="fc" id="L49">        install(new Das5ResourceModule());</span>
+<span class="fc" id="L50">        install(new LocalResourceModule());</span>
+<span class="fc" id="L51">        install(new EC2ResourceModule());</span>
+<span class="fc" id="L52">        install(new SshResourceModule());</span>
+<span class="fc" id="L53">        install(new MockResourceModule());</span>
 
-<span class="fc" id="L53">    }</span>
+<span class="fc" id="L55">    }</span>
 
     @Provides
     @Named(&quot;Config&quot;)
     private Config provideConfig() {
-<span class="fc" id="L58">        return this.config;</span>
+<span class="fc" id="L60">        return this.config;</span>
     }
 
 

@@ -33,17 +33,16 @@ import com.typesafe.config.Config;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.resources.ec2.EC2ResourceParameters;
 
 @AutoValue
-<span class="fc" id="L39">public abstract class LocalResourceParameters implements Resource.Parameters {</span>
+<span class="fc" id="L38">public abstract class LocalResourceParameters implements Resource.Parameters {</span>
 
 
     public static Builder builder() {
-<span class="fc" id="L43">        return new AutoValue_LocalResourceParameters.Builder().providerType(Resource.ProviderType.LOCAL)</span>
-<span class="fc" id="L44">                .id(UUID.randomUUID().toString())</span>
-<span class="fc" id="L45">                .cost(0.)</span>
-<span class="fc" id="L46">                .serverId(&quot;&quot;);</span>
+<span class="fc" id="L42">        return new AutoValue_LocalResourceParameters.Builder().providerType(Resource.ProviderType.LOCAL)</span>
+<span class="fc" id="L43">                .id(UUID.randomUUID().toString())</span>
+<span class="fc" id="L44">                .cost(0.)</span>
+<span class="fc" id="L45">                .serverId(&quot;&quot;);</span>
     }
 
     public abstract String command();
@@ -61,19 +60,19 @@ import ro.cosu.vampires.server.resources.ec2.EC2ResourceParameters;
     public abstract Builder toBuilder();
 
     public LocalResourceParameters withServerId(String serverId) {
-<span class="nc" id="L64">        return toBuilder().serverId(serverId).build();</span>
+<span class="nc" id="L63">        return toBuilder().serverId(serverId).build();</span>
     }
 
     public Resource.Parameters withId(String id) {
-<span class="nc" id="L68">        return toBuilder().id(id).build();</span>
+<span class="nc" id="L67">        return toBuilder().id(id).build();</span>
     }
 
-<span class="fc" id="L71">    @AutoValue.Builder</span>
-<span class="fc" id="L72">    public abstract static class Builder implements Resource.Parameters.Builder {</span>
+<span class="fc" id="L70">    @AutoValue.Builder</span>
+<span class="fc" id="L71">    public abstract static class Builder implements Resource.Parameters.Builder {</span>
         public Builder fromConfig(Config config) {
-<span class="fc" id="L74">            this.cost(config.getDouble(&quot;cost&quot;));</span>
-<span class="fc" id="L75">            this.command(config.getString(&quot;command&quot;));</span>
-<span class="fc" id="L76">            return this;</span>
+<span class="fc" id="L73">            this.cost(config.getDouble(&quot;cost&quot;));</span>
+<span class="fc" id="L74">            this.command(config.getString(&quot;command&quot;));</span>
+<span class="fc" id="L75">            return this;</span>
         }
 
         public abstract Builder providerType(Resource.ProviderType providerType);

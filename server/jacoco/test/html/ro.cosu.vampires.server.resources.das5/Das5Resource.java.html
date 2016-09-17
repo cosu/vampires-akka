@@ -25,15 +25,17 @@
 package ro.cosu.vampires.server.resources.das5;
 
 import com.jcraft.jsch.JSchException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ro.cosu.vampires.server.resources.AbstractResource;
-import ro.cosu.vampires.server.util.SshClient;
 
 import java.io.IOException;
 
+import ro.cosu.vampires.server.resources.AbstractResource;
+import ro.cosu.vampires.server.util.SshClient;
+
 public class Das5Resource extends AbstractResource {
-<span class="fc" id="L36">    private static final Logger LOG = LoggerFactory.getLogger(Das5Resource.class);</span>
+<span class="fc" id="L38">    private static final Logger LOG = LoggerFactory.getLogger(Das5Resource.class);</span>
 
     private final Das5ResourceParameters parameters;
     private final SshClient sshClient;
@@ -41,42 +43,42 @@ public class Das5Resource extends AbstractResource {
 
 
     public Das5Resource(Das5ResourceParameters parameters, SshClient sshClient) {
-<span class="fc" id="L44">        super(parameters);</span>
-<span class="fc" id="L45">        this.parameters = parameters;</span>
-<span class="fc" id="L46">        this.sshClient = sshClient;</span>
-<span class="fc" id="L47">    }</span>
+<span class="fc" id="L46">        super(parameters);</span>
+<span class="fc" id="L47">        this.parameters = parameters;</span>
+<span class="fc" id="L48">        this.sshClient = sshClient;</span>
+<span class="fc" id="L49">    }</span>
 
 
     @Override
     public void onStart() throws Exception {
-<span class="fc" id="L52">        String command = &quot;sbatch -N 1 &quot; + parameters.command() + &quot; &quot; + parameters.serverId()</span>
-<span class="fc" id="L53">                + &quot; &quot; + parameters.id();</span>
-<span class="fc" id="L54">        getLogger().debug(&quot;command: {}&quot;, command);</span>
-<span class="fc" id="L55">        this.commandOutput = exec(command);</span>
-<span class="fc" id="L56">    }</span>
+<span class="fc" id="L54">        String command = &quot;sbatch -N 1 &quot; + parameters.command() + &quot; &quot; + parameters.serverId()</span>
+<span class="fc" id="L55">                + &quot; &quot; + parameters.id();</span>
+<span class="fc" id="L56">        getLogger().debug(&quot;command: {}&quot;, command);</span>
+<span class="fc" id="L57">        this.commandOutput = exec(command);</span>
+<span class="fc" id="L58">    }</span>
 
     @Override
     public void onStop() throws Exception {
-<span class="fc" id="L60">        LOG.debug(&quot;das &quot; + commandOutput);</span>
-<span class="fc" id="L61">        String command = &quot;scancel &quot; + commandOutput.split(&quot; &quot;)[3];</span>
-<span class="fc" id="L62">        this.commandOutput = exec(command);</span>
+<span class="fc" id="L62">        LOG.debug(&quot;das &quot; + commandOutput);</span>
+<span class="fc" id="L63">        String command = &quot;scancel &quot; + commandOutput.split(&quot; &quot;)[3];</span>
+<span class="fc" id="L64">        this.commandOutput = exec(command);</span>
 
-<span class="fc" id="L64">    }</span>
+<span class="fc" id="L66">    }</span>
 
     @Override
     public void onFail() throws Exception {
-<span class="nc" id="L68">        String command = &quot;scancel &quot; + commandOutput.split(&quot; &quot;)[3];</span>
-<span class="nc" id="L69">        this.commandOutput = exec(command);</span>
+<span class="nc" id="L70">        String command = &quot;scancel &quot; + commandOutput.split(&quot; &quot;)[3];</span>
+<span class="nc" id="L71">        this.commandOutput = exec(command);</span>
 
-<span class="nc" id="L71">    }</span>
+<span class="nc" id="L73">    }</span>
 
     private String exec(String command) throws IOException, JSchException {
-<span class="fc" id="L74">        return sshClient.runCommand(parameters.user(), parameters.privateKey(), parameters.address(), command, parameters.port());</span>
+<span class="fc" id="L76">        return sshClient.runCommand(parameters.user(), parameters.privateKey(), parameters.address(), command, parameters.port());</span>
     }
 
     @Override
     protected Logger getLogger() {
-<span class="fc" id="L79">        return LOG;</span>
+<span class="fc" id="L81">        return LOG;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
