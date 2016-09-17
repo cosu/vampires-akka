@@ -179,7 +179,7 @@ public class StatsProcessor {
     private void updateMetric(String clientId, String metric, long value) {
 
         for (String key : getKeysForMetric(clientId, metric)) {
-            if (metric.equals("job")) {
+            if ("job".equals(metric)) {
                 metricRegistry.meter(key).mark();
             } else if (metric.contains("bytes")) {
                 metricRegistry.counter(key).inc(value);

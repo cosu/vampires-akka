@@ -159,7 +159,6 @@ public abstract class AbstractControllerTest<T extends Id, P> {
         HttpGet httpGet = new HttpGet(url + getPath());
         HttpResponse execute = client.execute(httpGet);
         assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_OK));
-
         String entity = EntityUtils.toString(execute.getEntity());
         List<T> list = getList(entity, getValueClass());
         assertThat(list.size(), not(0));
@@ -185,7 +184,6 @@ public abstract class AbstractControllerTest<T extends Id, P> {
         HttpPost httpPost = new HttpPost(url + getPath());
         httpPost.setEntity(new StringEntity(toJson));
         httpPost.setHeader("Content-type", "application/json");
-
         HttpClient client = getHttpClient();
         HttpResponse execute = client.execute(httpPost);
         assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_CREATED));
@@ -218,9 +216,7 @@ public abstract class AbstractControllerTest<T extends Id, P> {
         HttpPost httpPost = new HttpPost(url + Paths.get(getPath(), firstItem.id()).toString());
         httpPost.setEntity(new StringEntity(toJson));
         httpPost.setHeader("Content-type", "application/json");
-
         HttpClient client = getHttpClient();
-
         HttpResponse execute = client.execute(httpPost);
         assertThat(execute.getStatusLine().getStatusCode(), is(HTTP_CREATED));
 
@@ -232,7 +228,6 @@ public abstract class AbstractControllerTest<T extends Id, P> {
     @Test
     public void updateFail() throws Exception {
         Id firstItem = getFirstItem();
-
         HttpPost httpPost = new HttpPost(url + Paths.get(getPath(), firstItem.id()).toString());
         httpPost.setEntity(new StringEntity(""));
         httpPost.setHeader("Content-type", "application/json");

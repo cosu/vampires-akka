@@ -53,25 +53,23 @@ import ro.cosu.vampires.server.writers.ResultsWriter;
 
 public class JsonResultsWriter implements ResultsWriter {
     private static final Logger LOG = LoggerFactory.getLogger(JsonResultsWriter.class);
-    private final Config config;
+    private final String uploadDirName;
 
     private List<Job> results = new LinkedList<>();
     private List<ClientInfo> clients = new LinkedList<>();
 
 
     public JsonResultsWriter(Config config) {
-        this.config = config;
-
         Preconditions.checkArgument(config.hasPath("writers.json.dir"), "missing  config key writers.json.dir");
-        Paths.get(config.getString("writers.json.dir")).toFile().mkdir();
+        uploadDirName = config.getString("writers.json.dir");
+        Paths.get(uploadDirName).toFile().mkdir();
         Preconditions.checkArgument(Paths.get(config.getString("writers.json.dir")).toFile().canWrite(), "output dir " +
                 "does not exist");
-
     }
 
     private Path getPath(String prefix) {
         LocalDateTime date = LocalDateTime.now();
-        return Paths.get(config.getString("writers.json.dir"), prefix + "-" + date.format
+        return Paths.get(uploadDirName, prefix + "-" + date.format
                 (DateTimeFormatter.ISO_LOCAL_DATE_TIME) + ".json");
 
     }
@@ -96,25 +94,14 @@ public class JsonResultsWriter implements ResultsWriter {
         //write results to disk
         try {
 
-            Gson gson = new GsonBuilder().setPrettyPrinting()
-                    .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
-                    .create();
+            GsonBuilder gsonBuilder = new GsonBuilder()
+                    .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer());
 
-            Gson uglyGson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
-                    .create();
+            Gson gson = gsonBuilder.setPrettyPrinting().create();
+            Gson uglyGson = gsonBuilder.create();
 
             AllResults allResults = AllResults.builder().results(results).clients(clients).build();
             String collect = results.stream().map(uglyGson::toJson).collect(Collectors.joining("\n"));
-
-            fileWriter = Files.newWriter(getPath("results").toFile(), Charsets.UTF_8);
-            fileWriter.write(collect);
-            fileWriter.close();
-
-            collect = clients.stream().map(uglyGson::toJson).collect(Collectors.joining("\n"));
-            fileWriter = Files.newWriter(getPath("clients").toFile(), Charsets.UTF_8);
-            fileWriter.write(collect);
-            fileWriter.close();
 
             fileWriter = Files.newWriter(getPath("results-all").toFile(), Charsets.UTF_8);
             gson.toJson(allResults, fileWriter);
