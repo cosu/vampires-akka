@@ -62,20 +62,20 @@ import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
     @Inject
     private DockerClient dockerClient;
 
-    private static Metric convertDockerStatsToMetrics(Statistics stat) {
+    protected static Metric convertDockerStatsToMetrics(Statistics stat) {
 
         // the current stat api makes the 'read' field private so we put our own timestamp
         // future versions of the api will hopefully fix this
-<span class="nc" id="L69">        Map&lt;String, Double&gt; data = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L69">        Map&lt;String, Double&gt; data = new HashMap&lt;&gt;();</span>
 
-<span class="nc" id="L71">        Optional.ofNullable(stat.getNetworks()).ifPresent(stats -&gt; {</span>
-<span class="nc" id="L72">            data.putAll(flattenMap(&quot;network&quot;, stats));</span>
-<span class="nc" id="L73">        });</span>
-<span class="nc" id="L74">        data.putAll(flattenMap(&quot;memory&quot;, stat.getMemoryStats()));</span>
+<span class="fc" id="L71">        Optional.ofNullable(stat.getNetworks()).ifPresent(stats -&gt; {</span>
+<span class="fc" id="L72">            data.putAll(flattenMap(&quot;network&quot;, stats));</span>
+<span class="fc" id="L73">        });</span>
+<span class="fc" id="L74">        data.putAll(flattenMap(&quot;memory&quot;, stat.getMemoryStats()));</span>
 //        data.putAll(flattenMap(&quot;io&quot;, stat.getBlkioStats()));
-<span class="nc" id="L76">        data.putAll(flattenMap(&quot;cpu&quot;, stat.getCpuStats()));</span>
+<span class="fc" id="L76">        data.putAll(flattenMap(&quot;cpu&quot;, stat.getCpuStats()));</span>
 
-<span class="nc" id="L78">        return Metric.builder().values(ImmutableMap.copyOf(data)).time(LocalDateTime.now()).build();</span>
+<span class="fc" id="L78">        return Metric.builder().values(ImmutableMap.copyOf(data)).time(LocalDateTime.now()).build();</span>
     }
 
     @SuppressWarnings(&quot;unchecked&quot;)
@@ -95,7 +95,7 @@ import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 
 <span class="fc bfc" id="L96" title="All 2 branches covered.">            if (val instanceof Map) {</span>
 <span class="fc" id="L97">                redata.putAll(flattenMap(key, (Map&lt;String, Object&gt;) val));</span>
-<span class="pc bpc" id="L98" title="1 of 2 branches missed.">            } else if (val instanceof List) {</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">            } else if (val instanceof List) {</span>
 <span class="fc" id="L99">                final List valAsList = (List) val;</span>
 
 <span class="fc" id="L101">                IntStream.range(0, valAsList.size())</span>
@@ -105,7 +105,7 @@ import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 
 
 <span class="fc" id="L107">            } else {</span>
-<span class="nc" id="L108">                Optional.ofNullable(getDoubleFrom(val)).ifPresent(newValue -&gt; redata.put(key,</span>
+<span class="fc" id="L108">                Optional.ofNullable(getDoubleFrom(val)).ifPresent(newValue -&gt; redata.put(key,</span>
                         newValue));
             }
 <span class="fc" id="L111">        }</span>
@@ -150,13 +150,11 @@ import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 
         @Override
         public void onNext(Statistics stats) {
-            // NOTE: future versions of the docker api will break this
-
-<span class="nc" id="L155">            statisticsList.add(convertDockerStatsToMetrics(stats));</span>
-<span class="nc" id="L156">        }</span>
+<span class="nc" id="L153">            statisticsList.add(convertDockerStatsToMetrics(stats));</span>
+<span class="nc" id="L154">        }</span>
 
         public List&lt;Metric&gt; getStatisticsList() {
-<span class="fc" id="L159">            return statisticsList;</span>
+<span class="fc" id="L157">            return statisticsList;</span>
         }
     }
 }
