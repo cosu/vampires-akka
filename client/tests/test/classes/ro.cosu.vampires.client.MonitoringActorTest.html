@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.009s</div>
+<div class="counter">0.875s</div>
 <p>duration</p>
 </div>
 </td>
@@ -66,6 +66,9 @@
 <li>
 <a href="#tab1">Standard output</a>
 </li>
+<li>
+<a href="#tab2">Standard error</a>
+</li>
 </ul>
 <div id="tab0" class="tab">
 <h2>Tests</h2>
@@ -79,12 +82,12 @@
 </thead>
 <tr>
 <td class="success">testMetrics</td>
-<td>0.005s</td>
+<td>0.872s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">testReplyToMetrics</td>
-<td>0.004s</td>
+<td>0.003s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -92,19 +95,37 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2016-09-17 09:47:46,489 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
-2016-09-17 09:47:46,492 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://default)]- logger log1-Slf4jLogger started
-2016-09-17 09:47:46,493 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://default)]- Default Loggers started
-2016-09-17 09:47:46,498 INFO  akka.remote.Remoting [Test worker] [akka.remote.Remoting]- Starting remoting
-2016-09-17 09:47:46,540 INFO  akka.remote.Remoting [Test worker] [akka.remote.Remoting]- Remoting started; listening on addresses :[akka.tcp://default@127.0.0.1:44885]
-2016-09-17 09:47:46,580 DEBUG r.c.v.client.actors.MonitoringActor [Test worker] [akka://default/user/$$a]- Job{id=661a7d5d-4dc3-431f-90d9-652a70e1e60e, from=, created=2016-09-17T09:47:46.554, status=EXECUTED, computation=Computation{id=test, command=test}, result=Result{output=[], exitCode=0, duration=1, trace=Trace{start=2016-09-17T09:47:45.553, stop=2016-09-17T09:47:47.553, executorMetrics=Metrics{metrics=[], metadata={}, id=empty}, cpuSet=[1], totalCpuCount=1, executor=foo}}, hostMetrics=Metrics{metrics=[], metadata={}, id=empty}} from Actor[akka://default/temp/$a]
-2016-09-17 09:47:46,586 INFO  r.c.v.client.actors.MonitoringActor [Test worker] [akka://default/user/$$a]- id: 661a7d5d-4dc3-431f-90d9-652a70e1e60e -&gt; info:EXECUTED duration: 1
-2016-09-17 09:47:46,586 DEBUG r.c.v.client.actors.MonitoringActor [Test worker] [akka://default/user/$$b]- Metrics{metrics=[], metadata={}, id=empty} from Actor[akka://default/temp/$b]
-2016-09-17 09:47:46,586 DEBUG r.c.v.client.actors.MonitoringActor [Test worker] [akka://default/user/$$b]- got metrics request 
-2016-09-17 09:47:46,597 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [default-akka.remote.default-remote-dispatcher-7] [akka.tcp://default@127.0.0.1:44885/system/remoting-terminator]- Shutting down remote daemon.
-2016-09-17 09:47:46,597 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [default-akka.remote.default-remote-dispatcher-7] [akka.tcp://default@127.0.0.1:44885/system/remoting-terminator]- Remote daemon shut down; proceeding with flushing remote transports.
-2016-09-17 09:47:46,603 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [default-akka.remote.default-remote-dispatcher-6] [akka.tcp://default@127.0.0.1:44885/system/remoting-terminator]- Remoting shut down.
-2016-09-17 09:47:46,605 DEBUG akka.event.EventStream [default-akka.actor.default-dispatcher-15] [EventStream]- shutting down: StandardOutLogger started
+<pre>2016-09-17 09:53:49,631 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
+2016-09-17 09:53:49,655 DEBUG akka.event.EventStream [] []- logger log1-Slf4jLogger started
+2016-09-17 09:53:49,666 DEBUG akka.event.EventStream [] []- Default Loggers started
+2016-09-17 09:53:49,667 INFO  akka.remote.Remoting [] []- Starting remoting
+2016-09-17 09:53:49,668 INFO  akka.remote.Remoting [] []- Remoting started; listening on addresses :[akka.tcp://default@127.0.0.1:37235]
+2016-09-17 09:53:49,670 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [] []- Shutting down remote daemon.
+2016-09-17 09:53:49,670 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [] []- Remote daemon shut down; proceeding with flushing remote transports.
+2016-09-17 09:53:49,671 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [] []- Remoting shut down.
+2016-09-17 09:53:49,671 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
+2016-09-17 09:53:49,671 DEBUG akka.event.EventStream [] []- logger log1-Slf4jLogger started
+2016-09-17 09:53:49,671 DEBUG akka.event.EventStream [] []- Default Loggers started
+2016-09-17 09:53:49,672 INFO  akka.remote.Remoting [] []- Starting remoting
+2016-09-17 09:53:49,672 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
+2016-09-17 09:53:49,715 INFO  akka.remote.Remoting [Test worker] [akka.remote.Remoting]- Remoting started; listening on addresses :[akka.tcp://default@127.0.0.1:37070]
+2016-09-17 09:53:50,565 DEBUG r.c.v.client.actors.MonitoringActor [Test worker] [akka://default/user/$$a]- Job{id=ec3688e2-8e59-43bd-82a8-b41c393a361b, from=, created=2016-09-17T09:53:50.551, status=EXECUTED, computation=Computation{id=test, command=test}, result=Result{output=[], exitCode=0, duration=1, trace=Trace{start=2016-09-17T09:53:49.499, stop=2016-09-17T09:53:51.499, executorMetrics=Metrics{metrics=[], metadata={}, id=empty}, cpuSet=[1], totalCpuCount=1, executor=foo}}, hostMetrics=Metrics{metrics=[], metadata={}, id=empty}} from Actor[akka://default/temp/$a]
+2016-09-17 09:53:50,567 INFO  r.c.v.client.actors.MonitoringActor [Test worker] [akka://default/user/$$a]- id: ec3688e2-8e59-43bd-82a8-b41c393a361b -&gt; info:EXECUTED duration: 1
+2016-09-17 09:53:50,596 DEBUG r.c.v.client.actors.MonitoringActor [Test worker] [akka://default/user/$$b]- Metrics{metrics=[], metadata={}, id=empty} from Actor[akka://default/temp/$b]
+2016-09-17 09:53:50,597 DEBUG r.c.v.client.actors.MonitoringActor [Test worker] [akka://default/user/$$b]- got metrics request 
+2016-09-17 09:53:50,606 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [default-akka.remote.default-remote-dispatcher-7] [akka.tcp://default@127.0.0.1:37070/system/remoting-terminator]- Shutting down remote daemon.
+2016-09-17 09:53:50,606 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [default-akka.remote.default-remote-dispatcher-7] [akka.tcp://default@127.0.0.1:37070/system/remoting-terminator]- Remote daemon shut down; proceeding with flushing remote transports.
+2016-09-17 09:53:50,620 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [default-akka.remote.default-remote-dispatcher-6] [akka.tcp://default@127.0.0.1:37070/system/remoting-terminator]- Remoting shut down.
+[DEBUG] [09/17/2016 09:53:50.620] [default-akka.actor.default-dispatcher-16] [EventStream] shutting down: StandardOutLogger started
+</pre>
+</span>
+</div>
+<div id="tab2" class="tab">
+<h2>Standard error</h2>
+<span class="code">
+<pre>SLF4J: A number (12) of logging calls during the initialization phase have been intercepted and are
+SLF4J: now being replayed. These are subject to the filtering rules of the underlying logging system.
+SLF4J: See also http://www.slf4j.org/codes.html#replay
 </pre>
 </span>
 </div>
@@ -116,7 +137,7 @@
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 3.0</a> at Sep 17, 2016 9:47:48 AM</p>
+<a href="http://www.gradle.org">Gradle 3.0</a> at Sep 17, 2016 9:53:53 AM</p>
 </div>
 </div>
 </body>
