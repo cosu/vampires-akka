@@ -118,21 +118,24 @@ public class ResultActor extends UntypedActor {
     @Override
     public void onReceive(Object message) throws Exception {
         if (message instanceof Job) {
-            Job job = (Job) message;
-            handleJob(job);
+            handleJob((Job) message);
         } else if (message instanceof ClientInfo) {
-            ClientInfo clientInfo = (ClientInfo) message;
-            handleClientInfo(clientInfo);
+            handleClientInfo((ClientInfo) message);
         } else if (message instanceof ResourceInfo) {
-            ResourceInfo resourceInfo = (ResourceInfo) message;
-            handleResourceInfo(resourceInfo);
+            handleResourceInfo((ResourceInfo) message);
         } else if (message instanceof ResourceControl.Shutdown) {
-            shutdown(ExecutionInfo.Status.CANCELED);
-        } else if (message instanceof ResourceControl.Fail) {
-            shutdown(ExecutionInfo.Status.FAILED);
-
+            handleShutdown((ResourceControl.Shutdown) message);
         } else {
             unhandled(message);
+        }
+    }
+
+    private void handleShutdown(ResourceControl.Shutdown message) {
+        // if all jobs done then set status to finished
+        if (results.size() == totalSize) {
+            shutdown(ExecutionInfo.Status.FINISHED);
+        } else {
+            shutdown(ExecutionInfo.Status.CANCELED);
         }
     }
 
@@ -165,7 +168,7 @@ public class ResultActor extends UntypedActor {
         if (results.size() == totalSize) {
             // signal parent we're done
             log.debug("result actor exiting {}", results.size());
-            shutdown(ExecutionInfo.Status.FINISHED);
+            getContext().parent().tell(ResourceControl.Shutdown.create(), getSelf());
         }
     }
 

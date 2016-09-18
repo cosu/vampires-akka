@@ -120,7 +120,12 @@ public class StatsProcessor {
         String from = message.parameters().id();
 
         clientsCreatedAt.put(from, message.createdAt());
+
+        boolean seenBefore = resourcesInfo.containsKey(from);
+
         resourcesInfo.put(from, message);
+
+        if (seenBefore) return;
 
         // node count
         for (String key : getKeysForMetric(from, "resources")) {

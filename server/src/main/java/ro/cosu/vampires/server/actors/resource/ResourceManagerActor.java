@@ -158,7 +158,11 @@ public class ResourceManagerActor extends UntypedActor {
     }
 
     private void shutdownResources() {
+
         resourceRegistry.getResourceActors().forEach(r -> r.forward(ResourceControl.Shutdown.create(), getContext()));
+        if (resourceRegistry.getResourceActors().isEmpty()) {
+            getContext().stop(getSelf());
+        }
     }
 
 

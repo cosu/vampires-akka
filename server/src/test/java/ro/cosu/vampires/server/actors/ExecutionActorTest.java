@@ -34,27 +34,26 @@ import org.junit.Test;
 import java.util.Map;
 
 import akka.actor.ActorRef;
-import akka.actor.Terminated;
 import akka.testkit.JavaTestKit;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.values.ClientConfig;
 import ro.cosu.vampires.server.values.ClientInfo;
 import ro.cosu.vampires.server.values.jobs.Computation;
-import ro.cosu.vampires.server.values.resources.Configuration;
 import ro.cosu.vampires.server.values.jobs.Execution;
 import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
 import ro.cosu.vampires.server.values.jobs.ExecutionMode;
 import ro.cosu.vampires.server.values.jobs.Job;
-import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 import ro.cosu.vampires.server.values.jobs.Result;
 import ro.cosu.vampires.server.values.jobs.Workload;
+import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
+import ro.cosu.vampires.server.values.resources.Configuration;
 import ro.cosu.vampires.server.values.resources.ResourceDemand;
 import ro.cosu.vampires.server.values.resources.ResourceDescription;
 import scala.concurrent.duration.Duration;
 
 import static com.google.common.collect.ImmutableList.of;
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 
@@ -136,7 +135,7 @@ public class ExecutionActorTest extends AbstractActorTest {
 
 
     @Test
-    public void testShutdown() {
+    public void testShutdown() throws InterruptedException {
 
         new JavaTestKit(system) {
             {
@@ -150,9 +149,9 @@ public class ExecutionActorTest extends AbstractActorTest {
 
                 executionActor.tell(ResourceControl.Shutdown.create(), workProbe.getRef());
 
-                workProbe.expectMsgClass(Terminated.class);
+                ResourceInfo resourceInfo = workProbe.expectMsgClass(ResourceInfo.class);
 
-                assertThat(workProbe.getLastSender(), is(executionActor));
+                workProbe.expectTerminated(executionActor);
 
             }
         };

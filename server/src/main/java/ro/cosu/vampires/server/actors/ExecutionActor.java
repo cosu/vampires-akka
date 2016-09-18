@@ -97,7 +97,6 @@ class ExecutionActor extends UntypedActor {
             resultActor.tell(message, getSender());
         } else if (message instanceof ResourceControl.Shutdown) {
             resourceManagerActor.forward(message, getContext());
-            resultActor.forward(message, getContext());
         } else if (message instanceof ResourceInfo) {
             resultActor.forward(message, getContext());
         } else if (message instanceof Execution) {
@@ -107,9 +106,8 @@ class ExecutionActor extends UntypedActor {
             if (getSender().equals(resultActor)) {
                 getContext().stop(getSelf());
             }
-            if (getSender().equals(resourceManagerActor) && watchees.contains(resultActor)) {
-                // this is the case when all the resources have failed
-                resultActor.tell(ResourceControl.Fail.create(), getContext().parent());
+            if (getSender().equals(resourceManagerActor)) {
+                resultActor.tell(ResourceControl.Shutdown.create(), getContext().parent());
             }
             watchees.remove(getSender());
         } else {

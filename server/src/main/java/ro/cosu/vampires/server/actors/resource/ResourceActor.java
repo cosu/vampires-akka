@@ -57,9 +57,9 @@ public class ResourceActor extends UntypedActorWithStash {
         } else if (message instanceof ClientInfo) {
             connectClient((ClientInfo) message);
         } else if (message instanceof ResourceControl.Shutdown) {
-            log.debug("shutdown " + message);
             Resource stoppedResource = resource.stop().get();
             sender.tell(stoppedResource.info(), getSelf());
+            getContext().stop(getSelf());
         } else {
             log.error("unhandled {}", message);
             unhandled(message);
