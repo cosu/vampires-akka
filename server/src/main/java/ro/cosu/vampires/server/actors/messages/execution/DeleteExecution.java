@@ -24,14 +24,14 @@
  *
  */
 
-package ro.cosu.vampires.server.actors.messages.resource;
+package ro.cosu.vampires.server.actors.messages.execution;
 
 import com.google.auto.value.AutoValue;
 
 import ro.cosu.vampires.server.values.User;
 
 @AutoValue
-public abstract class DeleteExecution {
+public abstract class DeleteExecution implements ExecutionMessage {
     public static DeleteExecution create(String resourceId, User user) {
         return new AutoValue_DeleteExecution(resourceId, user);
     }

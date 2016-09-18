@@ -163,6 +163,7 @@ public class ResultActor extends UntypedActor {
             sendCurrentExecutionInfo(ExecutionInfo.Status.RUNNING);
         }
         if (results.size() == totalSize) {
+            // signal parent we're done
             log.debug("result actor exiting {}", results.size());
             shutdown(ExecutionInfo.Status.FINISHED);
         }

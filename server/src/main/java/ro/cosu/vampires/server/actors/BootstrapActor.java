@@ -45,10 +45,11 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.configuration.ConfigurationMessage;
+import ro.cosu.vampires.server.actors.messages.execution.DeleteExecution;
+import ro.cosu.vampires.server.actors.messages.execution.ExecutionMessage;
 import ro.cosu.vampires.server.actors.messages.execution.QueryExecution;
 import ro.cosu.vampires.server.actors.messages.execution.ResponseExecution;
 import ro.cosu.vampires.server.actors.messages.execution.StartExecution;
-import ro.cosu.vampires.server.actors.messages.resource.DeleteExecution;
 import ro.cosu.vampires.server.actors.messages.workload.WorkloadMessage;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.settings.Settings;
@@ -68,8 +69,6 @@ public class BootstrapActor extends UntypedActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private Map<String, ActorRef> executionsToActors = Maps.newHashMap();
     private HashBasedTable<User, String, Execution> executionHashBasedTable = HashBasedTable.create();
-
-
     private RestModule restModule = new RestModule(getSelf(), settings.getProviders(), settings.vampires.getConfig("rest"));
 
 
@@ -103,18 +102,10 @@ public class BootstrapActor extends UntypedActor {
 
     @Override
     public void onReceive(Object message) throws Exception {
-        if (message instanceof StartExecution) {
-            StartExecution startExecution = (StartExecution) message;
-            handleStartExecution(startExecution);
-        } else if (message instanceof Execution) {
-            Execution execution = (Execution) message;
-            handleExecution(execution);
-        } else if (message instanceof QueryExecution) {
-            QueryExecution queryExecution = (QueryExecution) message;
-            queryExecution(queryExecution);
-        } else if (message instanceof DeleteExecution) {
-            DeleteExecution shutdownResource = (DeleteExecution) message;
-            handleShutdown(shutdownResource);
+        if (message instanceof Execution) {
+            handleExecution((Execution) message);
+        } else if (message instanceof ExecutionMessage) {
+            handleExecutionMessage((ExecutionMessage) message);
         } else if (message instanceof ConfigurationMessage) {
             configurationsActor.forward(message, getContext());
         } else if (message instanceof WorkloadMessage) {
@@ -126,6 +117,17 @@ public class BootstrapActor extends UntypedActor {
         }
     }
 
+    private void handleExecutionMessage(ExecutionMessage message) {
+        if (message instanceof StartExecution) {
+            handleStartExecution((StartExecution) message);
+        } else if (message instanceof QueryExecution) {
+            queryExecution((QueryExecution) message);
+        } else if (message instanceof DeleteExecution) {
+            handleShutdown((DeleteExecution) message);
+        } else {
+            log.error("Unknown execution message {}", message);
+        }
+    }
 
     private void handleShutdown(DeleteExecution deleteExecution) {
         User user = deleteExecution.user();
@@ -145,23 +147,20 @@ public class BootstrapActor extends UntypedActor {
                         .updateStatus(ExecutionInfo.Status.STOPPING));
                 getResultsMap(user).put(execution.id(), execution);
             } else {
-                log.warning("shutting down a non-running execution {}", execution);
+                log.error("shutting down a non-running execution {}", execution);
             }
             getSender().tell(ResponseExecution.create(ImmutableList.of(execution)), getSelf());
         }
     }
 
     private void handleTerminated() {
-        Optional<String> execId =
-                executionsToActors.entrySet().stream()
-                        .filter(e -> e.getValue().equals(getSender()))
-                        .map(Map.Entry::getKey).findFirst();
-
-        if (execId.isPresent()) {
-            String id = execId.get();
+        executionsToActors.entrySet().stream()
+                .filter(e -> e.getValue().equals(getSender()))
+                .map(Map.Entry::getKey)
+                .findFirst().ifPresent(id -> {
             executionsToActors.remove(id);
             log.info("{} terminated ", id);
-        }
+        });
     }
 
     private void handleStartExecution(StartExecution startExecution) {
@@ -186,7 +185,6 @@ public class BootstrapActor extends UntypedActor {
         return executionHashBasedTable.row(user);
     }
 
-
     private void queryExecution(QueryExecution info) {
         User user = info.user();
         List<Execution> executionList;
@@ -198,6 +196,5 @@ public class BootstrapActor extends UntypedActor {
                     .orElse(Lists.newArrayList());
         }
         getSender().tell(ResponseExecution.create(executionList), getSelf());
-
     }
 }

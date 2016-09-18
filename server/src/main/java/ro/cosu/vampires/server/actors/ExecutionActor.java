@@ -38,7 +38,8 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.Terminated;
 import akka.actor.UntypedActor;
-import ro.cosu.vampires.server.actors.messages.QueryStats;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.resource.BootstrapResource;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.resource.ResourceManagerActor;
@@ -53,7 +54,7 @@ class ExecutionActor extends UntypedActor {
     private Set<ActorRef> watchees = Sets.newLinkedHashSet();
     private ActorRef resourceManagerActor;
     private ActorRef resultActor;
-    private boolean successful = false;
+    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     public ExecutionActor(Execution execution) {
         startExecution(execution);
@@ -65,7 +66,7 @@ class ExecutionActor extends UntypedActor {
 
     private void startExecution(Execution execution) {
 
-        resourceManagerActor = getContext().actorOf(ResourceManagerActor.props(), "resourceActor");
+        resourceManagerActor = getContext().actorOf(ResourceManagerActor.props(), "resourceManagerActor");
         resultActor = getContext().actorOf(ResultActor.props(execution), "resultActor");
         getContext().watch(resourceManagerActor);
         getContext().watch(resultActor);
@@ -104,15 +105,13 @@ class ExecutionActor extends UntypedActor {
             getContext().parent().forward(message, getContext());
         } else if (message instanceof Terminated) {
             if (getSender().equals(resultActor)) {
-                successful = true;
                 getContext().stop(getSelf());
             }
-            
-            if (getSender().equals(resourceManagerActor) && !successful) {
+            if (getSender().equals(resourceManagerActor) && watchees.contains(resultActor)) {
+                // this is the case when all the resources have failed
                 resultActor.tell(ResourceControl.Fail.create(), getContext().parent());
             }
-        } else if (message instanceof QueryStats) {
-            resultActor.forward(message, getContext());
+            watchees.remove(getSender());
         } else {
             unhandled(message);
         }

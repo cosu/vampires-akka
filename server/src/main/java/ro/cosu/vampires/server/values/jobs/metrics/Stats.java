@@ -27,8 +27,10 @@
 package ro.cosu.vampires.server.values.jobs.metrics;
 
 import com.google.auto.value.AutoValue;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.util.gson.AutoGson;
 
 @AutoValue
@@ -43,9 +45,11 @@ public abstract class Stats {
                 .values(ImmutableMap.of())
                 .meters(ImmutableMap.of())
                 .counters(ImmutableMap.of())
+                .resources(ImmutableList.of())
                 .build();
     }
 
+    public abstract ImmutableList<ResourceInfo> resources();
 
     public abstract ImmutableMap<String, ValueSnapshot> values();
 
@@ -59,6 +63,8 @@ public abstract class Stats {
     @AutoValue.Builder
     public abstract static class Builder {
         public abstract Stats build();
+
+        public abstract Builder resources(ImmutableList<ResourceInfo> resourceInfos);
 
         public abstract Builder values(ImmutableMap<String, ValueSnapshot> values);
 

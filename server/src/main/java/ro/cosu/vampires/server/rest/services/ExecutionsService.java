@@ -39,10 +39,10 @@ import java.util.List;
 import java.util.Optional;
 
 import akka.actor.ActorRef;
+import ro.cosu.vampires.server.actors.messages.execution.DeleteExecution;
 import ro.cosu.vampires.server.actors.messages.execution.QueryExecution;
 import ro.cosu.vampires.server.actors.messages.execution.ResponseExecution;
 import ro.cosu.vampires.server.actors.messages.execution.StartExecution;
-import ro.cosu.vampires.server.actors.messages.resource.DeleteExecution;
 import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.jobs.Execution;
 import ro.cosu.vampires.server.values.jobs.ExecutionInfo;

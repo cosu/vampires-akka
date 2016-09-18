@@ -2,4 +2,4 @@
 
 source $(dirname $0)/common.sh
 
-${curl}  ${api_server}/upload
+list_files

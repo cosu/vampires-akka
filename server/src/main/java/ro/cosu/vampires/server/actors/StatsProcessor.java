@@ -27,6 +27,7 @@
 package ro.cosu.vampires.server.actors;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -102,6 +103,7 @@ public class StatsProcessor {
                 .counters(ImmutableMap.copyOf(counters))
                 .values(ImmutableMap.copyOf(values))
                 .meters(ImmutableMap.copyOf(meters))
+                .resources(ImmutableList.copyOf(resourcesInfo.values()))
                 .histograms(ImmutableMap.copyOf(histograms)).build();
     }
 

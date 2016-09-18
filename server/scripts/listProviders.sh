@@ -4,4 +4,4 @@ set -o nounset
 
 source $(dirname $0)/common.sh
 
-${curl} ${api_server}/providers
+list_providers
