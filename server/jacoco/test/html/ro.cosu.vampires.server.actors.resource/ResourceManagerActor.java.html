@@ -158,8 +158,12 @@ public class ResourceManagerActor extends UntypedActor {
 <span class="fc" id="L158">    }</span>
 
     private void shutdownResources() {
-<span class="fc" id="L161">        resourceRegistry.getResourceActors().forEach(r -&gt; r.forward(ResourceControl.Shutdown.create(), getContext()));</span>
-<span class="fc" id="L162">    }</span>
+
+<span class="fc" id="L162">        resourceRegistry.getResourceActors().forEach(r -&gt; r.forward(ResourceControl.Shutdown.create(), getContext()));</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">        if (resourceRegistry.getResourceActors().isEmpty()) {</span>
+<span class="fc" id="L164">            getContext().stop(getSelf());</span>
+        }
+<span class="fc" id="L166">    }</span>
 
 
 }

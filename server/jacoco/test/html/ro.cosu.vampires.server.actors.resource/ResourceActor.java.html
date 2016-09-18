@@ -57,9 +57,9 @@ public class ResourceActor extends UntypedActorWithStash {
 <span class="fc bfc" id="L57" title="All 2 branches covered.">        } else if (message instanceof ClientInfo) {</span>
 <span class="fc" id="L58">            connectClient((ClientInfo) message);</span>
 <span class="pc bpc" id="L59" title="1 of 2 branches missed.">        } else if (message instanceof ResourceControl.Shutdown) {</span>
-<span class="fc" id="L60">            log.debug(&quot;shutdown &quot; + message);</span>
-<span class="fc" id="L61">            Resource stoppedResource = resource.stop().get();</span>
-<span class="fc" id="L62">            sender.tell(stoppedResource.info(), getSelf());</span>
+<span class="fc" id="L60">            Resource stoppedResource = resource.stop().get();</span>
+<span class="fc" id="L61">            sender.tell(stoppedResource.info(), getSelf());</span>
+<span class="fc" id="L62">            getContext().stop(getSelf());</span>
 <span class="fc" id="L63">        } else {</span>
 <span class="nc" id="L64">            log.error(&quot;unhandled {}&quot;, message);</span>
 <span class="nc" id="L65">            unhandled(message);</span>

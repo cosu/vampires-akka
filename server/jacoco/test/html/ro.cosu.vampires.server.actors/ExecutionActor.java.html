@@ -97,25 +97,23 @@ class ExecutionActor extends UntypedActor {
 <span class="fc" id="L97">            resultActor.tell(message, getSender());</span>
 <span class="fc bfc" id="L98" title="All 2 branches covered.">        } else if (message instanceof ResourceControl.Shutdown) {</span>
 <span class="fc" id="L99">            resourceManagerActor.forward(message, getContext());</span>
-<span class="fc" id="L100">            resultActor.forward(message, getContext());</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">        } else if (message instanceof ResourceInfo) {</span>
-<span class="fc" id="L102">            resultActor.forward(message, getContext());</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">        } else if (message instanceof Execution) {</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        } else if (message instanceof ResourceInfo) {</span>
+<span class="fc" id="L101">            resultActor.forward(message, getContext());</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        } else if (message instanceof Execution) {</span>
             // send exec info back to parent
-<span class="fc" id="L105">            getContext().parent().forward(message, getContext());</span>
-<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        } else if (message instanceof Terminated) {</span>
-<span class="pc bpc" id="L107" title="1 of 2 branches missed.">            if (getSender().equals(resultActor)) {</span>
-<span class="fc" id="L108">                getContext().stop(getSelf());</span>
+<span class="fc" id="L104">            getContext().parent().forward(message, getContext());</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">        } else if (message instanceof Terminated) {</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">            if (getSender().equals(resultActor)) {</span>
+<span class="fc" id="L107">                getContext().stop(getSelf());</span>
             }
-<span class="pc bpc" id="L110" title="3 of 4 branches missed.">            if (getSender().equals(resourceManagerActor) &amp;&amp; watchees.contains(resultActor)) {</span>
-                // this is the case when all the resources have failed
-<span class="nc" id="L112">                resultActor.tell(ResourceControl.Fail.create(), getContext().parent());</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">            if (getSender().equals(resourceManagerActor)) {</span>
+<span class="fc" id="L110">                resultActor.tell(ResourceControl.Shutdown.create(), getContext().parent());</span>
             }
-<span class="fc" id="L114">            watchees.remove(getSender());</span>
+<span class="fc" id="L112">            watchees.remove(getSender());</span>
         } else {
-<span class="nc" id="L116">            unhandled(message);</span>
+<span class="nc" id="L114">            unhandled(message);</span>
         }
-<span class="fc" id="L118">    }</span>
+<span class="fc" id="L116">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

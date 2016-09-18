@@ -120,109 +120,114 @@ import ro.cosu.vampires.server.values.jobs.metrics.ValueSnapshot;
 <span class="fc" id="L120">        String from = message.parameters().id();</span>
 
 <span class="fc" id="L122">        clientsCreatedAt.put(from, message.createdAt());</span>
-<span class="fc" id="L123">        resourcesInfo.put(from, message);</span>
+
+<span class="fc" id="L124">        boolean seenBefore = resourcesInfo.containsKey(from);</span>
+
+<span class="fc" id="L126">        resourcesInfo.put(from, message);</span>
+
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">        if (seenBefore) return;</span>
 
         // node count
-<span class="fc bfc" id="L126" title="All 2 branches covered.">        for (String key : getKeysForMetric(from, &quot;resources&quot;)) {</span>
-<span class="fc" id="L127">            metricRegistry.counter(key).inc();</span>
-<span class="fc" id="L128">        }</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        for (String key : getKeysForMetric(from, &quot;resources&quot;)) {</span>
+<span class="fc" id="L132">            metricRegistry.counter(key).inc();</span>
+<span class="fc" id="L133">        }</span>
 
-<span class="fc" id="L130">        List&lt;String&gt; costMetricKeys = getKeysForMetric(from, &quot;cost&quot;);</span>
+<span class="fc" id="L135">        List&lt;String&gt; costMetricKeys = getKeysForMetric(from, &quot;cost&quot;);</span>
         // remove the client key from the keys. this will provide the actual value
 
-<span class="fc" id="L133">        String clientCostMetricKey = costMetricKeys.get(0);</span>
+<span class="fc" id="L138">        String clientCostMetricKey = costMetricKeys.get(0);</span>
 
         // register a cost gauge for this client
-<span class="fc" id="L136">        metricRegistry.register(clientCostMetricKey, (Gauge&lt;Double&gt;) () -&gt; getCostForClient(from));</span>
+<span class="fc" id="L141">        metricRegistry.register(clientCostMetricKey, (Gauge&lt;Double&gt;) () -&gt; getCostForClient(from));</span>
 
         // cost gauges for the rest
 
-<span class="fc bfc" id="L140" title="All 2 branches covered.">        for (String key : costMetricKeys) {</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">        for (String key : costMetricKeys) {</span>
             // key not registered yet
-<span class="fc bfc" id="L142" title="All 2 branches covered.">            if (!metricRegistry.getGauges().containsKey(key)) {</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">            if (!metricRegistry.getGauges().containsKey(key)) {</span>
 
-<span class="fc" id="L144">                metricRegistry.register(key, (Gauge&lt;Double&gt;) () -&gt;</span>
+<span class="fc" id="L149">                metricRegistry.register(key, (Gauge&lt;Double&gt;) () -&gt;</span>
                         // get all the sibling gauges (but not the current gauge - nudge it with a :)
-<span class="fc bfc" id="L146" title="All 2 branches covered.">                        metricRegistry.getGauges((name, metric) -&gt; name.startsWith(key + &quot;:&quot;) &amp;&amp;</span>
-<span class="fc bfc" id="L147" title="All 2 branches covered.">                                name.split(&quot;:&quot;).length - key.split(&quot;:&quot;).length == 1)</span>
-<span class="fc" id="L148">                                .values().stream()</span>
-<span class="fc" id="L149">                                .mapToDouble(g -&gt; (Double) g.getValue())</span>
-<span class="fc" id="L150">                                .sum());</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">                        metricRegistry.getGauges((name, metric) -&gt; name.startsWith(key + &quot;:&quot;) &amp;&amp;</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">                                name.split(&quot;:&quot;).length - key.split(&quot;:&quot;).length == 1)</span>
+<span class="fc" id="L153">                                .values().stream()</span>
+<span class="fc" id="L154">                                .mapToDouble(g -&gt; (Double) g.getValue())</span>
+<span class="fc" id="L155">                                .sum());</span>
             }
-<span class="fc" id="L152">        }</span>
-<span class="fc" id="L153">    }</span>
+<span class="fc" id="L157">        }</span>
+<span class="fc" id="L158">    }</span>
 
     public void process(Job job) {
 
-<span class="fc" id="L157">        String from = job.from();</span>
+<span class="fc" id="L162">        String from = job.from();</span>
         // do not process jobs from strangers
-<span class="fc bfc" id="L159" title="All 2 branches covered.">        if (!resourcesInfo.containsKey(from)) {</span>
-<span class="fc" id="L160">            LOG.warn(&quot;client {} not registered. skipping processing&quot;, from);</span>
-<span class="fc" id="L161">            return;</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">        if (!resourcesInfo.containsKey(from)) {</span>
+<span class="fc" id="L165">            LOG.warn(&quot;client {} not registered. skipping processing&quot;, from);</span>
+<span class="fc" id="L166">            return;</span>
         }
 
-<span class="pc" id="L164">        job.hostMetrics().metrics().stream().flatMap(m -&gt; m.values().entrySet().stream())</span>
-<span class="fc" id="L165">                .forEach(e -&gt; {</span>
+<span class="pc" id="L169">        job.hostMetrics().metrics().stream().flatMap(m -&gt; m.values().entrySet().stream())</span>
+<span class="fc" id="L170">                .forEach(e -&gt; {</span>
                     // converts doubles to longs
-<span class="nc" id="L167">                    Double value = e.getValue();</span>
-<span class="nc bnc" id="L168" title="All 2 branches missed.">                    if (value &lt; 100) {</span>
-<span class="nc" id="L169">                        value = 1000. * value;</span>
+<span class="nc" id="L172">                    Double value = e.getValue();</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">                    if (value &lt; 100) {</span>
+<span class="nc" id="L174">                        value = 1000. * value;</span>
                     }
-<span class="nc" id="L171">                    long rounded = Math.round(value);</span>
-<span class="nc" id="L172">                    String key = e.getKey();</span>
-<span class="nc" id="L173">                    updateMetric(from, key, rounded);</span>
-<span class="nc" id="L174">                });</span>
+<span class="nc" id="L176">                    long rounded = Math.round(value);</span>
+<span class="nc" id="L177">                    String key = e.getKey();</span>
+<span class="nc" id="L178">                    updateMetric(from, key, rounded);</span>
+<span class="nc" id="L179">                });</span>
 
-<span class="fc" id="L176">        updateMetric(from, &quot;duration&quot;, job.result().duration());</span>
-<span class="fc" id="L177">        updateMetric(from, &quot;job&quot;, 0);</span>
+<span class="fc" id="L181">        updateMetric(from, &quot;duration&quot;, job.result().duration());</span>
+<span class="fc" id="L182">        updateMetric(from, &quot;job&quot;, 0);</span>
 
-<span class="fc" id="L179">    }</span>
+<span class="fc" id="L184">    }</span>
 
     private void updateMetric(String clientId, String metric, long value) {
 
-<span class="fc bfc" id="L183" title="All 2 branches covered.">        for (String key : getKeysForMetric(clientId, metric)) {</span>
-<span class="fc bfc" id="L184" title="All 2 branches covered.">            if (&quot;job&quot;.equals(metric)) {</span>
-<span class="fc" id="L185">                metricRegistry.meter(key).mark();</span>
-<span class="pc bpc" id="L186" title="1 of 2 branches missed.">            } else if (metric.contains(&quot;bytes&quot;)) {</span>
-<span class="nc" id="L187">                metricRegistry.counter(key).inc(value);</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">        for (String key : getKeysForMetric(clientId, metric)) {</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">            if (&quot;job&quot;.equals(metric)) {</span>
+<span class="fc" id="L190">                metricRegistry.meter(key).mark();</span>
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">            } else if (metric.contains(&quot;bytes&quot;)) {</span>
+<span class="nc" id="L192">                metricRegistry.counter(key).inc(value);</span>
             } else {
-<span class="fc" id="L189">                metricRegistry.histogram(key).update(value);</span>
+<span class="fc" id="L194">                metricRegistry.histogram(key).update(value);</span>
             }
-<span class="fc" id="L191">        }</span>
-<span class="fc" id="L192">    }</span>
+<span class="fc" id="L196">        }</span>
+<span class="fc" id="L197">    }</span>
 
     private double getCostForClient(String id) {
 
-<span class="fc" id="L196">        long billedHours = getDurationForClient(id).toHours() + 1;</span>
-<span class="fc" id="L197">        double cost = resourcesInfo.get(id).parameters().cost();</span>
-<span class="fc" id="L198">        return billedHours * cost;</span>
+<span class="fc" id="L201">        long billedHours = getDurationForClient(id).toHours() + 1;</span>
+<span class="fc" id="L202">        double cost = resourcesInfo.get(id).parameters().cost();</span>
+<span class="fc" id="L203">        return billedHours * cost;</span>
     }
 
     private Duration getDurationForClient(String id) {
-<span class="fc" id="L202">        LocalDateTime createdAt = clientsCreatedAt.get(id);</span>
-<span class="fc" id="L203">        LocalDateTime now = LocalDateTime.now();</span>
+<span class="fc" id="L207">        LocalDateTime createdAt = clientsCreatedAt.get(id);</span>
+<span class="fc" id="L208">        LocalDateTime now = LocalDateTime.now();</span>
 
-<span class="fc" id="L205">        return Duration.between(createdAt, now);</span>
+<span class="fc" id="L210">        return Duration.between(createdAt, now);</span>
     }
 
     private String getInstanceType(String from) {
-<span class="fc" id="L209">        return resourcesInfo.get(from).parameters().instanceType();</span>
+<span class="fc" id="L214">        return resourcesInfo.get(from).parameters().instanceType();</span>
     }
 
     private Resource.ProviderType getProviderType(String from) {
-<span class="fc" id="L213">        return resourcesInfo.get(from).parameters().providerType();</span>
+<span class="fc" id="L218">        return resourcesInfo.get(from).parameters().providerType();</span>
     }
 
     private List&lt;String&gt; getKeysForMetric(String clientId, String metric) {
 
-<span class="fc" id="L218">        String instanceType = getInstanceType(clientId);</span>
-<span class="fc" id="L219">        Resource.ProviderType providerType = getProviderType(clientId);</span>
+<span class="fc" id="L223">        String instanceType = getInstanceType(clientId);</span>
+<span class="fc" id="L224">        Resource.ProviderType providerType = getProviderType(clientId);</span>
 
         // return the keys in reverse order: most specific (longest) first
-<span class="fc" id="L222">        return Lists.reverse(Lists.newArrayList(metric,</span>
-<span class="fc" id="L223">                Joiner.on(&quot;:&quot;).join(metric, providerType),</span>
-<span class="fc" id="L224">                Joiner.on(&quot;:&quot;).join(metric, providerType, instanceType),</span>
-<span class="fc" id="L225">                Joiner.on(&quot;:&quot;).join(metric, providerType, instanceType, clientId)));</span>
+<span class="fc" id="L227">        return Lists.reverse(Lists.newArrayList(metric,</span>
+<span class="fc" id="L228">                Joiner.on(&quot;:&quot;).join(metric, providerType),</span>
+<span class="fc" id="L229">                Joiner.on(&quot;:&quot;).join(metric, providerType, instanceType),</span>
+<span class="fc" id="L230">                Joiner.on(&quot;:&quot;).join(metric, providerType, instanceType, clientId)));</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
