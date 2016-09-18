@@ -192,10 +192,10 @@ public class ResultActor extends UntypedActor {
 
     private Scheduler getScheduler(Execution execution) {
 <span class="fc" id="L194">        List&lt;Job&gt; jobs = execution.workload().jobs();</span>
-<span class="pc bpc" id="L195" title="1 of 2 branches missed.">        if (execution.type().equals(ExecutionMode.SAMPLE)) {</span>
-<span class="nc" id="L196">            log.info(&quot;running in sampling mode : sampling from {} jobs&quot;, jobs.size());</span>
-<span class="nc" id="L197">            return new SamplingScheduler(jobs, settings.getJobDeadline(),</span>
-<span class="nc" id="L198">                    settings.getBackoffInterval(), settings.getNumberOfJobsToSample());</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">        if (execution.type().equals(ExecutionMode.SAMPLE)) {</span>
+<span class="fc" id="L196">            log.info(&quot;running in sampling mode : sampling from {} jobs&quot;, jobs.size());</span>
+<span class="fc" id="L197">            return new SamplingScheduler(jobs, settings.getJobDeadline(),</span>
+<span class="fc" id="L198">                    settings.getBackoffInterval(), settings.getNumberOfJobsToSample());</span>
         } else
 <span class="fc" id="L200">            return new SimpleScheduler(jobs, settings.getJobDeadline(), TimeUnit.SECONDS,</span>
 <span class="fc" id="L201">                    settings.getBackoffInterval());</span>
