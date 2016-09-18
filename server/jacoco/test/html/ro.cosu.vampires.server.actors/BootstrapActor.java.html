@@ -45,10 +45,11 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.configuration.ConfigurationMessage;
+import ro.cosu.vampires.server.actors.messages.execution.DeleteExecution;
+import ro.cosu.vampires.server.actors.messages.execution.ExecutionMessage;
 import ro.cosu.vampires.server.actors.messages.execution.QueryExecution;
 import ro.cosu.vampires.server.actors.messages.execution.ResponseExecution;
 import ro.cosu.vampires.server.actors.messages.execution.StartExecution;
-import ro.cosu.vampires.server.actors.messages.resource.DeleteExecution;
 import ro.cosu.vampires.server.actors.messages.workload.WorkloadMessage;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.settings.Settings;
@@ -64,141 +65,137 @@ public class BootstrapActor extends UntypedActor {
     private final ActorRef terminator;
     private final ActorRef configurationsActor;
     private final ActorRef workloadsActor;
-<span class="fc" id="L67">    private final SettingsImpl settings = Settings.SettingsProvider.get(getContext().system());</span>
-<span class="fc" id="L68">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
-<span class="fc" id="L69">    private Map&lt;String, ActorRef&gt; executionsToActors = Maps.newHashMap();</span>
-<span class="fc" id="L70">    private HashBasedTable&lt;User, String, Execution&gt; executionHashBasedTable = HashBasedTable.create();</span>
+<span class="fc" id="L68">    private final SettingsImpl settings = Settings.SettingsProvider.get(getContext().system());</span>
+<span class="fc" id="L69">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
+<span class="fc" id="L70">    private Map&lt;String, ActorRef&gt; executionsToActors = Maps.newHashMap();</span>
+<span class="fc" id="L71">    private HashBasedTable&lt;User, String, Execution&gt; executionHashBasedTable = HashBasedTable.create();</span>
+<span class="fc" id="L72">    private RestModule restModule = new RestModule(getSelf(), settings.getProviders(), settings.vampires.getConfig(&quot;rest&quot;));</span>
 
 
-<span class="fc" id="L73">    private RestModule restModule = new RestModule(getSelf(), settings.getProviders(), settings.vampires.getConfig(&quot;rest&quot;));</span>
-
-
-<span class="fc" id="L76">    BootstrapActor(ActorRef terminator) {</span>
-<span class="fc" id="L77">        this.terminator = terminator;</span>
-<span class="fc" id="L78">        configurationsActor = getContext().actorOf(ConfigurationsActor.props(), &quot;configurations&quot;);</span>
-<span class="fc" id="L79">        workloadsActor = getContext().actorOf(WorkloadsActor.props(), &quot;workloads&quot;);</span>
-<span class="fc" id="L80">    }</span>
+<span class="fc" id="L75">    BootstrapActor(ActorRef terminator) {</span>
+<span class="fc" id="L76">        this.terminator = terminator;</span>
+<span class="fc" id="L77">        configurationsActor = getContext().actorOf(ConfigurationsActor.props(), &quot;configurations&quot;);</span>
+<span class="fc" id="L78">        workloadsActor = getContext().actorOf(WorkloadsActor.props(), &quot;workloads&quot;);</span>
+<span class="fc" id="L79">    }</span>
 
     public static Props props(ActorRef terminator) {
-<span class="fc" id="L83">        return Props.create(BootstrapActor.class, terminator);</span>
+<span class="fc" id="L82">        return Props.create(BootstrapActor.class, terminator);</span>
     }
 
     @Override
     public void preStart() {
-<span class="fc" id="L88">        terminator.tell(ResourceControl.Up.create(), getSelf());</span>
-<span class="fc" id="L89">        startWebserver();</span>
-<span class="fc" id="L90">    }</span>
+<span class="fc" id="L87">        terminator.tell(ResourceControl.Up.create(), getSelf());</span>
+<span class="fc" id="L88">        startWebserver();</span>
+<span class="fc" id="L89">    }</span>
 
     private void startWebserver() {
-<span class="fc" id="L93">        Spark.port(settings.vampires.getInt(&quot;rest.port&quot;));</span>
-<span class="fc" id="L94">        Spark.init();</span>
-<span class="fc" id="L95">        Guice.createInjector(restModule);</span>
-<span class="fc" id="L96">    }</span>
+<span class="fc" id="L92">        Spark.port(settings.vampires.getInt(&quot;rest.port&quot;));</span>
+<span class="fc" id="L93">        Spark.init();</span>
+<span class="fc" id="L94">        Guice.createInjector(restModule);</span>
+<span class="fc" id="L95">    }</span>
 
 
     @Override
     public void postStop() {
-<span class="fc" id="L101">        Spark.stop();</span>
-<span class="fc" id="L102">    }</span>
+<span class="fc" id="L100">        Spark.stop();</span>
+<span class="fc" id="L101">    }</span>
 
     @Override
     public void onReceive(Object message) throws Exception {
-<span class="fc bfc" id="L106" title="All 2 branches covered.">        if (message instanceof StartExecution) {</span>
-<span class="fc" id="L107">            StartExecution startExecution = (StartExecution) message;</span>
-<span class="fc" id="L108">            handleStartExecution(startExecution);</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">        } else if (message instanceof Execution) {</span>
-<span class="fc" id="L110">            Execution execution = (Execution) message;</span>
-<span class="fc" id="L111">            handleExecution(execution);</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">        } else if (message instanceof QueryExecution) {</span>
-<span class="fc" id="L113">            QueryExecution queryExecution = (QueryExecution) message;</span>
-<span class="fc" id="L114">            queryExecution(queryExecution);</span>
-<span class="fc bfc" id="L115" title="All 2 branches covered.">        } else if (message instanceof DeleteExecution) {</span>
-<span class="fc" id="L116">            DeleteExecution shutdownResource = (DeleteExecution) message;</span>
-<span class="fc" id="L117">            handleShutdown(shutdownResource);</span>
-<span class="pc bpc" id="L118" title="1 of 2 branches missed.">        } else if (message instanceof ConfigurationMessage) {</span>
-<span class="nc" id="L119">            configurationsActor.forward(message, getContext());</span>
-<span class="pc bpc" id="L120" title="1 of 2 branches missed.">        } else if (message instanceof WorkloadMessage) {</span>
-<span class="nc" id="L121">            workloadsActor.forward(message, getContext());</span>
-<span class="pc bpc" id="L122" title="1 of 2 branches missed.">        } else if (message instanceof Terminated) {</span>
-<span class="fc" id="L123">            handleTerminated();</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        if (message instanceof Execution) {</span>
+<span class="fc" id="L106">            handleExecution((Execution) message);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        } else if (message instanceof ExecutionMessage) {</span>
+<span class="fc" id="L108">            handleExecutionMessage((ExecutionMessage) message);</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        } else if (message instanceof ConfigurationMessage) {</span>
+<span class="nc" id="L110">            configurationsActor.forward(message, getContext());</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">        } else if (message instanceof WorkloadMessage) {</span>
+<span class="nc" id="L112">            workloadsActor.forward(message, getContext());</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">        } else if (message instanceof Terminated) {</span>
+<span class="fc" id="L114">            handleTerminated();</span>
         } else {
-<span class="nc" id="L125">            unhandled(message);</span>
+<span class="nc" id="L116">            unhandled(message);</span>
         }
-<span class="fc" id="L127">    }</span>
+<span class="fc" id="L118">    }</span>
 
+    private void handleExecutionMessage(ExecutionMessage message) {
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        if (message instanceof StartExecution) {</span>
+<span class="fc" id="L122">            handleStartExecution((StartExecution) message);</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">        } else if (message instanceof QueryExecution) {</span>
+<span class="fc" id="L124">            queryExecution((QueryExecution) message);</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">        } else if (message instanceof DeleteExecution) {</span>
+<span class="fc" id="L126">            handleShutdown((DeleteExecution) message);</span>
+        } else {
+<span class="nc" id="L128">            log.error(&quot;Unknown execution message {}&quot;, message);</span>
+        }
+<span class="fc" id="L130">    }</span>
 
     private void handleShutdown(DeleteExecution deleteExecution) {
-<span class="fc" id="L131">        User user = deleteExecution.user();</span>
+<span class="fc" id="L133">        User user = deleteExecution.user();</span>
 
-<span class="fc" id="L133">        boolean userHasExecution = getResultsMap(user).containsKey(deleteExecution.resourceId());</span>
-<span class="fc" id="L134">        boolean executionHasActor = executionsToActors.containsKey(deleteExecution.resourceId());</span>
+<span class="fc" id="L135">        boolean userHasExecution = getResultsMap(user).containsKey(deleteExecution.resourceId());</span>
+<span class="fc" id="L136">        boolean executionHasActor = executionsToActors.containsKey(deleteExecution.resourceId());</span>
 
-<span class="pc bpc" id="L136" title="2 of 4 branches missed.">        if (userHasExecution &amp;&amp; executionHasActor) {</span>
-<span class="fc" id="L137">            Execution execution = getResultsMap(user).get(deleteExecution.resourceId());</span>
-<span class="fc" id="L138">            boolean executionCanShutdown = ExecutionInfo.isActiveStatus(execution.info().status());</span>
-<span class="pc bpc" id="L139" title="1 of 2 branches missed.">            if (executionCanShutdown) {</span>
-<span class="fc" id="L140">                ActorRef executionActor = executionsToActors.get(deleteExecution.resourceId());</span>
-<span class="fc" id="L141">                executionActor.tell(ResourceControl.Shutdown.create(), getSelf());</span>
+<span class="pc bpc" id="L138" title="2 of 4 branches missed.">        if (userHasExecution &amp;&amp; executionHasActor) {</span>
+<span class="fc" id="L139">            Execution execution = getResultsMap(user).get(deleteExecution.resourceId());</span>
+<span class="fc" id="L140">            boolean executionCanShutdown = ExecutionInfo.isActiveStatus(execution.info().status());</span>
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">            if (executionCanShutdown) {</span>
+<span class="fc" id="L142">                ActorRef executionActor = executionsToActors.get(deleteExecution.resourceId());</span>
+<span class="fc" id="L143">                executionActor.tell(ResourceControl.Shutdown.create(), getSelf());</span>
 
                 // update the current view of the execution
-<span class="fc" id="L144">                execution = execution.withInfo(execution.info()</span>
-<span class="fc" id="L145">                        .updateStatus(ExecutionInfo.Status.STOPPING));</span>
-<span class="fc" id="L146">                getResultsMap(user).put(execution.id(), execution);</span>
-<span class="fc" id="L147">            } else {</span>
-<span class="nc" id="L148">                log.warning(&quot;shutting down a non-running execution {}&quot;, execution);</span>
+<span class="fc" id="L146">                execution = execution.withInfo(execution.info()</span>
+<span class="fc" id="L147">                        .updateStatus(ExecutionInfo.Status.STOPPING));</span>
+<span class="fc" id="L148">                getResultsMap(user).put(execution.id(), execution);</span>
+<span class="fc" id="L149">            } else {</span>
+<span class="nc" id="L150">                log.error(&quot;shutting down a non-running execution {}&quot;, execution);</span>
             }
-<span class="fc" id="L150">            getSender().tell(ResponseExecution.create(ImmutableList.of(execution)), getSelf());</span>
+<span class="fc" id="L152">            getSender().tell(ResponseExecution.create(ImmutableList.of(execution)), getSelf());</span>
         }
-<span class="fc" id="L152">    }</span>
+<span class="fc" id="L154">    }</span>
 
     private void handleTerminated() {
-<span class="fc" id="L155">        Optional&lt;String&gt; execId =</span>
-<span class="fc" id="L156">                executionsToActors.entrySet().stream()</span>
-<span class="fc" id="L157">                        .filter(e -&gt; e.getValue().equals(getSender()))</span>
-<span class="fc" id="L158">                        .map(Map.Entry::getKey).findFirst();</span>
-
-<span class="pc bpc" id="L160" title="1 of 2 branches missed.">        if (execId.isPresent()) {</span>
-<span class="fc" id="L161">            String id = execId.get();</span>
-<span class="fc" id="L162">            executionsToActors.remove(id);</span>
-<span class="fc" id="L163">            log.info(&quot;{} terminated &quot;, id);</span>
-        }
-<span class="fc" id="L165">    }</span>
+<span class="fc" id="L157">        executionsToActors.entrySet().stream()</span>
+<span class="fc" id="L158">                .filter(e -&gt; e.getValue().equals(getSender()))</span>
+<span class="fc" id="L159">                .map(Map.Entry::getKey)</span>
+<span class="fc" id="L160">                .findFirst().ifPresent(id -&gt; {</span>
+<span class="fc" id="L161">            executionsToActors.remove(id);</span>
+<span class="fc" id="L162">            log.info(&quot;{} terminated &quot;, id);</span>
+<span class="fc" id="L163">        });</span>
+<span class="fc" id="L164">    }</span>
 
     private void handleStartExecution(StartExecution startExecution) {
-<span class="fc" id="L168">        Execution execution = startExecution.execution();</span>
+<span class="fc" id="L167">        Execution execution = startExecution.execution();</span>
 
-<span class="pc bpc" id="L170" title="1 of 2 branches missed.">        if (!executionsToActors.containsKey(execution.id())) {</span>
-<span class="fc" id="L171">            ActorRef executionActor = getContext().actorOf(ExecutionActor.props(execution), execution.id());</span>
-<span class="fc" id="L172">            executionsToActors.put(execution.id(), executionActor);</span>
-<span class="fc" id="L173">            executionActor.tell(execution, getSelf());</span>
-<span class="fc" id="L174">            getContext().watch(executionActor);</span>
-<span class="fc" id="L175">            getResultsMap(startExecution.user()).put(execution.id(), execution);</span>
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">        if (!executionsToActors.containsKey(execution.id())) {</span>
+<span class="fc" id="L170">            ActorRef executionActor = getContext().actorOf(ExecutionActor.props(execution), execution.id());</span>
+<span class="fc" id="L171">            executionsToActors.put(execution.id(), executionActor);</span>
+<span class="fc" id="L172">            executionActor.tell(execution, getSelf());</span>
+<span class="fc" id="L173">            getContext().watch(executionActor);</span>
+<span class="fc" id="L174">            getResultsMap(startExecution.user()).put(execution.id(), execution);</span>
         }
-<span class="fc" id="L177">    }</span>
+<span class="fc" id="L176">    }</span>
 
     private void handleExecution(Execution execution) {
         //lsupdate or finished execution
-<span class="fc" id="L181">        User user = executionHashBasedTable.column(execution.id()).keySet().iterator().next();</span>
-<span class="fc" id="L182">        getResultsMap(user).put(execution.id(), execution);</span>
-<span class="fc" id="L183">    }</span>
+<span class="fc" id="L180">        User user = executionHashBasedTable.column(execution.id()).keySet().iterator().next();</span>
+<span class="fc" id="L181">        getResultsMap(user).put(execution.id(), execution);</span>
+<span class="fc" id="L182">    }</span>
 
     private Map&lt;String, Execution&gt; getResultsMap(User user) {
-<span class="fc" id="L186">        return executionHashBasedTable.row(user);</span>
+<span class="fc" id="L185">        return executionHashBasedTable.row(user);</span>
     }
 
-
     private void queryExecution(QueryExecution info) {
-<span class="fc" id="L191">        User user = info.user();</span>
+<span class="fc" id="L189">        User user = info.user();</span>
         List&lt;Execution&gt; executionList;
-<span class="pc bpc" id="L193" title="1 of 2 branches missed.">        if (info.equals(QueryExecution.all(info.user()))) {</span>
-<span class="nc" id="L194">            executionList = new ArrayList&lt;&gt;(getResultsMap(user).values());</span>
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">        if (info.equals(QueryExecution.all(info.user()))) {</span>
+<span class="nc" id="L192">            executionList = new ArrayList&lt;&gt;(getResultsMap(user).values());</span>
         } else {
-<span class="fc" id="L196">            executionList = Optional.ofNullable(getResultsMap(user).get(info.resourceId()))</span>
-<span class="fc" id="L197">                    .map(Lists::newArrayList)</span>
-<span class="fc" id="L198">                    .orElse(Lists.newArrayList());</span>
+<span class="fc" id="L194">            executionList = Optional.ofNullable(getResultsMap(user).get(info.resourceId()))</span>
+<span class="fc" id="L195">                    .map(Lists::newArrayList)</span>
+<span class="fc" id="L196">                    .orElse(Lists.newArrayList());</span>
         }
-<span class="fc" id="L200">        getSender().tell(ResponseExecution.create(executionList), getSelf());</span>
-
-<span class="fc" id="L202">    }</span>
+<span class="fc" id="L198">        getSender().tell(ResponseExecution.create(executionList), getSelf());</span>
+<span class="fc" id="L199">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

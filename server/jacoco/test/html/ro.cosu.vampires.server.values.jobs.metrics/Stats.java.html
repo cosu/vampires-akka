@@ -27,25 +27,29 @@
 package ro.cosu.vampires.server.values.jobs.metrics;
 
 import com.google.auto.value.AutoValue;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.util.gson.AutoGson;
 
 @AutoValue
 @AutoGson
-<span class="fc" id="L36">public abstract class Stats {</span>
+<span class="fc" id="L38">public abstract class Stats {</span>
     public static Builder builder() {
-<span class="fc" id="L38">        return new AutoValue_Stats.Builder();</span>
+<span class="fc" id="L40">        return new AutoValue_Stats.Builder();</span>
     }
 
     public static Stats empty() {
-<span class="fc" id="L42">        return builder().histograms(ImmutableMap.of())</span>
-<span class="fc" id="L43">                .values(ImmutableMap.of())</span>
-<span class="fc" id="L44">                .meters(ImmutableMap.of())</span>
-<span class="fc" id="L45">                .counters(ImmutableMap.of())</span>
-<span class="fc" id="L46">                .build();</span>
+<span class="fc" id="L44">        return builder().histograms(ImmutableMap.of())</span>
+<span class="fc" id="L45">                .values(ImmutableMap.of())</span>
+<span class="fc" id="L46">                .meters(ImmutableMap.of())</span>
+<span class="fc" id="L47">                .counters(ImmutableMap.of())</span>
+<span class="fc" id="L48">                .resources(ImmutableList.of())</span>
+<span class="fc" id="L49">                .build();</span>
     }
 
+    public abstract ImmutableList&lt;ResourceInfo&gt; resources();
 
     public abstract ImmutableMap&lt;String, ValueSnapshot&gt; values();
 
@@ -56,9 +60,11 @@ import ro.cosu.vampires.server.util.gson.AutoGson;
     public abstract ImmutableMap&lt;String, HistogramSnapshot&gt; histograms();
 
 
-<span class="fc" id="L59">    @AutoValue.Builder</span>
-<span class="fc" id="L60">    public abstract static class Builder {</span>
+<span class="fc" id="L63">    @AutoValue.Builder</span>
+<span class="fc" id="L64">    public abstract static class Builder {</span>
         public abstract Stats build();
+
+        public abstract Builder resources(ImmutableList&lt;ResourceInfo&gt; resourceInfos);
 
         public abstract Builder values(ImmutableMap&lt;String, ValueSnapshot&gt; values);
 

@@ -163,38 +163,39 @@ public class ResultActor extends UntypedActor {
 <span class="fc" id="L163">            sendCurrentExecutionInfo(ExecutionInfo.Status.RUNNING);</span>
         }
 <span class="pc bpc" id="L165" title="1 of 2 branches missed.">        if (results.size() == totalSize) {</span>
-<span class="nc" id="L166">            log.debug(&quot;result actor exiting {}&quot;, results.size());</span>
-<span class="nc" id="L167">            shutdown(ExecutionInfo.Status.FINISHED);</span>
+            // signal parent we're done
+<span class="nc" id="L167">            log.debug(&quot;result actor exiting {}&quot;, results.size());</span>
+<span class="nc" id="L168">            shutdown(ExecutionInfo.Status.FINISHED);</span>
         }
-<span class="fc" id="L169">    }</span>
+<span class="fc" id="L170">    }</span>
 
     private void handleClientInfo(ClientInfo clientInfo) {
-<span class="fc" id="L172">        ActorRef configActor = getContext().actorOf(ClientConfigActor.props(), &quot;clientConfig-&quot; + clientInfo.id());</span>
-<span class="fc" id="L173">        log.debug(&quot;got client info {}&quot;, clientInfo);</span>
-<span class="fc" id="L174">        configActor.forward(clientInfo, getContext());</span>
-<span class="pc" id="L175">        writers.forEach(r -&gt; r.addClient(clientInfo));</span>
-<span class="fc" id="L176">        statsProcessor.process(clientInfo);</span>
-<span class="fc" id="L177">    }</span>
+<span class="fc" id="L173">        ActorRef configActor = getContext().actorOf(ClientConfigActor.props(), &quot;clientConfig-&quot; + clientInfo.id());</span>
+<span class="fc" id="L174">        log.debug(&quot;got client info {}&quot;, clientInfo);</span>
+<span class="fc" id="L175">        configActor.forward(clientInfo, getContext());</span>
+<span class="pc" id="L176">        writers.forEach(r -&gt; r.addClient(clientInfo));</span>
+<span class="fc" id="L177">        statsProcessor.process(clientInfo);</span>
+<span class="fc" id="L178">    }</span>
 
     private void shutdown(ExecutionInfo.Status status) {
-<span class="fc" id="L180">        log.info(&quot;Total Duration: {}&quot;, formatDuration(Duration.between(startTime, LocalDateTime.now())));</span>
-<span class="fc" id="L181">        log.info(&quot;shutting down&quot;);</span>
-<span class="fc" id="L182">        writers.forEach(ResultsWriter::close);</span>
+<span class="fc" id="L181">        log.info(&quot;Total Duration: {}&quot;, formatDuration(Duration.between(startTime, LocalDateTime.now())));</span>
+<span class="fc" id="L182">        log.info(&quot;shutting down&quot;);</span>
+<span class="fc" id="L183">        writers.forEach(ResultsWriter::close);</span>
         // init shutdown
-<span class="fc" id="L184">        statsProcessor.flush();</span>
-<span class="fc" id="L185">        sendCurrentExecutionInfo(status);</span>
-<span class="fc" id="L186">        getContext().stop(getSelf());</span>
-<span class="fc" id="L187">    }</span>
+<span class="fc" id="L185">        statsProcessor.flush();</span>
+<span class="fc" id="L186">        sendCurrentExecutionInfo(status);</span>
+<span class="fc" id="L187">        getContext().stop(getSelf());</span>
+<span class="fc" id="L188">    }</span>
 
     private Scheduler getScheduler(Execution execution) {
-<span class="fc" id="L190">        List&lt;Job&gt; jobs = execution.workload().jobs();</span>
-<span class="pc bpc" id="L191" title="1 of 2 branches missed.">        if (execution.type().equals(ExecutionMode.SAMPLE)) {</span>
-<span class="nc" id="L192">            log.info(&quot;running in sampling mode : sampling from {} jobs&quot;, jobs.size());</span>
-<span class="nc" id="L193">            return new SamplingScheduler(jobs, settings.getJobDeadline(),</span>
-<span class="nc" id="L194">                    settings.getBackoffInterval(), settings.getNumberOfJobsToSample());</span>
+<span class="fc" id="L191">        List&lt;Job&gt; jobs = execution.workload().jobs();</span>
+<span class="pc bpc" id="L192" title="1 of 2 branches missed.">        if (execution.type().equals(ExecutionMode.SAMPLE)) {</span>
+<span class="nc" id="L193">            log.info(&quot;running in sampling mode : sampling from {} jobs&quot;, jobs.size());</span>
+<span class="nc" id="L194">            return new SamplingScheduler(jobs, settings.getJobDeadline(),</span>
+<span class="nc" id="L195">                    settings.getBackoffInterval(), settings.getNumberOfJobsToSample());</span>
         } else
-<span class="fc" id="L196">            return new SimpleScheduler(jobs, settings.getJobDeadline(), TimeUnit.SECONDS,</span>
-<span class="fc" id="L197">                    settings.getBackoffInterval());</span>
+<span class="fc" id="L197">            return new SimpleScheduler(jobs, settings.getJobDeadline(), TimeUnit.SECONDS,</span>
+<span class="fc" id="L198">                    settings.getBackoffInterval());</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

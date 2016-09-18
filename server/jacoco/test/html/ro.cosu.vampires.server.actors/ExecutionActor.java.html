@@ -38,7 +38,8 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.Terminated;
 import akka.actor.UntypedActor;
-import ro.cosu.vampires.server.actors.messages.QueryStats;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.resource.BootstrapResource;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.resource.ResourceManagerActor;
@@ -50,73 +51,71 @@ import ro.cosu.vampires.server.values.resources.ResourceDemand;
 
 class ExecutionActor extends UntypedActor {
 
-<span class="fc" id="L53">    private Set&lt;ActorRef&gt; watchees = Sets.newLinkedHashSet();</span>
+<span class="fc" id="L54">    private Set&lt;ActorRef&gt; watchees = Sets.newLinkedHashSet();</span>
     private ActorRef resourceManagerActor;
     private ActorRef resultActor;
-<span class="fc" id="L56">    private boolean successful = false;</span>
+<span class="fc" id="L57">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
 
-<span class="fc" id="L58">    public ExecutionActor(Execution execution) {</span>
-<span class="fc" id="L59">        startExecution(execution);</span>
-<span class="fc" id="L60">    }</span>
+<span class="fc" id="L59">    public ExecutionActor(Execution execution) {</span>
+<span class="fc" id="L60">        startExecution(execution);</span>
+<span class="fc" id="L61">    }</span>
 
     public static Props props(Execution execution) {
-<span class="fc" id="L63">        return Props.create(ExecutionActor.class, execution);</span>
+<span class="fc" id="L64">        return Props.create(ExecutionActor.class, execution);</span>
     }
 
     private void startExecution(Execution execution) {
 
-<span class="fc" id="L68">        resourceManagerActor = getContext().actorOf(ResourceManagerActor.props(), &quot;resourceActor&quot;);</span>
-<span class="fc" id="L69">        resultActor = getContext().actorOf(ResultActor.props(execution), &quot;resultActor&quot;);</span>
-<span class="fc" id="L70">        getContext().watch(resourceManagerActor);</span>
-<span class="fc" id="L71">        getContext().watch(resultActor);</span>
+<span class="fc" id="L69">        resourceManagerActor = getContext().actorOf(ResourceManagerActor.props(), &quot;resourceManagerActor&quot;);</span>
+<span class="fc" id="L70">        resultActor = getContext().actorOf(ResultActor.props(execution), &quot;resultActor&quot;);</span>
+<span class="fc" id="L71">        getContext().watch(resourceManagerActor);</span>
+<span class="fc" id="L72">        getContext().watch(resultActor);</span>
 
-<span class="fc" id="L73">        watchees.add(resourceManagerActor);</span>
-<span class="fc" id="L74">        watchees.add(resultActor);</span>
+<span class="fc" id="L74">        watchees.add(resourceManagerActor);</span>
+<span class="fc" id="L75">        watchees.add(resultActor);</span>
 
-<span class="fc" id="L76">        execution.configuration().withMode(execution.type()).resources().stream()</span>
-<span class="fc" id="L77">                .flatMap(resourceDemand -&gt; bootstrapResourceList(execution.id(), resourceDemand).stream())</span>
-<span class="fc" id="L78">                .forEach(bootstrapResource -&gt; resourceManagerActor.tell(bootstrapResource, getSelf()));</span>
-<span class="fc" id="L79">    }</span>
+<span class="fc" id="L77">        execution.configuration().withMode(execution.type()).resources().stream()</span>
+<span class="fc" id="L78">                .flatMap(resourceDemand -&gt; bootstrapResourceList(execution.id(), resourceDemand).stream())</span>
+<span class="fc" id="L79">                .forEach(bootstrapResource -&gt; resourceManagerActor.tell(bootstrapResource, getSelf()));</span>
+<span class="fc" id="L80">    }</span>
 
     private List&lt;BootstrapResource&gt; bootstrapResourceList(String executionid, ResourceDemand resourceDemand) {
-<span class="fc" id="L82">        return IntStream.range(0, resourceDemand.count()).boxed()</span>
-<span class="fc" id="L83">                .map(i -&gt; BootstrapResource.create(</span>
-<span class="fc" id="L84">                        resourceDemand.resourceDescription().provider(),</span>
-<span class="fc" id="L85">                        resourceDemand.resourceDescription().type(),</span>
+<span class="fc" id="L83">        return IntStream.range(0, resourceDemand.count()).boxed()</span>
+<span class="fc" id="L84">                .map(i -&gt; BootstrapResource.create(</span>
+<span class="fc" id="L85">                        resourceDemand.resourceDescription().provider(),</span>
+<span class="fc" id="L86">                        resourceDemand.resourceDescription().type(),</span>
                         executionid))
-<span class="fc" id="L87">                .collect(Collectors.toList());</span>
+<span class="fc" id="L88">                .collect(Collectors.toList());</span>
     }
 
 
     @Override
     public void onReceive(Object message) throws Exception {
-<span class="fc bfc" id="L93" title="All 2 branches covered.">        if (message instanceof ClientInfo) {</span>
-<span class="fc" id="L94">            watchees.forEach(actorRef -&gt; actorRef.forward(message, getContext()));</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">        } else if (message instanceof Job) {</span>
-<span class="fc" id="L96">            resultActor.tell(message, getSender());</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">        } else if (message instanceof ResourceControl.Shutdown) {</span>
-<span class="fc" id="L98">            resourceManagerActor.forward(message, getContext());</span>
-<span class="fc" id="L99">            resultActor.forward(message, getContext());</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">        } else if (message instanceof ResourceInfo) {</span>
-<span class="fc" id="L101">            resultActor.forward(message, getContext());</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">        } else if (message instanceof Execution) {</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        if (message instanceof ClientInfo) {</span>
+<span class="fc" id="L95">            watchees.forEach(actorRef -&gt; actorRef.forward(message, getContext()));</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        } else if (message instanceof Job) {</span>
+<span class="fc" id="L97">            resultActor.tell(message, getSender());</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        } else if (message instanceof ResourceControl.Shutdown) {</span>
+<span class="fc" id="L99">            resourceManagerActor.forward(message, getContext());</span>
+<span class="fc" id="L100">            resultActor.forward(message, getContext());</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        } else if (message instanceof ResourceInfo) {</span>
+<span class="fc" id="L102">            resultActor.forward(message, getContext());</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        } else if (message instanceof Execution) {</span>
             // send exec info back to parent
-<span class="fc" id="L104">            getContext().parent().forward(message, getContext());</span>
-<span class="pc bpc" id="L105" title="1 of 2 branches missed.">        } else if (message instanceof Terminated) {</span>
-<span class="pc bpc" id="L106" title="1 of 2 branches missed.">            if (getSender().equals(resultActor)) {</span>
-<span class="fc" id="L107">                successful = true;</span>
+<span class="fc" id="L105">            getContext().parent().forward(message, getContext());</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        } else if (message instanceof Terminated) {</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">            if (getSender().equals(resultActor)) {</span>
 <span class="fc" id="L108">                getContext().stop(getSelf());</span>
             }
-            
-<span class="pc bpc" id="L111" title="3 of 4 branches missed.">            if (getSender().equals(resourceManagerActor) &amp;&amp; !successful) {</span>
+<span class="pc bpc" id="L110" title="3 of 4 branches missed.">            if (getSender().equals(resourceManagerActor) &amp;&amp; watchees.contains(resultActor)) {</span>
+                // this is the case when all the resources have failed
 <span class="nc" id="L112">                resultActor.tell(ResourceControl.Fail.create(), getContext().parent());</span>
             }
-<span class="nc bnc" id="L114" title="All 2 branches missed.">        } else if (message instanceof QueryStats) {</span>
-<span class="nc" id="L115">            resultActor.forward(message, getContext());</span>
+<span class="fc" id="L114">            watchees.remove(getSender());</span>
         } else {
-<span class="nc" id="L117">            unhandled(message);</span>
+<span class="nc" id="L116">            unhandled(message);</span>
         }
-<span class="fc" id="L119">    }</span>
+<span class="fc" id="L118">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
