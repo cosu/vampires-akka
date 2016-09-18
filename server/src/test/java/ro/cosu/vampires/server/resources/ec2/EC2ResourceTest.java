@@ -52,6 +52,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -148,5 +149,10 @@ public class EC2ResourceTest {
         getResource("eu.t2.micro");
     }
 
+    @Test
+    public void testEC2Client() throws Exception {
+        AmazonEC2Client foo = EC2ResourceModule.getAmazonEC2Client("foo");
+        assertThat(foo, is(isNull()));
+    }
 
 }

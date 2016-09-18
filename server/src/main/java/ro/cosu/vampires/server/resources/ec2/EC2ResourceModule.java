@@ -49,6 +49,22 @@ import ro.cosu.vampires.server.resources.ResourceProvider;
 public class EC2ResourceModule extends AbstractModule {
     private static final Logger LOG = LoggerFactory.getLogger(EC2ResourceModule.class);
 
+    protected static AmazonEC2Client getAmazonEC2Client(String credentialsFile) {
+        AmazonEC2Client amazonEC2Client = null;
+
+        LOG.debug("reading credentials  AWS from {}", credentialsFile);
+        try {
+            PropertiesCredentials credentials = new PropertiesCredentials(new FileInputStream(credentialsFile));
+            amazonEC2Client = new AmazonEC2Client(credentials);
+        } catch (FileNotFoundException e) {
+            LOG.error("could not find ec2 credentials file: " + credentialsFile);
+        } catch (IOException e) {
+            LOG.error("failed to create amazon client", e);
+        }
+
+        return amazonEC2Client;
+    }
+
     @Override
     protected void configure() {
         MapBinder<Resource.ProviderType, ResourceProvider> mapbinder
@@ -59,22 +75,11 @@ public class EC2ResourceModule extends AbstractModule {
     @Provides
     @Nullable
     private AmazonEC2Client provideAmazonEc2(@Named("Config") Config config) {
-
         AmazonEC2Client amazonEC2Client = null;
-
         if (config.hasPath("resources.ec2.credentialsFile")) {
             String credentialsFile = config.getString("resources.ec2.credentialsFile");
-            LOG.debug("reading credentials  AWS from {}", credentialsFile);
-            try {
-                PropertiesCredentials credentials = new PropertiesCredentials(new FileInputStream(credentialsFile));
-                amazonEC2Client = new AmazonEC2Client(credentials);
-            } catch (FileNotFoundException e) {
-                LOG.error("could not find ec2 credentials file: " + credentialsFile);
-            } catch (IOException e) {
-                LOG.error("failed to create amazon client", e);
-            }
+            amazonEC2Client = getAmazonEC2Client(credentialsFile);
         }
-
         return amazonEC2Client;
     }
 }
