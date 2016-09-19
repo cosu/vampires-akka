@@ -56,6 +56,9 @@ public class EC2ResourceModule extends AbstractModule {
         try {
             PropertiesCredentials credentials = new PropertiesCredentials(new FileInputStream(credentialsFile));
             amazonEC2Client = new AmazonEC2Client(credentials);
+
+        } catch (IllegalArgumentException e) {
+            LOG.error("Invalid EC2 file format", e);
         } catch (FileNotFoundException e) {
             LOG.error("could not find ec2 credentials file: " + credentialsFile);
         } catch (IOException e) {
