@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.833s</div>
+<div class="counter">0.581s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,22 +79,22 @@
 </thead>
 <tr>
 <td class="success">testDispatchOfConfig</td>
-<td>0.055s</td>
+<td>0.106s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">testDispatchOfJob</td>
-<td>0.122s</td>
+<td>0.137s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">testDispatchSample</td>
-<td>0.472s</td>
+<td>0.206s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">testShutdown</td>
-<td>0.184s</td>
+<td>0.132s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -102,188 +102,150 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2016-09-19 05:53:32,114 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
-2016-09-19 05:53:32,118 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- logger log1-Slf4jLogger started
-2016-09-19 05:53:32,118 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- Default Loggers started
-2016-09-19 05:53:32,148 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
-2016-09-19 05:53:32,223 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
-2016-09-19 05:53:32,223 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
-2016-09-19 05:53:32,224 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-9] [akka://test/user/$a/resultActor]- results so far: 0/101
-2016-09-19 05:53:32,225 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 0 remaining 101
-2016-09-19 05:53:32,225 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,247 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 3645a06f-d8e0-488c-af27-29c163e65c9a = UNKNOWN =&gt; SLEEPING
-2016-09-19 05:53:32,247 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo f08a4a55-6e0e-4b42-b7ec-35a171f0cb88 = UNKNOWN =&gt; SLEEPING
-2016-09-19 05:53:32,267 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo f08a4a55-6e0e-4b42-b7ec-35a171f0cb88 = SLEEPING =&gt; STARTING
-2016-09-19 05:53:32,277 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 3645a06f-d8e0-488c-af27-29c163e65c9a = SLEEPING =&gt; STARTING
-2016-09-19 05:53:32,277 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=f08a4a55-6e0e-4b42-b7ec-35a171f0cb88, cost=0.0} f08a4a55-6e0e-4b42-b7ec-35a171f0cb88
-2016-09-19 05:53:32,277 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=3645a06f-d8e0-488c-af27-29c163e65c9a, cost=0.0} 3645a06f-d8e0-488c-af27-29c163e65c9a
-2016-09-19 05:53:32,278 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo f08a4a55-6e0e-4b42-b7ec-35a171f0cb88 = STARTING =&gt; RUNNING
-2016-09-19 05:53:32,278 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 3645a06f-d8e0-488c-af27-29c163e65c9a = STARTING =&gt; RUNNING
-2016-09-19 05:53:32,283 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
-2016-09-19 05:53:32,293 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-7] [akka://test/user/$a/resourceManagerActor]- resource register ResourceInfo{parameters=MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=f08a4a55-6e0e-4b42-b7ec-35a171f0cb88, cost=0.0}, status=RUNNING, createdAt=2016-09-19T05:53:32.282}
-2016-09-19 05:53:32,351 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
-2016-09-19 05:53:32,351 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
-2016-09-19 05:53:32,370 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-7] [akka://test/user/$a/resourceManagerActor]- resource register ResourceInfo{parameters=MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=3645a06f-d8e0-488c-af27-29c163e65c9a, cost=0.0}, status=RUNNING, createdAt=2016-09-19T05:53:32.290}
-2016-09-19 05:53:32,377 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-7] [akka://test/user/$b/resultActor]- results so far: 0/101
-2016-09-19 05:53:32,406 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 985fa48f-04c1-4e55-a80b-ba545f392786 = UNKNOWN =&gt; SLEEPING
-2016-09-19 05:53:32,406 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 386c9883-5c59-496c-be22-80702fa23469 = UNKNOWN =&gt; SLEEPING
-2016-09-19 05:53:32,416 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 985fa48f-04c1-4e55-a80b-ba545f392786 = SLEEPING =&gt; STARTING
-2016-09-19 05:53:32,416 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 386c9883-5c59-496c-be22-80702fa23469 = SLEEPING =&gt; STARTING
-2016-09-19 05:53:32,416 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=985fa48f-04c1-4e55-a80b-ba545f392786, cost=0.0} 985fa48f-04c1-4e55-a80b-ba545f392786
-2016-09-19 05:53:32,417 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 985fa48f-04c1-4e55-a80b-ba545f392786 = STARTING =&gt; RUNNING
-2016-09-19 05:53:32,418 DEBUG r.c.v.s.a.resource.ResourceActor [test-akka.actor.default-dispatcher-13] [akka://test/user/$b/resourceManagerActor/MOCK-386c9883-5c59-496c-be22-80702fa23469]- stash ro.cosu.vampires.server.actors.resource.ResourceControl$Shutdown@7cf23bd
-2016-09-19 05:53:32,417 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=386c9883-5c59-496c-be22-80702fa23469, cost=0.0} 386c9883-5c59-496c-be22-80702fa23469
-2016-09-19 05:53:32,419 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 386c9883-5c59-496c-be22-80702fa23469 = STARTING =&gt; RUNNING
-2016-09-19 05:53:32,421 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 386c9883-5c59-496c-be22-80702fa23469 = RUNNING =&gt; STOPPING
-2016-09-19 05:53:32,421 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 386c9883-5c59-496c-be22-80702fa23469 = STOPPING =&gt; STOPPED
-2016-09-19 05:53:32,422 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-7] [akka://test/user/$b/resourceManagerActor]- resource register ResourceInfo{parameters=MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=386c9883-5c59-496c-be22-80702fa23469, cost=0.0}, status=RUNNING, createdAt=2016-09-19T05:53:32.420}
-2016-09-19 05:53:32,422 DEBUG r.c.v.s.a.resource.ResourceActor [test-akka.actor.default-dispatcher-11] [akka://test/user/$b/resourceManagerActor/MOCK-985fa48f-04c1-4e55-a80b-ba545f392786]- stash ro.cosu.vampires.server.actors.resource.ResourceControl$Shutdown@71342668
-2016-09-19 05:53:32,423 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-12] [akka://test/user/$b/resourceManagerActor]- resource register ResourceInfo{parameters=MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=985fa48f-04c1-4e55-a80b-ba545f392786, cost=0.0}, status=RUNNING, createdAt=2016-09-19T05:53:32.422}
-2016-09-19 05:53:32,423 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 985fa48f-04c1-4e55-a80b-ba545f392786 = RUNNING =&gt; STOPPING
-2016-09-19 05:53:32,423 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 985fa48f-04c1-4e55-a80b-ba545f392786 = STOPPING =&gt; STOPPED
-2016-09-19 05:53:32,429 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-11] [akka://test/user/$b/resourceManagerActor]- terminated Actor[akka://test/user/$b/resourceManagerActor/MOCK-985fa48f-04c1-4e55-a80b-ba545f392786#-2030429604]
-2016-09-19 05:53:32,433 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-11] [akka://test/user/$b/resourceManagerActor]- terminated Actor[akka://test/user/$b/resourceManagerActor/MOCK-386c9883-5c59-496c-be22-80702fa23469#-36175683]
-2016-09-19 05:53:32,434 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-11] [akka://test/user/$b/resourceManagerActor]- shutting down resource manager
-2016-09-19 05:53:32,436 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-11] [akka://test/user/$b/resultActor]- Total Duration: 0:00:00
-2016-09-19 05:53:32,436 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-11] [akka://test/user/$b/resultActor]- shutting down
-2016-09-19 05:53:32,453 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
-2016-09-19 05:53:32,473 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
-2016-09-19 05:53:32,474 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
-2016-09-19 05:53:32,475 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-3] [akka://test/user/$c/resultActor]- results so far: 0/101
-2016-09-19 05:53:32,476 DEBUG r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-10] [akka://test/user/$c/resultActor]- got client info ClientInfo{id=foo, start=2016-09-19T05:53:32.449, executors={DOCKER=2, FORK=1}, metrics=Metrics{metrics=[], metadata={}, id=empty}}
-2016-09-19 05:53:32,478 DEBUG r.c.v.s.actors.ClientConfigActor [test-akka.actor.default-dispatcher-13] [akka://test/user/$c/resultActor/clientConfig-foo]- config for client foo null ClientConfig{executor=DOCKER, cpuSetSize=1, numberOfExecutors=2}
-2016-09-19 05:53:32,522 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
-2016-09-19 05:53:32,525 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo cfa928f5-2971-4ec9-b27a-ee7ac7addd3e = UNKNOWN =&gt; SLEEPING
-2016-09-19 05:53:32,526 INFO  r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-11] [akka://test/user/$c/resourceManagerActor]- clients 1 / resourceActors 2 
-2016-09-19 05:53:32,526 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 7956542a-206f-44b0-bb40-6abee83377a8 = UNKNOWN =&gt; SLEEPING
-2016-09-19 05:53:32,526 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo cfa928f5-2971-4ec9-b27a-ee7ac7addd3e = SLEEPING =&gt; STARTING
-2016-09-19 05:53:32,526 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=cfa928f5-2971-4ec9-b27a-ee7ac7addd3e, cost=0.0} cfa928f5-2971-4ec9-b27a-ee7ac7addd3e
-2016-09-19 05:53:32,526 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 7956542a-206f-44b0-bb40-6abee83377a8 = SLEEPING =&gt; STARTING
-2016-09-19 05:53:32,526 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo cfa928f5-2971-4ec9-b27a-ee7ac7addd3e = STARTING =&gt; RUNNING
-2016-09-19 05:53:32,526 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=7956542a-206f-44b0-bb40-6abee83377a8, cost=0.0} 7956542a-206f-44b0-bb40-6abee83377a8
-2016-09-19 05:53:32,527 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 7956542a-206f-44b0-bb40-6abee83377a8 = STARTING =&gt; RUNNING
-2016-09-19 05:53:32,527 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-13] [akka://test/user/$c/resourceManagerActor]- resource register ResourceInfo{parameters=MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=cfa928f5-2971-4ec9-b27a-ee7ac7addd3e, cost=0.0}, status=RUNNING, createdAt=2016-09-19T05:53:32.527}
-2016-09-19 05:53:32,528 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-5] [akka://test/user/$c/resourceManagerActor]- resource register ResourceInfo{parameters=MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=7956542a-206f-44b0-bb40-6abee83377a8, cost=0.0}, status=RUNNING, createdAt=2016-09-19T05:53:32.527}
-2016-09-19 05:53:32,647 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-7] [akka://test/user/$d/resultActor]- running in sampling mode : sampling from 101 jobs
-2016-09-19 05:53:32,665 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
-2016-09-19 05:53:32,665 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
-2016-09-19 05:53:32,665 WARN  r.c.v.s.actors.settings.Settings [] []- Missing sampleSize config value. using default 30
-2016-09-19 05:53:32,680 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,680 WARN  r.c.v.s.schedulers.SamplingScheduler [] []- received job result from unknown client 
-2016-09-19 05:53:32,680 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-15] [akka://test/user/$d/resultActor]- results so far: 0/101
-2016-09-19 05:53:32,683 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,704 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo ff36f410-7450-4c46-95b0-66cee887f8c0 = UNKNOWN =&gt; SLEEPING
-2016-09-19 05:53:32,705 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo ff36f410-7450-4c46-95b0-66cee887f8c0 = SLEEPING =&gt; STARTING
-2016-09-19 05:53:32,705 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=ff36f410-7450-4c46-95b0-66cee887f8c0, cost=0.0} ff36f410-7450-4c46-95b0-66cee887f8c0
-2016-09-19 05:53:32,705 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo ff36f410-7450-4c46-95b0-66cee887f8c0 = STARTING =&gt; RUNNING
-2016-09-19 05:53:32,706 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-10] [akka://test/user/$d/resourceManagerActor]- resource register ResourceInfo{parameters=MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=ff36f410-7450-4c46-95b0-66cee887f8c0, cost=0.0}, status=RUNNING, createdAt=2016-09-19T05:53:32.705}
-2016-09-19 05:53:32,894 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 1 remaining 29
-2016-09-19 05:53:32,897 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 1 remaining 28
-2016-09-19 05:53:32,898 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 2 remaining 27
-2016-09-19 05:53:32,898 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 2 remaining 26
-2016-09-19 05:53:32,898 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,899 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 2 remaining 25
-2016-09-19 05:53:32,899 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,899 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 3 remaining 24
-2016-09-19 05:53:32,902 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,902 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,902 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,908 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,902 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 4 remaining 23
-2016-09-19 05:53:32,912 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 4 remaining 22
-2016-09-19 05:53:32,913 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,913 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 5 remaining 21
-2016-09-19 05:53:32,913 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,917 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 5 remaining 20
-2016-09-19 05:53:32,917 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,918 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 5 remaining 19
-2016-09-19 05:53:32,918 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,919 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 5 remaining 18
-2016-09-19 05:53:32,919 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,920 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 6 remaining 17
-2016-09-19 05:53:32,920 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,920 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 7 remaining 16
-2016-09-19 05:53:32,920 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,921 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 8 remaining 15
-2016-09-19 05:53:32,921 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,921 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 8 remaining 14
-2016-09-19 05:53:32,921 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,922 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,922 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 8 remaining 13
-2016-09-19 05:53:32,923 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 9 remaining 12
-2016-09-19 05:53:32,923 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,926 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 10 remaining 11
-2016-09-19 05:53:32,927 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 10 remaining 10
-2016-09-19 05:53:32,927 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,927 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,936 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,937 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 11 remaining 9
-2016-09-19 05:53:32,938 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,938 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 11 remaining 8
-2016-09-19 05:53:32,938 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 12 remaining 7
-2016-09-19 05:53:32,939 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,939 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 12 remaining 6
-2016-09-19 05:53:32,939 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,940 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 13 remaining 5
-2016-09-19 05:53:32,940 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,941 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 13 remaining 4
-2016-09-19 05:53:32,941 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,942 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 14 remaining 3
-2016-09-19 05:53:32,943 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,944 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 14 remaining 2
-2016-09-19 05:53:32,944 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,944 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 15 remaining 1
-2016-09-19 05:53:32,945 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 15 remaining 0
-2016-09-19 05:53:32,945 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 15 remaining 0
-2016-09-19 05:53:32,946 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 14 remaining 0
-2016-09-19 05:53:32,946 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 14 remaining 0
-2016-09-19 05:53:32,946 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 13 remaining 0
-2016-09-19 05:53:32,946 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 13 remaining 0
-2016-09-19 05:53:32,947 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 12 remaining 0
-2016-09-19 05:53:32,947 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 12 remaining 0
-2016-09-19 05:53:32,947 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 11 remaining 0
-2016-09-19 05:53:32,947 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 10 remaining 0
-2016-09-19 05:53:32,947 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 10 remaining 0
-2016-09-19 05:53:32,948 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 10 remaining 0
-2016-09-19 05:53:32,948 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 9 remaining 0
-2016-09-19 05:53:32,948 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 9 remaining 0
-2016-09-19 05:53:32,948 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 8 remaining 0
-2016-09-19 05:53:32,949 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 8 remaining 0
-2016-09-19 05:53:32,949 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 7 remaining 0
-2016-09-19 05:53:32,949 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 7 remaining 0
-2016-09-19 05:53:32,949 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 6 remaining 0
-2016-09-19 05:53:32,950 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 6 remaining 0
-2016-09-19 05:53:32,950 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 5 remaining 0
-2016-09-19 05:53:32,950 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,950 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,951 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2016-09-19 05:53:32,951 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 5 remaining 0
-2016-09-19 05:53:32,952 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 4 remaining 0
-2016-09-19 05:53:32,952 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 4 remaining 0
-2016-09-19 05:53:32,952 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 3 remaining 0
-2016-09-19 05:53:32,953 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 3 remaining 0
-2016-09-19 05:53:32,953 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 2 remaining 0
-2016-09-19 05:53:32,953 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 2 remaining 0
-2016-09-19 05:53:32,954 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 1 remaining 0
-2016-09-19 05:53:32,954 DEBUG r.c.vampires.server.actors.WorkActor [test-akka.actor.default-dispatcher-4] [akka://test/user/$d/resultActor/workActor]- work actor exiting
-2016-09-19 05:53:32,967 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-4] [akka://test/user/$d/resultActor/workActor]- Message [ro.cosu.vampires.server.values.jobs.AutoValue_Job] from Actor[akka://test/system/testProbe-16#1642554561] to Actor[akka://test/user/$d/resultActor/workActor#-1754015263] was not delivered. [1] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
-2016-09-19 05:53:32,968 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-4] [akka://test/user/$d/resultActor/workActor]- Message [ro.cosu.vampires.server.values.jobs.AutoValue_Job] from Actor[akka://test/system/testProbe-16#1642554561] to Actor[akka://test/user/$d/resultActor/workActor#-1754015263] was not delivered. [2] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
-2016-09-19 05:53:32,968 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-4] [akka://test/user/$d/resultActor/workActor]- Message [ro.cosu.vampires.server.values.jobs.AutoValue_Job] from Actor[akka://test/system/testProbe-16#1642554561] to Actor[akka://test/user/$d/resultActor/workActor#-1754015263] was not delivered. [3] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
-2016-09-19 05:53:32,969 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo ff36f410-7450-4c46-95b0-66cee887f8c0 = RUNNING =&gt; STOPPING
-2016-09-19 05:53:32,970 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-4] [akka://test/user/$d/resultActor/workActor]- Message [ro.cosu.vampires.server.values.jobs.AutoValue_Job] from Actor[akka://test/system/testProbe-16#1642554561] to Actor[akka://test/user/$d/resultActor/workActor#-1754015263] was not delivered. [4] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
-2016-09-19 05:53:32,970 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo ff36f410-7450-4c46-95b0-66cee887f8c0 = STOPPING =&gt; STOPPED
-2016-09-19 05:53:32,977 INFO  akka.actor.RepointableActorRef [test-akka.actor.default-dispatcher-3] [akka://test/user/$d]- Message [ro.cosu.vampires.server.values.jobs.AutoValue_Execution] from Actor[akka://test/user/$d/resultActor#-145779172] to Actor[akka://test/user/$d#-1429992262] was not delivered. [5] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
-2016-09-19 05:53:32,977 INFO  akka.actor.RepointableActorRef [test-akka.actor.default-dispatcher-3] [akka://test/user/$d]- Message [ro.cosu.vampires.server.values.jobs.AutoValue_Execution] from Actor[akka://test/user/$d/resultActor#-145779172] to Actor[akka://test/user/$d#-1429992262] was not delivered. [6] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
-2016-09-19 05:53:32,980 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 7956542a-206f-44b0-bb40-6abee83377a8 = RUNNING =&gt; STOPPING
-2016-09-19 05:53:32,980 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 7956542a-206f-44b0-bb40-6abee83377a8 = STOPPING =&gt; STOPPED
-2016-09-19 05:53:32,980 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo cfa928f5-2971-4ec9-b27a-ee7ac7addd3e = RUNNING =&gt; STOPPING
-2016-09-19 05:53:32,980 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo cfa928f5-2971-4ec9-b27a-ee7ac7addd3e = STOPPING =&gt; STOPPED
-2016-09-19 05:53:32,981 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo f08a4a55-6e0e-4b42-b7ec-35a171f0cb88 = RUNNING =&gt; STOPPING
-2016-09-19 05:53:32,981 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo f08a4a55-6e0e-4b42-b7ec-35a171f0cb88 = STOPPING =&gt; STOPPED
-2016-09-19 05:53:32,981 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 3645a06f-d8e0-488c-af27-29c163e65c9a = RUNNING =&gt; STOPPING
-2016-09-19 05:53:32,981 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 3645a06f-d8e0-488c-af27-29c163e65c9a = STOPPING =&gt; STOPPED
-2016-09-19 05:53:32,983 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-24] [akka://test/user]- Message [ro.cosu.vampires.server.values.jobs.AutoValue_Execution] from Actor[akka://test/user/$d/resultActor#-145779172] to Actor[akka://test/user] was not delivered. [7] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
-2016-09-19 05:53:32,984 DEBUG akka.event.EventStream [test-akka.actor.default-dispatcher-17] [EventStream]- shutting down: StandardOutLogger started
+<pre>2016-09-19 22:51:13,314 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
+2016-09-19 22:51:13,321 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- logger log1-Slf4jLogger started
+2016-09-19 22:51:13,322 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- Default Loggers started
+2016-09-19 22:51:13,350 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
+2016-09-19 22:51:13,417 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
+2016-09-19 22:51:13,418 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
+2016-09-19 22:51:13,445 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$a/resultActor]- results so far: 0/101
+2016-09-19 22:51:13,450 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 0 remaining 101
+2016-09-19 22:51:13,454 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
+2016-09-19 22:51:13,477 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 1e0270ec-294e-4475-83a5-a6fcb265f0b0 = UNKNOWN =&gt; SLEEPING
+2016-09-19 22:51:13,478 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 8388b724-ec54-4e2f-a1a6-6d74e2012019 = UNKNOWN =&gt; SLEEPING
+2016-09-19 22:51:13,487 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 1e0270ec-294e-4475-83a5-a6fcb265f0b0 = SLEEPING =&gt; STARTING
+2016-09-19 22:51:13,487 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=1e0270ec-294e-4475-83a5-a6fcb265f0b0, cost=0.0} 1e0270ec-294e-4475-83a5-a6fcb265f0b0
+2016-09-19 22:51:13,487 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 1e0270ec-294e-4475-83a5-a6fcb265f0b0 = STARTING =&gt; RUNNING
+2016-09-19 22:51:13,498 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
+2016-09-19 22:51:13,487 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 8388b724-ec54-4e2f-a1a6-6d74e2012019 = SLEEPING =&gt; STARTING
+2016-09-19 22:51:13,498 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=8388b724-ec54-4e2f-a1a6-6d74e2012019, cost=0.0} 8388b724-ec54-4e2f-a1a6-6d74e2012019
+2016-09-19 22:51:13,499 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 8388b724-ec54-4e2f-a1a6-6d74e2012019 = STARTING =&gt; RUNNING
+2016-09-19 22:51:13,529 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-3] [akka://test/user/$a/resourceManagerActor]- resource register ResourceInfo{parameters=MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=1e0270ec-294e-4475-83a5-a6fcb265f0b0, cost=0.0}, status=RUNNING, createdAt=2016-09-19T22:51:13.516}
+2016-09-19 22:51:13,554 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
+2016-09-19 22:51:13,555 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
+2016-09-19 22:51:13,562 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-3] [akka://test/user/$a/resourceManagerActor]- resource register ResourceInfo{parameters=MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=8388b724-ec54-4e2f-a1a6-6d74e2012019, cost=0.0}, status=RUNNING, createdAt=2016-09-19T22:51:13.520}
+2016-09-19 22:51:13,568 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-9] [akka://test/user/$b/resultActor]- results so far: 0/101
+2016-09-19 22:51:13,581 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 14768b2a-07b3-463c-a929-06ab3122c689 = UNKNOWN =&gt; SLEEPING
+2016-09-19 22:51:13,581 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 14768b2a-07b3-463c-a929-06ab3122c689 = SLEEPING =&gt; STARTING
+2016-09-19 22:51:13,582 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=14768b2a-07b3-463c-a929-06ab3122c689, cost=0.0} 14768b2a-07b3-463c-a929-06ab3122c689
+2016-09-19 22:51:13,582 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 14768b2a-07b3-463c-a929-06ab3122c689 = STARTING =&gt; RUNNING
+2016-09-19 22:51:13,586 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 1eed4788-1b53-4473-99af-58b22f6f82ea = UNKNOWN =&gt; SLEEPING
+2016-09-19 22:51:13,587 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 1eed4788-1b53-4473-99af-58b22f6f82ea = SLEEPING =&gt; STARTING
+2016-09-19 22:51:13,587 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=1eed4788-1b53-4473-99af-58b22f6f82ea, cost=0.0} 1eed4788-1b53-4473-99af-58b22f6f82ea
+2016-09-19 22:51:13,587 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 1eed4788-1b53-4473-99af-58b22f6f82ea = STARTING =&gt; RUNNING
+2016-09-19 22:51:13,589 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 1eed4788-1b53-4473-99af-58b22f6f82ea = RUNNING =&gt; STOPPING
+2016-09-19 22:51:13,589 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 1eed4788-1b53-4473-99af-58b22f6f82ea = STOPPING =&gt; STOPPED
+2016-09-19 22:51:13,592 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 14768b2a-07b3-463c-a929-06ab3122c689 = RUNNING =&gt; STOPPING
+2016-09-19 22:51:13,593 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 14768b2a-07b3-463c-a929-06ab3122c689 = STOPPING =&gt; STOPPED
+2016-09-19 22:51:13,594 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$b/resourceManagerActor]- resource register ResourceInfo{parameters=MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=14768b2a-07b3-463c-a929-06ab3122c689, cost=0.0}, status=RUNNING, createdAt=2016-09-19T22:51:13.582}
+2016-09-19 22:51:13,594 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$b/resourceManagerActor]- resource register ResourceInfo{parameters=MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=1eed4788-1b53-4473-99af-58b22f6f82ea, cost=0.0}, status=RUNNING, createdAt=2016-09-19T22:51:13.587}
+2016-09-19 22:51:13,602 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-10] [akka://test/user/$b/resourceManagerActor]- terminated Actor[akka://test/user/$b/resourceManagerActor/MOCK-1eed4788-1b53-4473-99af-58b22f6f82ea#1042470749]
+2016-09-19 22:51:13,603 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-10] [akka://test/user/$b/resourceManagerActor]- terminated Actor[akka://test/user/$b/resourceManagerActor/MOCK-14768b2a-07b3-463c-a929-06ab3122c689#1353065714]
+2016-09-19 22:51:13,603 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-10] [akka://test/user/$b/resourceManagerActor]- shutting down resource manager
+2016-09-19 22:51:13,603 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-5] [akka://test/user/$b/resultActor]- Total Duration: 0:00:00
+2016-09-19 22:51:13,604 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-5] [akka://test/user/$b/resultActor]- shutting down
+2016-09-19 22:51:13,623 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
+2016-09-19 22:51:13,660 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
+2016-09-19 22:51:13,679 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
+2016-09-19 22:51:13,683 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-5] [akka://test/user/$c/resultActor]- results so far: 0/101
+2016-09-19 22:51:13,687 DEBUG r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$c/resultActor]- got client info ClientInfo{id=foo, start=2016-09-19T22:51:13.614, executors={DOCKER=2, FORK=1}, metrics=Metrics{metrics=[], metadata={}, id=empty}}
+2016-09-19 22:51:13,710 DEBUG r.c.v.s.actors.ClientConfigActor [test-akka.actor.default-dispatcher-5] [akka://test/user/$c/resultActor/clientConfig-foo]- config for client foo null ClientConfig{executor=DOCKER, cpuSetSize=1, numberOfExecutors=2}
+2016-09-19 22:51:13,720 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 8b63af79-b53a-4418-b125-e138340cf7a4 = UNKNOWN =&gt; SLEEPING
+2016-09-19 22:51:13,720 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 8b63af79-b53a-4418-b125-e138340cf7a4 = SLEEPING =&gt; STARTING
+2016-09-19 22:51:13,720 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=8b63af79-b53a-4418-b125-e138340cf7a4, cost=0.0} 8b63af79-b53a-4418-b125-e138340cf7a4
+2016-09-19 22:51:13,720 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 8b63af79-b53a-4418-b125-e138340cf7a4 = STARTING =&gt; RUNNING
+2016-09-19 22:51:13,722 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
+2016-09-19 22:51:13,737 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-10] [akka://test/user/$d/resultActor]- running in sampling mode : sampling from 101 jobs
+2016-09-19 22:51:13,751 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo d5fe698b-9e45-4738-9768-a94ad2b14edc = UNKNOWN =&gt; SLEEPING
+2016-09-19 22:51:13,752 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo d5fe698b-9e45-4738-9768-a94ad2b14edc = SLEEPING =&gt; STARTING
+2016-09-19 22:51:13,752 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=d5fe698b-9e45-4738-9768-a94ad2b14edc, cost=0.0} d5fe698b-9e45-4738-9768-a94ad2b14edc
+2016-09-19 22:51:13,752 INFO  r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-6] [akka://test/user/$c/resourceManagerActor]- clients 1 / resourceActors 2 
+2016-09-19 22:51:13,752 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo d5fe698b-9e45-4738-9768-a94ad2b14edc = STARTING =&gt; RUNNING
+2016-09-19 22:51:13,752 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-6] [akka://test/user/$c/resourceManagerActor]- resource register ResourceInfo{parameters=MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=8b63af79-b53a-4418-b125-e138340cf7a4, cost=0.0}, status=RUNNING, createdAt=2016-09-19T22:51:13.737}
+2016-09-19 22:51:13,753 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-9] [akka://test/user/$c/resourceManagerActor]- resource register ResourceInfo{parameters=MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=d5fe698b-9e45-4738-9768-a94ad2b14edc, cost=0.0}, status=RUNNING, createdAt=2016-09-19T22:51:13.753}
+2016-09-19 22:51:13,754 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
+2016-09-19 22:51:13,754 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
+2016-09-19 22:51:13,832 WARN  r.c.v.s.actors.settings.Settings [] []- Missing sampleSize config value. using default 30
+2016-09-19 22:51:13,860 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-5] [akka://test/user/$d/resultActor]- results so far: 0/101
+2016-09-19 22:51:13,860 WARN  r.c.v.s.schedulers.SamplingScheduler [] []- received job result from unknown client 
+2016-09-19 22:51:13,863 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
+2016-09-19 22:51:13,863 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
+2016-09-19 22:51:13,865 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 1 remaining 29
+2016-09-19 22:51:13,870 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 1 remaining 28
+2016-09-19 22:51:13,870 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
+2016-09-19 22:51:13,871 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 2 remaining 27
+2016-09-19 22:51:13,875 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
+2016-09-19 22:51:13,876 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
+2016-09-19 22:51:13,881 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 2 remaining 26
+2016-09-19 22:51:13,884 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 81b7dcf6-3e4b-46fb-b921-891f348d4770 = UNKNOWN =&gt; SLEEPING
+2016-09-19 22:51:13,885 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
+2016-09-19 22:51:13,886 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 3 remaining 25
+2016-09-19 22:51:13,887 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
+2016-09-19 22:51:13,887 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 3 remaining 24
+2016-09-19 22:51:13,887 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
+2016-09-19 22:51:13,887 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 3 remaining 23
+2016-09-19 22:51:13,888 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
+2016-09-19 22:51:13,888 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 4 remaining 22
+2016-09-19 22:51:13,889 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
+2016-09-19 22:51:13,889 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 5 remaining 21
+2016-09-19 22:51:13,891 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 81b7dcf6-3e4b-46fb-b921-891f348d4770 = SLEEPING =&gt; STARTING
+2016-09-19 22:51:13,891 DEBUG r.c.v.s.resources.mock.MockResource [] []- mock start: MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=81b7dcf6-3e4b-46fb-b921-891f348d4770, cost=0.0} 81b7dcf6-3e4b-46fb-b921-891f348d4770
+2016-09-19 22:51:13,892 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 81b7dcf6-3e4b-46fb-b921-891f348d4770 = STARTING =&gt; RUNNING
+2016-09-19 22:51:13,892 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 5 remaining 20
+2016-09-19 22:51:13,892 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 6 remaining 19
+2016-09-19 22:51:13,892 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 6 remaining 18
+2016-09-19 22:51:13,893 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 7 remaining 17
+2016-09-19 22:51:13,893 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 7 remaining 16
+2016-09-19 22:51:13,893 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 8 remaining 15
+2016-09-19 22:51:13,893 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 8 remaining 14
+2016-09-19 22:51:13,894 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 9 remaining 13
+2016-09-19 22:51:13,894 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 9 remaining 12
+2016-09-19 22:51:13,894 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 10 remaining 11
+2016-09-19 22:51:13,894 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 10 remaining 10
+2016-09-19 22:51:13,895 DEBUG r.c.v.s.a.r.ResourceManagerActor [test-akka.actor.default-dispatcher-7] [akka://test/user/$d/resourceManagerActor]- resource register ResourceInfo{parameters=MockResourceParameters{command=/home/travis/vampires-akka-dist/client/bin/client , providerType=MOCK, serverId=, instanceType=foo, id=81b7dcf6-3e4b-46fb-b921-891f348d4770, cost=0.0}, status=RUNNING, createdAt=2016-09-19T22:51:13.894}
+2016-09-19 22:51:13,895 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 10 remaining 9
+2016-09-19 22:51:13,895 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
+2016-09-19 22:51:13,895 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 10 remaining 8
+2016-09-19 22:51:13,896 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 10 remaining 7
+2016-09-19 22:51:13,896 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 10 remaining 6
+2016-09-19 22:51:13,896 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 10 remaining 5
+2016-09-19 22:51:13,897 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 10 remaining 4
+2016-09-19 22:51:13,897 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 10 remaining 3
+2016-09-19 22:51:13,897 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 10 remaining 2
+2016-09-19 22:51:13,898 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 10 remaining 1
+2016-09-19 22:51:13,901 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 11 remaining 0
+2016-09-19 22:51:13,902 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 10 remaining 0
+2016-09-19 22:51:13,902 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 9 remaining 0
+2016-09-19 22:51:13,902 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 8 remaining 0
+2016-09-19 22:51:13,911 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 7 remaining 0
+2016-09-19 22:51:13,912 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 6 remaining 0
+2016-09-19 22:51:13,913 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 5 remaining 0
+2016-09-19 22:51:13,913 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 4 remaining 0
+2016-09-19 22:51:13,913 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 3 remaining 0
+2016-09-19 22:51:13,913 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 2 remaining 0
+2016-09-19 22:51:13,914 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 1 remaining 0
+2016-09-19 22:51:13,920 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 81b7dcf6-3e4b-46fb-b921-891f348d4770 = RUNNING =&gt; STOPPING
+2016-09-19 22:51:13,920 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 81b7dcf6-3e4b-46fb-b921-891f348d4770 = STOPPING =&gt; STOPPED
+2016-09-19 22:51:13,921 DEBUG r.c.vampires.server.actors.WorkActor [test-akka.actor.default-dispatcher-5] [akka://test/user/$d/resultActor/workActor]- work actor exiting
+2016-09-19 22:51:13,922 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 8388b724-ec54-4e2f-a1a6-6d74e2012019 = RUNNING =&gt; STOPPING
+2016-09-19 22:51:13,923 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 8388b724-ec54-4e2f-a1a6-6d74e2012019 = STOPPING =&gt; STOPPED
+2016-09-19 22:51:13,923 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 1e0270ec-294e-4475-83a5-a6fcb265f0b0 = RUNNING =&gt; STOPPING
+2016-09-19 22:51:13,923 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 1e0270ec-294e-4475-83a5-a6fcb265f0b0 = STOPPING =&gt; STOPPED
+2016-09-19 22:51:13,927 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-4] [akka://test/user/$d/resultActor/workActor]- Message [ro.cosu.vampires.server.values.jobs.AutoValue_Job] from Actor[akka://test/system/testProbe-16#-1164401162] to Actor[akka://test/user/$d/resultActor/workActor#-1327133642] was not delivered. [1] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-19 22:51:13,928 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-6] [akka://test/user/$d/resultActor]- Message [ro.cosu.vampires.server.resources.AutoValue_ResourceInfo] from Actor[akka://test/user/$d/resourceManagerActor/MOCK-81b7dcf6-3e4b-46fb-b921-891f348d4770#-1042024826] to Actor[akka://test/user/$d/resultActor#-1688467460] was not delivered. [2] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-19 22:51:13,928 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-16] [akka://test/user/$d/resultActor]- Message [ro.cosu.vampires.server.values.jobs.AutoValue_Job] from Actor[akka://test/system/testProbe-16#-1164401162] to Actor[akka://test/user/$d/resultActor#-1688467460] was not delivered. [3] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-19 22:51:13,928 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-16] [akka://test/user/$d/resultActor]- Message [ro.cosu.vampires.server.values.jobs.AutoValue_Job] from Actor[akka://test/system/testProbe-16#-1164401162] to Actor[akka://test/user/$d/resultActor#-1688467460] was not delivered. [4] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-19 22:51:13,929 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-16] [akka://test/user/$d/resultActor]- Message [ro.cosu.vampires.server.values.jobs.AutoValue_Job] from Actor[akka://test/system/testProbe-16#-1164401162] to Actor[akka://test/user/$d/resultActor#-1688467460] was not delivered. [5] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-19 22:51:13,930 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-16] [akka://test/user/$d/resultActor]- Message [ro.cosu.vampires.server.values.jobs.AutoValue_Job] from Actor[akka://test/system/testProbe-16#-1164401162] to Actor[akka://test/user/$d/resultActor#-1688467460] was not delivered. [6] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-19 22:51:13,930 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-16] [akka://test/user/$d/resultActor]- Message [ro.cosu.vampires.server.values.jobs.AutoValue_Job] from Actor[akka://test/system/testProbe-16#-1164401162] to Actor[akka://test/user/$d/resultActor#-1688467460] was not delivered. [7] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-19 22:51:13,930 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-16] [akka://test/user/$d/resultActor]- Message [ro.cosu.vampires.server.values.jobs.AutoValue_Job] from Actor[akka://test/system/testProbe-16#-1164401162] to Actor[akka://test/user/$d/resultActor#-1688467460] was not delivered. [8] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-19 22:51:13,930 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-16] [akka://test/user/$d/resultActor]- Message [ro.cosu.vampires.server.values.jobs.AutoValue_Job] from Actor[akka://test/system/testProbe-16#-1164401162] to Actor[akka://test/user/$d/resultActor#-1688467460] was not delivered. [9] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-19 22:51:13,931 INFO  akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-16] [akka://test/user/$d/resultActor]- Message [ro.cosu.vampires.server.values.jobs.AutoValue_Job] from Actor[akka://test/system/testProbe-16#-1164401162] to Actor[akka://test/user/$d/resultActor#-1688467460] was not delivered. [10] dead letters encountered, no more dead letters will be logged. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-19 22:51:13,932 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 8b63af79-b53a-4418-b125-e138340cf7a4 = RUNNING =&gt; STOPPING
+2016-09-19 22:51:13,932 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo 8b63af79-b53a-4418-b125-e138340cf7a4 = STOPPING =&gt; STOPPED
+2016-09-19 22:51:13,933 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo d5fe698b-9e45-4738-9768-a94ad2b14edc = RUNNING =&gt; STOPPING
+2016-09-19 22:51:13,933 DEBUG r.c.v.s.resources.mock.MockResource [] []- MOCK foo d5fe698b-9e45-4738-9768-a94ad2b14edc = STOPPING =&gt; STOPPED
+[DEBUG] [09/19/2016 22:51:13.935] [test-akka.actor.default-dispatcher-15] [EventStream] shutting down: StandardOutLogger started
 </pre>
 </span>
 </div>
@@ -295,7 +257,7 @@
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 3.0</a> at Sep 19, 2016 5:53:43 AM</p>
+<a href="http://www.gradle.org">Gradle 3.0</a> at Sep 19, 2016 10:51:23 PM</p>
 </div>
 </div>
 </body>

@@ -60,9 +60,6 @@ import ro.cosu.vampires.server.values.jobs.metrics.Stats;
 <span class="fc" id="L60">                .build();</span>
     }
 
-    public static boolean isActiveStatus(Status status) {
-<span class="fc" id="L64">        return ACTIVE_STATUSES.contains(status);</span>
-    }
 
     public abstract Status status();
 
@@ -83,50 +80,58 @@ import ro.cosu.vampires.server.values.jobs.metrics.Stats;
     public abstract Builder toBuilder();
 
     private Builder update() {
-<span class="fc" id="L86">        return toBuilder().updatedAt(LocalDateTime.now());</span>
+<span class="fc" id="L83">        return toBuilder().updatedAt(LocalDateTime.now());</span>
     }
 
     public ExecutionInfo updateCompleted(int completed) {
-<span class="fc" id="L90">        return update().completed(completed)</span>
-<span class="fc" id="L91">                .build();</span>
+<span class="fc" id="L87">        return update().completed(completed)</span>
+<span class="fc" id="L88">                .build();</span>
     }
 
     public ExecutionInfo updateTotal(int total) {
-<span class="fc" id="L95">        return update().total(total).build();</span>
+<span class="fc" id="L92">        return update().total(total).build();</span>
     }
 
     public ExecutionInfo updateRemaining(int remaining) {
-<span class="fc" id="L99">        return update().remaining(remaining).build();</span>
+<span class="fc" id="L96">        return update().remaining(remaining).build();</span>
     }
 
     public ExecutionInfo updateElapsed(long elapsed) {
-<span class="fc" id="L103">        return update().elapsed(elapsed).build();</span>
+<span class="fc" id="L100">        return update().elapsed(elapsed).build();</span>
     }
 
     public ExecutionInfo updateFailed(int failed) {
-<span class="nc" id="L107">        return update().failed(failed).build();</span>
+<span class="nc" id="L104">        return update().failed(failed).build();</span>
     }
 
     public ExecutionInfo updateStatus(Status status) {
-<span class="fc" id="L111">        return update().status(status).build();</span>
+<span class="fc" id="L108">        return update().status(status).build();</span>
     }
 
     public ExecutionInfo updateStats(Stats stats) {
-<span class="fc" id="L115">        return update().stats(stats).build();</span>
+<span class="fc" id="L112">        return update().stats(stats).build();</span>
     }
 
 
-<span class="pc" id="L119">    public enum Status {</span>
-<span class="fc" id="L120">        STARTING,</span>
-<span class="fc" id="L121">        RUNNING,</span>
-<span class="fc" id="L122">        CANCELED,</span>
-<span class="fc" id="L123">        STOPPING,</span>
-<span class="fc" id="L124">        FAILED,</span>
-<span class="fc" id="L125">        FINISHED</span>
+<span class="pc" id="L116">    public enum Status {</span>
+<span class="fc" id="L117">        STARTING,</span>
+<span class="fc" id="L118">        RUNNING,</span>
+<span class="fc" id="L119">        CANCELED,</span>
+<span class="fc" id="L120">        STOPPING,</span>
+<span class="fc" id="L121">        FAILED,</span>
+<span class="fc" id="L122">        FINISHED;</span>
+
+<span class="fc" id="L124">        private static HashSet&lt;Status&gt; ACTIVE_STATUSES =</span>
+<span class="fc" id="L125">                Sets.newHashSet(ExecutionInfo.Status.RUNNING, ExecutionInfo.Status.STARTING);</span>
+
+        public boolean isActiveStatus() {
+<span class="fc" id="L128">            return ACTIVE_STATUSES.contains(this);</span>
+        }
+
     }
 
-<span class="fc" id="L128">    @AutoValue.Builder</span>
-<span class="fc" id="L129">    public abstract static class Builder {</span>
+<span class="fc" id="L133">    @AutoValue.Builder</span>
+<span class="fc" id="L134">    public abstract static class Builder {</span>
 
         public abstract Builder status(Status status);
 

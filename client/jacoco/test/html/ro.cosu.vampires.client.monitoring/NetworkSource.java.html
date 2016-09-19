@@ -85,7 +85,7 @@ public class NetworkSource implements Source {
 
     private Gauge&lt;Long&gt; txBytesGague(final NetworkIF iface) {
 <span class="fc" id="L87">        return () -&gt; {</span>
-<span class="fc" id="L88">            linuxNetworks.updateNetworkStats(iface);</span>
+<span class="fc" id="L88">            LinuxNetworks.updateNetworkStats(iface);</span>
 <span class="fc" id="L89">            return iface.getBytesSent();</span>
         };
     }
@@ -93,7 +93,7 @@ public class NetworkSource implements Source {
     private Gauge&lt;Long&gt; rxBytesGague(final NetworkIF iface) {
 
 <span class="fc" id="L95">        return () -&gt; {</span>
-<span class="fc" id="L96">            linuxNetworks.updateNetworkStats(iface);</span>
+<span class="fc" id="L96">            LinuxNetworks.updateNetworkStats(iface);</span>
 <span class="fc" id="L97">            return iface.getBytesRecv();</span>
         };
     }
@@ -106,7 +106,7 @@ public class NetworkSource implements Source {
 
             @Override
             public Long getValue() {
-<span class="fc" id="L109">                linuxNetworks.updateNetworkStats(iface);</span>
+<span class="fc" id="L109">                LinuxNetworks.updateNetworkStats(iface);</span>
 <span class="fc" id="L110">                previousValue = iface.getBytesSent();</span>
 <span class="fc" id="L111">                Duration between = Duration.between(previousSample, LocalDateTime.now());</span>
 <span class="fc" id="L112">                double delta = iface.getBytesSent() - previousValue;</span>
@@ -124,7 +124,7 @@ public class NetworkSource implements Source {
 
             @Override
             public Long getValue() {
-<span class="fc" id="L127">                linuxNetworks.updateNetworkStats(iface);</span>
+<span class="fc" id="L127">                LinuxNetworks.updateNetworkStats(iface);</span>
 
 <span class="fc" id="L129">                Duration between = Duration.between(previousSample, LocalDateTime.now());</span>
 <span class="fc" id="L130">                double delta = iface.getBytesRecv() - previousValue;</span>

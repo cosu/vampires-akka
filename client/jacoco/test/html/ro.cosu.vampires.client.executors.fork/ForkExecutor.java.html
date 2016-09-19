@@ -117,72 +117,71 @@ import ro.cosu.vampires.server.values.jobs.metrics.Trace;
 <span class="fc" id="L117">                .duration(duration)</span>
 <span class="fc" id="L118">                .exitCode(exitCode)</span>
 <span class="fc" id="L119">                .trace(getTrace(start, stop))</span>
-
-<span class="fc" id="L121">                .output(collectingLogOutputStream.getLines())</span>
-<span class="fc" id="L122">                .build();</span>
+<span class="fc" id="L120">                .output(collectingLogOutputStream.getLines())</span>
+<span class="fc" id="L121">                .build();</span>
 
     }
 
     @Override
     public void acquireResources() {
-<span class="pc" id="L128">        cpuSet = cpuAllocator.acquireCpuSet().orElseThrow(() -&gt; new RuntimeException(&quot;Unable to acquire cpus&quot;));</span>
-<span class="fc" id="L129">        LOG.debug(&quot;Acquired cpus {}&quot;, cpuSet);</span>
-<span class="fc" id="L130">    }</span>
+<span class="pc" id="L127">        cpuSet = cpuAllocator.acquireCpuSet().orElseThrow(() -&gt; new RuntimeException(&quot;Unable to acquire cpus&quot;));</span>
+<span class="fc" id="L128">        LOG.debug(&quot;Acquired cpus {}&quot;, cpuSet);</span>
+<span class="fc" id="L129">    }</span>
 
     @Override
     public void releaseResources() {
-<span class="fc" id="L134">        cpuAllocator.releaseCpuSets(cpuSet);</span>
-<span class="fc" id="L135">    }</span>
+<span class="fc" id="L133">        cpuAllocator.releaseCpuSets(cpuSet);</span>
+<span class="fc" id="L134">    }</span>
 
     @Override
     public Type getType() {
-<span class="fc" id="L139">        return Type.FORK;</span>
+<span class="fc" id="L138">        return Type.FORK;</span>
     }
 
     private Trace getTrace(LocalDateTime start, LocalDateTime stop) {
         final Trace.Builder builder = Trace
-<span class="fc" id="L144">                .withNoMetrics()</span>
-<span class="fc" id="L145">                .executor(getType().toString())</span>
-<span class="fc" id="L146">                .start(start)</span>
-<span class="fc" id="L147">                .stop(stop)</span>
-<span class="fc" id="L148">                .totalCpuCount(cpuAllocator.totalCpuCount());</span>
+<span class="fc" id="L143">                .withNoMetrics()</span>
+<span class="fc" id="L144">                .executor(getType().toString())</span>
+<span class="fc" id="L145">                .start(start)</span>
+<span class="fc" id="L146">                .stop(stop)</span>
+<span class="fc" id="L147">                .totalCpuCount(cpuAllocator.totalCpuCount());</span>
 
-<span class="fc" id="L150">        builder.cpuSet(cpuSet.getCpuSet());</span>
-<span class="fc" id="L151">        final Trace trace = builder.build();</span>
+<span class="fc" id="L149">        builder.cpuSet(cpuSet.getCpuSet());</span>
+<span class="fc" id="L150">        final Trace trace = builder.build();</span>
 
-<span class="fc" id="L153">        LOG.debug(&quot;{}&quot;, trace);</span>
-<span class="fc" id="L154">        return trace;</span>
+<span class="fc" id="L152">        LOG.debug(&quot;{}&quot;, trace);</span>
+<span class="fc" id="L153">        return trace;</span>
     }
 
     @Override
     public int getNCpu() {
         // this uses jvm info. We could use sigar to create this also but it adds a weird dependency here
-<span class="fc" id="L160">        return Runtime.getRuntime().availableProcessors();</span>
+<span class="fc" id="L159">        return Runtime.getRuntime().availableProcessors();</span>
     }
 
     private boolean isNumaEnabled() {
         int exitCode;
         try {
-<span class="fc" id="L166">            executor.setStreamHandler(new PumpStreamHandler(new CollectingLogOutputStream()));</span>
-<span class="nc" id="L167">            exitCode = executor.execute(CommandLine.parse(&quot;numactl --hardware&quot;));</span>
+<span class="fc" id="L165">            executor.setStreamHandler(new PumpStreamHandler(new CollectingLogOutputStream()));</span>
+<span class="nc" id="L166">            exitCode = executor.execute(CommandLine.parse(&quot;numactl --hardware&quot;));</span>
 
-<span class="fc" id="L169">        } catch (IOException e) {</span>
-<span class="fc" id="L170">            exitCode = -1;</span>
-<span class="nc" id="L171">        }</span>
-<span class="pc bpc" id="L172" title="1 of 2 branches missed.">        return (exitCode == 0);</span>
+<span class="fc" id="L168">        } catch (IOException e) {</span>
+<span class="fc" id="L169">            exitCode = -1;</span>
+<span class="nc" id="L170">        }</span>
+<span class="pc bpc" id="L171" title="1 of 2 branches missed.">        return (exitCode == 0);</span>
 
     }
 
-<span class="fc" id="L176">    private static class CollectingLogOutputStream extends LogOutputStream {</span>
-<span class="fc" id="L177">        private final List&lt;String&gt; lines = new LinkedList&lt;&gt;();</span>
+<span class="fc" id="L175">    private static class CollectingLogOutputStream extends LogOutputStream {</span>
+<span class="fc" id="L176">        private final List&lt;String&gt; lines = new LinkedList&lt;&gt;();</span>
 
         @Override
         protected void processLine(String line, int level) {
-<span class="fc" id="L181">            lines.add(line);</span>
-<span class="fc" id="L182">        }</span>
+<span class="fc" id="L180">            lines.add(line);</span>
+<span class="fc" id="L181">        }</span>
 
         public List&lt;String&gt; getLines() {
-<span class="fc" id="L185">            return lines;</span>
+<span class="fc" id="L184">            return lines;</span>
         }
     }
 }

@@ -115,15 +115,13 @@ public class MonitoringActor extends UntypedActor {
 <span class="fc" id="L115">                (job.result().trace().start(), job.result().trace().stop());</span>
 <span class="fc" id="L116">        ImmutableMap&lt;String, String&gt; hostValues = getHostMetrics();</span>
 <span class="fc" id="L117">        Metrics metrics = Metrics.builder().metadata(hostValues).metrics(metricsWindowInterval).build();</span>
-<span class="fc" id="L118">        Job withHostMetrics = job.withHostMetrics(metrics);</span>
-<span class="fc" id="L119">        return withHostMetrics;</span>
+<span class="fc" id="L118">        return job.withHostMetrics(metrics);</span>
     }
 
     private ImmutableMap&lt;String, String&gt; getHostMetrics() {
-<span class="fc" id="L123">        SortedMap&lt;String, Gauge&gt; hostGauges = metricRegistry.getGauges(</span>
-<span class="nc" id="L124">                (name, metric) -&gt; name.startsWith(&quot;host&quot;));</span>
-
-<span class="fc" id="L126">        return MetricsWindow.convertGaugesToString(hostGauges);</span>
+<span class="fc" id="L122">        SortedMap&lt;String, Gauge&gt; hostGauges = metricRegistry.getGauges(</span>
+<span class="nc" id="L123">                (name, metric) -&gt; name.startsWith(&quot;host&quot;));</span>
+<span class="fc" id="L124">        return MetricsWindow.convertGaugesToString(hostGauges);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

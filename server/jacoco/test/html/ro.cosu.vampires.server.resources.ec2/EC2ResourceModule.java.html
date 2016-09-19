@@ -54,16 +54,16 @@ import ro.cosu.vampires.server.resources.ResourceProvider;
 
 <span class="fc" id="L55">        LOG.debug(&quot;reading credentials  AWS from {}&quot;, credentialsFile);</span>
         try {
-<span class="nc" id="L57">            PropertiesCredentials credentials = new PropertiesCredentials(new FileInputStream(credentialsFile));</span>
-<span class="nc" id="L58">            amazonEC2Client = new AmazonEC2Client(credentials);</span>
+<span class="fc" id="L57">            PropertiesCredentials credentials = new PropertiesCredentials(new FileInputStream(credentialsFile));</span>
+<span class="fc" id="L58">            amazonEC2Client = new AmazonEC2Client(credentials);</span>
 
-<span class="nc" id="L60">        } catch (IllegalArgumentException e) {</span>
-<span class="nc" id="L61">            LOG.error(&quot;Invalid EC2 file format&quot;, e);</span>
+<span class="fc" id="L60">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L61">            LOG.error(&quot;Invalid EC2 file format&quot;, e);</span>
 <span class="fc" id="L62">        } catch (FileNotFoundException e) {</span>
 <span class="fc" id="L63">            LOG.error(&quot;could not find ec2 credentials file: &quot; + credentialsFile);</span>
 <span class="nc" id="L64">        } catch (IOException e) {</span>
 <span class="nc" id="L65">            LOG.error(&quot;failed to create amazon client&quot;, e);</span>
-<span class="pc" id="L66">        }</span>
+<span class="fc" id="L66">        }</span>
 
 <span class="fc" id="L68">        return amazonEC2Client;</span>
     }
