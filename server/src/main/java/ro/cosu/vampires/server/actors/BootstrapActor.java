@@ -137,20 +137,26 @@ public class BootstrapActor extends UntypedActor {
 
         if (userHasExecution && executionHasActor) {
             Execution execution = getResultsMap(user).get(deleteExecution.resourceId());
-            boolean executionCanShutdown = ExecutionInfo.isActiveStatus(execution.info().status());
-            if (executionCanShutdown) {
-                ActorRef executionActor = executionsToActors.get(deleteExecution.resourceId());
-                executionActor.tell(ResourceControl.Shutdown.create(), getSelf());
+            boolean executionCanShutdown = execution.info().status().isActiveStatus();
 
-                // update the current view of the execution
-                execution = execution.withInfo(execution.info()
-                        .updateStatus(ExecutionInfo.Status.STOPPING));
-                getResultsMap(user).put(execution.id(), execution);
+            if (executionCanShutdown) {
+                execution = shutdownExecution(deleteExecution, user, execution);
             } else {
                 log.error("shutting down a non-running execution {}", execution);
             }
             getSender().tell(ResponseExecution.create(ImmutableList.of(execution)), getSelf());
         }
+    }
+
+    private Execution shutdownExecution(DeleteExecution deleteExecution, User user, Execution execution) {
+        ActorRef executionActor = executionsToActors.get(deleteExecution.resourceId());
+        executionActor.tell(ResourceControl.Shutdown.create(), getSelf());
+
+        // update the current view of the execution
+        execution = execution.withInfo(execution.info()
+                .updateStatus(ExecutionInfo.Status.STOPPING));
+        getResultsMap(user).put(execution.id(), execution);
+        return execution;
     }
 
     private void handleTerminated() {

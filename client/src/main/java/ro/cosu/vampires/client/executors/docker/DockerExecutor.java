@@ -47,7 +47,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import javax.ws.rs.ProcessingException;
 
@@ -108,7 +110,7 @@ public class DockerExecutor implements Executor {
                 .awaitStatusCode();
 
         LocalDateTime stop = LocalDateTime.now();
-        String output = "";
+        List<String> output = Collections.emptyList();
         try {
             output = getOutput();
         } catch (InterruptedException e) {
@@ -126,18 +128,19 @@ public class DockerExecutor implements Executor {
                 .exitCode(exitCode)
                 .trace(getTrace(start, stop))
                 .duration(duration)
-                .output(Collections.singletonList(output))
+                .output(output)
                 .build();
-
     }
 
-    private String getOutput() throws InterruptedException {
-        return dockerClient.logContainerCmd(containerId)
+    private List<String> getOutput() throws InterruptedException {
+        String s = dockerClient.logContainerCmd(containerId)
                 .withStdErr(true)
                 .withStdOut(true)
                 .exec(new DockerLogResultCallback())
                 .awaitCompletion()
                 .toString();
+
+        return Arrays.asList(s.split("\n"));
     }
 
     private Trace getTrace(LocalDateTime start, LocalDateTime stop) {

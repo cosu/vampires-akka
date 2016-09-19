@@ -60,9 +60,6 @@ public abstract class ExecutionInfo {
                 .build();
     }
 
-    public static boolean isActiveStatus(Status status) {
-        return ACTIVE_STATUSES.contains(status);
-    }
 
     public abstract Status status();
 
@@ -122,7 +119,15 @@ public abstract class ExecutionInfo {
         CANCELED,
         STOPPING,
         FAILED,
-        FINISHED
+        FINISHED;
+
+        private static HashSet<Status> ACTIVE_STATUSES =
+                Sets.newHashSet(ExecutionInfo.Status.RUNNING, ExecutionInfo.Status.STARTING);
+
+        public boolean isActiveStatus() {
+            return ACTIVE_STATUSES.contains(this);
+        }
+
     }
 
     @AutoValue.Builder

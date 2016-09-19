@@ -85,7 +85,7 @@ public class NetworkSource implements Source {
 
     private Gauge<Long> txBytesGague(final NetworkIF iface) {
         return () -> {
-            linuxNetworks.updateNetworkStats(iface);
+            LinuxNetworks.updateNetworkStats(iface);
             return iface.getBytesSent();
         };
     }
@@ -93,7 +93,7 @@ public class NetworkSource implements Source {
     private Gauge<Long> rxBytesGague(final NetworkIF iface) {
 
         return () -> {
-            linuxNetworks.updateNetworkStats(iface);
+            LinuxNetworks.updateNetworkStats(iface);
             return iface.getBytesRecv();
         };
     }
@@ -106,7 +106,7 @@ public class NetworkSource implements Source {
 
             @Override
             public Long getValue() {
-                linuxNetworks.updateNetworkStats(iface);
+                LinuxNetworks.updateNetworkStats(iface);
                 previousValue = iface.getBytesSent();
                 Duration between = Duration.between(previousSample, LocalDateTime.now());
                 double delta = iface.getBytesSent() - previousValue;
@@ -124,7 +124,7 @@ public class NetworkSource implements Source {
 
             @Override
             public Long getValue() {
-                linuxNetworks.updateNetworkStats(iface);
+                LinuxNetworks.updateNetworkStats(iface);
 
                 Duration between = Duration.between(previousSample, LocalDateTime.now());
                 double delta = iface.getBytesRecv() - previousValue;

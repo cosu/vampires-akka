@@ -5,7 +5,7 @@ source $(dirname $0)/common.sh
 
 
 function help_message {
-    echo " -p PROVIDER -t TYPE -c COUNT"
+    echo "$0 -p PROVIDER -t TYPE -c COUNT (-m)"
 }
 
 if [ $# -eq 0 ];

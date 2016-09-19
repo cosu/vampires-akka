@@ -115,14 +115,12 @@ public class MonitoringActor extends UntypedActor {
                 (job.result().trace().start(), job.result().trace().stop());
         ImmutableMap<String, String> hostValues = getHostMetrics();
         Metrics metrics = Metrics.builder().metadata(hostValues).metrics(metricsWindowInterval).build();
-        Job withHostMetrics = job.withHostMetrics(metrics);
-        return withHostMetrics;
+        return job.withHostMetrics(metrics);
     }
 
     private ImmutableMap<String, String> getHostMetrics() {
         SortedMap<String, Gauge> hostGauges = metricRegistry.getGauges(
                 (name, metric) -> name.startsWith("host"));
-
         return MetricsWindow.convertGaugesToString(hostGauges);
     }
 }

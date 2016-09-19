@@ -117,7 +117,6 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
                 .duration(duration)
                 .exitCode(exitCode)
                 .trace(getTrace(start, stop))
-
                 .output(collectingLogOutputStream.getLines())
                 .build();
 

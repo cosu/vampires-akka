@@ -43,6 +43,11 @@ import com.typesafe.config.ConfigFactory;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import ro.cosu.vampires.server.resources.AbstractResource;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceManager;
@@ -51,6 +56,7 @@ import ro.cosu.vampires.server.resources.ResourceProvider;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -150,9 +156,29 @@ public class EC2ResourceTest {
     }
 
     @Test
-    public void testEC2Client() throws Exception {
+    public void testEC2ClientFail() throws Exception {
         AmazonEC2Client foo = EC2ResourceModule.getAmazonEC2Client("foo");
         assertThat(foo, is(nullValue()));
+    }
+
+    @Test
+    public void testEC2ClientFailInvalidFormat() throws Exception {
+        Path path = Files.createTempFile("aws", ".txt");
+        File file = path.toFile();
+        file.deleteOnExit();
+        Files.write(path, "foo\nbar".getBytes(StandardCharsets.UTF_8));
+        AmazonEC2Client foo = EC2ResourceModule.getAmazonEC2Client(file.getAbsolutePath());
+        assertThat(foo, is(nullValue()));
+    }
+
+    @Test
+    public void testEC2Client() throws Exception {
+        Path path = Files.createTempFile("aws", ".txt");
+        File file = path.toFile();
+        file.deleteOnExit();
+        Files.write(path, "accessKey=foo\nsecretKey=bar".getBytes(StandardCharsets.UTF_8));
+        AmazonEC2Client foo = EC2ResourceModule.getAmazonEC2Client(file.getAbsolutePath());
+        assertThat(foo, not(nullValue()));
     }
 
 }

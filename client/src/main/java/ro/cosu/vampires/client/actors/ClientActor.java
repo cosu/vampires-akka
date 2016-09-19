@@ -57,6 +57,16 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 
 public class ClientActor extends UntypedActor {
+    /**
+     * 1) Connect to the server
+     * 2) Send ClientInfo
+     * 3) Wait for ClientConfig
+     * 4) Send empty Job
+     * == Repeat
+     * 5) Receive new Job
+     * 6) Execute Job
+     * 7) Send ob Result back
+     */
 
     private final String serverPath;
     private final ExecutorsExtensionImpl executors = ExecutorsExtension.ExecutorsProvider.get(getContext().system());
