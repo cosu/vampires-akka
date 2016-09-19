@@ -98,26 +98,4 @@ public class ClientActorTest {
 
         assertThat(job.status(), is(JobStatus.COMPLETE));
     }
-
-    @Test
-    public void emptyConfig() throws Exception {
-
-        TestActorRef.create(system, MonitoringActor
-                .props(TestUtil.getMetricRegistryMock()), "monitor");
-
-        TestActorRef<ClientActor> client = TestActorRef.create(system, ClientActor.props("test", "client1"), "client1");
-
-        final JavaTestKit remoteProbe = new JavaTestKit(system);
-
-        // tell the client that the server is up
-        scala.Option<ActorRef> actorRefOption = Option.Some.option(remoteProbe.getRef()).asScala();
-        client.tell(new ActorIdentity(null, actorRefOption), ActorRef.noSender());
-
-        // client responds with client Info
-        ClientInfo clientInfo = (ClientInfo) remoteProbe.receiveOne(Duration.create("500 milliseconds"));
-        assertThat(clientInfo.executors().size(), not(0));
-        client.tell(ClientConfig.empty(), remoteProbe.getRef());
-
-
-    }
 }

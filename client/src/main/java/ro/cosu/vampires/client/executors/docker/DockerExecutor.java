@@ -50,6 +50,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.ws.rs.ProcessingException;
 
@@ -133,14 +134,15 @@ public class DockerExecutor implements Executor {
     }
 
     private List<String> getOutput() throws InterruptedException {
-        String s = dockerClient.logContainerCmd(containerId)
+        String output = dockerClient.logContainerCmd(containerId)
                 .withStdErr(true)
                 .withStdOut(true)
                 .exec(new DockerLogResultCallback())
                 .awaitCompletion()
                 .toString();
 
-        return Arrays.asList(s.split("\n"));
+        return Optional.ofNullable(output).map(s -> s.split("\n"))
+                .map(Arrays::asList).orElse(Collections.emptyList());
     }
 
     private Trace getTrace(LocalDateTime start, LocalDateTime stop) {
