@@ -27,14 +27,19 @@ package ro.cosu.vampires.server.util;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.KeyPair;
 import com.jcraft.jsch.Session;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -43,20 +48,25 @@ import static org.mockito.Mockito.when;
 
 public class SshClientTest {
 
+
+    @Before
+    public void setUp() throws Exception {
+        TestAppender.clear();
+    }
+
     @Test
     public void testRunCommand() throws Exception {
         SshClient sshClient = getSshClient(0);
 
         String result = sshClient.runCommand("user", "privateKey", "address", "cmd", 1);
         assertThat(result, is("resulterror"));
+
     }
 
     @Test(expected = RuntimeException.class)
     public void testRunCommandFail() throws Exception {
         SshClient sshClient = getSshClient(1);
         String result = sshClient.runCommand("user", "privateKey", "address", "cmd", 1);
-
-        assertThat(result, is("resulterror"));
     }
 
     private SshClient getSshClient(int value) throws JSchException, IOException {
@@ -74,5 +84,16 @@ public class SshClientTest {
         when(channelExec.getExitStatus()).thenReturn(value);
         when(channelExec.isClosed()).thenReturn(true);
         return sshClient;
+    }
+
+    @Test(expected = JSchException.class)
+    public void session() throws Exception {
+        SshClient sshClient = new SshClient();
+        Path tempFile = Files.createTempFile("foo", "bar");
+        tempFile.toFile().deleteOnExit();
+        JSch jSch = new JSch();
+        KeyPair keyPair = KeyPair.genKeyPair(jSch, KeyPair.RSA, 2048);
+        keyPair.writePrivateKey(new FileOutputStream(tempFile.toFile()));
+        sshClient.runCommand("user", tempFile.toAbsolutePath().toString(), "localhost", "command", 22);
     }
 }

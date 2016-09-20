@@ -72,6 +72,7 @@ public class SshClient {
         err.close();
         in.close();
         if (channel.isClosed() && channel.getExitStatus() > 0) {
+            LOG.error("Non-zero exit code {} command {]", channel.getExitStatus(), command);
             throw new RuntimeException("SSH returned non-zero exit code: " + channel.getExitStatus());
         }
         channel.disconnect();
@@ -100,7 +101,7 @@ public class SshClient {
         return session;
     }
 
-    private static class JSCHLogger implements com.jcraft.jsch.Logger {
+    public static class JSCHLogger implements com.jcraft.jsch.Logger {
 
         public boolean isEnabled(int level) {
             return true;
