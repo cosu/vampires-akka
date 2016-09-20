@@ -11,7 +11,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 
 public class TestAppender extends AppenderBase<ILoggingEvent> {
-    static Map<Level, List<ILoggingEvent>> events = new Hashtable<>();
+    public static Map<Level, List<ILoggingEvent>> events = new Hashtable<>();
 
     public static void clear() {
         events.clear();

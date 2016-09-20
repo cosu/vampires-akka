@@ -33,11 +33,14 @@ import org.junit.Test;
 import java.util.concurrent.TimeUnit;
 
 import akka.actor.ActorRef;
+import akka.actor.PoisonPill;
 import akka.actor.Props;
 import akka.actor.Terminated;
 import akka.testkit.JavaTestKit;
+import ch.qos.logback.classic.Level;
 import ro.cosu.vampires.server.schedulers.Scheduler;
 import ro.cosu.vampires.server.schedulers.SimpleScheduler;
+import ro.cosu.vampires.server.util.TestAppender;
 import ro.cosu.vampires.server.values.jobs.Computation;
 import ro.cosu.vampires.server.values.jobs.Execution;
 import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
@@ -109,5 +112,25 @@ public class WorkActorTest extends AbstractActorTest {
 
             }
         };
+    }
+
+    @Test
+    public void unhandled() throws Exception {
+        TestAppender.clear();
+        new JavaTestKit(system) {
+            {
+                // create a test probe
+                final JavaTestKit workProbe = new JavaTestKit(system);
+
+                // create a work actor
+                final Props props = WorkActor.props(getScheduler());
+                final ActorRef workActor = system.actorOf(props);
+                workProbe.watch(workActor);
+                workActor.tell(new Object(), ActorRef.noSender());
+                workActor.tell(PoisonPill.getInstance(), ActorRef.noSender());
+                workProbe.expectTerminated(workActor);
+            }
+        };
+        assertThat(TestAppender.events.get(Level.WARN).size(), is(1));
     }
 }
