@@ -122,7 +122,7 @@ public class BootstrapIT {
             ResponseExecution responseExecution = (ResponseExecution) Await.result(ask, timeout.duration());
             execution = responseExecution.values().get(0);
             System.out.println(execution.info().status());
-            running = ExecutionInfo.isActiveStatus(execution.info().status());
+            running = execution.info().status().isActiveStatus();
         }
     }
 }
