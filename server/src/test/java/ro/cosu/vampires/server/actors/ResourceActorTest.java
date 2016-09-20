@@ -103,9 +103,9 @@ public class ResourceActorTest extends AbstractActorTest {
                         return this;
                     }
                 });
-
                 resourceActor.tell(getCreateResource("foo"), resourceProbe.getRef());
-
+                // second create should be ignored
+                resourceActor.tell(getCreateResource("foo"), resourceProbe.getRef());
                 resourceProbe.receiveN(2, FiniteDuration.create(1, "seconds"));
 
             }
@@ -120,9 +120,7 @@ public class ResourceActorTest extends AbstractActorTest {
                 ActorRef resourceActor = system.actorOf(ResourceActor.props(getLocalProvider()), "resourceActor1");
 
                 TestActor.AutoPilot pilot = new TestActor.AutoPilot() {
-
                     public TestActor.AutoPilot run(ActorRef sender, Object msg) {
-
                         if (msg instanceof ResourceInfo) {
                             ResourceInfo resourceInfo = (ResourceInfo) msg;
                             if (resourceInfo.status().equals(Resource.Status.FAILED)) {
@@ -133,13 +131,9 @@ public class ResourceActorTest extends AbstractActorTest {
                         return this;
                     }
                 };
-
                 resourceProbe.setAutoPilot(pilot);
-
                 resourceActor.tell(getCreateResource("fail"), resourceProbe.getRef());
-
                 ResourceInfo ri = (ResourceInfo) resourceProbe.receiveOne(FiniteDuration.create(100, "seconds"));
-
                 assertThat(ri.status(), is(Resource.Status.FAILED));
             }
         };
