@@ -126,11 +126,15 @@ public class WorkActorTest extends AbstractActorTest {
                 final Props props = WorkActor.props(getScheduler());
                 final ActorRef workActor = system.actorOf(props);
                 workProbe.watch(workActor);
+                // send it a bogus message
                 workActor.tell(new Object(), ActorRef.noSender());
                 workActor.tell(PoisonPill.getInstance(), ActorRef.noSender());
                 workProbe.expectTerminated(workActor);
             }
         };
+        // logging might be async
+        Thread.sleep(50);
+        // expect to have something in the logs
         assertThat(TestAppender.events.get(Level.WARN).size(), is(1));
     }
 }

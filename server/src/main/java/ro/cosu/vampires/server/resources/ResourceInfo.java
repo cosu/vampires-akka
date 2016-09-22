@@ -36,14 +36,6 @@ public abstract class ResourceInfo {
         return new AutoValue_ResourceInfo(parameters, status, LocalDateTime.now());
     }
 
-    public static ResourceInfo unknown(Resource.Parameters parameters) {
-        return new AutoValue_ResourceInfo(parameters, Resource.Status.UNKNOWN, LocalDateTime.now());
-    }
-
-    public static ResourceInfo failed(Resource.Parameters parameters) {
-        return new AutoValue_ResourceInfo(parameters, Resource.Status.FAILED, LocalDateTime.now());
-    }
-
     public abstract Resource.Parameters parameters();
 
     public abstract Resource.Status status();

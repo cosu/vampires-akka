@@ -94,29 +94,35 @@ public class ResourceActorTest extends AbstractActorTest {
                 ActorRef resourceActor = system.actorOf(ResourceActor.props(resource));
                 resourceProbe.watch(resourceActor);
 
+                // start resource
                 resourceActor.tell(ResourceControl.Start.create(), resourceProbe.getRef());
-
                 resourceInfo = assertResourceStatus(resourceProbe, Resource.Status.RUNNING);
 
+                // check that it's running
                 resourceActor.tell(QueryResource.create(resourceInfo.parameters().id()), resourceProbe.getRef());
                 assertResourceStatus(resourceProbe, Resource.Status.RUNNING);
 
-                final ClientInfo clientInfo = ClientInfo.builder()
+                // tell it the client attached to the resource has connected
+                resourceActor.tell(getClientInfo(resourceInfo), resourceProbe.getRef());
+
+                // check the status
+                resourceActor.tell(QueryResource.create(resourceInfo.parameters().id()), resourceProbe.getRef());
+                assertResourceStatus(resourceProbe, Resource.Status.CONNECTED);
+
+                // stop it
+                resourceActor.tell(ResourceControl.Shutdown.create(), resourceProbe.getRef());
+                assertResourceStatus(resourceProbe, Resource.Status.STOPPED);
+
+                // actor should terminate
+                resourceProbe.expectTerminated(resourceActor);
+            }
+
+            private ClientInfo getClientInfo(ResourceInfo resourceInfo) {
+                return ClientInfo.builder()
                         .executors(Maps.newHashMap())
                         .metrics(Metrics.empty())
                         .id(resourceInfo.parameters().id())
                         .build();
-
-
-                resourceActor.tell(clientInfo, resourceProbe.getRef());
-
-                resourceActor.tell(QueryResource.create(resourceInfo.parameters().id()), resourceProbe.getRef());
-                assertResourceStatus(resourceProbe, Resource.Status.CONNECTED);
-
-                resourceActor.tell(ResourceControl.Shutdown.create(), resourceProbe.getRef());
-                assertResourceStatus(resourceProbe, Resource.Status.STOPPED);
-
-                resourceProbe.expectTerminated(resourceActor);
             }
 
 
@@ -132,22 +138,20 @@ public class ResourceActorTest extends AbstractActorTest {
     public void testEnhancedFail() throws Exception {
         new JavaTestKit(system) {
             {
-                ResourceInfo resourceInfo;
                 final JavaTestKit resourceProbe = new JavaTestKit(system);
                 Resource resource = getLocalProvider().create(getCreateResource("fail").parameters()).get();
                 ActorRef resourceActor = system.actorOf(ResourceActor.props(resource));
                 resourceProbe.watch(resourceActor);
 
+                // starting will fail
                 resourceActor.tell(ResourceControl.Start.create(), resourceProbe.getRef());
-                resourceInfo = assertResourceStatus(resourceProbe, Resource.Status.FAILED);
+                assertResourceStatus(resourceProbe, Resource.Status.FAILED);
 
+                // stop it
                 resourceActor.tell(ResourceControl.Shutdown.create(), resourceProbe.getRef());
                 assertResourceStatus(resourceProbe, Resource.Status.FAILED);
 
-                resourceActor.tell(QueryResource.create(resourceInfo.parameters().id()), resourceProbe.getRef());
-                resourceInfo = resourceProbe.expectMsgClass(ResourceInfo.class);
-                assertThat(resourceInfo.status(), is(Resource.Status.FAILED));
-
+                // actor should terminate
                 resourceProbe.expectTerminated(resourceActor);
             }
         };

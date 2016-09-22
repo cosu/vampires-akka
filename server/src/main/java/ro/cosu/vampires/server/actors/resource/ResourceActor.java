@@ -85,6 +85,7 @@ public class ResourceActor extends UntypedActor {
     private void sendResourceInfo(ActorRef toActor) {
         log.debug("sending {} to {}", resource.info(), toActor);
         toActor.tell(resource.info(), getSelf());
+        // also update the parent
         getContext().parent().tell(resource.info(), getSelf());
     }
 }

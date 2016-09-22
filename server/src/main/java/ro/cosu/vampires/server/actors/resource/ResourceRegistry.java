@@ -28,9 +28,7 @@ package ro.cosu.vampires.server.actors.resource;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Maps;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -47,11 +45,9 @@ public class ResourceRegistry {
 
     protected BiMap<String, ActorRef> clientIdsToResourceActors = HashBiMap.create();
     protected BiMap<String, ActorRef> clientIdsToClientActors = HashBiMap.create();
-    private Map<String, Resource.Parameters> clientParameters = Maps.newHashMap();
 
     public void addResourceActor(ActorRef resource, Resource.Parameters parameters) {
         clientIdsToResourceActors.put(parameters.id(), resource);
-        clientParameters.put(parameters.id(), parameters);
     }
 
     public BiMap<String, ActorRef> getRegisteredClients() {
@@ -79,9 +75,5 @@ public class ResourceRegistry {
         String clientId = clientIdsToResourceActors.inverse().get(resourceActor);
         clientIdsToClientActors.remove(clientId);
         clientIdsToResourceActors.remove(clientId);
-    }
-
-    public Resource.Parameters getParameterForClient(String id) {
-        return clientParameters.get(id);
     }
 }
