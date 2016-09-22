@@ -11,7 +11,6 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.values.ClientInfo;
 
 public class ResourceActor extends UntypedActor {
@@ -32,8 +31,6 @@ public class ResourceActor extends UntypedActor {
         ActorRef sender = getSender();
         if (message instanceof QueryResource) {
             sendResourceInfo(sender);
-        } else if (message instanceof ResourceInfo) {
-            handleResourceInfo((ResourceInfo) message);
         } else if (message instanceof ClientInfo) {
             connectClient((ClientInfo) message);
         } else if (message instanceof ResourceControl.Shutdown) {
@@ -46,13 +43,6 @@ public class ResourceActor extends UntypedActor {
         }
     }
 
-    private void handleResourceInfo(ResourceInfo resourceInfo) {
-        sendResourceInfo(getContext().parent());
-        if (!Resource.Status.RUNNING.equals(resourceInfo.status())) {
-            log.error("actor failed to interact with resource ");
-            getContext().stop(getSelf());
-        }
-    }
 
     private void stop() throws ExecutionException, InterruptedException {
         ActorRef sender = getSender();
