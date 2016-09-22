@@ -25,6 +25,7 @@
 package ro.cosu.vampires.server.actors.resource;
 
 
+
 import java.io.Serializable;
 
 public class ResourceControl {
@@ -48,4 +49,9 @@ public class ResourceControl {
     }
 
 
+    public static class Start implements Serializable {
+        public static Start create() {
+            return new Start();
+        }
+    }
 }

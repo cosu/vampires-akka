@@ -26,6 +26,7 @@
 
 package ro.cosu.vampires.server.actors;
 
+import com.google.common.collect.Maps;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -39,7 +40,7 @@ import org.junit.Test;
 
 import akka.actor.ActorRef;
 import akka.testkit.JavaTestKit;
-import akka.testkit.TestActor;
+import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.actors.messages.resource.CreateResource;
 import ro.cosu.vampires.server.actors.resource.ResourceActor;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
@@ -49,7 +50,8 @@ import ro.cosu.vampires.server.resources.ResourceManager;
 import ro.cosu.vampires.server.resources.ResourceProvider;
 import ro.cosu.vampires.server.resources.mock.MockResourceModule;
 import ro.cosu.vampires.server.resources.mock.MockResourceParameters;
-import scala.concurrent.duration.FiniteDuration;
+import ro.cosu.vampires.server.values.ClientInfo;
+import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -81,62 +83,74 @@ public class ResourceActorTest extends AbstractActorTest {
         return CreateResource.create(Resource.ProviderType.MOCK, parameters);
     }
 
-    @Test
-    public void testResourceActor() throws Exception {
 
+    @Test
+    public void testEnhancedStart() throws Exception {
         new JavaTestKit(system) {
             {
+                ResourceInfo resourceInfo;
                 final JavaTestKit resourceProbe = new JavaTestKit(system);
-                ActorRef resourceActor = system.actorOf(ResourceActor.props(getLocalProvider()), "resourceActor");
+                Resource resource = getLocalProvider().create(getCreateResource("foo").parameters()).get();
+                ActorRef resourceActor = system.actorOf(ResourceActor.props(resource));
+                resourceProbe.watch(resourceActor);
 
-                resourceProbe.setAutoPilot(new TestActor.AutoPilot() {
-                    public TestActor.AutoPilot run(ActorRef sender, Object msg) {
+                resourceActor.tell(ResourceControl.Start.create(), resourceProbe.getRef());
 
-                        if (msg instanceof ResourceInfo) {
-                            ResourceInfo resourceInfo = (ResourceInfo) msg;
-                            if (resourceInfo.status().equals(Resource.Status.RUNNING)) {
-                                resourceActor.tell(new ResourceControl.Shutdown(), resourceProbe.getRef());
-                            } else {
-                                return noAutoPilot();
-                            }
-                        }
-                        return this;
-                    }
-                });
-                resourceActor.tell(getCreateResource("foo"), resourceProbe.getRef());
-                // second create should be ignored
-                resourceActor.tell(getCreateResource("foo"), resourceProbe.getRef());
-                resourceProbe.receiveN(2, FiniteDuration.create(1, "seconds"));
+                resourceInfo = assertResourceStatus(resourceProbe, Resource.Status.RUNNING);
 
+                resourceActor.tell(QueryResource.create(resourceInfo.parameters().id()), resourceProbe.getRef());
+                assertResourceStatus(resourceProbe, Resource.Status.RUNNING);
+
+                final ClientInfo clientInfo = ClientInfo.builder()
+                        .executors(Maps.newHashMap())
+                        .metrics(Metrics.empty())
+                        .id(resourceInfo.parameters().id())
+                        .build();
+
+
+                resourceActor.tell(clientInfo, resourceProbe.getRef());
+
+                resourceActor.tell(QueryResource.create(resourceInfo.parameters().id()), resourceProbe.getRef());
+                assertResourceStatus(resourceProbe, Resource.Status.CONNECTED);
+
+                resourceActor.tell(ResourceControl.Shutdown.create(), resourceProbe.getRef());
+                assertResourceStatus(resourceProbe, Resource.Status.STOPPED);
+
+                resourceProbe.expectTerminated(resourceActor);
+            }
+
+
+        };
+    }
+
+    private ResourceInfo assertResourceStatus(JavaTestKit resourceProbe, Resource.Status status) {
+        ResourceInfo resourceInfo = resourceProbe.expectMsgClass(ResourceInfo.class);
+        assertThat(resourceInfo.status(), is(status));
+        return resourceInfo;
+    }
+    @Test
+    public void testEnhancedFail() throws Exception {
+        new JavaTestKit(system) {
+            {
+                ResourceInfo resourceInfo;
+                final JavaTestKit resourceProbe = new JavaTestKit(system);
+                Resource resource = getLocalProvider().create(getCreateResource("fail").parameters()).get();
+                ActorRef resourceActor = system.actorOf(ResourceActor.props(resource));
+                resourceProbe.watch(resourceActor);
+
+                resourceActor.tell(ResourceControl.Start.create(), resourceProbe.getRef());
+                resourceInfo = assertResourceStatus(resourceProbe, Resource.Status.FAILED);
+
+                resourceActor.tell(ResourceControl.Shutdown.create(), resourceProbe.getRef());
+                assertResourceStatus(resourceProbe, Resource.Status.FAILED);
+
+                resourceActor.tell(QueryResource.create(resourceInfo.parameters().id()), resourceProbe.getRef());
+                resourceInfo = resourceProbe.expectMsgClass(ResourceInfo.class);
+                assertThat(resourceInfo.status(), is(Resource.Status.FAILED));
+
+                resourceProbe.expectTerminated(resourceActor);
             }
         };
     }
 
-    @Test
-    public void testFailureOfResource() throws Exception {
-        new JavaTestKit(system) {
-            {
-                final JavaTestKit resourceProbe = new JavaTestKit(system);
-                ActorRef resourceActor = system.actorOf(ResourceActor.props(getLocalProvider()), "resourceActor1");
-
-                TestActor.AutoPilot pilot = new TestActor.AutoPilot() {
-                    public TestActor.AutoPilot run(ActorRef sender, Object msg) {
-                        if (msg instanceof ResourceInfo) {
-                            ResourceInfo resourceInfo = (ResourceInfo) msg;
-                            if (resourceInfo.status().equals(Resource.Status.FAILED)) {
-                                resourceActor.tell(new ResourceControl.Shutdown(), resourceProbe.getRef());
-                                return noAutoPilot();
-                            }
-                        }
-                        return this;
-                    }
-                };
-                resourceProbe.setAutoPilot(pilot);
-                resourceActor.tell(getCreateResource("fail"), resourceProbe.getRef());
-                ResourceInfo ri = (ResourceInfo) resourceProbe.receiveOne(FiniteDuration.create(100, "seconds"));
-                assertThat(ri.status(), is(Resource.Status.FAILED));
-            }
-        };
-
-    }
 }
