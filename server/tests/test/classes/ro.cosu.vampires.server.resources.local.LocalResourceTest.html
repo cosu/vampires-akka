@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.178s</div>
+<div class="counter">0.177s</div>
 <p>duration</p>
 </div>
 </td>
@@ -84,12 +84,12 @@
 </tr>
 <tr>
 <td class="success">testStartStopLocalResource</td>
-<td>0.036s</td>
+<td>0.061s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">testStartStopLocalResourceFail</td>
-<td>0.116s</td>
+<td>0.090s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -97,28 +97,28 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2016-09-22 07:53:29,997 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local df87a22a-78fd-4723-b957-0e7a2851f7e9 = UNKNOWN =&gt; SLEEPING
-2016-09-22 07:53:29,999 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local df87a22a-78fd-4723-b957-0e7a2851f7e9 = SLEEPING =&gt; STARTING
-2016-09-22 07:53:30,001 DEBUG r.c.v.s.r.local.LocalResource [] []- local starting [/bin/sh, -c, nohup foo  df87a22a-78fd-4723-b957-0e7a2851f7e9 2&gt;&amp;1 0&lt;/dev/null &amp;]
-2016-09-22 07:53:30,003 DEBUG r.c.v.s.r.local.LocalResource [] []- execute [/bin/sh, -c, nohup foo  df87a22a-78fd-4723-b957-0e7a2851f7e9 2&gt;&amp;1 0&lt;/dev/null &amp;]
-2016-09-22 07:53:30,003 ERROR r.c.v.s.r.local.LocalResource [] []- Output []
-2016-09-22 07:53:30,003 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local df87a22a-78fd-4723-b957-0e7a2851f7e9 = STARTING has failed with error -1: {}
+<pre>2016-09-22 17:39:56,720 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local a587412e-d6a4-46e4-bf55-043885c083e4 = UNKNOWN =&gt; SLEEPING
+2016-09-22 17:39:56,721 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local a587412e-d6a4-46e4-bf55-043885c083e4 = SLEEPING =&gt; STARTING
+2016-09-22 17:39:56,725 DEBUG r.c.v.s.r.local.LocalResource [] []- local starting [/bin/sh, -c, nohup foo  a587412e-d6a4-46e4-bf55-043885c083e4 2&gt;&amp;1 0&lt;/dev/null &amp;]
+2016-09-22 17:39:56,727 DEBUG r.c.v.s.r.local.LocalResource [] []- execute [/bin/sh, -c, nohup foo  a587412e-d6a4-46e4-bf55-043885c083e4 2&gt;&amp;1 0&lt;/dev/null &amp;]
+2016-09-22 17:39:56,728 ERROR r.c.v.s.r.local.LocalResource [] []- Output []
+2016-09-22 17:39:56,728 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local a587412e-d6a4-46e4-bf55-043885c083e4 = STARTING has failed with error -1: {}
 java.io.IOException: Non zero exit code
 	at ro.cosu.vampires.server.resources.local.LocalResource.execute(LocalResource.java:83)
 	at ro.cosu.vampires.server.resources.local.LocalResource.onStart(LocalResource.java:68)
 	at ro.cosu.vampires.server.resources.AbstractResource.startCall(AbstractResource.java:63)
-	at ro.cosu.vampires.server.resources.AbstractResource$$Lambda$96/1847365191.get(Unknown Source)
+	at ro.cosu.vampires.server.resources.AbstractResource$$Lambda$93/1902923657.get(Unknown Source)
 	at java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:476)
 	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:289)
 	at java.util.concurrent.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:902)
 	at java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1689)
 	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1644)
 	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:157)
-2016-09-22 07:53:30,003 DEBUG r.c.v.s.r.local.LocalResource [] []- 
-2016-09-22 07:53:30,005 DEBUG r.c.v.s.r.local.LocalResource [] []- failed resource
+2016-09-22 17:39:56,728 DEBUG r.c.v.s.r.local.LocalResource [] []- 
+2016-09-22 17:39:56,728 DEBUG r.c.v.s.r.local.LocalResource [] []- failed resource
 java.util.concurrent.CompletionException: java.io.IOException: Non zero exit code
 	at ro.cosu.vampires.server.resources.AbstractResource.startCall(AbstractResource.java:65)
-	at ro.cosu.vampires.server.resources.AbstractResource$$Lambda$96/1847365191.get(Unknown Source)
+	at ro.cosu.vampires.server.resources.AbstractResource$$Lambda$93/1902923657.get(Unknown Source)
 	at java.util.concurrent.CompletableFuture$AsyncSupply.exec(CompletableFuture.java:476)
 	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:289)
 	at java.util.concurrent.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:902)
@@ -130,18 +130,18 @@ Caused by: java.io.IOException: Non zero exit code
 	at ro.cosu.vampires.server.resources.local.LocalResource.onStart(LocalResource.java:68)
 	at ro.cosu.vampires.server.resources.AbstractResource.startCall(AbstractResource.java:63)
 	... 7 common frames omitted
-2016-09-22 07:53:30,014 DEBUG r.c.v.s.r.local.LocalResource [] []- local fail
-2016-09-22 07:53:30,014 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local df87a22a-78fd-4723-b957-0e7a2851f7e9 = STARTING =&gt; FAILED
-2016-09-22 07:53:30,021 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 0aab89f3-1b68-4064-a9d8-14a74e1176d8 = UNKNOWN =&gt; SLEEPING
-2016-09-22 07:53:30,075 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 29ff774d-8b33-4538-af6a-fd88364a540d = UNKNOWN =&gt; SLEEPING
-2016-09-22 07:53:30,076 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 29ff774d-8b33-4538-af6a-fd88364a540d = SLEEPING =&gt; STARTING
-2016-09-22 07:53:30,076 DEBUG r.c.v.s.r.local.LocalResource [] []- local starting [/bin/sh, -c, nohup foo  29ff774d-8b33-4538-af6a-fd88364a540d 2&gt;&amp;1 0&lt;/dev/null &amp;]
-2016-09-22 07:53:30,076 DEBUG r.c.v.s.r.local.LocalResource [] []- execute [/bin/sh, -c, nohup foo  29ff774d-8b33-4538-af6a-fd88364a540d 2&gt;&amp;1 0&lt;/dev/null &amp;]
-2016-09-22 07:53:30,076 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 29ff774d-8b33-4538-af6a-fd88364a540d = STARTING =&gt; RUNNING
-2016-09-22 07:53:30,078 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 29ff774d-8b33-4538-af6a-fd88364a540d = RUNNING =&gt; STOPPING
-2016-09-22 07:53:30,078 DEBUG r.c.v.s.r.local.LocalResource [] []- local  29ff774d-8b33-4538-af6a-fd88364a540d stopping
-2016-09-22 07:53:30,078 DEBUG r.c.v.s.r.local.LocalResource [] []- execute [/bin/sh, -c, pgrep 29ff774d-8b33-4538-af6a-fd88364a540d; if [ $? -eq 0 ]; then pkill 29ff774d-8b33-4538-af6a-fd88364a540d; fi]
-2016-09-22 07:53:30,078 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 29ff774d-8b33-4538-af6a-fd88364a540d = STOPPING =&gt; STOPPED
+2016-09-22 17:39:56,730 DEBUG r.c.v.s.r.local.LocalResource [] []- local fail
+2016-09-22 17:39:56,731 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local a587412e-d6a4-46e4-bf55-043885c083e4 = STARTING =&gt; FAILED
+2016-09-22 17:39:56,755 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local a3410cf4-b46a-4ec6-b919-238d4d96aa3d = UNKNOWN =&gt; SLEEPING
+2016-09-22 17:39:56,796 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 143829a3-f0d3-41a1-a178-96d70bab0dd6 = UNKNOWN =&gt; SLEEPING
+2016-09-22 17:39:56,814 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 143829a3-f0d3-41a1-a178-96d70bab0dd6 = SLEEPING =&gt; STARTING
+2016-09-22 17:39:56,814 DEBUG r.c.v.s.r.local.LocalResource [] []- local starting [/bin/sh, -c, nohup foo  143829a3-f0d3-41a1-a178-96d70bab0dd6 2&gt;&amp;1 0&lt;/dev/null &amp;]
+2016-09-22 17:39:56,814 DEBUG r.c.v.s.r.local.LocalResource [] []- execute [/bin/sh, -c, nohup foo  143829a3-f0d3-41a1-a178-96d70bab0dd6 2&gt;&amp;1 0&lt;/dev/null &amp;]
+2016-09-22 17:39:56,814 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 143829a3-f0d3-41a1-a178-96d70bab0dd6 = STARTING =&gt; RUNNING
+2016-09-22 17:39:56,816 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 143829a3-f0d3-41a1-a178-96d70bab0dd6 = RUNNING =&gt; STOPPING
+2016-09-22 17:39:56,816 DEBUG r.c.v.s.r.local.LocalResource [] []- local  143829a3-f0d3-41a1-a178-96d70bab0dd6 stopping
+2016-09-22 17:39:56,817 DEBUG r.c.v.s.r.local.LocalResource [] []- execute [/bin/sh, -c, pgrep 143829a3-f0d3-41a1-a178-96d70bab0dd6; if [ $? -eq 0 ]; then pkill 143829a3-f0d3-41a1-a178-96d70bab0dd6; fi]
+2016-09-22 17:39:56,817 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local 143829a3-f0d3-41a1-a178-96d70bab0dd6 = STOPPING =&gt; STOPPED
 </pre>
 </span>
 </div>
@@ -153,7 +153,7 @@ Caused by: java.io.IOException: Non zero exit code
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 3.0</a> at Sep 22, 2016 7:53:39 AM</p>
+<a href="http://www.gradle.org">Gradle 3.0</a> at Sep 22, 2016 5:40:02 PM</p>
 </div>
 </div>
 </body>

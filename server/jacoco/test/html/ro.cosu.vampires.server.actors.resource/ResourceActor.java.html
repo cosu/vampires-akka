@@ -1,172 +1,92 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ResourceActor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.server.actors.resource</a> &gt; <span class="el_source">ResourceActor.java</span></div><h1>ResourceActor.java</h1><pre class="source lang-java linenums">/*
- *
- *  * The MIT License (MIT)
- *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
- *  *
- *  * Permission is hereby granted, free of charge, to any person obtaining a copy
- *  * of this software and associated documentation files (the “Software”), to deal
- *  * in the Software without restriction, including without limitation the rights
- *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- *  * copies of the Software, and to permit persons to whom the Software is
- *  * furnished to do so, subject to the following conditions:
- *  *
- *  * The above copyright notice and this permission notice shall be included in
- *  * all copies or substantial portions of the Software.
- *  *
- *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- *  * THE SOFTWARE.
- *  *
- *
- */
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ResourceActor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.server.actors.resource</a> &gt; <span class="el_source">ResourceActor.java</span></div><h1>ResourceActor.java</h1><pre class="source lang-java linenums">package ro.cosu.vampires.server.actors.resource;
 
-package ro.cosu.vampires.server.actors.resource;
 
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import akka.actor.ActorRef;
+import akka.actor.PoisonPill;
 import akka.actor.Props;
-import akka.actor.UntypedActorWithStash;
+import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import akka.japi.Procedure;
 import ro.cosu.vampires.server.actors.messages.QueryResource;
-import ro.cosu.vampires.server.actors.messages.resource.CreateResource;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
-import ro.cosu.vampires.server.resources.ResourceProvider;
 import ro.cosu.vampires.server.values.ClientInfo;
 
-public class ResourceActor extends UntypedActorWithStash {
-    private final ResourceProvider resourceProvider;
-<span class="fc" id="L47">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
-    private Resource resource;
-    private Resource.Parameters parameters;
+public class ResourceActor extends UntypedActor {
 
+    private final Resource resource;
+<span class="fc" id="L20">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
 
-<span class="fc" id="L52">    private Procedure&lt;Object&gt; active = message -&gt; {</span>
-<span class="fc" id="L53">        ActorRef sender = getSender();</span>
+<span class="fc" id="L22">    ResourceActor(Resource resource) {</span>
+<span class="fc" id="L23">        this.resource = resource;</span>
+<span class="fc" id="L24">    }</span>
 
-<span class="fc bfc" id="L55" title="All 2 branches covered.">        if (message instanceof QueryResource) {</span>
-<span class="fc" id="L56">            sendResourceInfo(sender);</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">        } else if (message instanceof ClientInfo) {</span>
-<span class="fc" id="L58">            connectClient((ClientInfo) message);</span>
-<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        } else if (message instanceof ResourceControl.Shutdown) {</span>
-<span class="fc" id="L60">            Resource stoppedResource = resource.stop().get();</span>
-<span class="fc" id="L61">            sender.tell(stoppedResource.info(), getSelf());</span>
-<span class="fc" id="L62">            getContext().stop(getSelf());</span>
-<span class="fc" id="L63">        } else {</span>
-<span class="nc" id="L64">            log.error(&quot;unhandled {}&quot;, message);</span>
-<span class="nc" id="L65">            unhandled(message);</span>
+    public static Props props(Resource resource) {
+<span class="fc" id="L27">        return Props.create(ResourceActor.class, resource);</span>
+    }
+
+    @Override
+    public void onReceive(Object message) throws Throwable {
+<span class="fc" id="L32">        ActorRef sender = getSender();</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if (message instanceof QueryResource) {</span>
+<span class="fc" id="L34">            sendResourceInfo(sender);</span>
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">        } else if (message instanceof ResourceInfo) {</span>
+<span class="nc" id="L36">            handleResourceInfo((ResourceInfo) message);</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        } else if (message instanceof ClientInfo) {</span>
+<span class="fc" id="L38">            connectClient((ClientInfo) message);</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        } else if (message instanceof ResourceControl.Shutdown) {</span>
+<span class="fc" id="L40">            stop();</span>
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        } else if (message instanceof ResourceControl.Start) {</span>
+<span class="fc" id="L42">            start();</span>
+        } else {
+<span class="nc" id="L44">            log.error(&quot;unhandled {}&quot;, message);</span>
+<span class="nc" id="L45">            unhandled(message);</span>
         }
-<span class="fc" id="L67">    };</span>
+<span class="fc" id="L47">    }</span>
 
+    private void handleResourceInfo(ResourceInfo resourceInfo) {
+<span class="nc" id="L50">        sendResourceInfo(getContext().parent());</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        if (!Resource.Status.RUNNING.equals(resourceInfo.status())) {</span>
+<span class="nc" id="L52">            log.error(&quot;actor failed to interact with resource &quot;);</span>
+<span class="nc" id="L53">            getContext().stop(getSelf());</span>
+        }
+<span class="nc" id="L55">    }</span>
 
-<span class="fc" id="L70">    ResourceActor(ResourceProvider resourceProvider) {</span>
-<span class="fc" id="L71">        this.resourceProvider = resourceProvider;</span>
+    private void stop() throws ExecutionException, InterruptedException {
+<span class="fc" id="L58">        ActorRef sender = getSender();</span>
+<span class="fc" id="L59">        resource.stop()</span>
+<span class="fc" id="L60">                .thenAccept(resource -&gt;</span>
+                {
+<span class="fc" id="L62">                    sendResourceInfo(sender);</span>
+<span class="fc" id="L63">                    getSelf().tell(PoisonPill.getInstance(), ActorRef.noSender());</span>
+<span class="fc" id="L64">                });</span>
+<span class="fc" id="L65">    }</span>
+
+    private void start() {
+<span class="fc" id="L68">        ActorRef sender = getSender();</span>
+<span class="fc" id="L69">        this.resource</span>
+<span class="fc" id="L70">                .start()</span>
+<span class="fc" id="L71">                .thenAccept(resource -&gt; sendResourceInfo(sender));</span>
 <span class="fc" id="L72">    }</span>
 
-    public static Props props(ResourceProvider resourceProvider) {
-<span class="fc" id="L75">        return Props.create(ResourceActor.class, resourceProvider);</span>
-    }
-
-    @Override
-    public void onReceive(Object message) throws Exception {
-<span class="fc" id="L80">        ActorRef sender = getSender();</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">        if (message instanceof CreateResource) {</span>
-<span class="fc" id="L82">            createResource((CreateResource) message, sender);</span>
-<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        } else if (message instanceof QueryResource) {</span>
-<span class="nc" id="L84">            sendResourceInfo(sender);</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">        } else if (message instanceof ResourceInfo) {</span>
-<span class="fc" id="L86">            handleResourceInfo((ResourceInfo) message);</span>
-        } else {
-<span class="fc" id="L88">            log.debug(&quot;stash {}&quot;, message);</span>
-<span class="fc" id="L89">            stash();</span>
-        }
-<span class="fc" id="L91">    }</span>
-
-    private void handleResourceInfo(ResourceInfo message) {
-<span class="fc bfc" id="L94" title="All 2 branches covered.">        if (Resource.Status.RUNNING.equals(message.status())) {</span>
-<span class="fc" id="L95">            activate();</span>
-        } else {
-<span class="fc" id="L97">            log.error(&quot;got resource info {}. deactivating actor&quot;, message);</span>
-<span class="fc" id="L98">            fail();</span>
-        }
-<span class="fc" id="L100">    }</span>
-
-    private void createResource(CreateResource createResource, ActorRef sender) {
-<span class="pc bpc" id="L103" title="1 of 4 branches missed.">        if (resource != null &amp;&amp; !resource.status().equals(Resource.Status.SLEEPING)) {</span>
-<span class="fc" id="L104">            log.warning(&quot;Attempting to start an already started resource. doing nothing&quot;);</span>
-<span class="fc" id="L105">            return;</span>
-        }
-<span class="fc" id="L107">        parameters = createResource.parameters();</span>
-
-<span class="fc" id="L109">        Optional&lt;Resource&gt; resourceOptional = resourceProvider.create(parameters);</span>
-
-<span class="pc bpc" id="L111" title="1 of 2 branches missed.">        if (resourceOptional.isPresent()) {</span>
-<span class="fc" id="L112">            this.resource = resourceOptional.get();</span>
-            // do it async because activate needs a context
-            // which is not available after the future completes
-<span class="fc" id="L115">            this.resource.start().thenAccept(started -&gt; {</span>
-<span class="fc" id="L116">                sendResourceInfo(sender);</span>
-<span class="fc" id="L117">                sendResourceInfo(getSelf());</span>
-<span class="fc" id="L118">            }).exceptionally(e -&gt; {</span>
-<span class="nc" id="L119">                sendResourceInfo(sender);</span>
-<span class="nc" id="L120">                sendResourceInfo(getSelf());</span>
-<span class="nc" id="L121">                return null;</span>
-            });
-        } else {
-<span class="nc" id="L124">            getSelf().tell(Resource.Status.FAILED, sender);</span>
-        }
-<span class="fc" id="L126">    }</span>
-
-    private Void fail() {
-<span class="fc" id="L129">        log.error(&quot;actor failed to interact with resource &quot;);</span>
-<span class="fc" id="L130">        sendInfoToParent();</span>
-<span class="fc" id="L131">        getContext().stop(getSelf());</span>
-<span class="fc" id="L132">        return null;</span>
-    }
-
-    private void sendInfoToParent() {
-<span class="fc" id="L136">        sendResourceInfo(getContext().parent());</span>
-<span class="fc" id="L137">    }</span>
-
-    private void activate() {
-<span class="fc" id="L140">        sendInfoToParent();</span>
-<span class="fc" id="L141">        unstashAll();</span>
-<span class="fc" id="L142">        getContext().become(active);</span>
-<span class="fc" id="L143">    }</span>
-
-    @Override
-    public void postStop() {
-<span class="pc bpc" id="L147" title="1 of 2 branches missed.">        if (resource != null)</span>
-            try {
-<span class="fc" id="L149">                resource.stop().get();</span>
-<span class="nc" id="L150">            } catch (InterruptedException | ExecutionException e) {</span>
-<span class="nc" id="L151">                log.error(e, &quot;failed to stop resource&quot;);</span>
-<span class="fc" id="L152">            }</span>
-<span class="fc" id="L153">    }</span>
 
     private void connectClient(ClientInfo clientInfo) {
-<span class="pc bpc" id="L156" title="1 of 2 branches missed.">        if (clientInfo.id().equals(resource.parameters().id())) {</span>
-<span class="fc" id="L157">            resource.connected();</span>
-<span class="fc" id="L158">            log.info(&quot;Connected: {} {}&quot;, resource.info().parameters().providerType(), resource.info().parameters().instanceType());</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">        if (clientInfo.id().equals(resource.parameters().id())) {</span>
+<span class="fc" id="L77">            resource.connected();</span>
+<span class="fc" id="L78">            log.info(&quot;Connected: {} {}&quot;, resource.info().parameters().providerType(), resource.info().parameters().instanceType());</span>
         } else {
-<span class="nc" id="L160">            log.error(&quot;client info and resource info don't match {}, {}&quot;, clientInfo, resource.info());</span>
+<span class="nc" id="L80">            log.error(&quot;client info and resource info don't match {}, {}&quot;, clientInfo, resource.info());</span>
         }
-<span class="fc" id="L162">    }</span>
+<span class="fc" id="L82">        sendResourceInfo(getContext().parent());</span>
+<span class="fc" id="L83">    }</span>
 
     private void sendResourceInfo(ActorRef toActor) {
-<span class="fc" id="L165">        ResourceInfo info = Optional.ofNullable(this.resource)</span>
-<span class="fc" id="L166">                .map(Resource::info)</span>
-<span class="fc" id="L167">                .orElse(ResourceInfo.failed(parameters));</span>
-<span class="fc" id="L168">        toActor.tell(info, getSelf());</span>
-<span class="fc" id="L169">    }</span>
-
+<span class="fc" id="L86">        log.debug(&quot;sending {} to {}&quot;, resource.info(), toActor);</span>
+<span class="fc" id="L87">        toActor.tell(resource.info(), getSelf());</span>
+        // also update the parent
+<span class="fc" id="L89">        getContext().parent().tell(resource.info(), getSelf());</span>
+<span class="fc" id="L90">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

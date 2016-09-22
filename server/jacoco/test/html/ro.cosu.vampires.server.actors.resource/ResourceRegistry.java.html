@@ -28,9 +28,7 @@ package ro.cosu.vampires.server.actors.resource;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Maps;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -39,50 +37,44 @@ import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.values.ClientInfo;
 
-<span class="fc" id="L42">public class ResourceRegistry {</span>
+<span class="fc" id="L40">public class ResourceRegistry {</span>
     /**
      * ResourceActors - local akka actors clients - client remote akka actors ClientIds -
      * initialized at creation - shared by both remote and resource
      */
 
-<span class="fc" id="L48">    protected BiMap&lt;String, ActorRef&gt; clientIdsToResourceActors = HashBiMap.create();</span>
-<span class="fc" id="L49">    protected BiMap&lt;String, ActorRef&gt; clientIdsToClientActors = HashBiMap.create();</span>
-<span class="fc" id="L50">    private Map&lt;String, Resource.Parameters&gt; clientParameters = Maps.newHashMap();</span>
+<span class="fc" id="L46">    protected BiMap&lt;String, ActorRef&gt; clientIdsToResourceActors = HashBiMap.create();</span>
+<span class="fc" id="L47">    protected BiMap&lt;String, ActorRef&gt; clientIdsToClientActors = HashBiMap.create();</span>
 
     public void addResourceActor(ActorRef resource, Resource.Parameters parameters) {
-<span class="fc" id="L53">        clientIdsToResourceActors.put(parameters.id(), resource);</span>
-<span class="fc" id="L54">        clientParameters.put(parameters.id(), parameters);</span>
-<span class="fc" id="L55">    }</span>
+<span class="fc" id="L50">        clientIdsToResourceActors.put(parameters.id(), resource);</span>
+<span class="fc" id="L51">    }</span>
 
     public BiMap&lt;String, ActorRef&gt; getRegisteredClients() {
-<span class="fc" id="L58">        return clientIdsToClientActors;</span>
+<span class="fc" id="L54">        return clientIdsToClientActors;</span>
     }
 
     public Optional&lt;ActorRef&gt; lookupResourceOfClient(String clientId) {
-<span class="fc" id="L62">        return Optional.ofNullable(clientIdsToResourceActors.get(clientId));</span>
+<span class="fc" id="L58">        return Optional.ofNullable(clientIdsToResourceActors.get(clientId));</span>
     }
 
     public Set&lt;ActorRef&gt; getResourceActors() {
-<span class="fc" id="L66">        return clientIdsToResourceActors.values();</span>
+<span class="fc" id="L62">        return clientIdsToResourceActors.values();</span>
     }
 
     public void registerResource(ActorRef localResourceActor, ResourceInfo resourceInfo) {
-<span class="fc" id="L70">        String clientId = resourceInfo.parameters().id();</span>
-<span class="fc" id="L71">        clientIdsToResourceActors.put(clientId, localResourceActor);</span>
-<span class="fc" id="L72">    }</span>
+<span class="fc" id="L66">        String clientId = resourceInfo.parameters().id();</span>
+<span class="fc" id="L67">        clientIdsToResourceActors.put(clientId, localResourceActor);</span>
+<span class="fc" id="L68">    }</span>
 
     public void registerClient(ActorRef clientActor, ClientInfo clientInfo) {
-<span class="fc" id="L75">        clientIdsToClientActors.put(clientInfo.id(), clientActor);</span>
-<span class="fc" id="L76">    }</span>
+<span class="fc" id="L71">        clientIdsToClientActors.put(clientInfo.id(), clientActor);</span>
+<span class="fc" id="L72">    }</span>
 
     public void removeResource(ActorRef resourceActor) {
-<span class="fc" id="L79">        String clientId = clientIdsToResourceActors.inverse().get(resourceActor);</span>
-<span class="fc" id="L80">        clientIdsToClientActors.remove(clientId);</span>
-<span class="fc" id="L81">        clientIdsToResourceActors.remove(clientId);</span>
-<span class="fc" id="L82">    }</span>
-
-    public Resource.Parameters getParameterForClient(String id) {
-<span class="nc" id="L85">        return clientParameters.get(id);</span>
-    }
+<span class="fc" id="L75">        String clientId = clientIdsToResourceActors.inverse().get(resourceActor);</span>
+<span class="fc" id="L76">        clientIdsToClientActors.remove(clientId);</span>
+<span class="fc" id="L77">        clientIdsToResourceActors.remove(clientId);</span>
+<span class="fc" id="L78">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
