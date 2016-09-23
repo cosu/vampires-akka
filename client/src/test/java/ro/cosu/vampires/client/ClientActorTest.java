@@ -31,9 +31,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import akka.actor.ActorIdentity;
-import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import akka.japi.Option;
+import akka.actor.Identify;
 import akka.testkit.JavaTestKit;
 import akka.testkit.TestActorRef;
 import ro.cosu.vampires.client.actors.ClientActor;
@@ -56,6 +55,8 @@ public class ClientActorTest {
     @BeforeClass
     public static void setUp() {
         system = ActorSystem.create();
+        TestActorRef.create(system, MonitoringActor
+                .props(TestUtil.getMetricRegistryMock()), "monitor");
     }
 
     @AfterClass
@@ -67,19 +68,15 @@ public class ClientActorTest {
     @Test
     public void testClientActor() throws Exception {
 
-        TestActorRef.create(system, MonitoringActor
-                .props(TestUtil.getMetricRegistryMock()), "monitor");
-
-        TestActorRef<ClientActor> client = TestActorRef.create(system, ClientActor.props("test", "client1"), "client1");
 
         final JavaTestKit remoteProbe = new JavaTestKit(system);
+        TestActorRef<ClientActor> client = TestActorRef.create(system, ClientActor.props(remoteProbe.getRef().path().toString(), "client1"));
 
         // tell the client that the server is up
-        scala.Option<ActorRef> actorRefOption = Option.Some.option(remoteProbe.getRef()).asScala();
-        client.tell(new ActorIdentity(null, actorRefOption), ActorRef.noSender());
+        client.tell(new Identify("test"), remoteProbe.getRef());
 
         // client responds with client Info
-        ClientInfo clientInfo = (ClientInfo) remoteProbe.receiveOne(Duration.create("500 milliseconds"));
+        ClientInfo clientInfo = remoteProbe.expectMsgClass(ClientInfo.class);
         assertThat(clientInfo.executors().size(), not(0));
 
         // Server responds with ClientConfig
@@ -87,7 +84,9 @@ public class ClientActorTest {
         client.tell(clientConfig, remoteProbe.getRef());
 
         // Client responds with an empty Job
-        Job job = (Job) remoteProbe.receiveOne(Duration.create("500 milliseconds"));
+        remoteProbe.expectMsgClass(ActorIdentity.class);
+
+        Job job = remoteProbe.expectMsgClass(Job.class);
         assertThat(job.computation(), is(Computation.empty()));
 
         // send a job to the client

@@ -93,9 +93,9 @@ public class ClientActor extends UntypedActor {
             log.info("starting {} workers", config.numberOfExecutors());
             //bootstrapping via an empty job
             IntStream.range(0, config.numberOfExecutors()).forEach(i -> execute(Job.empty()));
-            getContext().setReceiveTimeout(Duration.create(1, SECONDS));
             getContext().become(active, true);
         } else {
+            log.debug("Unhandled {}", message);
             unhandled(message);
         }
     };
@@ -103,6 +103,7 @@ public class ClientActor extends UntypedActor {
     public ClientActor(String serverPath, String clientId) {
         this.serverPath = serverPath;
         this.clientId = clientId;
+        getContext().setReceiveTimeout(Duration.create(1, SECONDS));
         sendIdentifyRequest();
     }
 
@@ -120,9 +121,9 @@ public class ClientActor extends UntypedActor {
     }
 
     private void sendIdentifyRequest() {
-
         log.info("connecting to {}", serverPath);
         getContext().actorSelection(serverPath).tell(new Identify(serverPath), getSelf());
+
         getContext().system().scheduler()
                 .scheduleOnce(
                         Duration.create(3, SECONDS), getSelf(),
