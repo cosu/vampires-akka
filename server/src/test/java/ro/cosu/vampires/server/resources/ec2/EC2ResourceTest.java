@@ -38,6 +38,7 @@ import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
 import com.amazonaws.services.ec2.model.TerminateInstancesResult;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigException;
 import com.typesafe.config.ConfigFactory;
 
 import org.junit.Before;
@@ -48,7 +49,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import ro.cosu.vampires.server.resources.AbstractResource;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceManager;
 import ro.cosu.vampires.server.resources.ResourceProvider;
@@ -65,7 +65,7 @@ import static org.mockito.Mockito.when;
 
 
 public class EC2ResourceTest {
-    private static final String INSTANCE_TYPE = "eu-west-1.t2.micro";
+    private static final String INSTANCE_TYPE = "eu-west-1-t2-micro";
     private Injector injector;
 
     @Before
@@ -82,19 +82,7 @@ public class EC2ResourceTest {
             @Provides
             @Named("Config")
             private Config provideConfig() {
-                return ConfigFactory.parseString(
-                        "resources.ec2 { " +
-                                "command=bar\n" +
-                                "imageId=baz\n" +
-                                "keyName=foo\n" +
-                                "cost=100\n" +
-                                "securityGroup=foo\n" +
-                                "eu-west-1.t2.medium {\n" +
-                                "region=eu-east-1\n" +
-                                "instanceType=t2.medium\n" +
-                                "}" +
-                                "}"
-                );
+                return ConfigFactory.load("application-dev.conf").getConfig("vampires");
             }
 
             @Provides
@@ -138,19 +126,13 @@ public class EC2ResourceTest {
         return ec2Provider.create(parameters).get();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ConfigException.class)
     public void testInvalidInstanceType() throws Exception {
         getResource("foo");
     }
 
-    @Test
-    public void testCustomInstanceType() throws Exception {
-        AbstractResource resource = (EC2Resource) getResource("eu-west-1.t2.medium");
-        EC2ResourceParameters parameters = (EC2ResourceParameters) resource.parameters();
-        assertThat(parameters.region(), is("eu-east-1"));
-    }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ConfigException.class)
     public void testInvalidRegion() throws Exception {
         getResource("eu.t2.micro");
     }
