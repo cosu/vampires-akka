@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static ro.cosu.vampires.server.util.ConfigUtil.getConfigForKey;
 
 public class ConfigUtilTest {
 
@@ -23,7 +24,7 @@ public class ConfigUtilTest {
                 "   }";
 
         Config config = ConfigFactory.parseString(configString);
-        Config resources = ConfigUtil.getConfigForKey(config, "resources", "ssh", "local");
+        Config resources = getConfigForKey(config, "resources", "ssh", "local");
         assertThat(resources.getString("privateKey"), is("local key"));
     }
 
@@ -39,7 +40,7 @@ public class ConfigUtilTest {
                 "   }";
 
         Config config = ConfigFactory.parseString(configString);
-        Config resources = ConfigUtil.getConfigForKey(config, "resources", "ssh", "local");
+        Config resources = getConfigForKey(config, "resources", "ssh", "local");
         assertThat(resources.getString("privateKey"), is("ssh resource key"));
     }
 
@@ -54,7 +55,7 @@ public class ConfigUtilTest {
                 "   }";
 
         Config config = ConfigFactory.parseString(configString);
-        Config resources = ConfigUtil.getConfigForKey(config, "resources", "ssh", "local");
+        Config resources = getConfigForKey(config, "resources", "ssh", "local");
         assertThat(resources.getString("privateKey"), is("resources key"));
     }
 }

@@ -24,19 +24,13 @@
 
 package ro.cosu.vampires.server.resources.ec2;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
 import com.amazonaws.services.ec2.AmazonEC2Client;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
@@ -73,24 +67,5 @@ public class EC2ResourceProvider extends AbstractResourceProvider {
     @Override
     public Resource.Parameters.Builder getBuilder() {
         return EC2ResourceParameters.builder();
-    }
-
-    @Override
-    protected Config getSimpleConfigForInstance(String instanceName) {
-        if (getConfig().hasPath(getInstanceKey(instanceName))) {
-            return super.getSimpleConfigForInstance(instanceName);
-        }
-        return parseInstanceType(instanceName);
-    }
-
-    private Config parseInstanceType(String type) {
-        Map<String, String> map = Maps.newHashMap();
-        String[] split = type.split("\\.");
-        Preconditions.checkArgument(split.length == 3,
-                "invalid instance format. Should be <region>.<class>.<name>. Eg: eu-west-1.t2.micro");
-        map.put("region", split[0]);
-        map.put("instanceType", Joiner.on(".").join(split[1], split[2]));
-
-        return ConfigFactory.parseMap(map);
     }
 }
