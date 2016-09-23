@@ -52,11 +52,11 @@ import ro.cosu.vampires.server.values.jobs.metrics.Metric;
 <span class="fc" id="L52">    private Cache&lt;LocalDateTime, Object&gt; cache = CacheBuilder.newBuilder()</span>
 <span class="fc" id="L53">            .expireAfterWrite(MAX_JOB_LENGTH, TimeUnit.MINUTES)</span>
 <span class="fc" id="L54">            .removalListener(notification -&gt; {</span>
-<span class="nc bnc" id="L55" title="All 4 branches missed.">                if (notification.getKey() != null &amp;&amp; notification.getKey() instanceof LocalDateTime) {</span>
-<span class="nc" id="L56">                    LocalDateTime key = (LocalDateTime) notification.getKey();</span>
-<span class="nc" id="L57">                    metricWindow.remove(key);</span>
+<span class="pc bpc" id="L55" title="2 of 4 branches missed.">                if (notification.getKey() != null &amp;&amp; notification.getKey() instanceof LocalDateTime) {</span>
+<span class="fc" id="L56">                    LocalDateTime key = (LocalDateTime) notification.getKey();</span>
+<span class="fc" id="L57">                    metricWindow.remove(key);</span>
                 }
-<span class="pc" id="L59">            }).build();</span>
+<span class="fc" id="L59">            }).build();</span>
 
     private static ImmutableMap&lt;String, Double&gt; convertGaugesToDouble(SortedMap&lt;String, Gauge&gt; gauges) {
 <span class="fc" id="L62">        ImmutableMap.Builder&lt;String, Double&gt; builder = ImmutableMap.builder();</span>
