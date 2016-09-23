@@ -29,7 +29,7 @@
 </td>
 <td>
 <div class="infoBox" id="failures">
-<div class="counter">0</div>
+<div class="counter">1</div>
 <p>failures</p>
 </div>
 </td>
@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">5.397s</div>
+<div class="counter">3.459s</div>
 <p>duration</p>
 </div>
 </td>
@@ -50,8 +50,8 @@
 </div>
 </td>
 <td>
-<div class="infoBox success" id="successRate">
-<div class="percent">100%</div>
+<div class="infoBox failures" id="successRate">
+<div class="percent">0%</div>
 <p>successful</p>
 </div>
 </td>
@@ -61,13 +61,79 @@
 <div id="tabs">
 <ul class="tabLinks">
 <li>
-<a href="#tab0">Tests</a>
+<a href="#tab0">Failed tests</a>
 </li>
 <li>
-<a href="#tab1">Standard output</a>
+<a href="#tab1">Tests</a>
+</li>
+<li>
+<a href="#tab2">Standard output</a>
 </li>
 </ul>
 <div id="tab0" class="tab">
+<h2>Failed tests</h2>
+<div class="test">
+<a name="start"></a>
+<h3 class="failures">start</h3>
+<span class="code">
+<pre>java.lang.AssertionError: assertion failed: timeout (3 seconds) during expectMsgClass waiting for class ro.cosu.vampires.server.actors.messages.execution.ResponseExecution
+	at scala.Predef$.assert(Predef.scala:170)
+	at akka.testkit.TestKitBase$class.expectMsgClass_internal(TestKit.scala:472)
+	at akka.testkit.TestKitBase$class.expectMsgClass(TestKit.scala:459)
+	at akka.testkit.TestKit.expectMsgClass(TestKit.scala:814)
+	at akka.testkit.JavaTestKit.expectMsgClass(JavaTestKit.java:400)
+	at ro.cosu.vampires.server.actors.BootstrapActorTest$1.&lt;init&gt;(BootstrapActorTest.java:78)
+	at ro.cosu.vampires.server.actors.BootstrapActorTest.start(BootstrapActorTest.java:61)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:483)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.runTestClass(JUnitTestClassExecuter.java:114)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.execute(JUnitTestClassExecuter.java:57)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassProcessor.processTestClass(JUnitTestClassProcessor.java:66)
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:51)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:483)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:93)
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:109)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:483)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:377)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:54)
+	at org.gradle.internal.concurrent.StoppableExecutorImpl$1.run(StoppableExecutorImpl.java:40)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+</pre>
+</span>
+</div>
+</div>
+<div id="tab1" class="tab">
 <h2>Tests</h2>
 <table>
 <thead>
@@ -78,55 +144,50 @@
 </tr>
 </thead>
 <tr>
-<td class="success">start</td>
-<td>5.397s</td>
-<td class="success">passed</td>
+<td class="failures">start</td>
+<td>3.459s</td>
+<td class="failures">failed</td>
 </tr>
 </table>
 </div>
-<div id="tab1" class="tab">
+<div id="tab2" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2016-09-23 20:28:00,982 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
-2016-09-23 20:28:01,031 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- logger log1-Slf4jLogger started
-2016-09-23 20:28:01,039 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- Default Loggers started
-2016-09-23 20:28:03,025 INFO  s.e.jetty.EmbeddedJettyServer [] []- == Spark has ignited ...
-2016-09-23 20:28:03,036 INFO  s.e.jetty.EmbeddedJettyServer [] []- &gt;&gt; Listening on 0.0.0.0:4567
-2016-09-23 20:28:04,295 DEBUG spark.route.Routes [] []- Adds route: get, /providers, spark.ResponseTransformerRouteImpl$1@5897b156
-2016-09-23 20:28:04,303 DEBUG spark.route.Routes [] []- Adds route: get, /configurations, spark.ResponseTransformerRouteImpl$1@3f38bd68
-2016-09-23 20:28:04,304 DEBUG spark.route.Routes [] []- Adds route: get, /configurations/:id, spark.ResponseTransformerRouteImpl$1@6a60cfab
-2016-09-23 20:28:04,305 DEBUG spark.route.Routes [] []- Adds route: delete, /configurations/:id, spark.ResponseTransformerRouteImpl$1@1a5737e7
-2016-09-23 20:28:04,306 DEBUG spark.route.Routes [] []- Adds route: post, /configurations, spark.ResponseTransformerRouteImpl$1@17aa223c
-2016-09-23 20:28:04,307 DEBUG spark.route.Routes [] []- Adds route: post, /configurations/:id, spark.ResponseTransformerRouteImpl$1@24a47fcc
-2016-09-23 20:28:04,308 DEBUG spark.route.Routes [] []- Adds route: get, /executions, spark.ResponseTransformerRouteImpl$1@3f4dec74
-2016-09-23 20:28:04,308 DEBUG spark.route.Routes [] []- Adds route: get, /executions/:id, spark.ResponseTransformerRouteImpl$1@3890be4e
-2016-09-23 20:28:04,308 DEBUG spark.route.Routes [] []- Adds route: delete, /executions/:id, spark.ResponseTransformerRouteImpl$1@29c17d14
-2016-09-23 20:28:04,308 DEBUG spark.route.Routes [] []- Adds route: post, /executions, spark.ResponseTransformerRouteImpl$1@158de5bf
-2016-09-23 20:28:04,308 DEBUG spark.route.Routes [] []- Adds route: post, /executions/:id, spark.ResponseTransformerRouteImpl$1@45738536
-2016-09-23 20:28:04,309 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@20fd6c22
-2016-09-23 20:28:04,309 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@79fe173e
-2016-09-23 20:28:04,309 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@60c3dde8
-2016-09-23 20:28:04,309 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@4565ade
-2016-09-23 20:28:04,310 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@4f81ba0a
-2016-09-23 20:28:04,317 DEBUG spark.route.Routes [] []- Adds route: options, /*, spark.RouteImpl$1@65b04ca9
-2016-09-23 20:28:04,320 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@574d6e
-2016-09-23 20:28:04,341 DEBUG r.c.v.s.r.c.FilesController [] []- Upload dir /tmp/vampires
-2016-09-23 20:28:04,343 DEBUG spark.route.Routes [] []- Adds route: post, /upload, spark.ResponseTransformerRouteImpl$1@79d145ce
-2016-09-23 20:28:04,344 DEBUG spark.route.Routes [] []- Adds route: get, /upload, spark.ResponseTransformerRouteImpl$1@376af430
-2016-09-23 20:28:04,346 DEBUG spark.route.Routes [] []- Adds route: get, /upload/:id, spark.RouteImpl$1@7c371221
-2016-09-23 20:28:04,347 DEBUG spark.route.Routes [] []- Adds route: delete, /upload/:id, spark.ResponseTransformerRouteImpl$1@58086777
-2016-09-23 20:28:04,352 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@201de655
-2016-09-23 20:28:04,354 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
-2016-09-23 20:28:04,393 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
-2016-09-23 20:28:04,705 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
-2016-09-23 20:28:04,714 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
-2016-09-23 20:28:04,744 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-4] [akka://test/user/bootstrap/0fdd5831-9833-4b1e-a600-2529a8e53834/resultActor]- results so far: 0/2
-2016-09-23 20:28:05,391 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-5] [akka://test/user/bootstrap/0fdd5831-9833-4b1e-a600-2529a8e53834/resultActor]- Total Duration: 0:00:01
-2016-09-23 20:28:05,392 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-5] [akka://test/user/bootstrap/0fdd5831-9833-4b1e-a600-2529a8e53834/resultActor]- shutting down
-2016-09-23 20:28:05,438 INFO  r.c.v.server.actors.BootstrapActor [test-akka.actor.default-dispatcher-2] [akka://test/user/bootstrap]- 0fdd5831-9833-4b1e-a600-2529a8e53834 terminated 
-2016-09-23 20:28:06,457 INFO  s.e.jetty.EmbeddedJettyServer [] []- &gt;&gt;&gt; Spark shutting down ...
-2016-09-23 20:28:06,469 INFO  s.e.jetty.EmbeddedJettyServer [] []- done
-2016-09-23 20:28:06,481 DEBUG akka.event.EventStream [test-akka.actor.default-dispatcher-6] [EventStream]- shutting down: StandardOutLogger started
+<pre>2016-09-23 20:45:35,432 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
+2016-09-23 20:45:35,459 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- logger log1-Slf4jLogger started
+2016-09-23 20:45:35,485 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- Default Loggers started
+2016-09-23 20:45:37,335 INFO  s.e.jetty.EmbeddedJettyServer [] []- == Spark has ignited ...
+2016-09-23 20:45:37,362 INFO  s.e.jetty.EmbeddedJettyServer [] []- &gt;&gt; Listening on 0.0.0.0:4567
+2016-09-23 20:45:39,210 DEBUG spark.route.Routes [] []- Adds route: get, /providers, spark.ResponseTransformerRouteImpl$1@14e53a7e
+2016-09-23 20:45:39,218 DEBUG spark.route.Routes [] []- Adds route: get, /configurations, spark.ResponseTransformerRouteImpl$1@5500e0e0
+2016-09-23 20:45:39,220 DEBUG spark.route.Routes [] []- Adds route: get, /configurations/:id, spark.ResponseTransformerRouteImpl$1@70b3cc6
+2016-09-23 20:45:39,222 DEBUG spark.route.Routes [] []- Adds route: delete, /configurations/:id, spark.ResponseTransformerRouteImpl$1@1de8efad
+2016-09-23 20:45:39,224 DEBUG spark.route.Routes [] []- Adds route: post, /configurations, spark.ResponseTransformerRouteImpl$1@33e8799e
+2016-09-23 20:45:39,225 DEBUG spark.route.Routes [] []- Adds route: post, /configurations/:id, spark.ResponseTransformerRouteImpl$1@4eb799cd
+2016-09-23 20:45:39,226 DEBUG spark.route.Routes [] []- Adds route: get, /executions, spark.ResponseTransformerRouteImpl$1@5fc540a5
+2016-09-23 20:45:39,227 DEBUG spark.route.Routes [] []- Adds route: get, /executions/:id, spark.ResponseTransformerRouteImpl$1@2dced361
+2016-09-23 20:45:39,227 DEBUG spark.route.Routes [] []- Adds route: delete, /executions/:id, spark.ResponseTransformerRouteImpl$1@421fa900
+2016-09-23 20:45:39,227 DEBUG spark.route.Routes [] []- Adds route: post, /executions, spark.ResponseTransformerRouteImpl$1@78586798
+2016-09-23 20:45:39,228 DEBUG spark.route.Routes [] []- Adds route: post, /executions/:id, spark.ResponseTransformerRouteImpl$1@d6dc05e
+2016-09-23 20:45:39,230 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@52d47522
+2016-09-23 20:45:39,246 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@31582016
+2016-09-23 20:45:39,246 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@7d0d3863
+2016-09-23 20:45:39,246 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@49eb3eb5
+2016-09-23 20:45:39,247 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@38672fcf
+2016-09-23 20:45:39,256 DEBUG spark.route.Routes [] []- Adds route: options, /*, spark.RouteImpl$1@4fe02f4f
+2016-09-23 20:45:39,259 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@2b69a17a
+2016-09-23 20:45:39,315 DEBUG r.c.v.s.r.c.FilesController [] []- Upload dir /tmp/vampires
+2016-09-23 20:45:39,317 DEBUG spark.route.Routes [] []- Adds route: post, /upload, spark.ResponseTransformerRouteImpl$1@72b3e1de
+2016-09-23 20:45:39,326 DEBUG spark.route.Routes [] []- Adds route: get, /upload, spark.ResponseTransformerRouteImpl$1@4a9ac020
+2016-09-23 20:45:39,327 DEBUG spark.route.Routes [] []- Adds route: get, /upload/:id, spark.RouteImpl$1@7de63103
+2016-09-23 20:45:39,327 DEBUG spark.route.Routes [] []- Adds route: delete, /upload/:id, spark.ResponseTransformerRouteImpl$1@780f5708
+2016-09-23 20:45:39,329 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@70865679
+2016-09-23 20:45:39,330 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
+2016-09-23 20:45:39,447 INFO  s.e.jetty.EmbeddedJettyServer [] []- &gt;&gt;&gt; Spark shutting down ...
+2016-09-23 20:45:39,463 INFO  s.e.jetty.EmbeddedJettyServer [] []- done
+2016-09-23 20:45:39,496 INFO  akka.actor.RepointableActorRef [test-akka.actor.default-dispatcher-3] [akka://test/user/bootstrap]- Message [ro.cosu.vampires.server.actors.messages.execution.AutoValue_StartExecution] from Actor[akka://test/system/testProbe-3#157731124] to Actor[akka://test/user/bootstrap#-322538693] was not delivered. [1] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-23 20:45:39,500 INFO  akka.actor.RepointableActorRef [test-akka.actor.default-dispatcher-3] [akka://test/user/bootstrap]- Message [ro.cosu.vampires.server.actors.messages.execution.AutoValue_QueryExecution] from Actor[akka://test/system/testProbe-3#157731124] to Actor[akka://test/user/bootstrap#-322538693] was not delivered. [2] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-09-23 20:45:39,542 DEBUG akka.event.EventStream [test-akka.actor.default-dispatcher-4] [EventStream]- shutting down: StandardOutLogger started
 </pre>
 </span>
 </div>
@@ -138,7 +199,7 @@
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 3.0</a> at Sep 23, 2016 8:28:20 PM</p>
+<a href="http://www.gradle.org">Gradle 3.0</a> at Sep 23, 2016 8:45:55 PM</p>
 </div>
 </div>
 </body>
