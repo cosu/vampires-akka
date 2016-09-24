@@ -97,4 +97,5 @@ public class ClientActorTest {
 
         assertThat(job.status(), is(JobStatus.COMPLETE));
     }
+
 }
