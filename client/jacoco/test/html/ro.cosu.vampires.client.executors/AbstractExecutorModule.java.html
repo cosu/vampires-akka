@@ -65,15 +65,14 @@ public abstract class AbstractExecutorModule extends AbstractModule {
     @Provides
     @Singleton
     private CpuAllocator provideCpuAllocator(@Named(&quot;cpuCount&quot;) int cpuCount) {
-<span class="fc" id="L68">        int cpuSetSize = config.getInt(&quot;cpu-set-size&quot;);</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        int cpuSetSize = config.hasPath(&quot;cpu-set-size&quot;) ? config.getInt(&quot;cpu-set-size&quot;) : 1;</span>
 
 <span class="fc" id="L70">        LOG.info(&quot; cpuCount: {} countSetSize: {}&quot;, cpuCount, cpuSetSize);</span>
 
-
-<span class="fc" id="L73">        return FixedCpuSetAllocator.builder()</span>
-<span class="fc" id="L74">                .cpuSetSize(cpuSetSize)</span>
-<span class="fc" id="L75">                .totalCpuCount(cpuCount)</span>
-<span class="fc" id="L76">                .build();</span>
+<span class="fc" id="L72">        return FixedCpuSetAllocator.builder()</span>
+<span class="fc" id="L73">                .cpuSetSize(cpuSetSize)</span>
+<span class="fc" id="L74">                .totalCpuCount(cpuCount)</span>
+<span class="fc" id="L75">                .build();</span>
 
     }
 

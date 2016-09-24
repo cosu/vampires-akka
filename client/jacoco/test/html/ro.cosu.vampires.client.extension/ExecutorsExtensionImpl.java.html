@@ -61,7 +61,7 @@ public class ExecutorsExtensionImpl implements Extension {
 <span class="nc" id="L61">            Preconditions.checkArgument(executor.isAvailable());</span>
 <span class="nc" id="L62">            executorInfo.put(executor.getType().toString(), executor.getNCpu());</span>
 <span class="fc" id="L63">        } catch (Exception e) {</span>
-<span class="fc" id="L64">            LOG.info(&quot;docker executor not available&quot;);</span>
+<span class="fc" id="L64">            LOG.warn(&quot;docker executor not available&quot;, e);</span>
 <span class="nc" id="L65">        }</span>
 
         try {
@@ -69,7 +69,7 @@ public class ExecutorsExtensionImpl implements Extension {
 <span class="fc" id="L69">            final Executor executor = injector.getInstance(Executor.class);</span>
 <span class="fc" id="L70">            executorInfo.put(executor.getType().toString(), executor.getNCpu());</span>
 <span class="nc" id="L71">        } catch (Exception e) {</span>
-<span class="nc" id="L72">            LOG.info(&quot;fork executor not available&quot;);</span>
+<span class="nc" id="L72">            LOG.warn(&quot;fork executor not available&quot;, e);</span>
 <span class="fc" id="L73">        }</span>
 <span class="fc" id="L74">        LOG.info(&quot;available executors: {}&quot;, executorInfo);</span>
 

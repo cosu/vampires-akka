@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.503s</div>
+<div class="counter">0.452s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,37 +79,37 @@
 </thead>
 <tr>
 <td class="success">create</td>
-<td>0.152s</td>
+<td>0.055s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">delete</td>
-<td>0.169s</td>
+<td>0.147s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">getUnknown</td>
-<td>0.027s</td>
+<td>0.032s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">list</td>
-<td>0.030s</td>
-<td class="success">passed</td>
-</tr>
-<tr>
-<td class="success">unauthorized</td>
 <td>0.034s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
+<td class="success">unauthorized</td>
+<td>0.053s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
 <td class="success">update</td>
-<td>0.049s</td>
+<td>0.083s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">updateFail</td>
-<td>0.042s</td>
+<td>0.048s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -117,208 +117,208 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2016-09-23 20:55:47,182 INFO  s.e.jetty.EmbeddedJettyServer [] []- == Spark has ignited ...
-2016-09-23 20:55:47,183 INFO  s.e.jetty.EmbeddedJettyServer [] []- &gt;&gt; Listening on 0.0.0.0:4567
-2016-09-23 20:55:47,345 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
-2016-09-23 20:55:47,355 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@5d35a03c
-2016-09-23 20:55:47,355 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@30ab1e45
-2016-09-23 20:55:47,355 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@41083ab6
-2016-09-23 20:55:47,355 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@43e43a9d
-2016-09-23 20:55:47,355 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@33a0569d
-2016-09-23 20:55:47,355 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@5a042490
-2016-09-23 20:55:47,355 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
-2016-09-23 20:55:47,413 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- logger log1-Slf4jLogger started
-2016-09-23 20:55:47,413 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- Default Loggers started
-2016-09-23 20:55:47,419 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,419 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,419 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-09-23 20:55:47,419 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
-2016-09-23 20:55:47,426 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,426 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,426 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,426 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,426 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:create url: http://localhost:4567/workloads
-2016-09-23 20:55:47,437 DEBUG r.c.v.server.actors.WorkloadsActor [test-akka.actor.default-dispatcher-3] [akka://test/user/$a]- Created workload Workload{id=6fe19d7a-26d2-4cbf-8e8c-f12266756bda, createdAt=2016-09-23T20:55:47.427, updatedAt=2016-09-23T20:55:47.427, sequenceStart=0, sequenceStop=10, task=foo, format=%d, url=foo, file=, description=}
-2016-09-23 20:55:47,441 DEBUG r.c.v.s.r.services.WorkloadsService [] []- Created  for user admin:  6fe19d7a-26d2-4cbf-8e8c-f12266756bda with 11 jobs
-2016-09-23 20:55:47,472 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,472 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,486 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-09-23 20:55:47,486 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
-2016-09-23 20:55:47,492 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,492 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,492 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,492 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,492 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:create url: http://localhost:4567/workloads
-2016-09-23 20:55:47,493 DEBUG r.c.v.server.actors.WorkloadsActor [test-akka.actor.default-dispatcher-3] [akka://test/user/$a]- Created workload Workload{id=c45ca12b-5e9f-4961-a63e-da66a8af1929, createdAt=2016-09-23T20:55:47.492, updatedAt=2016-09-23T20:55:47.492, sequenceStart=0, sequenceStop=10, task=foo, format=%d, url=foo, file=, description=}
-2016-09-23 20:55:47,494 DEBUG r.c.v.s.r.services.WorkloadsService [] []- Created  for user admin:  c45ca12b-5e9f-4961-a63e-da66a8af1929 with 11 jobs
-2016-09-23 20:55:47,510 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@6c69e643
-2016-09-23 20:55:47,511 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@51e3a538
-2016-09-23 20:55:47,511 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@210e9de0
-2016-09-23 20:55:47,511 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@13d88756
-2016-09-23 20:55:47,511 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@30202090
-2016-09-23 20:55:47,512 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@7128169
-2016-09-23 20:55:47,512 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
-2016-09-23 20:55:47,607 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,608 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,608 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-09-23 20:55:47,608 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
-2016-09-23 20:55:47,622 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,622 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,623 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,623 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,623 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,623 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,623 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:create url: http://localhost:4567/workloads
-2016-09-23 20:55:47,624 DEBUG r.c.v.server.actors.WorkloadsActor [test-akka.actor.default-dispatcher-3] [akka://test/user/$a]- Created workload Workload{id=6917fc19-cb52-4d23-bc0b-e4ab6f17f666, createdAt=2016-09-23T20:55:47.623, updatedAt=2016-09-23T20:55:47.623, sequenceStart=0, sequenceStop=10, task=foo, format=%d, url=foo, file=, description=}
-2016-09-23 20:55:47,625 DEBUG r.c.v.s.r.services.WorkloadsService [] []- Created  for user admin:  6917fc19-cb52-4d23-bc0b-e4ab6f17f666 with 11 jobs
-2016-09-23 20:55:47,631 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,631 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,631 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-09-23 20:55:47,631 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
-2016-09-23 20:55:47,632 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,632 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,632 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,632 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,632 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,632 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,632 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:list url: http://localhost:4567/workloads
-2016-09-23 20:55:47,659 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,659 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,660 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-09-23 20:55:47,660 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads/6fe19d7a-26d2-4cbf-8e8c-f12266756bda headers null
-2016-09-23 20:55:47,667 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,667 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,667 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,667 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,667 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,667 DEBUG spark.Request [] []- matchedPart: :id = 6fe19d7a-26d2-4cbf-8e8c-f12266756bda
-2016-09-23 20:55:47,667 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,667 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:delete url: http://localhost:4567/workloads/6fe19d7a-26d2-4cbf-8e8c-f12266756bda
-2016-09-23 20:55:47,682 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@10884318
-2016-09-23 20:55:47,683 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@6e46891d
-2016-09-23 20:55:47,683 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@338431e3
-2016-09-23 20:55:47,683 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@1dcb4f5
-2016-09-23 20:55:47,683 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@539eb755
-2016-09-23 20:55:47,684 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@6c9f0e8
-2016-09-23 20:55:47,684 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
-2016-09-23 20:55:47,688 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,688 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,689 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-09-23 20:55:47,689 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
-2016-09-23 20:55:47,690 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,690 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,690 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,690 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,690 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,690 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,690 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,690 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,690 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:create url: http://localhost:4567/workloads
-2016-09-23 20:55:47,691 DEBUG r.c.v.server.actors.WorkloadsActor [test-akka.actor.default-dispatcher-3] [akka://test/user/$a]- Created workload Workload{id=fad0ade8-0f87-419e-8205-9df148121cbc, createdAt=2016-09-23T20:55:47.691, updatedAt=2016-09-23T20:55:47.691, sequenceStart=0, sequenceStop=10, task=foo, format=%d, url=foo, file=, description=}
-2016-09-23 20:55:47,693 DEBUG r.c.v.s.r.services.WorkloadsService [] []- Created  for user admin:  fad0ade8-0f87-419e-8205-9df148121cbc with 11 jobs
-2016-09-23 20:55:47,698 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,698 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,698 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-09-23 20:55:47,698 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
-2016-09-23 20:55:47,699 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,699 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,699 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,699 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,699 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,699 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,699 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,699 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,699 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:list url: http://localhost:4567/workloads
-2016-09-23 20:55:47,705 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,705 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,705 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-09-23 20:55:47,705 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads/6917fc19-cb52-4d23-bc0b-e4ab6f17f666 headers null
-2016-09-23 20:55:47,706 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,706 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,707 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,707 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,707 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,707 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,707 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,707 DEBUG spark.Request [] []- matchedPart: :id = 6917fc19-cb52-4d23-bc0b-e4ab6f17f666
-2016-09-23 20:55:47,707 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,707 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:update url: http://localhost:4567/workloads/6917fc19-cb52-4d23-bc0b-e4ab6f17f666
-2016-09-23 20:55:47,710 DEBUG r.c.v.server.actors.WorkloadsActor [test-akka.actor.default-dispatcher-8] [akka://test/user/$a]- Created workload Workload{id=6917fc19-cb52-4d23-bc0b-e4ab6f17f666, createdAt=2016-09-23T20:55:47.623, updatedAt=2016-09-23T20:55:47.623, sequenceStart=0, sequenceStop=10, task=foo, format=%d, url=foo, file=, description=}
-2016-09-23 20:55:47,715 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,715 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,715 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-09-23 20:55:47,715 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
-2016-09-23 20:55:47,716 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,716 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,716 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,716 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,716 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,716 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,717 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,717 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,717 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:list url: http://localhost:4567/workloads
-2016-09-23 20:55:47,723 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@4cc01243
-2016-09-23 20:55:47,723 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@3948615a
-2016-09-23 20:55:47,723 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@18b4f803
-2016-09-23 20:55:47,723 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@772dc49d
-2016-09-23 20:55:47,724 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@3b338231
-2016-09-23 20:55:47,724 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@5af1c4e6
-2016-09-23 20:55:47,724 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
-2016-09-23 20:55:47,728 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,728 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,728 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-09-23 20:55:47,728 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
-2016-09-23 20:55:47,729 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,729 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,730 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,730 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,730 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,730 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,730 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,730 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,730 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,730 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,730 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:create url: http://localhost:4567/workloads
-2016-09-23 20:55:47,731 DEBUG r.c.v.server.actors.WorkloadsActor [test-akka.actor.default-dispatcher-8] [akka://test/user/$a]- Created workload Workload{id=86f49a01-68c6-486c-adfc-de0755efb330, createdAt=2016-09-23T20:55:47.730, updatedAt=2016-09-23T20:55:47.730, sequenceStart=0, sequenceStop=10, task=foo, format=%d, url=foo, file=, description=}
-2016-09-23 20:55:47,732 DEBUG r.c.v.s.r.services.WorkloadsService [] []- Created  for user admin:  86f49a01-68c6-486c-adfc-de0755efb330 with 11 jobs
-2016-09-23 20:55:47,737 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,737 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,737 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-09-23 20:55:47,737 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
-2016-09-23 20:55:47,738 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,738 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,738 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,738 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,738 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,738 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,738 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,738 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,738 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,738 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,739 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:list url: http://localhost:4567/workloads
-2016-09-23 20:55:47,745 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,745 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,745 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-09-23 20:55:47,745 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads/86f49a01-68c6-486c-adfc-de0755efb330 headers null
-2016-09-23 20:55:47,747 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,747 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,747 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,747 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,747 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,747 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,747 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,747 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,747 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,747 DEBUG spark.Request [] []- matchedPart: :id = 86f49a01-68c6-486c-adfc-de0755efb330
-2016-09-23 20:55:47,747 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,747 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:update url: http://localhost:4567/workloads/86f49a01-68c6-486c-adfc-de0755efb330
-2016-09-23 20:55:47,748 ERROR r.c.v.s.r.c.ExceptionMapper [] []- Error for client 127.0.0.1 path http://localhost:4567/workloads/86f49a01-68c6-486c-adfc-de0755efb330 body 
+<pre>2016-09-24 18:21:40,585 INFO  s.e.jetty.EmbeddedJettyServer [] []- == Spark has ignited ...
+2016-09-24 18:21:40,585 INFO  s.e.jetty.EmbeddedJettyServer [] []- &gt;&gt; Listening on 0.0.0.0:4567
+2016-09-24 18:21:40,655 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
+2016-09-24 18:21:40,658 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- logger log1-Slf4jLogger started
+2016-09-24 18:21:40,658 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- Default Loggers started
+2016-09-24 18:21:40,665 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@71dbfe4e
+2016-09-24 18:21:40,665 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@696bdb39
+2016-09-24 18:21:40,666 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@16d1f3fe
+2016-09-24 18:21:40,666 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@736f6e50
+2016-09-24 18:21:40,666 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@5d68c7fd
+2016-09-24 18:21:40,666 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@6164906f
+2016-09-24 18:21:40,666 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
+2016-09-24 18:21:40,678 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,678 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,678 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-09-24 18:21:40,678 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
+2016-09-24 18:21:40,684 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,684 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,684 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,684 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,684 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:create url: http://localhost:4567/workloads
+2016-09-24 18:21:40,686 DEBUG r.c.v.server.actors.WorkloadsActor [test-akka.actor.default-dispatcher-5] [akka://test/user/$a]- Created workload Workload{id=4e751253-27ae-4c3d-a59c-87abdc007fd0, createdAt=2016-09-24T18:21:40.685, updatedAt=2016-09-24T18:21:40.685, sequenceStart=0, sequenceStop=10, task=foo, format=%d, url=foo, file=, description=}
+2016-09-24 18:21:40,693 DEBUG r.c.v.s.r.services.WorkloadsService [] []- Created  for user admin:  4e751253-27ae-4c3d-a59c-87abdc007fd0 with 11 jobs
+2016-09-24 18:21:40,701 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,701 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,701 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-09-24 18:21:40,701 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
+2016-09-24 18:21:40,707 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,707 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,708 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,708 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,708 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:create url: http://localhost:4567/workloads
+2016-09-24 18:21:40,709 DEBUG r.c.v.server.actors.WorkloadsActor [test-akka.actor.default-dispatcher-7] [akka://test/user/$a]- Created workload Workload{id=5a91b0b8-577f-4159-8f50-e9e6c5a926a1, createdAt=2016-09-24T18:21:40.708, updatedAt=2016-09-24T18:21:40.708, sequenceStart=0, sequenceStop=10, task=foo, format=%d, url=foo, file=, description=}
+2016-09-24 18:21:40,710 DEBUG r.c.v.s.r.services.WorkloadsService [] []- Created  for user admin:  5a91b0b8-577f-4159-8f50-e9e6c5a926a1 with 11 jobs
+2016-09-24 18:21:40,716 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@6931b9d6
+2016-09-24 18:21:40,717 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@2a3b8601
+2016-09-24 18:21:40,717 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@25115489
+2016-09-24 18:21:40,717 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@4c7f438c
+2016-09-24 18:21:40,717 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@2864bcdc
+2016-09-24 18:21:40,718 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@5d35a03c
+2016-09-24 18:21:40,718 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
+2016-09-24 18:21:40,722 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,722 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,722 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-09-24 18:21:40,722 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
+2016-09-24 18:21:40,755 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,755 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,755 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,755 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,756 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,756 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,756 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:create url: http://localhost:4567/workloads
+2016-09-24 18:21:40,757 DEBUG r.c.v.server.actors.WorkloadsActor [test-akka.actor.default-dispatcher-7] [akka://test/user/$a]- Created workload Workload{id=2d2d72a3-f337-4ad0-ac25-bbb646040be4, createdAt=2016-09-24T18:21:40.756, updatedAt=2016-09-24T18:21:40.756, sequenceStart=0, sequenceStop=10, task=foo, format=%d, url=foo, file=, description=}
+2016-09-24 18:21:40,758 DEBUG r.c.v.s.r.services.WorkloadsService [] []- Created  for user admin:  2d2d72a3-f337-4ad0-ac25-bbb646040be4 with 11 jobs
+2016-09-24 18:21:40,793 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,793 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,793 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-09-24 18:21:40,793 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
+2016-09-24 18:21:40,806 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,806 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,806 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,806 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,806 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,806 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,806 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:list url: http://localhost:4567/workloads
+2016-09-24 18:21:40,852 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,852 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,852 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-09-24 18:21:40,852 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads/2d2d72a3-f337-4ad0-ac25-bbb646040be4 headers null
+2016-09-24 18:21:40,856 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,856 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,856 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,856 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,856 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,856 DEBUG spark.Request [] []- matchedPart: :id = 2d2d72a3-f337-4ad0-ac25-bbb646040be4
+2016-09-24 18:21:40,856 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,856 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:delete url: http://localhost:4567/workloads/2d2d72a3-f337-4ad0-ac25-bbb646040be4
+2016-09-24 18:21:40,876 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@453f111f
+2016-09-24 18:21:40,876 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@4ba7675b
+2016-09-24 18:21:40,877 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@2e7382fd
+2016-09-24 18:21:40,877 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@6c69e643
+2016-09-24 18:21:40,877 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@51e3a538
+2016-09-24 18:21:40,877 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@2912ea30
+2016-09-24 18:21:40,877 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
+2016-09-24 18:21:40,887 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,887 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,888 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-09-24 18:21:40,888 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
+2016-09-24 18:21:40,890 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,890 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,890 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,890 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,890 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,890 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,890 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,890 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,890 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:create url: http://localhost:4567/workloads
+2016-09-24 18:21:40,894 DEBUG r.c.v.server.actors.WorkloadsActor [test-akka.actor.default-dispatcher-7] [akka://test/user/$a]- Created workload Workload{id=bacdc4ae-520c-434d-9882-9baf3b154600, createdAt=2016-09-24T18:21:40.891, updatedAt=2016-09-24T18:21:40.891, sequenceStart=0, sequenceStop=10, task=foo, format=%d, url=foo, file=, description=}
+2016-09-24 18:21:40,895 DEBUG r.c.v.s.r.services.WorkloadsService [] []- Created  for user admin:  bacdc4ae-520c-434d-9882-9baf3b154600 with 11 jobs
+2016-09-24 18:21:40,901 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,901 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,901 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-09-24 18:21:40,901 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
+2016-09-24 18:21:40,916 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,916 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,916 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,916 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,916 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,916 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,916 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,916 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,916 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:list url: http://localhost:4567/workloads
+2016-09-24 18:21:40,932 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,932 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,932 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-09-24 18:21:40,932 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads/bacdc4ae-520c-434d-9882-9baf3b154600 headers null
+2016-09-24 18:21:40,933 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,933 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,933 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,933 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,933 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,934 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,934 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,934 DEBUG spark.Request [] []- matchedPart: :id = bacdc4ae-520c-434d-9882-9baf3b154600
+2016-09-24 18:21:40,934 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,934 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:update url: http://localhost:4567/workloads/bacdc4ae-520c-434d-9882-9baf3b154600
+2016-09-24 18:21:40,939 DEBUG r.c.v.server.actors.WorkloadsActor [test-akka.actor.default-dispatcher-5] [akka://test/user/$a]- Created workload Workload{id=bacdc4ae-520c-434d-9882-9baf3b154600, createdAt=2016-09-24T18:21:40.891, updatedAt=2016-09-24T18:21:40.891, sequenceStart=0, sequenceStop=10, task=foo, format=%d, url=foo, file=, description=}
+2016-09-24 18:21:40,945 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,945 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,945 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-09-24 18:21:40,945 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
+2016-09-24 18:21:40,946 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,947 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,947 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,947 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,947 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,947 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,947 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,947 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,947 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:list url: http://localhost:4567/workloads
+2016-09-24 18:21:40,954 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@1dcb4f5
+2016-09-24 18:21:40,954 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@539eb755
+2016-09-24 18:21:40,954 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@9cad25a
+2016-09-24 18:21:40,954 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@1b53f1a9
+2016-09-24 18:21:40,955 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@7f4c852a
+2016-09-24 18:21:40,955 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@35031fc1
+2016-09-24 18:21:40,955 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
+2016-09-24 18:21:40,973 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,974 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,974 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-09-24 18:21:40,974 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
+2016-09-24 18:21:40,975 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,975 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,975 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,975 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,975 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,975 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,975 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,975 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,975 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,975 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,975 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:create url: http://localhost:4567/workloads
+2016-09-24 18:21:40,977 DEBUG r.c.v.server.actors.WorkloadsActor [test-akka.actor.default-dispatcher-5] [akka://test/user/$a]- Created workload Workload{id=065da95a-1383-4be4-816a-7525bca2d753, createdAt=2016-09-24T18:21:40.976, updatedAt=2016-09-24T18:21:40.976, sequenceStart=0, sequenceStop=10, task=foo, format=%d, url=foo, file=, description=}
+2016-09-24 18:21:40,977 DEBUG r.c.v.s.r.services.WorkloadsService [] []- Created  for user admin:  065da95a-1383-4be4-816a-7525bca2d753 with 11 jobs
+2016-09-24 18:21:40,983 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,983 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,983 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-09-24 18:21:40,983 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
+2016-09-24 18:21:40,984 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,984 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,984 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,984 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,985 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,985 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,985 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,985 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,985 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,985 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,985 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:list url: http://localhost:4567/workloads
+2016-09-24 18:21:40,992 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,992 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,992 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-09-24 18:21:40,992 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads/4e751253-27ae-4c3d-a59c-87abdc007fd0 headers null
+2016-09-24 18:21:40,993 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,993 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,993 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,993 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,993 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,993 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,993 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,993 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,993 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:40,993 DEBUG spark.Request [] []- matchedPart: :id = 4e751253-27ae-4c3d-a59c-87abdc007fd0
+2016-09-24 18:21:40,993 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:40,993 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:update url: http://localhost:4567/workloads/4e751253-27ae-4c3d-a59c-87abdc007fd0
+2016-09-24 18:21:40,994 ERROR r.c.v.s.r.c.ExceptionMapper [] []- Error for client 127.0.0.1 path http://localhost:4567/workloads/4e751253-27ae-4c3d-a59c-87abdc007fd0 body 
 java.lang.NullPointerException: empty payload
 	at com.google.common.base.Preconditions.checkNotNull(Preconditions.java:228)
 	at ro.cosu.vampires.server.rest.services.WorkloadsService.update(WorkloadsService.java:98)
 	at ro.cosu.vampires.server.rest.services.WorkloadsService.update(WorkloadsService.java:50)
 	at ro.cosu.vampires.server.rest.controllers.AbstractRestController.lambda$update$50(AbstractRestController.java:130)
-	at ro.cosu.vampires.server.rest.controllers.AbstractRestController$$Lambda$18/585358316.handle(Unknown Source)
+	at ro.cosu.vampires.server.rest.controllers.AbstractRestController$$Lambda$18/1686373439.handle(Unknown Source)
 	at spark.ResponseTransformerRouteImpl$1.handle(ResponseTransformerRouteImpl.java:47)
 	at spark.http.matching.Routes.execute(Routes.java:61)
 	at spark.http.matching.MatcherFilter.doFilter(MatcherFilter.java:126)
@@ -337,137 +337,137 @@ java.lang.NullPointerException: empty payload
 	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:654)
 	at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:572)
 	at java.lang.Thread.run(Thread.java:745)
-2016-09-23 20:55:47,771 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@7792b575
-2016-09-23 20:55:47,771 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@72487207
-2016-09-23 20:55:47,771 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@43314d8
-2016-09-23 20:55:47,771 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@428656ba
-2016-09-23 20:55:47,771 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@205d7a82
-2016-09-23 20:55:47,772 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@58efed
-2016-09-23 20:55:47,772 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
-2016-09-23 20:55:47,777 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,777 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,778 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-09-23 20:55:47,778 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
-2016-09-23 20:55:47,778 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,778 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,779 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,779 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,779 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,779 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,779 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,779 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,779 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,779 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,779 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,779 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,779 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:create url: http://localhost:4567/workloads
-2016-09-23 20:55:47,780 DEBUG r.c.v.server.actors.WorkloadsActor [test-akka.actor.default-dispatcher-8] [akka://test/user/$a]- Created workload Workload{id=70868690-1580-4437-86db-28088a8f75c4, createdAt=2016-09-23T20:55:47.779, updatedAt=2016-09-23T20:55:47.779, sequenceStart=0, sequenceStop=10, task=foo, format=%d, url=foo, file=, description=}
-2016-09-23 20:55:47,781 DEBUG r.c.v.s.r.services.WorkloadsService [] []- Created  for user admin:  70868690-1580-4437-86db-28088a8f75c4 with 11 jobs
-2016-09-23 20:55:47,787 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,787 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,788 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-09-23 20:55:47,788 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
-2016-09-23 20:55:47,788 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,789 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,789 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,789 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,789 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,789 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,789 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,789 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,789 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,789 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,789 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,789 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,789 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:list url: http://localhost:4567/workloads
-2016-09-23 20:55:47,796 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@71a7bc14
-2016-09-23 20:55:47,796 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@6f8d65a3
-2016-09-23 20:55:47,796 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@345a794c
-2016-09-23 20:55:47,796 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@1a7d4aec
-2016-09-23 20:55:47,796 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@56f602ab
-2016-09-23 20:55:47,797 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@67c187d1
-2016-09-23 20:55:47,797 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
-2016-09-23 20:55:47,808 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,808 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,808 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-09-23 20:55:47,808 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
-2016-09-23 20:55:47,810 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,810 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,810 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,810 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,811 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,811 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,811 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,811 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,811 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,811 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,811 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,811 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,811 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,811 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,811 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:create url: http://localhost:4567/workloads
-2016-09-23 20:55:47,812 DEBUG r.c.v.server.actors.WorkloadsActor [test-akka.actor.default-dispatcher-8] [akka://test/user/$a]- Created workload Workload{id=3451ab2d-2e7d-4326-b276-83b3f4719ce6, createdAt=2016-09-23T20:55:47.811, updatedAt=2016-09-23T20:55:47.811, sequenceStart=0, sequenceStop=10, task=foo, format=%d, url=foo, file=, description=}
-2016-09-23 20:55:47,815 DEBUG r.c.v.s.r.services.WorkloadsService [] []- Created  for user admin:  3451ab2d-2e7d-4326-b276-83b3f4719ce6 with 11 jobs
-2016-09-23 20:55:47,822 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,822 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,822 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-09-23 20:55:47,822 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
-2016-09-23 20:55:47,834 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@654667ba
-2016-09-23 20:55:47,834 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@17e3f4f
-2016-09-23 20:55:47,834 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@719ef6c5
-2016-09-23 20:55:47,834 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@25433354
-2016-09-23 20:55:47,834 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@736efbf1
-2016-09-23 20:55:47,834 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@6f18608b
-2016-09-23 20:55:47,835 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
-2016-09-23 20:55:47,839 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,839 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,839 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-09-23 20:55:47,839 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
-2016-09-23 20:55:47,841 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,841 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,841 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,841 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,841 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,841 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,841 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,841 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,841 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,841 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,841 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,841 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,842 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,842 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,842 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,842 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,842 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:create url: http://localhost:4567/workloads
-2016-09-23 20:55:47,843 DEBUG r.c.v.server.actors.WorkloadsActor [test-akka.actor.default-dispatcher-8] [akka://test/user/$a]- Created workload Workload{id=8c02ef5b-3160-4384-abb4-74a2af1ccb72, createdAt=2016-09-23T20:55:47.842, updatedAt=2016-09-23T20:55:47.842, sequenceStart=0, sequenceStop=10, task=foo, format=%d, url=foo, file=, description=}
-2016-09-23 20:55:47,844 DEBUG r.c.v.s.r.services.WorkloadsService [] []- Created  for user admin:  8c02ef5b-3160-4384-abb4-74a2af1ccb72 with 11 jobs
-2016-09-23 20:55:47,850 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,850 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,850 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-09-23 20:55:47,850 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads/foo headers null
-2016-09-23 20:55:47,851 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,851 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,852 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,852 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,852 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,852 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,852 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,852 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,852 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,852 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,852 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,852 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,852 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,852 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,852 DEBUG spark.Request [] []- get params
-2016-09-23 20:55:47,852 DEBUG spark.Request [] []- matchedPart: :id = foo
-2016-09-23 20:55:47,852 DEBUG spark.Request [] []- get splat
-2016-09-23 20:55:47,852 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:get url: http://localhost:4567/workloads/foo
-2016-09-23 20:55:47,853 ERROR r.c.v.s.r.c.ExceptionMapper [] []- Error for client 127.0.0.1 path http://localhost:4567/workloads/foo body 
+2016-09-24 18:21:41,002 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@4c81bf92
+2016-09-24 18:21:41,002 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@7cc13786
+2016-09-24 18:21:41,002 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@3844b23
+2016-09-24 18:21:41,002 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@d7c5151
+2016-09-24 18:21:41,002 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@4cc01243
+2016-09-24 18:21:41,002 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@418b66bc
+2016-09-24 18:21:41,002 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
+2016-09-24 18:21:41,007 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,007 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,007 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-09-24 18:21:41,007 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
+2016-09-24 18:21:41,008 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,008 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,008 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,008 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,008 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,008 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,008 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,008 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,008 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,008 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,008 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,008 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,008 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:create url: http://localhost:4567/workloads
+2016-09-24 18:21:41,010 DEBUG r.c.v.server.actors.WorkloadsActor [test-akka.actor.default-dispatcher-5] [akka://test/user/$a]- Created workload Workload{id=b5bae666-2f61-4f09-8c91-310c3aaf24f5, createdAt=2016-09-24T18:21:41.009, updatedAt=2016-09-24T18:21:41.009, sequenceStart=0, sequenceStop=10, task=foo, format=%d, url=foo, file=, description=}
+2016-09-24 18:21:41,010 DEBUG r.c.v.s.r.services.WorkloadsService [] []- Created  for user admin:  b5bae666-2f61-4f09-8c91-310c3aaf24f5 with 11 jobs
+2016-09-24 18:21:41,015 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,015 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,016 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-09-24 18:21:41,016 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
+2016-09-24 18:21:41,025 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,026 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,026 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,026 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,026 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,026 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,026 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,026 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,026 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,026 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,026 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,026 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,026 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:list url: http://localhost:4567/workloads
+2016-09-24 18:21:41,043 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@4d80be9c
+2016-09-24 18:21:41,044 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@60ccc058
+2016-09-24 18:21:41,044 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@56624894
+2016-09-24 18:21:41,044 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@5fe5fd35
+2016-09-24 18:21:41,044 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@1759cc0b
+2016-09-24 18:21:41,044 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@65626de3
+2016-09-24 18:21:41,044 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
+2016-09-24 18:21:41,049 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,049 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,049 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-09-24 18:21:41,049 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
+2016-09-24 18:21:41,050 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,051 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,051 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,051 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,051 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,051 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,051 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,051 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,051 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,051 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,051 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,051 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,051 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,051 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,051 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:create url: http://localhost:4567/workloads
+2016-09-24 18:21:41,052 DEBUG r.c.v.server.actors.WorkloadsActor [test-akka.actor.default-dispatcher-5] [akka://test/user/$a]- Created workload Workload{id=9d5dd652-323d-486f-a454-52034223b9d1, createdAt=2016-09-24T18:21:41.052, updatedAt=2016-09-24T18:21:41.052, sequenceStart=0, sequenceStop=10, task=foo, format=%d, url=foo, file=, description=}
+2016-09-24 18:21:41,053 DEBUG r.c.v.s.r.services.WorkloadsService [] []- Created  for user admin:  9d5dd652-323d-486f-a454-52034223b9d1 with 11 jobs
+2016-09-24 18:21:41,084 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,084 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,084 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-09-24 18:21:41,085 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
+2016-09-24 18:21:41,089 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@70ba92da
+2016-09-24 18:21:41,089 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@6a82e860
+2016-09-24 18:21:41,089 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@510b952d
+2016-09-24 18:21:41,089 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@64c95f5b
+2016-09-24 18:21:41,090 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@40c12d5a
+2016-09-24 18:21:41,090 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@263ee7e
+2016-09-24 18:21:41,090 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
+2016-09-24 18:21:41,097 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,097 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,097 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-09-24 18:21:41,097 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads headers null
+2016-09-24 18:21:41,098 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,098 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,099 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,099 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,099 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,099 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,099 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,099 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,099 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,099 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,099 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,099 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,099 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,099 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,099 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,099 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,099 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:create url: http://localhost:4567/workloads
+2016-09-24 18:21:41,100 DEBUG r.c.v.server.actors.WorkloadsActor [test-akka.actor.default-dispatcher-5] [akka://test/user/$a]- Created workload Workload{id=b9868e83-8f98-4818-8909-7f7f6bd0801b, createdAt=2016-09-24T18:21:41.100, updatedAt=2016-09-24T18:21:41.100, sequenceStart=0, sequenceStop=10, task=foo, format=%d, url=foo, file=, description=}
+2016-09-24 18:21:41,101 DEBUG r.c.v.s.r.services.WorkloadsService [] []- Created  for user admin:  b9868e83-8f98-4818-8909-7f7f6bd0801b with 11 jobs
+2016-09-24 18:21:41,109 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,109 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,110 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-09-24 18:21:41,110 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/workloads/foo headers null
+2016-09-24 18:21:41,110 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,110 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,111 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,111 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,111 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,111 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,111 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,111 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,111 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,111 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,111 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,111 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,111 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,111 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,111 DEBUG spark.Request [] []- get params
+2016-09-24 18:21:41,111 DEBUG spark.Request [] []- matchedPart: :id = foo
+2016-09-24 18:21:41,111 DEBUG spark.Request [] []- get splat
+2016-09-24 18:21:41,111 DEBUG r.c.v.s.r.c.WorkloadsController [] []- User:admin action:get url: http://localhost:4567/workloads/foo
+2016-09-24 18:21:41,112 ERROR r.c.v.s.r.c.ExceptionMapper [] []- Error for client 127.0.0.1 path http://localhost:4567/workloads/foo body 
 java.io.FileNotFoundException: could not find resource foo
 	at ro.cosu.vampires.server.rest.controllers.AbstractRestController.lambda$get$48(AbstractRestController.java:108)
-	at ro.cosu.vampires.server.rest.controllers.AbstractRestController$$Lambda$15/84575190.handle(Unknown Source)
+	at ro.cosu.vampires.server.rest.controllers.AbstractRestController$$Lambda$15/1509638194.handle(Unknown Source)
 	at spark.ResponseTransformerRouteImpl$1.handle(ResponseTransformerRouteImpl.java:47)
 	at spark.http.matching.Routes.execute(Routes.java:61)
 	at spark.http.matching.MatcherFilter.doFilter(MatcherFilter.java:126)
@@ -486,9 +486,9 @@ java.io.FileNotFoundException: could not find resource foo
 	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:654)
 	at org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:572)
 	at java.lang.Thread.run(Thread.java:745)
-2016-09-23 20:55:47,854 INFO  s.e.jetty.EmbeddedJettyServer [] []- &gt;&gt;&gt; Spark shutting down ...
-2016-09-23 20:55:47,862 INFO  s.e.jetty.EmbeddedJettyServer [] []- done
-2016-09-23 20:55:47,867 DEBUG akka.event.EventStream [test-akka.actor.default-dispatcher-3] [EventStream]- shutting down: StandardOutLogger started
+2016-09-24 18:21:41,117 INFO  s.e.jetty.EmbeddedJettyServer [] []- &gt;&gt;&gt; Spark shutting down ...
+2016-09-24 18:21:41,132 INFO  s.e.jetty.EmbeddedJettyServer [] []- done
+[DEBUG] [09/24/2016 18:21:41.150] [test-akka.actor.default-dispatcher-6] [EventStream] shutting down: StandardOutLogger started
 </pre>
 </span>
 </div>
@@ -500,7 +500,7 @@ java.io.FileNotFoundException: could not find resource foo
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 3.0</a> at Sep 23, 2016 8:55:49 PM</p>
+<a href="http://www.gradle.org">Gradle 3.0</a> at Sep 24, 2016 6:21:42 PM</p>
 </div>
 </div>
 </body>
