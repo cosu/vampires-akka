@@ -27,13 +27,9 @@
 package ro.cosu.vampires.server.values.jobs.metrics;
 
 import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableList;
-import com.google.common.primitives.Longs;
 
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Snapshot;
-
-import java.util.List;
 
 import ro.cosu.vampires.server.util.gson.AutoGson;
 
@@ -46,24 +42,27 @@ public abstract class HistogramSnapshot {
     }
 
     public static HistogramSnapshot fromHistogram(String name, Histogram histogram) {
+        return fromHistogram(name, histogram, 1);
+    }
+
+
+    public static HistogramSnapshot fromHistogram(String name, Histogram histogram, double scaleDownFactor) {
         final Snapshot snapshot = histogram.getSnapshot();
 
         return builder()
                 .name(name)
                 .count(histogram.getCount())
-                .max(snapshot.getMax())
-                .min(snapshot.getMin())
-                .mean(snapshot.getMean())
-                .p50(snapshot.getMedian())
-                .p75(snapshot.get75thPercentile())
-                .p95(snapshot.get95thPercentile())
-                .p98(snapshot.get98thPercentile())
-                .p99(snapshot.get99thPercentile())
-                .p999(snapshot.get999thPercentile())
-                .stddev(snapshot.getStdDev())
-                .values(ImmutableList.copyOf(Longs.asList(snapshot.getValues())))
+                .max(snapshot.getMax()/scaleDownFactor)
+                .min(snapshot.getMin()/scaleDownFactor)
+                .mean(snapshot.getMean()/scaleDownFactor)
+                .p50(snapshot.getMedian()/scaleDownFactor)
+                .p75(snapshot.get75thPercentile()/scaleDownFactor)
+                .p95(snapshot.get95thPercentile()/scaleDownFactor)
+                .p98(snapshot.get98thPercentile()/scaleDownFactor)
+                .p99(snapshot.get99thPercentile()/scaleDownFactor)
+                .p999(snapshot.get999thPercentile()/scaleDownFactor)
+                .stddev(snapshot.getStdDev()/scaleDownFactor)
                 .build();
-
     }
 
     public abstract Builder toBuilder();
@@ -72,9 +71,9 @@ public abstract class HistogramSnapshot {
 
     public abstract long count();
 
-    public abstract long max();
+    public abstract double max();
 
-    public abstract long min();
+    public abstract double min();
 
     public abstract double mean();
 
@@ -92,17 +91,15 @@ public abstract class HistogramSnapshot {
 
     public abstract double stddev();
 
-    public abstract List<Long> values();
-
     @AutoValue.Builder
     public abstract static class Builder {
         public abstract Builder count(long value);
 
         public abstract Builder name(String value);
 
-        public abstract Builder max(long value);
+        public abstract Builder max(double value);
 
-        public abstract Builder min(long value);
+        public abstract Builder min(double value);
 
         public abstract Builder mean(double value);
 
@@ -119,9 +116,6 @@ public abstract class HistogramSnapshot {
         public abstract Builder p999(double value);
 
         public abstract Builder stddev(double value);
-
-        public abstract Builder values(List<Long> values);
-
 
         public abstract HistogramSnapshot build();
     }

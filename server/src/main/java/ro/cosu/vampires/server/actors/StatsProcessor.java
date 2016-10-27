@@ -59,6 +59,10 @@ import ro.cosu.vampires.server.values.jobs.metrics.ValueSnapshot;
 public class StatsProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatsProcessor.class);
+    // because the histogram doesn't work with double we perform an internal conversion from double to long
+    // and we scale up the value with a power of 10 not to lose too much precision
+    // when we read the values back we need to scale down
+    private static final double SCALE_DOWN_FACTOR = 1000.;
 
     private MetricRegistry metricRegistry = new MetricRegistry();
 
@@ -69,35 +73,10 @@ public class StatsProcessor {
     private Stats latestStats = Stats.empty();
 
     public void flush() {
-        Map<String, HistogramSnapshot> histograms = Maps.newHashMap();
-        Map<String, MeterSnapshot> meters = Maps.newHashMap();
-        Map<String, CounterSnapshot> counters = Maps.newHashMap();
-        Map<String, ValueSnapshot> values = Maps.newHashMap();
-
-
-        metricRegistry.getHistograms().entrySet().forEach(m -> {
-            String name = m.getKey();
-            Histogram value = m.getValue();
-            histograms.put(name, HistogramSnapshot.fromHistogram(name, value));
-        });
-
-        metricRegistry.getMeters().entrySet().forEach(m -> {
-            String name = m.getKey();
-            Meter value = m.getValue();
-            meters.put(name, MeterSnapshot.fromMeter(name, value));
-        });
-
-        metricRegistry.getCounters().entrySet().forEach(m -> {
-            String name = m.getKey();
-            Counter value = m.getValue();
-            counters.put(name, CounterSnapshot.fromCounter(name, value));
-        });
-
-        metricRegistry.getGauges().entrySet().forEach(m -> {
-            String name = m.getKey();
-            Gauge value = m.getValue();
-            values.put(name, ValueSnapshot.fromGauge(name, value));
-        });
+        Map<String, HistogramSnapshot> histograms = getStringHistogramSnapshotMap();
+        Map<String, MeterSnapshot> meters = getStringMeterSnapshotMap();
+        Map<String, CounterSnapshot> counters = getStringCounterSnapshotMap();
+        Map<String, ValueSnapshot> values = getStringValueSnapshotMap();
 
         latestStats = Stats.builder()
                 .counters(ImmutableMap.copyOf(counters))
@@ -105,6 +84,46 @@ public class StatsProcessor {
                 .meters(ImmutableMap.copyOf(meters))
                 .resources(ImmutableList.copyOf(resourcesInfo.values()))
                 .histograms(ImmutableMap.copyOf(histograms)).build();
+    }
+
+    private Map<String, ValueSnapshot> getStringValueSnapshotMap() {
+        Map<String, ValueSnapshot> values = Maps.newHashMap();
+        metricRegistry.getGauges().entrySet().forEach(m -> {
+            String name = m.getKey();
+            Gauge value = m.getValue();
+            values.put(name, ValueSnapshot.fromGauge(name, value));
+        });
+        return values;
+    }
+
+    private Map<String, CounterSnapshot> getStringCounterSnapshotMap() {
+        Map<String, CounterSnapshot> counters = Maps.newHashMap();
+        metricRegistry.getCounters().entrySet().forEach(m -> {
+            String name = m.getKey();
+            Counter value = m.getValue();
+            counters.put(name, CounterSnapshot.fromCounter(name, value));
+        });
+        return counters;
+    }
+
+    private Map<String, MeterSnapshot> getStringMeterSnapshotMap() {
+        Map<String, MeterSnapshot> meters = Maps.newHashMap();
+        metricRegistry.getMeters().entrySet().forEach(m -> {
+            String name = m.getKey();
+            Meter value = m.getValue();
+            meters.put(name, MeterSnapshot.fromMeter(name, value));
+        });
+        return meters;
+    }
+
+    private Map<String, HistogramSnapshot> getStringHistogramSnapshotMap() {
+        Map<String, HistogramSnapshot> histograms = Maps.newHashMap();
+        metricRegistry.getHistograms().entrySet().forEach(m -> {
+            String name = m.getKey();
+            Histogram value = m.getValue();
+            histograms.put(name, HistogramSnapshot.fromHistogram(name, value, SCALE_DOWN_FACTOR));
+        });
+        return histograms;
     }
 
     public Stats getStats() {
@@ -165,12 +184,10 @@ public class StatsProcessor {
 
         job.hostMetrics().metrics().stream().flatMap(m -> m.values().entrySet().stream())
                 .forEach(e -> {
-                    // converts doubles to longs
-                    Double value = e.getValue();
-                    if (value < 100) {
-                        value = 1000. * value;
-                    }
-                    long rounded = Math.round(value);
+                    // the metrics lib supports histograms only for longs so we're going to convert our values to long
+                    // to keep some precision we multiply by a power of 10 and then divide it back when we produce the
+                    // histogram or read values back. changing metrics to support double histograms is non-trivial
+                    long rounded = Math.round(SCALE_DOWN_FACTOR * e.getValue());
                     String key = e.getKey();
                     updateMetric(from, key, rounded);
                 });
