@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">7.159s</div>
+<div class="counter">3.354s</div>
 <p>duration</p>
 </div>
 </td>
@@ -82,7 +82,7 @@
 	at akka.testkit.TestKitBase$class.expectMsgClass(TestKit.scala:459)
 	at akka.testkit.TestKit.expectMsgClass(TestKit.scala:814)
 	at akka.testkit.JavaTestKit.expectMsgClass(JavaTestKit.java:400)
-	at ro.cosu.vampires.server.actors.BootstrapActorTest$1.&lt;init&gt;(BootstrapActorTest.java:105)
+	at ro.cosu.vampires.server.actors.BootstrapActorTest$1.&lt;init&gt;(BootstrapActorTest.java:78)
 	at ro.cosu.vampires.server.actors.BootstrapActorTest.start(BootstrapActorTest.java:61)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
@@ -145,7 +145,7 @@
 </thead>
 <tr>
 <td class="failures">start</td>
-<td>7.159s</td>
+<td>3.354s</td>
 <td class="failures">failed</td>
 </tr>
 </table>
@@ -153,47 +153,41 @@
 <div id="tab2" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2016-10-28 07:08:19,443 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
-2016-10-28 07:08:19,467 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- logger log1-Slf4jLogger started
-2016-10-28 07:08:19,498 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- Default Loggers started
-2016-10-28 07:08:20,499 INFO  s.e.jetty.EmbeddedJettyServer [] []- == Spark has ignited ...
-2016-10-28 07:08:20,540 INFO  s.e.jetty.EmbeddedJettyServer [] []- &gt;&gt; Listening on 0.0.0.0:4567
-2016-10-28 07:08:21,526 DEBUG spark.route.Routes [] []- Adds route: get, /providers, spark.ResponseTransformerRouteImpl$1@5e7eff04
-2016-10-28 07:08:21,532 DEBUG spark.route.Routes [] []- Adds route: get, /configurations, spark.ResponseTransformerRouteImpl$1@2b05c977
-2016-10-28 07:08:21,533 DEBUG spark.route.Routes [] []- Adds route: get, /configurations/:id, spark.ResponseTransformerRouteImpl$1@57929c2b
-2016-10-28 07:08:21,533 DEBUG spark.route.Routes [] []- Adds route: delete, /configurations/:id, spark.ResponseTransformerRouteImpl$1@2051fbd3
-2016-10-28 07:08:21,534 DEBUG spark.route.Routes [] []- Adds route: post, /configurations, spark.ResponseTransformerRouteImpl$1@77a64280
-2016-10-28 07:08:21,534 DEBUG spark.route.Routes [] []- Adds route: post, /configurations/:id, spark.ResponseTransformerRouteImpl$1@2bec595b
-2016-10-28 07:08:21,535 DEBUG spark.route.Routes [] []- Adds route: get, /executions, spark.ResponseTransformerRouteImpl$1@c17f47b
-2016-10-28 07:08:21,535 DEBUG spark.route.Routes [] []- Adds route: get, /executions/:id, spark.ResponseTransformerRouteImpl$1@45784223
-2016-10-28 07:08:21,535 DEBUG spark.route.Routes [] []- Adds route: delete, /executions/:id, spark.ResponseTransformerRouteImpl$1@5ff20402
-2016-10-28 07:08:21,535 DEBUG spark.route.Routes [] []- Adds route: post, /executions, spark.ResponseTransformerRouteImpl$1@3f5b1d29
-2016-10-28 07:08:21,535 DEBUG spark.route.Routes [] []- Adds route: post, /executions/:id, spark.ResponseTransformerRouteImpl$1@cdc8295
-2016-10-28 07:08:21,536 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@23fa88fe
-2016-10-28 07:08:21,536 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@4bda6e3e
-2016-10-28 07:08:21,536 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@55754e3a
-2016-10-28 07:08:21,536 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@6add9c4c
-2016-10-28 07:08:21,536 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@1d974491
-2016-10-28 07:08:21,539 DEBUG spark.route.Routes [] []- Adds route: options, /*, spark.RouteImpl$1@5320367f
-2016-10-28 07:08:21,557 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@2e9bb139
-2016-10-28 07:08:21,595 DEBUG r.c.v.s.r.c.FilesController [] []- Upload dir /tmp/vampires
-2016-10-28 07:08:21,596 DEBUG spark.route.Routes [] []- Adds route: post, /upload, spark.ResponseTransformerRouteImpl$1@78d98f3e
-2016-10-28 07:08:21,598 DEBUG spark.route.Routes [] []- Adds route: get, /upload, spark.ResponseTransformerRouteImpl$1@3adf705f
-2016-10-28 07:08:21,599 DEBUG spark.route.Routes [] []- Adds route: get, /upload/:id, spark.RouteImpl$1@19f8f8a9
-2016-10-28 07:08:21,599 DEBUG spark.route.Routes [] []- Adds route: delete, /upload/:id, spark.ResponseTransformerRouteImpl$1@11d35314
-2016-10-28 07:08:21,610 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@74d90c61
-2016-10-28 07:08:21,612 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
-2016-10-28 07:08:21,646 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
-2016-10-28 07:08:21,762 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
-2016-10-28 07:08:21,762 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
-2016-10-28 07:08:21,774 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-5] [akka://test/user/bootstrap/f330f3a8-97d0-4370-9ab0-380d478bbdee/resultActor]- results so far: 0/2
-2016-10-28 07:08:22,297 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-3] [akka://test/user/bootstrap/f330f3a8-97d0-4370-9ab0-380d478bbdee/resultActor]- Total Duration: 0:00:00
-2016-10-28 07:08:22,297 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-3] [akka://test/user/bootstrap/f330f3a8-97d0-4370-9ab0-380d478bbdee/resultActor]- shutting down
-2016-10-28 07:08:31,643 INFO  r.c.v.server.actors.BootstrapActor [test-akka.actor.default-dispatcher-4] [akka://test/user/bootstrap]- f330f3a8-97d0-4370-9ab0-380d478bbdee terminated 
-2016-10-28 07:08:31,667 INFO  s.e.jetty.EmbeddedJettyServer [] []- &gt;&gt;&gt; Spark shutting down ...
-2016-10-28 07:08:31,752 INFO  s.e.jetty.EmbeddedJettyServer [] []- done
-2016-10-28 07:08:31,807 INFO  akka.actor.RepointableActorRef [test-akka.actor.default-dispatcher-4] [akka://test/user/bootstrap]- Message [ro.cosu.vampires.server.actors.messages.execution.AutoValue_QueryExecution] from Actor[akka://test/system/testProbe-3#1090613726] to Actor[akka://test/user/bootstrap#-1060649183] was not delivered. [1] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
-[DEBUG] [10/28/2016 07:08:31.762] [test-akka.actor.default-dispatcher-4] [EventStream] shutting down: StandardOutLogger started
+<pre>2016-10-28 07:17:27,864 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
+2016-10-28 07:17:28,025 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- logger log1-Slf4jLogger started
+2016-10-28 07:17:28,033 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- Default Loggers started
+2016-10-28 07:17:29,957 INFO  s.e.jetty.EmbeddedJettyServer [] []- == Spark has ignited ...
+2016-10-28 07:17:29,967 INFO  s.e.jetty.EmbeddedJettyServer [] []- &gt;&gt; Listening on 0.0.0.0:4567
+2016-10-28 07:17:32,330 DEBUG spark.route.Routes [] []- Adds route: get, /providers, spark.ResponseTransformerRouteImpl$1@6e2cf152
+2016-10-28 07:17:32,353 DEBUG spark.route.Routes [] []- Adds route: get, /configurations, spark.ResponseTransformerRouteImpl$1@51cf96ae
+2016-10-28 07:17:32,356 DEBUG spark.route.Routes [] []- Adds route: get, /configurations/:id, spark.ResponseTransformerRouteImpl$1@641f5d67
+2016-10-28 07:17:32,366 DEBUG spark.route.Routes [] []- Adds route: delete, /configurations/:id, spark.ResponseTransformerRouteImpl$1@679a8e18
+2016-10-28 07:17:32,367 DEBUG spark.route.Routes [] []- Adds route: post, /configurations, spark.ResponseTransformerRouteImpl$1@2cf3ea53
+2016-10-28 07:17:32,367 DEBUG spark.route.Routes [] []- Adds route: post, /configurations/:id, spark.ResponseTransformerRouteImpl$1@3d1d8c09
+2016-10-28 07:17:32,368 DEBUG spark.route.Routes [] []- Adds route: get, /executions, spark.ResponseTransformerRouteImpl$1@58a0db00
+2016-10-28 07:17:32,368 DEBUG spark.route.Routes [] []- Adds route: get, /executions/:id, spark.ResponseTransformerRouteImpl$1@90c79d9
+2016-10-28 07:17:32,368 DEBUG spark.route.Routes [] []- Adds route: delete, /executions/:id, spark.ResponseTransformerRouteImpl$1@614fec82
+2016-10-28 07:17:32,369 DEBUG spark.route.Routes [] []- Adds route: post, /executions, spark.ResponseTransformerRouteImpl$1@2c66e831
+2016-10-28 07:17:32,369 DEBUG spark.route.Routes [] []- Adds route: post, /executions/:id, spark.ResponseTransformerRouteImpl$1@72c05e66
+2016-10-28 07:17:32,369 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@1de1b0bf
+2016-10-28 07:17:32,370 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@6da2fe0b
+2016-10-28 07:17:32,370 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@3489027a
+2016-10-28 07:17:32,370 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@5d842f11
+2016-10-28 07:17:32,370 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@4d700856
+2016-10-28 07:17:32,396 DEBUG spark.route.Routes [] []- Adds route: options, /*, spark.RouteImpl$1@724cde9d
+2016-10-28 07:17:32,400 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@29d7f7a7
+2016-10-28 07:17:32,444 DEBUG r.c.v.s.r.c.FilesController [] []- Upload dir /tmp/vampires
+2016-10-28 07:17:32,451 DEBUG spark.route.Routes [] []- Adds route: post, /upload, spark.ResponseTransformerRouteImpl$1@5e03f115
+2016-10-28 07:17:32,452 DEBUG spark.route.Routes [] []- Adds route: get, /upload, spark.ResponseTransformerRouteImpl$1@60088a0e
+2016-10-28 07:17:32,453 DEBUG spark.route.Routes [] []- Adds route: get, /upload/:id, spark.RouteImpl$1@662f2071
+2016-10-28 07:17:32,454 DEBUG spark.route.Routes [] []- Adds route: delete, /upload/:id, spark.ResponseTransformerRouteImpl$1@3ccc0011
+2016-10-28 07:17:32,461 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@63d9207c
+2016-10-28 07:17:32,463 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
+2016-10-28 07:17:32,473 INFO  s.e.jetty.EmbeddedJettyServer [] []- &gt;&gt;&gt; Spark shutting down ...
+2016-10-28 07:17:32,489 INFO  s.e.jetty.EmbeddedJettyServer [] []- done
+2016-10-28 07:17:32,498 INFO  akka.actor.RepointableActorRef [test-akka.actor.default-dispatcher-4] [akka://test/user/bootstrap]- Message [ro.cosu.vampires.server.actors.messages.execution.AutoValue_StartExecution] from Actor[akka://test/system/testProbe-3#-757044261] to Actor[akka://test/user/bootstrap#277939845] was not delivered. [1] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-10-28 07:17:32,500 INFO  akka.actor.RepointableActorRef [test-akka.actor.default-dispatcher-4] [akka://test/user/bootstrap]- Message [ro.cosu.vampires.server.actors.messages.execution.AutoValue_QueryExecution] from Actor[akka://test/system/testProbe-3#-757044261] to Actor[akka://test/user/bootstrap#277939845] was not delivered. [2] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-10-28 07:17:32,525 DEBUG akka.event.EventStream [test-akka.actor.default-dispatcher-2] [EventStream]- shutting down: StandardOutLogger started
 </pre>
 </span>
 </div>
@@ -205,7 +199,7 @@
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 3.0</a> at Oct 28, 2016 7:08:43 AM</p>
+<a href="http://www.gradle.org">Gradle 3.0</a> at Oct 28, 2016 7:17:48 AM</p>
 </div>
 </div>
 </body>
