@@ -27,43 +27,42 @@
 package ro.cosu.vampires.server.values.jobs.metrics;
 
 import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableList;
-import com.google.common.primitives.Longs;
 
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Snapshot;
-
-import java.util.List;
 
 import ro.cosu.vampires.server.util.gson.AutoGson;
 
 @AutoValue
 @AutoGson
-<span class="fc" id="L42">public abstract class HistogramSnapshot {</span>
+<span class="fc" id="L38">public abstract class HistogramSnapshot {</span>
 
     public static Builder builder() {
-<span class="fc" id="L45">        return new AutoValue_HistogramSnapshot.Builder();</span>
+<span class="fc" id="L41">        return new AutoValue_HistogramSnapshot.Builder();</span>
     }
 
     public static HistogramSnapshot fromHistogram(String name, Histogram histogram) {
-<span class="fc" id="L49">        final Snapshot snapshot = histogram.getSnapshot();</span>
+<span class="nc" id="L45">        return fromHistogram(name, histogram, 1);</span>
+    }
 
-<span class="fc" id="L51">        return builder()</span>
-<span class="fc" id="L52">                .name(name)</span>
-<span class="fc" id="L53">                .count(histogram.getCount())</span>
-<span class="fc" id="L54">                .max(snapshot.getMax())</span>
-<span class="fc" id="L55">                .min(snapshot.getMin())</span>
-<span class="fc" id="L56">                .mean(snapshot.getMean())</span>
-<span class="fc" id="L57">                .p50(snapshot.getMedian())</span>
-<span class="fc" id="L58">                .p75(snapshot.get75thPercentile())</span>
-<span class="fc" id="L59">                .p95(snapshot.get95thPercentile())</span>
-<span class="fc" id="L60">                .p98(snapshot.get98thPercentile())</span>
-<span class="fc" id="L61">                .p99(snapshot.get99thPercentile())</span>
-<span class="fc" id="L62">                .p999(snapshot.get999thPercentile())</span>
-<span class="fc" id="L63">                .stddev(snapshot.getStdDev())</span>
-<span class="fc" id="L64">                .values(ImmutableList.copyOf(Longs.asList(snapshot.getValues())))</span>
+
+    public static HistogramSnapshot fromHistogram(String name, Histogram histogram, double scaleDownFactor) {
+<span class="fc" id="L50">        final Snapshot snapshot = histogram.getSnapshot();</span>
+
+<span class="fc" id="L52">        return builder()</span>
+<span class="fc" id="L53">                .name(name)</span>
+<span class="fc" id="L54">                .count(histogram.getCount())</span>
+<span class="fc" id="L55">                .max(snapshot.getMax()/scaleDownFactor)</span>
+<span class="fc" id="L56">                .min(snapshot.getMin()/scaleDownFactor)</span>
+<span class="fc" id="L57">                .mean(snapshot.getMean()/scaleDownFactor)</span>
+<span class="fc" id="L58">                .p50(snapshot.getMedian()/scaleDownFactor)</span>
+<span class="fc" id="L59">                .p75(snapshot.get75thPercentile()/scaleDownFactor)</span>
+<span class="fc" id="L60">                .p95(snapshot.get95thPercentile()/scaleDownFactor)</span>
+<span class="fc" id="L61">                .p98(snapshot.get98thPercentile()/scaleDownFactor)</span>
+<span class="fc" id="L62">                .p99(snapshot.get99thPercentile()/scaleDownFactor)</span>
+<span class="fc" id="L63">                .p999(snapshot.get999thPercentile()/scaleDownFactor)</span>
+<span class="fc" id="L64">                .stddev(snapshot.getStdDev()/scaleDownFactor)</span>
 <span class="fc" id="L65">                .build();</span>
-
     }
 
     public abstract Builder toBuilder();
@@ -72,9 +71,9 @@ import ro.cosu.vampires.server.util.gson.AutoGson;
 
     public abstract long count();
 
-    public abstract long max();
+    public abstract double max();
 
-    public abstract long min();
+    public abstract double min();
 
     public abstract double mean();
 
@@ -92,17 +91,15 @@ import ro.cosu.vampires.server.util.gson.AutoGson;
 
     public abstract double stddev();
 
-    public abstract List&lt;Long&gt; values();
-
-<span class="fc" id="L97">    @AutoValue.Builder</span>
-<span class="fc" id="L98">    public abstract static class Builder {</span>
+<span class="fc" id="L94">    @AutoValue.Builder</span>
+<span class="fc" id="L95">    public abstract static class Builder {</span>
         public abstract Builder count(long value);
 
         public abstract Builder name(String value);
 
-        public abstract Builder max(long value);
+        public abstract Builder max(double value);
 
-        public abstract Builder min(long value);
+        public abstract Builder min(double value);
 
         public abstract Builder mean(double value);
 
@@ -119,9 +116,6 @@ import ro.cosu.vampires.server.util.gson.AutoGson;
         public abstract Builder p999(double value);
 
         public abstract Builder stddev(double value);
-
-        public abstract Builder values(List&lt;Long&gt; values);
-
 
         public abstract HistogramSnapshot build();
     }

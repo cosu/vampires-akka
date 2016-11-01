@@ -59,172 +59,189 @@ import ro.cosu.vampires.server.values.jobs.metrics.ValueSnapshot;
 <span class="fc" id="L59">public class StatsProcessor {</span>
 
 <span class="fc" id="L61">    private static final Logger LOG = LoggerFactory.getLogger(StatsProcessor.class);</span>
+    // because the histogram doesn't work with double we perform an internal conversion from double to long
+    // and we scale up the value with a power of 10 not to lose too much precision
+    // when we read the values back we need to scale down
+    private static final double SCALE_DOWN_FACTOR = 1000.;
 
-<span class="fc" id="L63">    private MetricRegistry metricRegistry = new MetricRegistry();</span>
+<span class="fc" id="L67">    private MetricRegistry metricRegistry = new MetricRegistry();</span>
 
-<span class="fc" id="L65">    private Map&lt;String, LocalDateTime&gt; clientsCreatedAt = Maps.newHashMap();</span>
-<span class="fc" id="L66">    private Map&lt;String, ClientInfo&gt; clientsInfo = Maps.newHashMap();</span>
-<span class="fc" id="L67">    private Map&lt;String, ResourceInfo&gt; resourcesInfo = Maps.newHashMap();</span>
+<span class="fc" id="L69">    private Map&lt;String, LocalDateTime&gt; clientsCreatedAt = Maps.newHashMap();</span>
+<span class="fc" id="L70">    private Map&lt;String, ClientInfo&gt; clientsInfo = Maps.newHashMap();</span>
+<span class="fc" id="L71">    private Map&lt;String, ResourceInfo&gt; resourcesInfo = Maps.newHashMap();</span>
 
-<span class="fc" id="L69">    private Stats latestStats = Stats.empty();</span>
+<span class="fc" id="L73">    private Stats latestStats = Stats.empty();</span>
 
     public void flush() {
-<span class="fc" id="L72">        Map&lt;String, HistogramSnapshot&gt; histograms = Maps.newHashMap();</span>
-<span class="fc" id="L73">        Map&lt;String, MeterSnapshot&gt; meters = Maps.newHashMap();</span>
-<span class="fc" id="L74">        Map&lt;String, CounterSnapshot&gt; counters = Maps.newHashMap();</span>
-<span class="fc" id="L75">        Map&lt;String, ValueSnapshot&gt; values = Maps.newHashMap();</span>
+<span class="fc" id="L76">        Map&lt;String, HistogramSnapshot&gt; histograms = getStringHistogramSnapshotMap();</span>
+<span class="fc" id="L77">        Map&lt;String, MeterSnapshot&gt; meters = getStringMeterSnapshotMap();</span>
+<span class="fc" id="L78">        Map&lt;String, CounterSnapshot&gt; counters = getStringCounterSnapshotMap();</span>
+<span class="fc" id="L79">        Map&lt;String, ValueSnapshot&gt; values = getStringValueSnapshotMap();</span>
 
+<span class="fc" id="L81">        latestStats = Stats.builder()</span>
+<span class="fc" id="L82">                .counters(ImmutableMap.copyOf(counters))</span>
+<span class="fc" id="L83">                .values(ImmutableMap.copyOf(values))</span>
+<span class="fc" id="L84">                .meters(ImmutableMap.copyOf(meters))</span>
+<span class="fc" id="L85">                .resources(ImmutableList.copyOf(resourcesInfo.values()))</span>
+<span class="fc" id="L86">                .histograms(ImmutableMap.copyOf(histograms)).build();</span>
+<span class="fc" id="L87">    }</span>
 
-<span class="fc" id="L78">        metricRegistry.getHistograms().entrySet().forEach(m -&gt; {</span>
-<span class="fc" id="L79">            String name = m.getKey();</span>
-<span class="fc" id="L80">            Histogram value = m.getValue();</span>
-<span class="fc" id="L81">            histograms.put(name, HistogramSnapshot.fromHistogram(name, value));</span>
-<span class="fc" id="L82">        });</span>
+    private Map&lt;String, ValueSnapshot&gt; getStringValueSnapshotMap() {
+<span class="fc" id="L90">        Map&lt;String, ValueSnapshot&gt; values = Maps.newHashMap();</span>
+<span class="fc" id="L91">        metricRegistry.getGauges().entrySet().forEach(m -&gt; {</span>
+<span class="fc" id="L92">            String name = m.getKey();</span>
+<span class="fc" id="L93">            Gauge value = m.getValue();</span>
+<span class="fc" id="L94">            values.put(name, ValueSnapshot.fromGauge(name, value));</span>
+<span class="fc" id="L95">        });</span>
+<span class="fc" id="L96">        return values;</span>
+    }
 
-<span class="fc" id="L84">        metricRegistry.getMeters().entrySet().forEach(m -&gt; {</span>
-<span class="fc" id="L85">            String name = m.getKey();</span>
-<span class="fc" id="L86">            Meter value = m.getValue();</span>
-<span class="fc" id="L87">            meters.put(name, MeterSnapshot.fromMeter(name, value));</span>
-<span class="fc" id="L88">        });</span>
+    private Map&lt;String, CounterSnapshot&gt; getStringCounterSnapshotMap() {
+<span class="fc" id="L100">        Map&lt;String, CounterSnapshot&gt; counters = Maps.newHashMap();</span>
+<span class="fc" id="L101">        metricRegistry.getCounters().entrySet().forEach(m -&gt; {</span>
+<span class="fc" id="L102">            String name = m.getKey();</span>
+<span class="fc" id="L103">            Counter value = m.getValue();</span>
+<span class="fc" id="L104">            counters.put(name, CounterSnapshot.fromCounter(name, value));</span>
+<span class="fc" id="L105">        });</span>
+<span class="fc" id="L106">        return counters;</span>
+    }
 
-<span class="fc" id="L90">        metricRegistry.getCounters().entrySet().forEach(m -&gt; {</span>
-<span class="fc" id="L91">            String name = m.getKey();</span>
-<span class="fc" id="L92">            Counter value = m.getValue();</span>
-<span class="fc" id="L93">            counters.put(name, CounterSnapshot.fromCounter(name, value));</span>
-<span class="fc" id="L94">        });</span>
+    private Map&lt;String, MeterSnapshot&gt; getStringMeterSnapshotMap() {
+<span class="fc" id="L110">        Map&lt;String, MeterSnapshot&gt; meters = Maps.newHashMap();</span>
+<span class="fc" id="L111">        metricRegistry.getMeters().entrySet().forEach(m -&gt; {</span>
+<span class="fc" id="L112">            String name = m.getKey();</span>
+<span class="fc" id="L113">            Meter value = m.getValue();</span>
+<span class="fc" id="L114">            meters.put(name, MeterSnapshot.fromMeter(name, value));</span>
+<span class="fc" id="L115">        });</span>
+<span class="fc" id="L116">        return meters;</span>
+    }
 
-<span class="fc" id="L96">        metricRegistry.getGauges().entrySet().forEach(m -&gt; {</span>
-<span class="fc" id="L97">            String name = m.getKey();</span>
-<span class="fc" id="L98">            Gauge value = m.getValue();</span>
-<span class="fc" id="L99">            values.put(name, ValueSnapshot.fromGauge(name, value));</span>
-<span class="fc" id="L100">        });</span>
-
-<span class="fc" id="L102">        latestStats = Stats.builder()</span>
-<span class="fc" id="L103">                .counters(ImmutableMap.copyOf(counters))</span>
-<span class="fc" id="L104">                .values(ImmutableMap.copyOf(values))</span>
-<span class="fc" id="L105">                .meters(ImmutableMap.copyOf(meters))</span>
-<span class="fc" id="L106">                .resources(ImmutableList.copyOf(resourcesInfo.values()))</span>
-<span class="fc" id="L107">                .histograms(ImmutableMap.copyOf(histograms)).build();</span>
-<span class="fc" id="L108">    }</span>
+    private Map&lt;String, HistogramSnapshot&gt; getStringHistogramSnapshotMap() {
+<span class="fc" id="L120">        Map&lt;String, HistogramSnapshot&gt; histograms = Maps.newHashMap();</span>
+<span class="fc" id="L121">        metricRegistry.getHistograms().entrySet().forEach(m -&gt; {</span>
+<span class="fc" id="L122">            String name = m.getKey();</span>
+<span class="fc" id="L123">            Histogram value = m.getValue();</span>
+<span class="fc" id="L124">            histograms.put(name, HistogramSnapshot.fromHistogram(name, value, SCALE_DOWN_FACTOR));</span>
+<span class="fc" id="L125">        });</span>
+<span class="fc" id="L126">        return histograms;</span>
+    }
 
     public Stats getStats() {
-<span class="fc" id="L111">        return latestStats;</span>
+<span class="fc" id="L130">        return latestStats;</span>
     }
 
     public void process(ClientInfo message) {
-<span class="fc" id="L115">        String from = message.id();</span>
-<span class="fc" id="L116">        clientsInfo.put(from, message);</span>
-<span class="fc" id="L117">    }</span>
+<span class="fc" id="L134">        String from = message.id();</span>
+<span class="fc" id="L135">        clientsInfo.put(from, message);</span>
+<span class="fc" id="L136">    }</span>
 
     public void process(ResourceInfo message) {
-<span class="fc" id="L120">        String from = message.parameters().id();</span>
+<span class="fc" id="L139">        String from = message.parameters().id();</span>
 
-<span class="fc" id="L122">        clientsCreatedAt.put(from, message.createdAt());</span>
-<span class="fc" id="L123">        boolean seenBefore = resourcesInfo.containsKey(from);</span>
-<span class="fc" id="L124">        resourcesInfo.put(from, message);</span>
-<span class="pc bpc" id="L125" title="1 of 2 branches missed.">        if (seenBefore) return;</span>
+<span class="fc" id="L141">        clientsCreatedAt.put(from, message.createdAt());</span>
+<span class="fc" id="L142">        boolean seenBefore = resourcesInfo.containsKey(from);</span>
+<span class="fc" id="L143">        resourcesInfo.put(from, message);</span>
+<span class="pc bpc" id="L144" title="1 of 2 branches missed.">        if (seenBefore) return;</span>
 
         // node count
-<span class="fc bfc" id="L128" title="All 2 branches covered.">        for (String key : getKeysForMetric(from, &quot;resources&quot;)) {</span>
-<span class="fc" id="L129">            metricRegistry.counter(key).inc();</span>
-<span class="fc" id="L130">        }</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        for (String key : getKeysForMetric(from, &quot;resources&quot;)) {</span>
+<span class="fc" id="L148">            metricRegistry.counter(key).inc();</span>
+<span class="fc" id="L149">        }</span>
 
-<span class="fc" id="L132">        List&lt;String&gt; costMetricKeys = getKeysForMetric(from, &quot;cost&quot;);</span>
+<span class="fc" id="L151">        List&lt;String&gt; costMetricKeys = getKeysForMetric(from, &quot;cost&quot;);</span>
         // remove the client key from the keys. this will provide the actual value
 
-<span class="fc" id="L135">        String clientCostMetricKey = costMetricKeys.get(0);</span>
+<span class="fc" id="L154">        String clientCostMetricKey = costMetricKeys.get(0);</span>
 
         // register a cost gauge for this client
-<span class="fc" id="L138">        metricRegistry.register(clientCostMetricKey, (Gauge&lt;Double&gt;) () -&gt; getCostForClient(from));</span>
+<span class="fc" id="L157">        metricRegistry.register(clientCostMetricKey, (Gauge&lt;Double&gt;) () -&gt; getCostForClient(from));</span>
 
         // cost gauges for the rest
 
-<span class="fc bfc" id="L142" title="All 2 branches covered.">        for (String key : costMetricKeys) {</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">        for (String key : costMetricKeys) {</span>
             // key not registered yet
-<span class="fc bfc" id="L144" title="All 2 branches covered.">            if (!metricRegistry.getGauges().containsKey(key)) {</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">            if (!metricRegistry.getGauges().containsKey(key)) {</span>
 
-<span class="fc" id="L146">                metricRegistry.register(key, (Gauge&lt;Double&gt;) () -&gt;</span>
+<span class="fc" id="L165">                metricRegistry.register(key, (Gauge&lt;Double&gt;) () -&gt;</span>
                         // get all the sibling gauges (but not the current gauge - nudge it with a :)
-<span class="fc bfc" id="L148" title="All 2 branches covered.">                        metricRegistry.getGauges((name, metric) -&gt; name.startsWith(key + &quot;:&quot;) &amp;&amp;</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">                                name.split(&quot;:&quot;).length - key.split(&quot;:&quot;).length == 1)</span>
-<span class="fc" id="L150">                                .values().stream()</span>
-<span class="fc" id="L151">                                .mapToDouble(g -&gt; (Double) g.getValue())</span>
-<span class="fc" id="L152">                                .sum());</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">                        metricRegistry.getGauges((name, metric) -&gt; name.startsWith(key + &quot;:&quot;) &amp;&amp;</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">                                name.split(&quot;:&quot;).length - key.split(&quot;:&quot;).length == 1)</span>
+<span class="fc" id="L169">                                .values().stream()</span>
+<span class="fc" id="L170">                                .mapToDouble(g -&gt; (Double) g.getValue())</span>
+<span class="fc" id="L171">                                .sum());</span>
             }
-<span class="fc" id="L154">        }</span>
-<span class="fc" id="L155">    }</span>
+<span class="fc" id="L173">        }</span>
+<span class="fc" id="L174">    }</span>
 
     public void process(Job job) {
 
-<span class="fc" id="L159">        String from = job.from();</span>
+<span class="fc" id="L178">        String from = job.from();</span>
         // do not process jobs from strangers
-<span class="fc bfc" id="L161" title="All 2 branches covered.">        if (!resourcesInfo.containsKey(from)) {</span>
-<span class="fc" id="L162">            LOG.warn(&quot;client {} not registered. skipping processing&quot;, from);</span>
-<span class="fc" id="L163">            return;</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">        if (!resourcesInfo.containsKey(from)) {</span>
+<span class="fc" id="L181">            LOG.warn(&quot;client {} not registered. skipping processing&quot;, from);</span>
+<span class="fc" id="L182">            return;</span>
         }
 
-<span class="pc" id="L166">        job.hostMetrics().metrics().stream().flatMap(m -&gt; m.values().entrySet().stream())</span>
-<span class="fc" id="L167">                .forEach(e -&gt; {</span>
-                    // converts doubles to longs
-<span class="nc" id="L169">                    Double value = e.getValue();</span>
-<span class="nc bnc" id="L170" title="All 2 branches missed.">                    if (value &lt; 100) {</span>
-<span class="nc" id="L171">                        value = 1000. * value;</span>
-                    }
-<span class="nc" id="L173">                    long rounded = Math.round(value);</span>
-<span class="nc" id="L174">                    String key = e.getKey();</span>
-<span class="nc" id="L175">                    updateMetric(from, key, rounded);</span>
-<span class="nc" id="L176">                });</span>
+<span class="pc" id="L185">        job.hostMetrics().metrics().stream().flatMap(m -&gt; m.values().entrySet().stream())</span>
+<span class="fc" id="L186">                .forEach(e -&gt; {</span>
+                    // the metrics lib supports histograms only for longs so we're going to convert our values to long
+                    // to keep some precision we multiply by a power of 10 and then divide it back when we produce the
+                    // histogram or read values back. changing metrics to support double histograms is non-trivial
+<span class="nc" id="L190">                    long rounded = Math.round(SCALE_DOWN_FACTOR * e.getValue());</span>
+<span class="nc" id="L191">                    String key = e.getKey();</span>
+<span class="nc" id="L192">                    updateMetric(from, key, rounded);</span>
+<span class="nc" id="L193">                });</span>
 
-<span class="fc" id="L178">        updateMetric(from, &quot;duration&quot;, job.result().duration());</span>
-<span class="fc" id="L179">        updateMetric(from, &quot;job&quot;, 0);</span>
+<span class="fc" id="L195">        updateMetric(from, &quot;duration&quot;, job.result().duration());</span>
+<span class="fc" id="L196">        updateMetric(from, &quot;job&quot;, 0);</span>
 
-<span class="fc" id="L181">    }</span>
+<span class="fc" id="L198">    }</span>
 
     private void updateMetric(String clientId, String metric, long value) {
 
-<span class="fc bfc" id="L185" title="All 2 branches covered.">        for (String key : getKeysForMetric(clientId, metric)) {</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">            if (&quot;job&quot;.equals(metric)) {</span>
-<span class="fc" id="L187">                metricRegistry.meter(key).mark();</span>
-<span class="pc bpc" id="L188" title="1 of 2 branches missed.">            } else if (metric.contains(&quot;bytes&quot;)) {</span>
-<span class="nc" id="L189">                metricRegistry.counter(key).inc(value);</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">        for (String key : getKeysForMetric(clientId, metric)) {</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">            if (&quot;job&quot;.equals(metric)) {</span>
+<span class="fc" id="L204">                metricRegistry.meter(key).mark();</span>
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">            } else if (metric.contains(&quot;bytes&quot;)) {</span>
+<span class="nc" id="L206">                metricRegistry.counter(key).inc(value);</span>
             } else {
-<span class="fc" id="L191">                metricRegistry.histogram(key).update(value);</span>
+<span class="fc" id="L208">                metricRegistry.histogram(key).update(value);</span>
             }
-<span class="fc" id="L193">        }</span>
-<span class="fc" id="L194">    }</span>
+<span class="fc" id="L210">        }</span>
+<span class="fc" id="L211">    }</span>
 
     private double getCostForClient(String id) {
 
-<span class="fc" id="L198">        long billedHours = getDurationForClient(id).toHours() + 1;</span>
-<span class="fc" id="L199">        double cost = resourcesInfo.get(id).parameters().cost();</span>
-<span class="fc" id="L200">        return billedHours * cost;</span>
+<span class="fc" id="L215">        long billedHours = getDurationForClient(id).toHours() + 1;</span>
+<span class="fc" id="L216">        double cost = resourcesInfo.get(id).parameters().cost();</span>
+<span class="fc" id="L217">        return billedHours * cost;</span>
     }
 
     private Duration getDurationForClient(String id) {
-<span class="fc" id="L204">        LocalDateTime createdAt = clientsCreatedAt.get(id);</span>
-<span class="fc" id="L205">        LocalDateTime now = LocalDateTime.now();</span>
+<span class="fc" id="L221">        LocalDateTime createdAt = clientsCreatedAt.get(id);</span>
+<span class="fc" id="L222">        LocalDateTime now = LocalDateTime.now();</span>
 
-<span class="fc" id="L207">        return Duration.between(createdAt, now);</span>
+<span class="fc" id="L224">        return Duration.between(createdAt, now);</span>
     }
 
     private String getInstanceType(String from) {
-<span class="fc" id="L211">        return resourcesInfo.get(from).parameters().instanceType();</span>
+<span class="fc" id="L228">        return resourcesInfo.get(from).parameters().instanceType();</span>
     }
 
     private Resource.ProviderType getProviderType(String from) {
-<span class="fc" id="L215">        return resourcesInfo.get(from).parameters().providerType();</span>
+<span class="fc" id="L232">        return resourcesInfo.get(from).parameters().providerType();</span>
     }
 
     private List&lt;String&gt; getKeysForMetric(String clientId, String metric) {
 
-<span class="fc" id="L220">        String instanceType = getInstanceType(clientId);</span>
-<span class="fc" id="L221">        Resource.ProviderType providerType = getProviderType(clientId);</span>
+<span class="fc" id="L237">        String instanceType = getInstanceType(clientId);</span>
+<span class="fc" id="L238">        Resource.ProviderType providerType = getProviderType(clientId);</span>
 
         // return the keys in reverse order: most specific (longest) first
-<span class="fc" id="L224">        return Lists.reverse(Lists.newArrayList(metric,</span>
-<span class="fc" id="L225">                Joiner.on(&quot;:&quot;).join(metric, providerType),</span>
-<span class="fc" id="L226">                Joiner.on(&quot;:&quot;).join(metric, providerType, instanceType),</span>
-<span class="fc" id="L227">                Joiner.on(&quot;:&quot;).join(metric, providerType, instanceType, clientId)));</span>
+<span class="fc" id="L241">        return Lists.reverse(Lists.newArrayList(metric,</span>
+<span class="fc" id="L242">                Joiner.on(&quot;:&quot;).join(metric, providerType),</span>
+<span class="fc" id="L243">                Joiner.on(&quot;:&quot;).join(metric, providerType, instanceType),</span>
+<span class="fc" id="L244">                Joiner.on(&quot;:&quot;).join(metric, providerType, instanceType, clientId)));</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
