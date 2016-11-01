@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.252s</div>
+<div class="counter">0.404s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,27 +79,27 @@
 </thead>
 <tr>
 <td class="success">create</td>
-<td>0.056s</td>
+<td>0.112s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">delete</td>
-<td>0.082s</td>
+<td>0.118s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">get</td>
-<td>0.060s</td>
+<td>0.079s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">list</td>
-<td>0.047s</td>
+<td>0.083s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">options</td>
-<td>0.007s</td>
+<td>0.012s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -107,138 +107,274 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2016-10-28 07:21:39,810 INFO  s.e.jetty.EmbeddedJettyServer [] []- == Spark has ignited ...
-2016-10-28 07:21:39,811 INFO  s.e.jetty.EmbeddedJettyServer [] []- &gt;&gt; Listening on 0.0.0.0:4567
-2016-10-28 07:21:39,851 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
-2016-10-28 07:21:39,853 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- logger log1-Slf4jLogger started
-2016-10-28 07:21:39,853 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- Default Loggers started
-2016-10-28 07:21:39,896 DEBUG spark.route.Routes [] []- Adds route: get, /executions, spark.ResponseTransformerRouteImpl$1@24358bcc
-2016-10-28 07:21:39,896 DEBUG spark.route.Routes [] []- Adds route: get, /executions/:id, spark.ResponseTransformerRouteImpl$1@10c15722
-2016-10-28 07:21:39,896 DEBUG spark.route.Routes [] []- Adds route: delete, /executions/:id, spark.ResponseTransformerRouteImpl$1@530b55c0
-2016-10-28 07:21:39,896 DEBUG spark.route.Routes [] []- Adds route: post, /executions, spark.ResponseTransformerRouteImpl$1@6d430a56
-2016-10-28 07:21:39,896 DEBUG spark.route.Routes [] []- Adds route: post, /executions/:id, spark.ResponseTransformerRouteImpl$1@652087d9
-2016-10-28 07:21:39,903 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@435a213b
-2016-10-28 07:21:39,903 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
-2016-10-28 07:21:39,907 DEBUG spark.route.Routes [] []- Adds route: options, /*, spark.RouteImpl$1@5d2f835d
-2016-10-28 07:21:39,907 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@4fee323a
-2016-10-28 07:21:39,923 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:39,923 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:39,924 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-10-28 07:21:39,924 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
-2016-10-28 07:21:39,926 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:39,926 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:39,926 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:39,926 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:39,926 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:39,926 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:39,926 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:create url: http://localhost:4567/executions
-2016-10-28 07:21:39,930 INFO  r.c.v.s.r.services.ExecutionsService [] []- user User{id=admin} starting execution: 0d33a91a-1dc2-4e6d-853b-a991dbbfa108
-2016-10-28 07:21:39,930 DEBUG r.c.v.s.r.services.ExecutionsService [] []- Execution:
-Execution{id=0d33a91a-1dc2-4e6d-853b-a991dbbfa108, configuration=Configuration{id=7b90b998-c912-4027-8adf-f6664ff76ed5, createdAt=2016-10-28T07:21:39.858, updatedAt=2016-10-28T07:21:39.858, description=foo, cost=0.0, resources=[ResourceDemand{resourceDescription=ResourceDescription{type=bar, provider=MOCK, cost=0.0, id=48af3837-ac5a-32a2-a344-b29ec497a31f, createdAt=2016-10-28T07:21:39.858, updatedAt=2016-10-28T07:21:39.858}, count=1}]}, workload=Workload{id=8aa622ae-2870-48d4-8726-69c37f88803c, createdAt=2016-10-28T07:21:39.858, updatedAt=2016-10-28T07:21:39.858, sequenceStart=0, sequenceStop=10, task=echo, format=%08d.tif, url=, file=, description=}, type=FULL, info=ExecutionInfo{status=STARTING, updatedAt=2016-10-28T07:21:39.930, failed=0, remaining=11, total=0, completed=0, elapsed=0, stats=Stats{resources=[], values={}, counters={}, meters={}, histograms={}}}, createdAt=2016-10-28T07:21:39.929, updatedAt=2016-10-28T07:21:39.929}
-2016-10-28 07:21:39,981 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:39,981 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:39,988 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-10-28 07:21:39,988 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
-2016-10-28 07:21:39,989 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:39,989 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:39,989 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:39,989 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:39,990 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:39,990 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:39,990 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:create url: http://localhost:4567/executions
-2016-10-28 07:21:39,991 INFO  r.c.v.s.r.services.ExecutionsService [] []- user User{id=admin} starting execution: de532840-b96e-412c-92c6-0b1a9f07c1ef
-2016-10-28 07:21:39,991 DEBUG r.c.v.s.r.services.ExecutionsService [] []- Execution:
-Execution{id=de532840-b96e-412c-92c6-0b1a9f07c1ef, configuration=Configuration{id=7b90b998-c912-4027-8adf-f6664ff76ed5, createdAt=2016-10-28T07:21:39.858, updatedAt=2016-10-28T07:21:39.858, description=foo, cost=0.0, resources=[ResourceDemand{resourceDescription=ResourceDescription{type=bar, provider=MOCK, cost=0.0, id=48af3837-ac5a-32a2-a344-b29ec497a31f, createdAt=2016-10-28T07:21:39.858, updatedAt=2016-10-28T07:21:39.858}, count=1}]}, workload=Workload{id=8aa622ae-2870-48d4-8726-69c37f88803c, createdAt=2016-10-28T07:21:39.858, updatedAt=2016-10-28T07:21:39.858, sequenceStart=0, sequenceStop=10, task=echo, format=%08d.tif, url=, file=, description=}, type=FULL, info=ExecutionInfo{status=STARTING, updatedAt=2016-10-28T07:21:39.991, failed=0, remaining=11, total=0, completed=0, elapsed=0, stats=Stats{resources=[], values={}, counters={}, meters={}, histograms={}}}, createdAt=2016-10-28T07:21:39.990, updatedAt=2016-10-28T07:21:39.990}
-2016-10-28 07:21:40,007 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,015 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,016 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-10-28 07:21:40,016 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
-2016-10-28 07:21:40,020 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,020 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,020 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,020 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,020 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,020 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,020 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:list url: http://localhost:4567/executions
-2016-10-28 07:21:40,042 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,042 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,042 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-10-28 07:21:40,042 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions/0d33a91a-1dc2-4e6d-853b-a991dbbfa108 headers null
-2016-10-28 07:21:40,046 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,046 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,047 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,047 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,047 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,047 DEBUG spark.Request [] []- matchedPart: :id = 0d33a91a-1dc2-4e6d-853b-a991dbbfa108
-2016-10-28 07:21:40,047 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,047 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:delete url: http://localhost:4567/executions/0d33a91a-1dc2-4e6d-853b-a991dbbfa108
-2016-10-28 07:21:40,055 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,055 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,056 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,056 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,056 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,056 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,068 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,068 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,069 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-10-28 07:21:40,069 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
-2016-10-28 07:21:40,080 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,080 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,080 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,080 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,080 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,080 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,080 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:create url: http://localhost:4567/executions
-2016-10-28 07:21:40,087 INFO  r.c.v.s.r.services.ExecutionsService [] []- user User{id=admin} starting execution: 2e943940-ff47-4ae5-ad2c-a781a66f8c15
-2016-10-28 07:21:40,087 DEBUG r.c.v.s.r.services.ExecutionsService [] []- Execution:
-Execution{id=2e943940-ff47-4ae5-ad2c-a781a66f8c15, configuration=Configuration{id=7b90b998-c912-4027-8adf-f6664ff76ed5, createdAt=2016-10-28T07:21:39.858, updatedAt=2016-10-28T07:21:39.858, description=foo, cost=0.0, resources=[ResourceDemand{resourceDescription=ResourceDescription{type=bar, provider=MOCK, cost=0.0, id=48af3837-ac5a-32a2-a344-b29ec497a31f, createdAt=2016-10-28T07:21:39.858, updatedAt=2016-10-28T07:21:39.858}, count=1}]}, workload=Workload{id=8aa622ae-2870-48d4-8726-69c37f88803c, createdAt=2016-10-28T07:21:39.858, updatedAt=2016-10-28T07:21:39.858, sequenceStart=0, sequenceStop=10, task=echo, format=%08d.tif, url=, file=, description=}, type=FULL, info=ExecutionInfo{status=STARTING, updatedAt=2016-10-28T07:21:40.087, failed=0, remaining=11, total=0, completed=0, elapsed=0, stats=Stats{resources=[], values={}, counters={}, meters={}, histograms={}}}, createdAt=2016-10-28T07:21:40.087, updatedAt=2016-10-28T07:21:40.087}
-2016-10-28 07:21:40,099 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,099 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,099 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-10-28 07:21:40,099 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
-2016-10-28 07:21:40,101 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,101 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,101 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,101 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,101 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,101 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,101 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:list url: http://localhost:4567/executions
-2016-10-28 07:21:40,110 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,110 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,110 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,110 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,110 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,110 DEBUG spark.Request [] []- matchedPart: :id = 0d33a91a-1dc2-4e6d-853b-a991dbbfa108
-2016-10-28 07:21:40,110 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,111 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:get url: http://localhost:4567/executions/0d33a91a-1dc2-4e6d-853b-a991dbbfa108
-2016-10-28 07:21:40,123 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,123 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,123 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-10-28 07:21:40,123 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
-2016-10-28 07:21:40,124 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,124 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,124 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,125 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,125 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,125 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,125 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:create url: http://localhost:4567/executions
-2016-10-28 07:21:40,126 INFO  r.c.v.s.r.services.ExecutionsService [] []- user User{id=admin} starting execution: 254967f8-fef9-49fc-9868-49b01e30b9ab
-2016-10-28 07:21:40,126 DEBUG r.c.v.s.r.services.ExecutionsService [] []- Execution:
-Execution{id=254967f8-fef9-49fc-9868-49b01e30b9ab, configuration=Configuration{id=7b90b998-c912-4027-8adf-f6664ff76ed5, createdAt=2016-10-28T07:21:39.858, updatedAt=2016-10-28T07:21:39.858, description=foo, cost=0.0, resources=[ResourceDemand{resourceDescription=ResourceDescription{type=bar, provider=MOCK, cost=0.0, id=48af3837-ac5a-32a2-a344-b29ec497a31f, createdAt=2016-10-28T07:21:39.858, updatedAt=2016-10-28T07:21:39.858}, count=1}]}, workload=Workload{id=8aa622ae-2870-48d4-8726-69c37f88803c, createdAt=2016-10-28T07:21:39.858, updatedAt=2016-10-28T07:21:39.858, sequenceStart=0, sequenceStop=10, task=echo, format=%08d.tif, url=, file=, description=}, type=FULL, info=ExecutionInfo{status=STARTING, updatedAt=2016-10-28T07:21:40.126, failed=0, remaining=11, total=0, completed=0, elapsed=0, stats=Stats{resources=[], values={}, counters={}, meters={}, histograms={}}}, createdAt=2016-10-28T07:21:40.126, updatedAt=2016-10-28T07:21:40.126}
-2016-10-28 07:21:40,137 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,138 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,138 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2016-10-28 07:21:40,138 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
-2016-10-28 07:21:40,152 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,152 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,155 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,155 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,155 DEBUG spark.Request [] []- get params
-2016-10-28 07:21:40,155 DEBUG spark.Request [] []- get splat
-2016-10-28 07:21:40,155 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:list url: http://localhost:4567/executions
-2016-10-28 07:21:40,166 DEBUG akka.event.EventStream [test-akka.actor.default-dispatcher-3] [EventStream]- shutting down: StandardOutLogger started
-2016-10-28 07:21:40,175 INFO  s.e.jetty.EmbeddedJettyServer [] []- &gt;&gt;&gt; Spark shutting down ...
-2016-10-28 07:21:40,212 INFO  s.e.jetty.EmbeddedJettyServer [] []- done
+<pre>2016-11-01 17:23:47,427 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
+2016-11-01 17:23:47,437 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- logger log1-Slf4jLogger started
+2016-11-01 17:23:47,437 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- Default Loggers started
+2016-11-01 17:23:47,553 DEBUG spark.route.Routes [] []- Adds route: get, /executions, spark.ResponseTransformerRouteImpl$1@48ce69
+2016-11-01 17:23:47,553 DEBUG spark.route.Routes [] []- Adds route: get, /executions/:id, spark.ResponseTransformerRouteImpl$1@5a7bec7a
+2016-11-01 17:23:47,553 DEBUG spark.route.Routes [] []- Adds route: delete, /executions/:id, spark.ResponseTransformerRouteImpl$1@283c23b
+2016-11-01 17:23:47,553 DEBUG spark.route.Routes [] []- Adds route: post, /executions, spark.ResponseTransformerRouteImpl$1@436c025e
+2016-11-01 17:23:47,553 DEBUG spark.route.Routes [] []- Adds route: post, /executions/:id, spark.ResponseTransformerRouteImpl$1@591a7dc
+2016-11-01 17:23:47,561 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@1330b2c4
+2016-11-01 17:23:47,561 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
+2016-11-01 17:23:47,561 DEBUG spark.route.Routes [] []- Adds route: options, /*, spark.RouteImpl$1@24c9bf08
+2016-11-01 17:23:47,561 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@32f99fc7
+2016-11-01 17:23:47,606 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,606 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,607 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-11-01 17:23:47,607 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
+2016-11-01 17:23:47,609 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,610 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,610 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,610 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,610 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,610 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,610 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,610 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,610 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,610 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,610 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,610 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,610 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,610 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,610 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,610 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,611 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,611 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,611 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,611 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,611 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:create url: http://localhost:4567/executions
+2016-11-01 17:23:47,615 INFO  r.c.v.s.r.services.ExecutionsService [] []- user User{id=admin} starting execution: 2de2de3a-4d03-401d-98bc-a99d0c134836
+2016-11-01 17:23:47,616 DEBUG r.c.v.s.r.services.ExecutionsService [] []- Execution:
+Execution{id=2de2de3a-4d03-401d-98bc-a99d0c134836, configuration=Configuration{id=ad9fe197-e1c4-4364-8b52-b87e015f61d2, createdAt=2016-11-01T17:23:47.437, updatedAt=2016-11-01T17:23:47.437, description=foo, cost=0.0, resources=[ResourceDemand{resourceDescription=ResourceDescription{type=bar, provider=MOCK, cost=0.0, id=48af3837-ac5a-32a2-a344-b29ec497a31f, createdAt=2016-11-01T17:23:47.437, updatedAt=2016-11-01T17:23:47.437}, count=1}]}, workload=Workload{id=269570c6-3bb8-45b6-970e-abba28ed25d4, createdAt=2016-11-01T17:23:47.465, updatedAt=2016-11-01T17:23:47.465, sequenceStart=0, sequenceStop=10, task=echo, format=%08d.tif, url=, file=, description=}, type=FULL, info=ExecutionInfo{status=STARTING, updatedAt=2016-11-01T17:23:47.615, failed=0, remaining=11, total=0, completed=0, elapsed=0, stats=Stats{resources=[], values={}, counters={}, meters={}, histograms={}}}, createdAt=2016-11-01T17:23:47.614, updatedAt=2016-11-01T17:23:47.614}
+2016-11-01 17:23:47,714 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,714 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,715 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-11-01 17:23:47,715 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
+2016-11-01 17:23:47,721 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,721 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,721 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,721 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,721 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,721 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,721 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,721 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,721 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,721 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,721 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,721 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,721 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,721 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,721 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,722 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,722 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,722 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,722 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,722 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,722 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:create url: http://localhost:4567/executions
+2016-11-01 17:23:47,730 INFO  r.c.v.s.r.services.ExecutionsService [] []- user User{id=admin} starting execution: 9ba6cba7-4f09-4655-8705-df2e3392ed14
+2016-11-01 17:23:47,730 DEBUG r.c.v.s.r.services.ExecutionsService [] []- Execution:
+Execution{id=9ba6cba7-4f09-4655-8705-df2e3392ed14, configuration=Configuration{id=ad9fe197-e1c4-4364-8b52-b87e015f61d2, createdAt=2016-11-01T17:23:47.437, updatedAt=2016-11-01T17:23:47.437, description=foo, cost=0.0, resources=[ResourceDemand{resourceDescription=ResourceDescription{type=bar, provider=MOCK, cost=0.0, id=48af3837-ac5a-32a2-a344-b29ec497a31f, createdAt=2016-11-01T17:23:47.437, updatedAt=2016-11-01T17:23:47.437}, count=1}]}, workload=Workload{id=269570c6-3bb8-45b6-970e-abba28ed25d4, createdAt=2016-11-01T17:23:47.465, updatedAt=2016-11-01T17:23:47.465, sequenceStart=0, sequenceStop=10, task=echo, format=%08d.tif, url=, file=, description=}, type=FULL, info=ExecutionInfo{status=STARTING, updatedAt=2016-11-01T17:23:47.730, failed=0, remaining=11, total=0, completed=0, elapsed=0, stats=Stats{resources=[], values={}, counters={}, meters={}, histograms={}}}, createdAt=2016-11-01T17:23:47.729, updatedAt=2016-11-01T17:23:47.729}
+2016-11-01 17:23:47,753 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,753 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,754 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-11-01 17:23:47,754 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
+2016-11-01 17:23:47,757 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,757 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,758 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,758 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,758 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,758 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,758 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,758 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,758 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,758 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,758 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,758 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,758 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,758 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,758 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,758 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,758 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,758 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,759 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,759 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,759 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:list url: http://localhost:4567/executions
+2016-11-01 17:23:47,810 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,810 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,810 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-11-01 17:23:47,810 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions/2de2de3a-4d03-401d-98bc-a99d0c134836 headers null
+2016-11-01 17:23:47,813 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,813 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,813 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,813 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,813 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,813 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,813 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,813 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,813 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,813 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,813 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,813 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,813 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,813 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,814 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,814 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,814 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,814 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,814 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,814 DEBUG spark.Request [] []- matchedPart: :id = 2de2de3a-4d03-401d-98bc-a99d0c134836
+2016-11-01 17:23:47,814 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,814 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:delete url: http://localhost:4567/executions/2de2de3a-4d03-401d-98bc-a99d0c134836
+2016-11-01 17:23:47,830 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,830 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,830 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,830 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,830 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,830 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,830 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,830 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,830 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,830 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,830 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,830 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,830 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,830 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,830 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,831 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,831 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,831 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,831 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,831 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,844 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,844 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,844 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-11-01 17:23:47,844 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
+2016-11-01 17:23:47,847 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,848 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,848 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,848 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,848 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,848 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,848 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,848 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,848 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,848 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,848 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,848 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,848 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,848 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,849 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,849 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,849 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,849 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,849 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,849 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,849 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:create url: http://localhost:4567/executions
+2016-11-01 17:23:47,851 INFO  r.c.v.s.r.services.ExecutionsService [] []- user User{id=admin} starting execution: 6431f84c-e920-4393-b857-1cfd3837b0fc
+2016-11-01 17:23:47,851 DEBUG r.c.v.s.r.services.ExecutionsService [] []- Execution:
+Execution{id=6431f84c-e920-4393-b857-1cfd3837b0fc, configuration=Configuration{id=ad9fe197-e1c4-4364-8b52-b87e015f61d2, createdAt=2016-11-01T17:23:47.437, updatedAt=2016-11-01T17:23:47.437, description=foo, cost=0.0, resources=[ResourceDemand{resourceDescription=ResourceDescription{type=bar, provider=MOCK, cost=0.0, id=48af3837-ac5a-32a2-a344-b29ec497a31f, createdAt=2016-11-01T17:23:47.437, updatedAt=2016-11-01T17:23:47.437}, count=1}]}, workload=Workload{id=269570c6-3bb8-45b6-970e-abba28ed25d4, createdAt=2016-11-01T17:23:47.465, updatedAt=2016-11-01T17:23:47.465, sequenceStart=0, sequenceStop=10, task=echo, format=%08d.tif, url=, file=, description=}, type=FULL, info=ExecutionInfo{status=STARTING, updatedAt=2016-11-01T17:23:47.851, failed=0, remaining=11, total=0, completed=0, elapsed=0, stats=Stats{resources=[], values={}, counters={}, meters={}, histograms={}}}, createdAt=2016-11-01T17:23:47.850, updatedAt=2016-11-01T17:23:47.850}
+2016-11-01 17:23:47,879 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,879 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,879 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-11-01 17:23:47,879 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
+2016-11-01 17:23:47,881 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,881 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,882 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,882 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,882 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,882 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,882 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,882 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,882 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,882 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,882 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,882 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,882 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,882 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,882 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,882 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,882 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,882 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,882 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,882 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,883 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:list url: http://localhost:4567/executions
+2016-11-01 17:23:47,904 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,904 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,904 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,904 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,905 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,905 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,905 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,905 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,905 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,905 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,905 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,905 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,905 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,905 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,905 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,905 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,905 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,905 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,905 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,905 DEBUG spark.Request [] []- matchedPart: :id = 2de2de3a-4d03-401d-98bc-a99d0c134836
+2016-11-01 17:23:47,905 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,905 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:get url: http://localhost:4567/executions/2de2de3a-4d03-401d-98bc-a99d0c134836
+2016-11-01 17:23:47,926 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,926 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,926 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-11-01 17:23:47,926 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
+2016-11-01 17:23:47,929 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,929 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,929 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,929 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,929 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,929 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,929 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,929 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,929 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,929 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,929 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,929 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,929 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,929 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,930 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,930 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,930 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,930 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,930 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,930 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,930 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:create url: http://localhost:4567/executions
+2016-11-01 17:23:47,932 INFO  r.c.v.s.r.services.ExecutionsService [] []- user User{id=admin} starting execution: a27090ce-dacc-4e05-9f0f-ab91c68f4a73
+2016-11-01 17:23:47,932 DEBUG r.c.v.s.r.services.ExecutionsService [] []- Execution:
+Execution{id=a27090ce-dacc-4e05-9f0f-ab91c68f4a73, configuration=Configuration{id=ad9fe197-e1c4-4364-8b52-b87e015f61d2, createdAt=2016-11-01T17:23:47.437, updatedAt=2016-11-01T17:23:47.437, description=foo, cost=0.0, resources=[ResourceDemand{resourceDescription=ResourceDescription{type=bar, provider=MOCK, cost=0.0, id=48af3837-ac5a-32a2-a344-b29ec497a31f, createdAt=2016-11-01T17:23:47.437, updatedAt=2016-11-01T17:23:47.437}, count=1}]}, workload=Workload{id=269570c6-3bb8-45b6-970e-abba28ed25d4, createdAt=2016-11-01T17:23:47.465, updatedAt=2016-11-01T17:23:47.465, sequenceStart=0, sequenceStop=10, task=echo, format=%08d.tif, url=, file=, description=}, type=FULL, info=ExecutionInfo{status=STARTING, updatedAt=2016-11-01T17:23:47.932, failed=0, remaining=11, total=0, completed=0, elapsed=0, stats=Stats{resources=[], values={}, counters={}, meters={}, histograms={}}}, createdAt=2016-11-01T17:23:47.931, updatedAt=2016-11-01T17:23:47.931}
+2016-11-01 17:23:47,973 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,973 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,974 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2016-11-01 17:23:47,974 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
+2016-11-01 17:23:47,976 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,976 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,976 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,976 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,976 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,976 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,977 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,977 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,977 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,977 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,977 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,977 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,977 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,977 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,977 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,977 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,977 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,977 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,977 DEBUG spark.Request [] []- get params
+2016-11-01 17:23:47,977 DEBUG spark.Request [] []- get splat
+2016-11-01 17:23:47,977 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:list url: http://localhost:4567/executions
+[DEBUG] [11/01/2016 17:23:48.002] [test-akka.actor.default-dispatcher-8] [EventStream] shutting down: StandardOutLogger started
 </pre>
 </span>
 </div>
@@ -250,7 +386,7 @@ Execution{id=254967f8-fef9-49fc-9868-49b01e30b9ab, configuration=Configuration{i
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 3.0</a> at Oct 28, 2016 7:21:42 AM</p>
+<a href="http://www.gradle.org">Gradle 3.0</a> at Nov 1, 2016 5:23:51 PM</p>
 </div>
 </div>
 </body>
