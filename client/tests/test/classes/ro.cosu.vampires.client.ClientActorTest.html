@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">4.557s</div>
+<div class="counter">4.670s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,7 +79,7 @@
 </thead>
 <tr>
 <td class="success">testClientActor</td>
-<td>4.557s</td>
+<td>4.670s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -87,15 +87,15 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2016-11-01 22:03:53,949 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
-2016-11-01 22:03:53,969 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://default)]- logger log1-Slf4jLogger started
-2016-11-01 22:03:53,975 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://default)]- Default Loggers started
-2016-11-01 22:03:54,093 INFO  akka.remote.Remoting [Test worker] [akka.remote.Remoting]- Starting remoting
-2016-11-01 22:03:55,060 INFO  akka.remote.Remoting [Test worker] [akka.remote.Remoting]- Remoting started; listening on addresses :[akka.tcp://default@127.0.0.1:53813]
-2016-11-01 22:04:00,951 ERROR r.c.v.c.e.docker.DockerModule [] []- failed to create docker cpu count : org.apache.http.conn.HttpHostConnectException: Connect to 127.0.0.1:2375 [/127.0.0.1] failed: Connection refused
-2016-11-01 22:04:00,952 INFO  r.c.v.c.e.AbstractExecutorModule [] []-  cpuCount: 0 countSetSize: 1
-2016-11-01 22:04:01,159 INFO  r.c.v.c.e.docker.DockerExecutor [] []- docker is not available: org.apache.http.conn.HttpHostConnectException: Connect to 127.0.0.1:2375 [/127.0.0.1] failed: Connection refused
-2016-11-01 22:04:01,162 WARN  r.c.v.c.e.ExecutorsExtensionImpl [] []- docker executor not available
+<pre>2016-11-01 22:09:42,954 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
+2016-11-01 22:09:42,971 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://default)]- logger log1-Slf4jLogger started
+2016-11-01 22:09:42,976 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://default)]- Default Loggers started
+2016-11-01 22:09:43,108 INFO  akka.remote.Remoting [Test worker] [akka.remote.Remoting]- Starting remoting
+2016-11-01 22:09:43,854 INFO  akka.remote.Remoting [Test worker] [akka.remote.Remoting]- Remoting started; listening on addresses :[akka.tcp://default@127.0.0.1:51638]
+2016-11-01 22:09:49,583 ERROR r.c.v.c.e.docker.DockerModule [] []- failed to create docker cpu count : org.apache.http.conn.HttpHostConnectException: Connect to 127.0.0.1:2375 [/127.0.0.1] failed: Connection refused
+2016-11-01 22:09:49,584 INFO  r.c.v.c.e.AbstractExecutorModule [] []-  cpuCount: 0 countSetSize: 1
+2016-11-01 22:09:49,826 INFO  r.c.v.c.e.docker.DockerExecutor [] []- docker is not available: org.apache.http.conn.HttpHostConnectException: Connect to 127.0.0.1:2375 [/127.0.0.1] failed: Connection refused
+2016-11-01 22:09:49,832 WARN  r.c.v.c.e.ExecutorsExtensionImpl [] []- docker executor not available
 java.lang.IllegalArgumentException: null
 	at com.google.common.base.Preconditions.checkArgument(Preconditions.java:108)
 	at ro.cosu.vampires.client.extension.ExecutorsExtensionImpl.&lt;init&gt;(ExecutorsExtensionImpl.java:61)
@@ -177,35 +177,35 @@ java.lang.IllegalArgumentException: null
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
 	at java.lang.Thread.run(Thread.java:745)
-2016-11-01 22:04:01,206 INFO  r.c.v.c.e.AbstractExecutorModule [] []-  cpuCount: 32 countSetSize: 1
-2016-11-01 22:04:01,214 INFO  r.c.v.c.e.ExecutorsExtensionImpl [] []- available executors: {FORK=32}
-2016-11-01 22:04:01,247 INFO  r.c.v.client.actors.ClientActor [Test worker] [akka://default/user/$$a]- connecting to akka://default/system/testProbe-1
-2016-11-01 22:04:01,298 DEBUG r.c.v.client.actors.MonitoringActor [Test worker] [akka://default/user/monitor]- Metrics{metrics=[], metadata={}, id=empty} from Actor[akka://default/temp/$a]
-2016-11-01 22:04:01,299 DEBUG r.c.v.client.actors.MonitoringActor [Test worker] [akka://default/user/monitor]- got metrics request 
-2016-11-01 22:04:01,476 INFO  r.c.v.c.e.ExecutorsExtensionImpl [] []- configured ClientConfig{executor=FORK, cpuSetSize=1, numberOfExecutors=1}
-2016-11-01 22:04:01,476 INFO  r.c.v.c.e.AbstractExecutorModule [] []-  cpuCount: 32 countSetSize: 1
-2016-11-01 22:04:01,477 INFO  r.c.v.client.actors.ClientActor [Test worker] [akka://default/user/$$a]- starting 1 workers
-2016-11-01 22:04:01,520 DEBUG r.c.v.c.a.FixedCpuSetAllocator [] []- take CpuSet{cpuSet=[0]}
-2016-11-01 22:04:01,521 DEBUG r.c.v.c.executors.fork.ForkExecutor [] []- Acquired cpus CpuSet{cpuSet=[0]}
-2016-11-01 22:04:01,535 INFO  r.c.v.c.executors.fork.ForkExecutor [] []- executing true with timeout 10 minutes
-2016-11-01 22:04:01,658 DEBUG r.c.v.c.a.FixedCpuSetAllocator [] []- release CPUset CpuSet{cpuSet=[0]}
-2016-11-01 22:04:01,658 DEBUG r.c.v.c.executors.fork.ForkExecutor [] []- Trace{start=2016-11-01T22:04:01.543, stop=2016-11-01T22:04:01.658, executorMetrics=Metrics{metrics=[], metadata={}, id=empty}, cpuSet=[0], totalCpuCount=32, executor=FORK}
-2016-11-01 22:04:01,661 DEBUG r.c.v.client.actors.ExecutorActor [default-akka.actor.default-dispatcher-6] [akka://default/user/$$a/$a]- done executing job 18f4be39-80ba-421f-9dfb-8e6bbc8b5cb7
-2016-11-01 22:04:01,661 DEBUG r.c.v.client.actors.MonitoringActor [default-akka.actor.default-dispatcher-6] [akka://default/user/monitor]- Job{id=18f4be39-80ba-421f-9dfb-8e6bbc8b5cb7, from=, created=2016-11-01T22:04:01.491, status=EXECUTED, computation=Computation{id=EMPTY, command=true}, result=Result{output=[], exitCode=0, duration=115, trace=Trace{start=2016-11-01T22:04:01.543, stop=2016-11-01T22:04:01.658, executorMetrics=Metrics{metrics=[], metadata={}, id=empty}, cpuSet=[0], totalCpuCount=32, executor=FORK}}, hostMetrics=Metrics{metrics=[], metadata={}, id=empty}} from TestActor[akka://default/user/$$a]
-2016-11-01 22:04:01,661 INFO  r.c.v.client.actors.MonitoringActor [default-akka.actor.default-dispatcher-6] [akka://default/user/monitor]- id: 18f4be39-80ba-421f-9dfb-8e6bbc8b5cb7 -&gt; info:EXECUTED duration: 115
-2016-11-01 22:04:01,669 DEBUG r.c.v.client.actors.ClientActor [Test worker] [akka://default/user/$$a]- Execute akka://default/user/$$a -&gt; Computation{id=BACKOFF, command=sleep 0.1} Actor[akka://default/system/testProbe-1#-1320240525]
-2016-11-01 22:04:01,669 DEBUG r.c.v.c.a.FixedCpuSetAllocator [] []- take CpuSet{cpuSet=[1]}
-2016-11-01 22:04:01,670 DEBUG r.c.v.c.executors.fork.ForkExecutor [] []- Acquired cpus CpuSet{cpuSet=[1]}
-2016-11-01 22:04:01,698 INFO  r.c.v.c.executors.fork.ForkExecutor [] []- executing sleep 0.1 with timeout 10 minutes
-2016-11-01 22:04:01,868 DEBUG r.c.v.c.a.FixedCpuSetAllocator [] []- release CPUset CpuSet{cpuSet=[1]}
-2016-11-01 22:04:01,869 DEBUG r.c.v.c.executors.fork.ForkExecutor [] []- Trace{start=2016-11-01T22:04:01.699, stop=2016-11-01T22:04:01.868, executorMetrics=Metrics{metrics=[], metadata={}, id=empty}, cpuSet=[1], totalCpuCount=32, executor=FORK}
-2016-11-01 22:04:01,870 DEBUG r.c.v.client.actors.ExecutorActor [default-akka.actor.default-dispatcher-4] [akka://default/user/$$a/$b]- done executing job 6b97c447-6e62-4154-a84d-01a8bbec464d
-2016-11-01 22:04:01,873 DEBUG r.c.v.client.actors.MonitoringActor [default-akka.actor.default-dispatcher-4] [akka://default/user/monitor]- Job{id=6b97c447-6e62-4154-a84d-01a8bbec464d, from=, created=2016-11-01T22:04:01.668, status=EXECUTED, computation=Computation{id=BACKOFF, command=sleep 0.1}, result=Result{output=[], exitCode=0, duration=169, trace=Trace{start=2016-11-01T22:04:01.699, stop=2016-11-01T22:04:01.868, executorMetrics=Metrics{metrics=[], metadata={}, id=empty}, cpuSet=[1], totalCpuCount=32, executor=FORK}}, hostMetrics=Metrics{metrics=[], metadata={}, id=empty}} from TestActor[akka://default/user/$$a]
-2016-11-01 22:04:01,879 INFO  r.c.v.client.actors.MonitoringActor [default-akka.actor.default-dispatcher-4] [akka://default/user/monitor]- id: 6b97c447-6e62-4154-a84d-01a8bbec464d -&gt; info:EXECUTED duration: 169
-2016-11-01 22:04:01,904 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [default-akka.remote.default-remote-dispatcher-17] [akka.tcp://default@127.0.0.1:53813/system/remoting-terminator]- Shutting down remote daemon.
-2016-11-01 22:04:01,905 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [default-akka.remote.default-remote-dispatcher-17] [akka.tcp://default@127.0.0.1:53813/system/remoting-terminator]- Remote daemon shut down; proceeding with flushing remote transports.
-2016-11-01 22:04:01,968 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [default-akka.remote.default-remote-dispatcher-18] [akka.tcp://default@127.0.0.1:53813/system/remoting-terminator]- Remoting shut down.
-2016-11-01 22:04:01,969 DEBUG akka.event.EventStream [default-akka.actor.default-dispatcher-5] [EventStream]- shutting down: StandardOutLogger started
+2016-11-01 22:09:49,946 INFO  r.c.v.c.e.AbstractExecutorModule [] []-  cpuCount: 32 countSetSize: 1
+2016-11-01 22:09:49,968 INFO  r.c.v.c.e.ExecutorsExtensionImpl [] []- available executors: {FORK=32}
+2016-11-01 22:09:49,981 INFO  r.c.v.client.actors.ClientActor [Test worker] [akka://default/user/$$a]- connecting to akka://default/system/testProbe-1
+2016-11-01 22:09:50,026 DEBUG r.c.v.client.actors.MonitoringActor [Test worker] [akka://default/user/monitor]- Metrics{metrics=[], metadata={}, id=empty} from Actor[akka://default/temp/$a]
+2016-11-01 22:09:50,028 DEBUG r.c.v.client.actors.MonitoringActor [Test worker] [akka://default/user/monitor]- got metrics request 
+2016-11-01 22:09:50,178 INFO  r.c.v.c.e.ExecutorsExtensionImpl [] []- configured ClientConfig{executor=FORK, cpuSetSize=1, numberOfExecutors=1}
+2016-11-01 22:09:50,179 INFO  r.c.v.c.e.AbstractExecutorModule [] []-  cpuCount: 32 countSetSize: 1
+2016-11-01 22:09:50,181 INFO  r.c.v.client.actors.ClientActor [Test worker] [akka://default/user/$$a]- starting 1 workers
+2016-11-01 22:09:50,241 DEBUG r.c.v.c.a.FixedCpuSetAllocator [] []- take CpuSet{cpuSet=[0]}
+2016-11-01 22:09:50,243 DEBUG r.c.v.c.executors.fork.ForkExecutor [] []- Acquired cpus CpuSet{cpuSet=[0]}
+2016-11-01 22:09:50,278 INFO  r.c.v.c.executors.fork.ForkExecutor [] []- executing true with timeout 10 minutes
+2016-11-01 22:09:50,378 DEBUG r.c.v.c.a.FixedCpuSetAllocator [] []- release CPUset CpuSet{cpuSet=[0]}
+2016-11-01 22:09:50,378 DEBUG r.c.v.c.executors.fork.ForkExecutor [] []- Trace{start=2016-11-01T22:09:50.289, stop=2016-11-01T22:09:50.377, executorMetrics=Metrics{metrics=[], metadata={}, id=empty}, cpuSet=[0], totalCpuCount=32, executor=FORK}
+2016-11-01 22:09:50,382 DEBUG r.c.v.client.actors.ExecutorActor [default-akka.actor.default-dispatcher-2] [akka://default/user/$$a/$a]- done executing job 59c41995-2ce6-4b8f-ae0c-a62dc62e672e
+2016-11-01 22:09:50,382 DEBUG r.c.v.client.actors.MonitoringActor [default-akka.actor.default-dispatcher-2] [akka://default/user/monitor]- Job{id=59c41995-2ce6-4b8f-ae0c-a62dc62e672e, from=, created=2016-11-01T22:09:50.187, status=EXECUTED, computation=Computation{id=EMPTY, command=true}, result=Result{output=[], exitCode=0, duration=88, trace=Trace{start=2016-11-01T22:09:50.289, stop=2016-11-01T22:09:50.377, executorMetrics=Metrics{metrics=[], metadata={}, id=empty}, cpuSet=[0], totalCpuCount=32, executor=FORK}}, hostMetrics=Metrics{metrics=[], metadata={}, id=empty}} from TestActor[akka://default/user/$$a]
+2016-11-01 22:09:50,382 INFO  r.c.v.client.actors.MonitoringActor [default-akka.actor.default-dispatcher-2] [akka://default/user/monitor]- id: 59c41995-2ce6-4b8f-ae0c-a62dc62e672e -&gt; info:EXECUTED duration: 88
+2016-11-01 22:09:50,398 DEBUG r.c.v.client.actors.ClientActor [Test worker] [akka://default/user/$$a]- Execute akka://default/user/$$a -&gt; Computation{id=BACKOFF, command=sleep 0.1} Actor[akka://default/system/testProbe-1#1717448968]
+2016-11-01 22:09:50,399 DEBUG r.c.v.c.a.FixedCpuSetAllocator [] []- take CpuSet{cpuSet=[1]}
+2016-11-01 22:09:50,399 DEBUG r.c.v.c.executors.fork.ForkExecutor [] []- Acquired cpus CpuSet{cpuSet=[1]}
+2016-11-01 22:09:50,406 INFO  r.c.v.c.executors.fork.ForkExecutor [] []- executing sleep 0.1 with timeout 10 minutes
+2016-11-01 22:09:50,573 DEBUG r.c.v.c.a.FixedCpuSetAllocator [] []- release CPUset CpuSet{cpuSet=[1]}
+2016-11-01 22:09:50,573 DEBUG r.c.v.c.executors.fork.ForkExecutor [] []- Trace{start=2016-11-01T22:09:50.407, stop=2016-11-01T22:09:50.573, executorMetrics=Metrics{metrics=[], metadata={}, id=empty}, cpuSet=[1], totalCpuCount=32, executor=FORK}
+2016-11-01 22:09:50,574 DEBUG r.c.v.client.actors.ExecutorActor [default-akka.actor.default-dispatcher-3] [akka://default/user/$$a/$b]- done executing job 665d9447-069d-490e-9377-1f29d724e4b2
+2016-11-01 22:09:50,577 DEBUG r.c.v.client.actors.MonitoringActor [default-akka.actor.default-dispatcher-3] [akka://default/user/monitor]- Job{id=665d9447-069d-490e-9377-1f29d724e4b2, from=, created=2016-11-01T22:09:50.397, status=EXECUTED, computation=Computation{id=BACKOFF, command=sleep 0.1}, result=Result{output=[], exitCode=0, duration=166, trace=Trace{start=2016-11-01T22:09:50.407, stop=2016-11-01T22:09:50.573, executorMetrics=Metrics{metrics=[], metadata={}, id=empty}, cpuSet=[1], totalCpuCount=32, executor=FORK}}, hostMetrics=Metrics{metrics=[], metadata={}, id=empty}} from TestActor[akka://default/user/$$a]
+2016-11-01 22:09:50,577 INFO  r.c.v.client.actors.MonitoringActor [default-akka.actor.default-dispatcher-3] [akka://default/user/monitor]- id: 665d9447-069d-490e-9377-1f29d724e4b2 -&gt; info:EXECUTED duration: 166
+2016-11-01 22:09:50,639 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [default-akka.remote.default-remote-dispatcher-6] [akka.tcp://default@127.0.0.1:51638/system/remoting-terminator]- Shutting down remote daemon.
+2016-11-01 22:09:50,645 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [default-akka.remote.default-remote-dispatcher-6] [akka.tcp://default@127.0.0.1:51638/system/remoting-terminator]- Remote daemon shut down; proceeding with flushing remote transports.
+2016-11-01 22:09:50,727 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [default-akka.remote.default-remote-dispatcher-17] [akka.tcp://default@127.0.0.1:51638/system/remoting-terminator]- Remoting shut down.
+2016-11-01 22:09:50,729 DEBUG akka.event.EventStream [default-akka.actor.default-dispatcher-19] [EventStream]- shutting down: StandardOutLogger started
 </pre>
 </span>
 </div>
@@ -217,7 +217,7 @@ java.lang.IllegalArgumentException: null
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 3.0</a> at Nov 1, 2016 10:04:05 PM</p>
+<a href="http://www.gradle.org">Gradle 3.0</a> at Nov 1, 2016 10:09:55 PM</p>
 </div>
 </div>
 </body>
