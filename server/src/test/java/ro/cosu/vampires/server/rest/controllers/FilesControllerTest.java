@@ -16,7 +16,6 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.util.EntityUtils;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -48,16 +47,9 @@ public class FilesControllerTest {
         filesController = new FilesController(config);
     }
 
-    @AfterClass
-    public static void tearDown() throws Exception {
-        Spark.stop();
-    }
-
-
     @Before
     public void setUp() throws Exception {
         Spark.awaitInitialization();
-
     }
 
 

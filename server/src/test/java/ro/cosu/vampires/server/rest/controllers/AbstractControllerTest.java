@@ -87,7 +87,6 @@ public abstract class AbstractControllerTest<T extends Id, P> {
 
     @AfterClass
     public static void teardown() {
-        Spark.stop();
         JavaTestKit.shutdownActorSystem(actorSystem);
         actorSystem = null;
 
