@@ -58,7 +58,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -93,11 +93,11 @@ public class EC2ResourceTest {
                 TerminateInstancesResult terminateInstancesResult = mock(TerminateInstancesResult.class, RETURNS_DEEP_STUBS);
 
                 when(runInstancesResult.getReservation().getInstances().get(0).getInstanceId()).thenReturn("foo");
-                when(ec2Client.runInstances(anyObject())).thenReturn(runInstancesResult);
-                when(ec2Client.describeInstances(anyObject())).thenReturn(describeInstancesResult);
+                when(ec2Client.runInstances(any())).thenReturn(runInstancesResult);
+                when(ec2Client.describeInstances(any())).thenReturn(describeInstancesResult);
                 when(describeInstancesResult.getReservations().get(0).getInstances().get(0).getPublicDnsName())
                         .thenReturn("").thenReturn("foo");
-                when(ec2Client.terminateInstances(anyObject())).thenReturn(terminateInstancesResult);
+                when(ec2Client.terminateInstances(any())).thenReturn(terminateInstancesResult);
                 return ec2Client;
             }
         });

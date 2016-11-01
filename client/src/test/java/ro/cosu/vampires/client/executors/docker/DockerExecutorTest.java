@@ -26,37 +26,40 @@
 
 package ro.cosu.vampires.client.executors.docker;
 
+import com.google.common.collect.Maps;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
+import com.google.inject.name.Named;
+
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.LogContainerCmd;
 import com.github.dockerjava.api.command.WaitContainerCmd;
 import com.github.dockerjava.core.command.WaitContainerResultCallback;
-import com.google.common.collect.Maps;
-import com.google.inject.*;
-import com.google.inject.name.Named;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.util.Map;
+
 import ro.cosu.vampires.client.allocation.CpuAllocator;
 import ro.cosu.vampires.client.allocation.FixedCpuSetAllocator;
 import ro.cosu.vampires.client.executors.Executor;
 import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
 import ro.cosu.vampires.server.values.jobs.Computation;
-import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 import ro.cosu.vampires.server.values.jobs.Result;
-
-import java.util.Map;
+import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNot.not;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.when;
 
-/**
- * Created on 11-2-16.
- */
 public class DockerExecutorTest {
     @Test
     public void testDockerStart() {
@@ -92,25 +95,19 @@ public class DockerExecutorTest {
 
                     @Provides
                     private DockerClient provideDockerClient() throws InterruptedException {
-
-                        DockerClient mock = Mockito.mock(DockerClient.class, RETURNS_DEEP_STUBS);
+                        DockerClient dockerClient = Mockito.mock(DockerClient.class, RETURNS_DEEP_STUBS);
                         LogContainerCmd logContainerCmdMock = Mockito.mock(LogContainerCmd.class);
-
                         WaitContainerCmd waitContainerCmdMock = Mockito.mock(WaitContainerCmd.class);
-
                         WaitContainerResultCallback waitContainerResultCallback = Mockito.mock(WaitContainerResultCallback.class);
-
-                        when(mock.waitContainerCmd(anyString())).thenReturn(waitContainerCmdMock);
-                        when(waitContainerCmdMock.exec(anyObject())).thenReturn(waitContainerResultCallback);
-                        //mockito has some trouble keeping up with the fluent interface so we mock the chain by hand
-
+                        when(dockerClient.waitContainerCmd(any())).thenReturn(waitContainerCmdMock);
+                        when(waitContainerCmdMock.exec(any())).thenReturn(waitContainerResultCallback);
                         DockerExecutor.DockerLogResultCallback resultCallbackMock =
                                 Mockito.mock(DockerExecutor.DockerLogResultCallback.class, RETURNS_DEEP_STUBS);
 
-                        when(mock.logContainerCmd(anyString()).withStdErr(true).withStdOut(true)).thenReturn(logContainerCmdMock);
-                        when(logContainerCmdMock.exec(anyObject())).thenReturn(resultCallbackMock);
+                        when(dockerClient.logContainerCmd(any()).withStdErr(true).withStdOut(true)).thenReturn(logContainerCmdMock);
+                        when(logContainerCmdMock.exec(any())).thenReturn(resultCallbackMock);
 
-                        return mock;
+                        return dockerClient;
                     }
 
                     @Provides

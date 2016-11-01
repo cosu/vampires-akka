@@ -49,8 +49,8 @@ import ro.cosu.vampires.server.util.SshClient;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 
@@ -83,7 +83,7 @@ public class SshClientResourceTest {
             @Named("SshClient")
             SshClient provideSsh() throws IOException, JSchException {
                 SshClient sshClientMock = Mockito.mock(SshClient.class);
-                when(sshClientMock.runCommand(anyString(), anyString(), anyString(), anyString(), anyInt()))
+                when(sshClientMock.runCommand(any(), any(), any(), any(), anyInt()))
                         .thenReturn("42");
                 return sshClientMock;
             }

@@ -24,15 +24,17 @@
 
 package ro.cosu.vampires.client;
 
+import com.google.common.collect.Maps;
+
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.Maps;
+
 import org.mockito.Mockito;
 
 import java.util.Collections;
 import java.util.TreeMap;
 
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class TestUtil {
@@ -47,7 +49,7 @@ public class TestUtil {
         results.put("network", gauge);
         results.put("cpu", gauge);
 
-        when(mock.getGauges(anyObject()))
+        when(mock.getGauges(any()))
                 .thenReturn(Collections.unmodifiableSortedMap(results));
 
         return mock;

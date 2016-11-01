@@ -2,12 +2,13 @@
 
 set -ev
 # run tests
-./gradlew clean
-./gradlew check
+GRADLE="./gradlew ${GRADLE_OPTS}"
+${GRADLE} clean
+${GRADLE} check
 #install the client locally
-./gradlew installDist 
+${GRADLE} installDist 
 
-./gradlew integrationTest
+${GRADLE} integrationTest
 
 # run the server
 

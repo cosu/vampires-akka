@@ -48,7 +48,7 @@ import ro.cosu.vampires.server.resources.ResourceProvider;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class LocalResourceTest {
@@ -76,7 +76,7 @@ public class LocalResourceTest {
     private Resource getFailingResource() throws IOException {
 
         DefaultExecutor mock = Mockito.mock(DefaultExecutor.class);
-        when(mock.execute(anyObject())).thenReturn(-1);
+        when(mock.execute(any())).thenReturn(-1);
 
         return getResource(mock);
     }

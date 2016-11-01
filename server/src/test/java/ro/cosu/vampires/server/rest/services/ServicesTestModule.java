@@ -60,8 +60,8 @@ import ro.cosu.vampires.server.values.resources.ResourceDemand;
 import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -164,14 +164,14 @@ public class ServicesTestModule extends AbstractModule {
     @Provides
     private WorkloadsService getWS() {
         WorkloadsService mock = mock(WorkloadsService.class);
-        when(mock.get(anyString(), eq(User.admin()))).thenReturn(Optional.of(workload));
+        when(mock.get(any(), eq(User.admin()))).thenReturn(Optional.of(workload));
         return mock;
     }
 
     @Provides
     private ConfigurationsService getCS() {
         ConfigurationsService mock = mock(ConfigurationsService.class);
-        when(mock.get(anyString(), eq(User.admin()))).thenReturn(Optional.of(configuration));
+        when(mock.get(any(), eq(User.admin()))).thenReturn(Optional.of(configuration));
         return mock;
     }
 }

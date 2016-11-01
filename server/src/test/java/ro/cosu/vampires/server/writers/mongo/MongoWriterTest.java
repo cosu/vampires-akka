@@ -13,7 +13,7 @@ import ro.cosu.vampires.server.values.ClientInfo;
 import ro.cosu.vampires.server.values.jobs.Job;
 import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -24,7 +24,7 @@ public class MongoWriterTest {
         Morphia morphia = mock(Morphia.class);
         Datastore datastore = mock(Datastore.class);
         MongoClient mongoClient = mock(MongoClient.class);
-        when(morphia.createDatastore(Mockito.eq(mongoClient), anyString())).thenReturn(datastore);
+        when(morphia.createDatastore(Mockito.eq(mongoClient), any())).thenReturn(datastore);
         MongoWriter mongoWriter = new MongoWriter(morphia, mongoClient);
         Job empty = Job.empty();
         mongoWriter.addResult(empty);
