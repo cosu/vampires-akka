@@ -30,8 +30,6 @@ import com.google.common.collect.ImmutableList;
 
 import org.junit.Test;
 
-import java.util.concurrent.TimeUnit;
-
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.testkit.JavaTestKit;
@@ -39,13 +37,13 @@ import ro.cosu.vampires.server.actors.messages.execution.DeleteExecution;
 import ro.cosu.vampires.server.actors.messages.execution.QueryExecution;
 import ro.cosu.vampires.server.actors.messages.execution.ResponseExecution;
 import ro.cosu.vampires.server.actors.messages.execution.StartExecution;
+import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.jobs.Execution;
 import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
 import ro.cosu.vampires.server.values.jobs.ExecutionMode;
 import ro.cosu.vampires.server.values.jobs.Workload;
 import ro.cosu.vampires.server.values.resources.Configuration;
-import scala.concurrent.duration.Duration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -73,13 +71,13 @@ public class BootstrapActorTest extends AbstractActorTest {
                 final Props props = BootstrapActor.props(terminator.getRef());
                 final ActorRef bootstrapActor = system.actorOf(props, "bootstrap");
 
+                terminator.expectMsgClass(ResourceControl.Up.class);
                 // start exec is fire and forget.
                 bootstrapActor.tell(startExecution, restService.getRef());
 
                 // query the state
                 bootstrapActor.tell(QueryExecution.create(execution.id(), User.admin()), restService.getRef());
-                ResponseExecution responseExecution = restService.expectMsgClass(Duration.create(1, TimeUnit.SECONDS),
-                        ResponseExecution.class);
+                ResponseExecution responseExecution = restService.expectMsgClass(ResponseExecution.class);
                 Execution startedExecution = responseExecution.values().get(0);
                 assertThat(startedExecution.id(), is(execution.id()));
                 assertThat(startedExecution.info().status(), is(ExecutionInfo.Status.STARTING));
