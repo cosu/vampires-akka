@@ -76,6 +76,7 @@ public class BootstrapActor extends UntypedActor {
         this.terminator = terminator;
         configurationsActor = getContext().actorOf(ConfigurationsActor.props(), "configurations");
         workloadsActor = getContext().actorOf(WorkloadsActor.props(), "workloads");
+        startWebserver();
     }
 
     public static Props props(ActorRef terminator) {
@@ -85,13 +86,15 @@ public class BootstrapActor extends UntypedActor {
     @Override
     public void preStart() {
         terminator.tell(ResourceControl.Up.create(), getSelf());
-        startWebserver();
+        log.debug("Bootstrap actor is up");
     }
 
     private void startWebserver() {
         Spark.port(settings.vampires.getInt("rest.port"));
         Spark.init();
+        Spark.awaitInitialization();
         Guice.createInjector(restModule);
+        log.debug("Started webserver");
     }
 
 
