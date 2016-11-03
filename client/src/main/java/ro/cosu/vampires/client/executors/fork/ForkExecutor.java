@@ -77,21 +77,32 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
 
     @Override
     public Result execute(Computation computation) {
-
         acquireResources();
 
         CommandLine commandLine = getCommandLine(computation.command());
 
-        CollectingLogOutputStream collectingLogOutputStream = new CollectingLogOutputStream();
-        PumpStreamHandler handler = new PumpStreamHandler(collectingLogOutputStream);
-        executor.setStreamHandler(handler);
-        executor.setWatchdog(new ExecuteWatchdog(TIMEOUT_IN_MILIS));
-        executor.setWorkingDirectory(Paths.get("").toAbsolutePath().toFile());
+        CollectingLogOutputStream collectingLogOutputStream = configureExecutorAndGetLogOutputStream();
 
         DefaultExecuteResultHandler resultHandler = new DefaultExecuteResultHandler();
 
         LocalDateTime start = LocalDateTime.now();
-        int exitCode;
+
+        int exitCode = runAndGetExitCode(commandLine, resultHandler);
+
+        LocalDateTime stop = LocalDateTime.now();
+
+        releaseResources();
+
+        return Result.builder()
+                .duration(Duration.between(start, stop).toMillis())
+                .exitCode(exitCode)
+                .trace(getTrace(start, stop))
+                .output(collectingLogOutputStream.getLines())
+                .build();
+
+    }
+
+    private int runAndGetExitCode(CommandLine commandLine, DefaultExecuteResultHandler resultHandler) {
         try {
             executor.execute(commandLine, resultHandler);
         } catch (IOException e) {
@@ -104,22 +115,16 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
             LOG.error("failed to exec", resultHandler.getException());
         }
 
-        exitCode = resultHandler.hasResult() ? resultHandler.getExitValue() : -1;
+        return resultHandler.hasResult() ? resultHandler.getExitValue() : -1;
+    }
 
-        //TODO take different action for failed commands so we can collect the output (stderr or java exception)
-
-        LocalDateTime stop = LocalDateTime.now();
-
-        long duration = Duration.between(start, stop).toMillis();
-
-        releaseResources();
-        return Result.builder()
-                .duration(duration)
-                .exitCode(exitCode)
-                .trace(getTrace(start, stop))
-                .output(collectingLogOutputStream.getLines())
-                .build();
-
+    private CollectingLogOutputStream configureExecutorAndGetLogOutputStream() {
+        CollectingLogOutputStream collectingLogOutputStream = new CollectingLogOutputStream();
+        PumpStreamHandler handler = new PumpStreamHandler(collectingLogOutputStream);
+        executor.setStreamHandler(handler);
+        executor.setWatchdog(new ExecuteWatchdog(TIMEOUT_IN_MILIS));
+        executor.setWorkingDirectory(Paths.get("").toAbsolutePath().toFile());
+        return collectingLogOutputStream;
     }
 
     @Override

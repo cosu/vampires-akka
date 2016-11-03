@@ -95,6 +95,9 @@ public class DockerExecutorTest {
 
                     @Provides
                     private DockerClient provideDockerClient() throws InterruptedException {
+                        // the docker client fluent api doesn't really play well with mockito so we have to mock all
+                        // the calls. Frankly this sucks big time but I don't have a better solution for now
+
                         DockerClient dockerClient = Mockito.mock(DockerClient.class, RETURNS_DEEP_STUBS);
                         LogContainerCmd logContainerCmdMock = Mockito.mock(LogContainerCmd.class);
                         WaitContainerCmd waitContainerCmdMock = Mockito.mock(WaitContainerCmd.class);
