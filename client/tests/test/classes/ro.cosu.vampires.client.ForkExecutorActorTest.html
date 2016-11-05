@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0s</div>
+<div class="counter">0.428s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,7 +79,7 @@
 </thead>
 <tr>
 <td class="success">testExecutorActor</td>
-<td>0s</td>
+<td>0.428s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -87,15 +87,108 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2016-11-05 22:39:08,790 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
-2016-11-05 22:39:08,792 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://default)]- logger log1-Slf4jLogger started
-2016-11-05 22:39:08,814 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://default)]- Default Loggers started
-2016-11-05 22:39:08,819 INFO  akka.remote.Remoting [Test worker] [akka.remote.Remoting]- Starting remoting
-2016-11-05 22:39:08,942 INFO  akka.remote.Remoting [Test worker] [akka.remote.Remoting]- Remoting started; listening on addresses :[akka.tcp://default@127.0.0.1:35051]
-2016-11-05 22:39:08,957 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [default-akka.remote.default-remote-dispatcher-22] [akka.tcp://default@127.0.0.1:35051/system/remoting-terminator]- Shutting down remote daemon.
-2016-11-05 22:39:08,970 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [default-akka.remote.default-remote-dispatcher-22] [akka.tcp://default@127.0.0.1:35051/system/remoting-terminator]- Remote daemon shut down; proceeding with flushing remote transports.
-2016-11-05 22:39:08,976 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [default-akka.remote.default-remote-dispatcher-14] [akka.tcp://default@127.0.0.1:35051/system/remoting-terminator]- Remoting shut down.
-2016-11-05 22:39:08,977 DEBUG akka.event.EventStream [default-akka.actor.default-dispatcher-3] [EventStream]- shutting down: StandardOutLogger started
+<pre>2016-11-05 23:14:36,070 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
+2016-11-05 23:14:36,073 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://default)]- logger log1-Slf4jLogger started
+2016-11-05 23:14:36,073 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://default)]- Default Loggers started
+2016-11-05 23:14:36,093 INFO  akka.remote.Remoting [Test worker] [akka.remote.Remoting]- Starting remoting
+2016-11-05 23:14:36,116 INFO  akka.remote.Remoting [Test worker] [akka.remote.Remoting]- Remoting started; listening on addresses :[akka.tcp://default@127.0.0.1:44403]
+2016-11-05 23:14:36,171 ERROR r.c.v.c.e.docker.DockerModule [] []- failed to create docker cpu count : org.apache.http.conn.HttpHostConnectException: Connect to 127.0.0.1:2375 [/127.0.0.1] failed: Connection refused
+2016-11-05 23:14:36,171 INFO  r.c.v.c.e.AbstractExecutorModule [] []-  cpuCount: 0 countSetSize: 1
+2016-11-05 23:14:36,203 INFO  r.c.v.c.e.docker.DockerExecutor [] []- docker is not available: org.apache.http.conn.HttpHostConnectException: Connect to 127.0.0.1:2375 [/127.0.0.1] failed: Connection refused
+2016-11-05 23:14:36,204 WARN  r.c.v.c.e.ExecutorsExtensionImpl [] []- docker executor not available
+2016-11-05 23:14:36,204 DEBUG r.c.v.c.e.ExecutorsExtensionImpl [] []- {}
+java.lang.IllegalArgumentException: null
+	at com.google.common.base.Preconditions.checkArgument(Preconditions.java:108)
+	at ro.cosu.vampires.client.extension.ExecutorsExtensionImpl.&lt;init&gt;(ExecutorsExtensionImpl.java:61)
+	at ro.cosu.vampires.client.extension.ExecutorsExtension.createExtension(ExecutorsExtension.java:44)
+	at ro.cosu.vampires.client.extension.ExecutorsExtension.createExtension(ExecutorsExtension.java:32)
+	at akka.actor.ActorSystemImpl.registerExtension(ActorSystem.scala:746)
+	at akka.actor.ExtensionId$class.apply(Extension.scala:79)
+	at akka.actor.AbstractExtensionId.apply(Extension.scala:106)
+	at akka.actor.ExtensionId$class.get(Extension.scala:91)
+	at akka.actor.AbstractExtensionId.get(Extension.scala:106)
+	at ro.cosu.vampires.client.actors.ExecutorActor.&lt;init&gt;(ExecutorActor.java:42)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:408)
+	at akka.util.Reflect$.instantiate(Reflect.scala:65)
+	at akka.actor.ArgsReflectConstructor.produce(IndirectActorProducer.scala:96)
+	at akka.actor.Props.newActor(Props.scala:213)
+	at akka.actor.ActorCell.newActor(ActorCell.scala:562)
+	at akka.actor.ActorCell.create(ActorCell.scala:588)
+	at akka.actor.ActorCell.invokeAll$1(ActorCell.scala:461)
+	at akka.actor.ActorCell.systemInvoke(ActorCell.scala:483)
+	at akka.dispatch.Mailbox.processAllSystemMessages(Mailbox.scala:282)
+	at akka.testkit.CallingThreadDispatcher.process$1(CallingThreadDispatcher.scala:243)
+	at akka.testkit.CallingThreadDispatcher.runQueue(CallingThreadDispatcher.scala:283)
+	at akka.testkit.CallingThreadDispatcher.register(CallingThreadDispatcher.scala:152)
+	at akka.dispatch.MessageDispatcher.attach(AbstractDispatcher.scala:132)
+	at akka.actor.dungeon.Dispatch$class.start(Dispatch.scala:100)
+	at akka.actor.ActorCell.start(ActorCell.scala:374)
+	at akka.testkit.TestActorRef.&lt;init&gt;(TestActorRef.scala:50)
+	at akka.testkit.TestActorRef$.apply(TestActorRef.scala:146)
+	at akka.testkit.TestActorRef$.apply(TestActorRef.scala:137)
+	at akka.testkit.TestActorRef$.create(TestActorRef.scala:191)
+	at akka.testkit.TestActorRef.create(TestActorRef.scala)
+	at ro.cosu.vampires.client.ForkExecutorActorTest.testExecutorActor(ForkExecutorActorTest.java:60)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:483)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.runTestClass(JUnitTestClassExecuter.java:114)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.execute(JUnitTestClassExecuter.java:57)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassProcessor.processTestClass(JUnitTestClassProcessor.java:66)
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:51)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:483)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:93)
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:109)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:483)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:377)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:54)
+	at org.gradle.internal.concurrent.StoppableExecutorImpl$1.run(StoppableExecutorImpl.java:40)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+2016-11-05 23:14:36,238 INFO  r.c.v.c.e.AbstractExecutorModule [] []-  cpuCount: 32 countSetSize: 1
+2016-11-05 23:14:36,239 INFO  r.c.v.c.e.ExecutorsExtensionImpl [] []- available executors: {FORK=32}
+2016-11-05 23:14:36,239 DEBUG r.c.v.c.a.FixedCpuSetAllocator [] []- take CpuSet{cpuSet=[0]}
+2016-11-05 23:14:36,239 DEBUG r.c.v.c.executors.fork.ForkExecutor [] []- Acquired cpus CpuSet{cpuSet=[0]}
+2016-11-05 23:14:36,240 INFO  r.c.v.c.executors.fork.ForkExecutor [] []- executing test with timeout 10 minutes
+2016-11-05 23:14:36,541 DEBUG r.c.v.c.a.FixedCpuSetAllocator [] []- release CPUset CpuSet{cpuSet=[0]}
+2016-11-05 23:14:36,542 DEBUG r.c.v.c.executors.fork.ForkExecutor [] []- Trace{start=2016-11-05T23:14:36.240, stop=2016-11-05T23:14:36.541, executorMetrics=Metrics{metrics=[], metadata={}, id=empty}, cpuSet=[0], totalCpuCount=32, executor=FORK}
+2016-11-05 23:14:36,542 DEBUG r.c.v.client.actors.ExecutorActor [Test worker] [akka://default/user/executor1]- done executing job ee715657-e761-4cd1-80d9-11fb38fe8f2e
+2016-11-05 23:14:36,550 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [default-akka.remote.default-remote-dispatcher-6] [akka.tcp://default@127.0.0.1:44403/system/remoting-terminator]- Shutting down remote daemon.
+2016-11-05 23:14:36,550 INFO  a.r.RemoteActorRefProvider$RemotingTerminator [default-akka.remote.default-remote-dispatcher-6] [akka.tcp://default@127.0.0.1:44403/system/remoting-terminator]- Remote daemon shut down; proceeding with flushing remote transports.
+[INFO] [11/05/2016 23:14:36.564] [default-akka.remote.default-remote-dispatcher-8] [akka.tcp://default@127.0.0.1:44403/system/remoting-terminator] Remoting shut down.
+[DEBUG] [11/05/2016 23:14:36.565] [default-akka.actor.default-dispatcher-4] [EventStream] shutting down: StandardOutLogger started
 </pre>
 </span>
 </div>
@@ -107,7 +200,7 @@
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 3.0</a> at Nov 5, 2016 10:39:12 PM</p>
+<a href="http://www.gradle.org">Gradle 3.0</a> at Nov 5, 2016 11:14:40 PM</p>
 </div>
 </div>
 </body>

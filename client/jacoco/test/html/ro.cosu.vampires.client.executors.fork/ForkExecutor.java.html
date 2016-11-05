@@ -54,7 +54,7 @@ import ro.cosu.vampires.server.values.jobs.metrics.Trace;
 
 <span class="fc" id="L55">public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor {</span>
 
-    private static final int TIMEOUT_IN_MILIS = 600000;
+    private static final int TIMEOUT_IN_MILLIS = 600000;
 <span class="fc" id="L58">    private static final Logger LOG = LoggerFactory.getLogger(ForkExecutor.class);</span>
     @Inject
     private CpuAllocator cpuAllocator;
@@ -71,7 +71,7 @@ import ro.cosu.vampires.server.values.jobs.metrics.Trace;
 <span class="nc" id="L71">            newCommand = &quot;numactl --physcpubind=&quot; + cpus + &quot; &quot; + command;</span>
         }
 
-<span class="fc" id="L74">        LOG.info(&quot;executing {} with timeout {} minutes&quot;, newCommand, TIMEOUT_IN_MILIS / 1000 / 60);</span>
+<span class="fc" id="L74">        LOG.info(&quot;executing {} with timeout {} minutes&quot;, newCommand, TIMEOUT_IN_MILLIS / 1000 / 60);</span>
 <span class="fc" id="L75">        return CommandLine.parse(newCommand);</span>
     }
 
@@ -122,7 +122,7 @@ import ro.cosu.vampires.server.values.jobs.metrics.Trace;
 <span class="fc" id="L122">        CollectingLogOutputStream collectingLogOutputStream = new CollectingLogOutputStream();</span>
 <span class="fc" id="L123">        PumpStreamHandler handler = new PumpStreamHandler(collectingLogOutputStream);</span>
 <span class="fc" id="L124">        executor.setStreamHandler(handler);</span>
-<span class="fc" id="L125">        executor.setWatchdog(new ExecuteWatchdog(TIMEOUT_IN_MILIS));</span>
+<span class="fc" id="L125">        executor.setWatchdog(new ExecuteWatchdog(TIMEOUT_IN_MILLIS));</span>
 <span class="fc" id="L126">        executor.setWorkingDirectory(Paths.get(&quot;&quot;).toAbsolutePath().toFile());</span>
 <span class="fc" id="L127">        return collectingLogOutputStream;</span>
     }

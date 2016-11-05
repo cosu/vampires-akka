@@ -26,7 +26,7 @@
 
 package ro.cosu.vampires.client.actors;
 
-import akka.actor.ActorSelection;
+import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
@@ -40,15 +40,15 @@ import ro.cosu.vampires.server.values.jobs.Result;
 public class ExecutorActor extends UntypedActor {
 
 <span class="fc" id="L42">    private final ExecutorsExtensionImpl executors = ExecutorsExtension.ExecutorsProvider.get(getContext().system());</span>
-    private final ActorSelection monitorActor;
+    private final ActorRef monitorActor;
 <span class="fc" id="L44">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
 
-<span class="fc" id="L46">    public ExecutorActor() {</span>
-<span class="fc" id="L47">        monitorActor = getContext().actorSelection(&quot;/user/monitor&quot;);</span>
+<span class="fc" id="L46">    public ExecutorActor(ActorRef monitorActor) {</span>
+<span class="fc" id="L47">        this.monitorActor = monitorActor;</span>
 <span class="fc" id="L48">    }</span>
 
-    public static Props props() {
-<span class="fc" id="L51">        return Props.create(ExecutorActor.class);</span>
+    public static Props props(ActorRef monitorActor) {
+<span class="fc" id="L51">        return Props.create(ExecutorActor.class, monitorActor);</span>
     }
 
     @Override
@@ -60,9 +60,8 @@ public class ExecutorActor extends UntypedActor {
 <span class="fc" id="L60">            log.debug(&quot;done executing job {}&quot;, job.id());</span>
 <span class="fc" id="L61">            monitorActor.tell(job.withResult(result), getSender());</span>
         }
-
-<span class="fc" id="L64">        getContext().stop(getSelf());</span>
-<span class="fc" id="L65">    }</span>
+<span class="fc" id="L63">        getContext().stop(getSelf());</span>
+<span class="fc" id="L64">    }</span>
 
 
 }
