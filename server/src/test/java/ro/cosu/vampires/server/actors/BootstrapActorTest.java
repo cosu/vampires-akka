@@ -30,8 +30,9 @@ import com.google.common.collect.ImmutableList;
 
 import org.junit.Test;
 
+import java.util.concurrent.TimeUnit;
+
 import akka.actor.ActorRef;
-import akka.actor.Props;
 import akka.testkit.JavaTestKit;
 import ro.cosu.vampires.server.actors.messages.execution.DeleteExecution;
 import ro.cosu.vampires.server.actors.messages.execution.QueryExecution;
@@ -44,6 +45,7 @@ import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
 import ro.cosu.vampires.server.values.jobs.ExecutionMode;
 import ro.cosu.vampires.server.values.jobs.Workload;
 import ro.cosu.vampires.server.values.resources.Configuration;
+import scala.concurrent.duration.Duration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -64,15 +66,13 @@ public class BootstrapActorTest extends AbstractActorTest {
                 // create a test probe
                 final JavaTestKit terminator = new JavaTestKit(system);
                 final JavaTestKit restService = new JavaTestKit(system);
+                final ActorRef bootstrapActor = system.actorOf(BootstrapActor.props(terminator.getRef()), "bootstrap");
 
+                terminator.expectMsgClass(Duration.create(10, TimeUnit.SECONDS), ResourceControl.Up.class);
+
+                // start exec is fire and forget.
                 Execution execution = getExecution();
                 StartExecution startExecution = StartExecution.create(User.admin(), execution);
-                //
-                final Props props = BootstrapActor.props(terminator.getRef());
-                final ActorRef bootstrapActor = system.actorOf(props, "bootstrap");
-
-                terminator.expectMsgClass(ResourceControl.Up.class);
-                // start exec is fire and forget.
                 bootstrapActor.tell(startExecution, restService.getRef());
 
                 // query the state
