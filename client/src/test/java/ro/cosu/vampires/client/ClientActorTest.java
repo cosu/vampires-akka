@@ -30,11 +30,14 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.concurrent.TimeUnit;
+
 import akka.actor.ActorIdentity;
 import akka.actor.ActorSystem;
 import akka.actor.Identify;
 import akka.testkit.JavaTestKit;
 import akka.testkit.TestActorRef;
+import akka.testkit.TestProbe;
 import ro.cosu.vampires.client.actors.ClientActor;
 import ro.cosu.vampires.client.actors.MonitoringActor;
 import ro.cosu.vampires.server.values.ClientConfig;
@@ -63,6 +66,37 @@ public class ClientActorTest {
     public static void tearDown() {
         JavaTestKit.shutdownActorSystem(system);
         system = null;
+    }
+
+    @Test
+    public void testClientActorShutdown() throws Exception {
+        TestProbe remoteProbe = new TestProbe(system);
+        TestProbe watcher = new TestProbe(system);
+
+        TestActorRef<ClientActor> client = TestActorRef.create(system, ClientActor.props(remoteProbe.ref().path().toString(), "client1"));
+        watcher.watch(client);
+
+        // tell the client that the server is up
+        client.tell(new Identify("test"), remoteProbe.ref());
+
+        // client responds with client Info
+        ClientInfo clientInfo = remoteProbe.expectMsgClass(ClientInfo.class);
+        assertThat(clientInfo.executors().size(), not(0));
+
+        // Server responds with ClientConfig
+        ClientConfig clientConfig = ClientConfig.withDefaults().numberOfExecutors(1).build();
+        client.tell(clientConfig, remoteProbe.ref());
+
+        // Client responds with an empty Job
+        remoteProbe.expectMsgClass(ActorIdentity.class);
+
+        Job job = remoteProbe.expectMsgClass(Job.class);
+        assertThat(job.computation(), is(Computation.empty()));
+
+        system.stop(remoteProbe.ref());
+
+        watcher.expectTerminated(client, Duration.create(1, TimeUnit.SECONDS));
+
     }
 
     @Test
