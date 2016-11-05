@@ -74,12 +74,12 @@ public class ClientActor extends UntypedActor {
 <span class="fc" id="L74">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
     private ActorRef server;
 <span class="fc" id="L76">    private Procedure&lt;Object&gt; active = message -&gt; {</span>
-<span class="pc bpc" id="L77" title="1 of 2 branches missed.">        if (message instanceof Job) {</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        if (message instanceof Job) {</span>
 <span class="fc" id="L78">            handleJob((Job) message);</span>
-<span class="nc bnc" id="L79" title="All 2 branches missed.">        } else if (message instanceof Terminated) {</span>
-<span class="nc bnc" id="L80" title="All 2 branches missed.">            if (getSender().equals(server)) {</span>
-<span class="nc" id="L81">                log.info(&quot;server left. shutting down&quot;);</span>
-<span class="nc" id="L82">                getContext().stop(getSelf());</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        } else if (message instanceof Terminated) {</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">            if (getSender().equals(server)) {</span>
+<span class="fc" id="L81">                log.info(&quot;server left. shutting down&quot;);</span>
+<span class="fc" id="L82">                getContext().stop(getSelf());</span>
             }
         } else {
 <span class="nc" id="L85">            log.error(&quot;Unhandled: {} -&gt; {} {}&quot;, getSelf().path(), message.toString(), getSender());</span>
