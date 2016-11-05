@@ -92,8 +92,8 @@ public class BootstrapActor extends UntypedActor {
     private void startWebserver() {
         Spark.port(settings.vampires.getInt("rest.port"));
         Spark.init();
-        Spark.awaitInitialization();
         Guice.createInjector(restModule);
+        Spark.awaitInitialization();
         log.debug("Started webserver");
     }
 
