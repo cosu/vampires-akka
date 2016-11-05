@@ -28,8 +28,13 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.testkit.JavaTestKit;
+import akka.testkit.TestActorRef;
+import akka.testkit.TestProbe;
+import ro.cosu.vampires.client.actors.ExecutorActor;
+import ro.cosu.vampires.server.values.jobs.Job;
 
 public class ForkExecutorActorTest {
     private static ActorSystem system;
@@ -48,15 +53,15 @@ public class ForkExecutorActorTest {
     @Test
     public void testExecutorActor() throws Exception {
 
+        Job job = Job.empty().withCommand("test");
 
-        //TODO use a probe for this
-//        TestActorRef<RegisterActor> ref = TestActorRef.create(system, ExecutorActor.props(), "executor1");
-//
-//        final Future<Object> future = akka.pattern.Patterns.ask(ref, ng Computation("echo 1"), 3000);
-//        assertTrue(future.isCompleted());
-//        Message.Result result = (Message.Result) Await.result(future, Duration.Zero());
-//
-//        assertThat(result.getResult().getExitCode(), is(0));
+        TestProbe monitorActor = new TestProbe(system);
+
+        TestActorRef<ExecutorActor> executor = TestActorRef.create(system, ExecutorActor.props(monitorActor.ref()), "executor1");
+
+        executor.tell(job, ActorRef.noSender());
+
+        monitorActor.expectMsgClass(Job.class);
 
     }
 

@@ -26,7 +26,7 @@
 
 package ro.cosu.vampires.client.actors;
 
-import akka.actor.ActorSelection;
+import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
@@ -40,15 +40,15 @@ import ro.cosu.vampires.server.values.jobs.Result;
 public class ExecutorActor extends UntypedActor {
 
     private final ExecutorsExtensionImpl executors = ExecutorsExtension.ExecutorsProvider.get(getContext().system());
-    private final ActorSelection monitorActor;
+    private final ActorRef monitorActor;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
-    public ExecutorActor() {
-        monitorActor = getContext().actorSelection("/user/monitor");
+    public ExecutorActor(ActorRef monitorActor) {
+        this.monitorActor = monitorActor;
     }
 
-    public static Props props() {
-        return Props.create(ExecutorActor.class);
+    public static Props props(ActorRef monitorActor) {
+        return Props.create(ExecutorActor.class, monitorActor);
     }
 
     @Override
@@ -60,7 +60,6 @@ public class ExecutorActor extends UntypedActor {
             log.debug("done executing job {}", job.id());
             monitorActor.tell(job.withResult(result), getSender());
         }
-
         getContext().stop(getSelf());
     }
 

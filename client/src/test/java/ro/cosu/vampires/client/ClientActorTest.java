@@ -32,6 +32,7 @@ import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
+import akka.actor.Actor;
 import akka.actor.ActorIdentity;
 import akka.actor.ActorSystem;
 import akka.actor.Identify;
@@ -54,11 +55,12 @@ import static org.hamcrest.core.Is.is;
 public class ClientActorTest {
 
     private static ActorSystem system;
-
+    private static TestActorRef<Actor> monitor;
     @BeforeClass
     public static void setUp() {
         system = ActorSystem.create();
-        TestActorRef.create(system, MonitoringActor
+
+        monitor = TestActorRef.create(system, MonitoringActor
                 .props(TestUtil.getMetricRegistryMock()), "monitor");
     }
 
@@ -73,7 +75,7 @@ public class ClientActorTest {
         TestProbe remoteProbe = new TestProbe(system);
         TestProbe watcher = new TestProbe(system);
 
-        TestActorRef<ClientActor> client = TestActorRef.create(system, ClientActor.props(remoteProbe.ref().path().toString(), "client1"));
+        TestActorRef<ClientActor> client = TestActorRef.create(system, ClientActor.props(remoteProbe.ref().path().toString(), "client1", monitor));
         watcher.watch(client);
 
         // tell the client that the server is up
@@ -102,9 +104,8 @@ public class ClientActorTest {
     @Test
     public void testClientActor() throws Exception {
 
-
         final JavaTestKit remoteProbe = new JavaTestKit(system);
-        TestActorRef<ClientActor> client = TestActorRef.create(system, ClientActor.props(remoteProbe.getRef().path().toString(), "client1"));
+        TestActorRef<ClientActor> client = TestActorRef.create(system, ClientActor.props(remoteProbe.getRef().path().toString(), "client1", monitor));
 
         // tell the client that the server is up
         client.tell(new Identify("test"), remoteProbe.getRef());

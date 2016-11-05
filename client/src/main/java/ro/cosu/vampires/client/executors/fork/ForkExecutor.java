@@ -54,7 +54,7 @@ import ro.cosu.vampires.server.values.jobs.metrics.Trace;
 
 public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor {
 
-    private static final int TIMEOUT_IN_MILIS = 600000;
+    private static final int TIMEOUT_IN_MILLIS = 600000;
     private static final Logger LOG = LoggerFactory.getLogger(ForkExecutor.class);
     @Inject
     private CpuAllocator cpuAllocator;
@@ -71,7 +71,7 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
             newCommand = "numactl --physcpubind=" + cpus + " " + command;
         }
 
-        LOG.info("executing {} with timeout {} minutes", newCommand, TIMEOUT_IN_MILIS / 1000 / 60);
+        LOG.info("executing {} with timeout {} minutes", newCommand, TIMEOUT_IN_MILLIS / 1000 / 60);
         return CommandLine.parse(newCommand);
     }
 
@@ -122,7 +122,7 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
         CollectingLogOutputStream collectingLogOutputStream = new CollectingLogOutputStream();
         PumpStreamHandler handler = new PumpStreamHandler(collectingLogOutputStream);
         executor.setStreamHandler(handler);
-        executor.setWatchdog(new ExecuteWatchdog(TIMEOUT_IN_MILIS));
+        executor.setWatchdog(new ExecuteWatchdog(TIMEOUT_IN_MILLIS));
         executor.setWorkingDirectory(Paths.get("").toAbsolutePath().toFile());
         return collectingLogOutputStream;
     }

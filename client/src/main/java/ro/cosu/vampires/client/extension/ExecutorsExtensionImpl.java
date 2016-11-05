@@ -61,7 +61,8 @@ public class ExecutorsExtensionImpl implements Extension {
             Preconditions.checkArgument(executor.isAvailable());
             executorInfo.put(executor.getType().toString(), executor.getNCpu());
         } catch (Exception e) {
-            LOG.warn("docker executor not available", e);
+            LOG.warn("docker executor not available");
+            LOG.debug("{}", e);
         }
 
         try {

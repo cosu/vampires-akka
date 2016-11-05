@@ -31,7 +31,6 @@ import java.util.stream.IntStream;
 
 import akka.actor.ActorIdentity;
 import akka.actor.ActorRef;
-import akka.actor.ActorSelection;
 import akka.actor.Identify;
 import akka.actor.Props;
 import akka.actor.ReceiveTimeout;
@@ -70,6 +69,7 @@ public class ClientActor extends UntypedActor {
 
     private final String serverPath;
     private final ExecutorsExtensionImpl executors = ExecutorsExtension.ExecutorsProvider.get(getContext().system());
+    private final ActorRef monitorActor;
     private String clientId;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private ActorRef server;
@@ -100,15 +100,16 @@ public class ClientActor extends UntypedActor {
         }
     };
 
-    public ClientActor(String serverPath, String clientId) {
+    public ClientActor(String serverPath, String clientId, ActorRef monitorActor) {
         this.serverPath = serverPath;
         this.clientId = clientId;
         getContext().setReceiveTimeout(Duration.create(1, SECONDS));
+        this.monitorActor = monitorActor;
         sendIdentifyRequest();
     }
 
-    public static Props props(String path, String clientId) {
-        return Props.create(ClientActor.class, path, clientId);
+    public static Props props(String path, String clientId, ActorRef monitorActor) {
+        return Props.create(ClientActor.class, path, clientId, monitorActor);
     }
 
     private void handleJob(Job job) {
@@ -150,14 +151,12 @@ public class ClientActor extends UntypedActor {
     }
 
     private void execute(Job job) {
-        ActorRef executorActor = getContext().actorOf(ExecutorActor.props());
+        ActorRef executorActor = getContext().actorOf(ExecutorActor.props(monitorActor));
         executorActor.tell(job, getSelf());
     }
 
     private ClientInfo getClientInfo() throws Exception {
         final Map<String, Integer> executorInfo = executors.getExecutorInfo();
-
-        final ActorSelection monitorActor = getContext().actorSelection("/user/monitor");
 
         // ugly but this is done only when the client boots
         final Future<Object> metricsFuture = Patterns.ask(monitorActor, Metrics.empty(), Timeout.apply(1, SECONDS));

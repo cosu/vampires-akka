@@ -62,8 +62,9 @@ public class Client {
 
         final String serverPath = "akka.tcp://ServerSystem@" + host + ":2552/user/bootstrap/" + serverId;
 
-        system.actorOf(MonitoringActor.props(MonitoringManager.getMetricRegistry()), "monitor");
-        final ActorRef client = system.actorOf(ClientActor.props(serverPath, clientId), "client");
+        ActorRef monitor = system.actorOf(MonitoringActor.props(MonitoringManager.getMetricRegistry()), "monitor");
+
+        final ActorRef client = system.actorOf(ClientActor.props(serverPath, clientId, monitor), "client");
         system.actorOf(TerminatorActor.props(client), "terminator");
 
         Await.result(system.whenTerminated(), Duration.Inf());
