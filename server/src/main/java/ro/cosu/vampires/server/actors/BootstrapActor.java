@@ -157,7 +157,7 @@ public class BootstrapActor extends UntypedActor {
 
         // update the current view of the execution
         Execution updatedExecution = execution.withInfo(execution.info().updateStatus(ExecutionInfo.Status.STOPPING));
-        getResultsMap(user).put(execution.id(), execution);
+        getResultsMap(user).put(updatedExecution.id(), updatedExecution);
 
         return updatedExecution;
     }
