@@ -29,7 +29,7 @@
 </td>
 <td>
 <div class="infoBox" id="failures">
-<div class="counter">0</div>
+<div class="counter">1</div>
 <p>failures</p>
 </div>
 </td>
@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">23.087s</div>
+<div class="counter">6.471s</div>
 <p>duration</p>
 </div>
 </td>
@@ -50,8 +50,8 @@
 </div>
 </td>
 <td>
-<div class="infoBox success" id="successRate">
-<div class="percent">100%</div>
+<div class="infoBox failures" id="successRate">
+<div class="percent">0%</div>
 <p>successful</p>
 </div>
 </td>
@@ -61,13 +61,77 @@
 <div id="tabs">
 <ul class="tabLinks">
 <li>
-<a href="#tab0">Tests</a>
+<a href="#tab0">Failed tests</a>
 </li>
 <li>
-<a href="#tab1">Standard output</a>
+<a href="#tab1">Tests</a>
+</li>
+<li>
+<a href="#tab2">Standard output</a>
 </li>
 </ul>
 <div id="tab0" class="tab">
+<h2>Failed tests</h2>
+<div class="test">
+<a name="bootStrap"></a>
+<h3 class="failures">bootStrap</h3>
+<span class="code">
+<pre>java.util.concurrent.TimeoutException: Futures timed out after [100 milliseconds]
+	at scala.concurrent.impl.Promise$DefaultPromise.ready(Promise.scala:219)
+	at scala.concurrent.impl.Promise$DefaultPromise.result(Promise.scala:223)
+	at scala.concurrent.Await$$anonfun$result$1.apply(package.scala:190)
+	at scala.concurrent.BlockContext$DefaultBlockContext$.blockOn(BlockContext.scala:53)
+	at scala.concurrent.Await$.result(package.scala:190)
+	at scala.concurrent.Await.result(package.scala)
+	at ro.cosu.vampires.server.BootstrapIT.bootStrap(BootstrapIT.java:122)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:483)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.runTestClass(JUnitTestClassExecuter.java:114)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.execute(JUnitTestClassExecuter.java:57)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassProcessor.processTestClass(JUnitTestClassProcessor.java:66)
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:51)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:483)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:93)
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:109)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:483)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:377)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:54)
+	at org.gradle.internal.concurrent.StoppableExecutorImpl$1.run(StoppableExecutorImpl.java:40)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+</pre>
+</span>
+</div>
+</div>
+<div id="tab1" class="tab">
 <h2>Tests</h2>
 <table>
 <thead>
@@ -78,151 +142,73 @@
 </tr>
 </thead>
 <tr>
-<td class="success">bootStrap</td>
-<td>23.087s</td>
-<td class="success">passed</td>
+<td class="failures">bootStrap</td>
+<td>6.471s</td>
+<td class="failures">failed</td>
 </tr>
 </table>
 </div>
-<div id="tab1" class="tab">
+<div id="tab2" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>23:15:46,585 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback.groovy]
-23:15:46,585 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found resource [logback-test.xml] at [file:/home/travis/build/cosu/vampires-akka/server/build/resources/integrationTest/logback-test.xml]
-23:15:46,586 |-WARN in ch.qos.logback.classic.LoggerContext[default] - Resource [logback-test.xml] occurs multiple times on the classpath.
-23:15:46,586 |-WARN in ch.qos.logback.classic.LoggerContext[default] - Resource [logback-test.xml] occurs at [file:/home/travis/build/cosu/vampires-akka/server/build/resources/test/logback-test.xml]
-23:15:46,586 |-WARN in ch.qos.logback.classic.LoggerContext[default] - Resource [logback-test.xml] occurs at [file:/home/travis/build/cosu/vampires-akka/server/build/resources/integrationTest/logback-test.xml]
-23:15:46,712 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - debug attribute not set
-23:15:46,714 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
-23:15:46,726 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - Naming appender as [STDOUT]
-23:15:46,734 |-INFO in ch.qos.logback.core.joran.action.NestedComplexPropertyIA - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
-23:15:46,775 |-INFO in ch.qos.logback.classic.joran.action.RootLoggerAction - Setting level of ROOT logger to DEBUG
-23:15:46,775 |-INFO in ch.qos.logback.core.joran.action.AppenderRefAction - Attaching appender named [STDOUT] to Logger[ROOT]
-23:15:46,777 |-INFO in ch.qos.logback.classic.joran.action.LoggerAction - Setting level of logger [org.eclipse.jetty] to WARN
-23:15:46,777 |-INFO in ch.qos.logback.classic.joran.action.LoggerAction - Setting level of logger [org.mongodb] to WARN
-23:15:46,777 |-INFO in ch.qos.logback.classic.joran.action.LoggerAction - Setting level of logger [ro.cosu.vampires.server.util.SshClient] to ERROR
-23:15:46,777 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - End of configuration.
-23:15:46,779 |-INFO in ch.qos.logback.classic.joran.JoranConfigurator@477f0f8f - Registering current configuration as safe fallback point
+<pre>09:55:17,101 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback.groovy]
+09:55:17,101 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found resource [logback-test.xml] at [file:/home/travis/build/cosu/vampires-akka/server/build/resources/integrationTest/logback-test.xml]
+09:55:17,102 |-WARN in ch.qos.logback.classic.LoggerContext[default] - Resource [logback-test.xml] occurs multiple times on the classpath.
+09:55:17,102 |-WARN in ch.qos.logback.classic.LoggerContext[default] - Resource [logback-test.xml] occurs at [file:/home/travis/build/cosu/vampires-akka/server/build/resources/test/logback-test.xml]
+09:55:17,102 |-WARN in ch.qos.logback.classic.LoggerContext[default] - Resource [logback-test.xml] occurs at [file:/home/travis/build/cosu/vampires-akka/server/build/resources/integrationTest/logback-test.xml]
+09:55:17,176 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - debug attribute not set
+09:55:17,178 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
+09:55:17,188 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - Naming appender as [STDOUT]
+09:55:17,196 |-INFO in ch.qos.logback.core.joran.action.NestedComplexPropertyIA - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+09:55:17,233 |-INFO in ch.qos.logback.classic.joran.action.RootLoggerAction - Setting level of ROOT logger to DEBUG
+09:55:17,233 |-INFO in ch.qos.logback.core.joran.action.AppenderRefAction - Attaching appender named [STDOUT] to Logger[ROOT]
+09:55:17,235 |-INFO in ch.qos.logback.classic.joran.action.LoggerAction - Setting level of logger [org.eclipse.jetty] to WARN
+09:55:17,235 |-INFO in ch.qos.logback.classic.joran.action.LoggerAction - Setting level of logger [org.mongodb] to WARN
+09:55:17,235 |-INFO in ch.qos.logback.classic.joran.action.LoggerAction - Setting level of logger [ro.cosu.vampires.server.util.SshClient] to ERROR
+09:55:17,235 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - End of configuration.
+09:55:17,236 |-INFO in ch.qos.logback.classic.joran.JoranConfigurator@28eef0e1 - Registering current configuration as safe fallback point
 
-2016-11-05 23:15:46,806 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
-2016-11-05 23:15:46,837 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://ServerSystem)]- logger log1-Slf4jLogger started
-2016-11-05 23:15:46,847 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://ServerSystem)]- Default Loggers started
-2016-11-05 23:15:47,046 INFO  akka.remote.Remoting [Test worker] [akka.remote.Remoting]- Starting remoting
-2016-11-05 23:15:47,737 INFO  akka.remote.Remoting [Test worker] [akka.remote.Remoting]- Remoting started; listening on addresses :[akka.tcp://ServerSystem@127.0.0.1:2552]
-2016-11-05 23:15:47,740 INFO  akka.remote.Remoting [Test worker] [akka.remote.Remoting]- Remoting now listens on addresses: [akka.tcp://ServerSystem@127.0.0.1:2552]
-2016-11-05 23:15:48,707 INFO  s.e.jetty.EmbeddedJettyServer [] []- == Spark has ignited ...
-2016-11-05 23:15:48,717 INFO  s.e.jetty.EmbeddedJettyServer [] []- &gt;&gt; Listening on 0.0.0.0:9876
-2016-11-05 23:15:50,076 DEBUG spark.route.Routes [] []- Adds route: get, /providers, spark.ResponseTransformerRouteImpl$1@4f748c05
-2016-11-05 23:15:50,099 DEBUG spark.route.Routes [] []- Adds route: get, /configurations, spark.ResponseTransformerRouteImpl$1@41b94943
-2016-11-05 23:15:50,100 DEBUG spark.route.Routes [] []- Adds route: get, /configurations/:id, spark.ResponseTransformerRouteImpl$1@46dd56dd
-2016-11-05 23:15:50,103 DEBUG spark.route.Routes [] []- Adds route: delete, /configurations/:id, spark.ResponseTransformerRouteImpl$1@64fe2a3a
-2016-11-05 23:15:50,106 DEBUG spark.route.Routes [] []- Adds route: post, /configurations, spark.ResponseTransformerRouteImpl$1@2f9d709
-2016-11-05 23:15:50,108 DEBUG spark.route.Routes [] []- Adds route: post, /configurations/:id, spark.ResponseTransformerRouteImpl$1@4c30e43a
-2016-11-05 23:15:50,111 DEBUG spark.route.Routes [] []- Adds route: get, /executions, spark.ResponseTransformerRouteImpl$1@52306840
-2016-11-05 23:15:50,111 DEBUG spark.route.Routes [] []- Adds route: get, /executions/:id, spark.ResponseTransformerRouteImpl$1@19ea5708
-2016-11-05 23:15:50,112 DEBUG spark.route.Routes [] []- Adds route: delete, /executions/:id, spark.ResponseTransformerRouteImpl$1@6776c72a
-2016-11-05 23:15:50,112 DEBUG spark.route.Routes [] []- Adds route: post, /executions, spark.ResponseTransformerRouteImpl$1@3ba3b714
-2016-11-05 23:15:50,113 DEBUG spark.route.Routes [] []- Adds route: post, /executions/:id, spark.ResponseTransformerRouteImpl$1@6a80ba48
-2016-11-05 23:15:50,114 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@563a3c9a
-2016-11-05 23:15:50,114 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@39879eef
-2016-11-05 23:15:50,114 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@5760da02
-2016-11-05 23:15:50,115 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@1e5a5501
-2016-11-05 23:15:50,115 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@190364bc
-2016-11-05 23:15:50,125 DEBUG spark.route.Routes [] []- Adds route: options, /*, spark.RouteImpl$1@189780e
-2016-11-05 23:15:50,127 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@710e6484
-2016-11-05 23:15:50,175 DEBUG r.c.v.s.r.c.FilesController [] []- Upload dir /tmp/vampires
-2016-11-05 23:15:50,176 DEBUG spark.route.Routes [] []- Adds route: post, /upload, spark.ResponseTransformerRouteImpl$1@7826d873
-2016-11-05 23:15:50,176 DEBUG spark.route.Routes [] []- Adds route: get, /upload, spark.ResponseTransformerRouteImpl$1@df149a1
-2016-11-05 23:15:50,177 DEBUG spark.route.Routes [] []- Adds route: get, /upload/:id, spark.RouteImpl$1@41f4817e
-2016-11-05 23:15:50,178 DEBUG spark.route.Routes [] []- Adds route: delete, /upload/:id, spark.ResponseTransformerRouteImpl$1@59d00f75
-2016-11-05 23:15:50,179 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@1a5fa6b2
-2016-11-05 23:15:50,179 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
-2016-11-05 23:15:50,193 DEBUG r.c.v.server.actors.BootstrapActor [ServerSystem-akka.actor.default-dispatcher-4] [akka://ServerSystem/user/bootstrap]- Started webserver
-2016-11-05 23:15:50,193 DEBUG r.c.v.server.actors.BootstrapActor [ServerSystem-akka.actor.default-dispatcher-4] [akka://ServerSystem/user/bootstrap]- Bootstrap actor is up
-2016-11-05 23:15:50,193 DEBUG r.c.v.server.actors.Terminator [ServerSystem-akka.actor.default-dispatcher-6] [akka://ServerSystem/user/terminator]- watching Actor[akka://ServerSystem/user/bootstrap#1799376270]
-2016-11-05 23:15:50,199 DEBUG r.c.v.server.actors.WorkloadsActor [ServerSystem-akka.actor.default-dispatcher-2] [akka://ServerSystem/user/bootstrap/workloads]- Created workload Workload{id=73dfc630-b144-4c17-8770-aa5cf921f3c2, createdAt=2016-11-05T23:15:48.160, updatedAt=2016-11-05T23:15:48.160, sequenceStart=0, sequenceStop=5, task=sleep 1, format=%s, url=, file=, description=}
-2016-11-05 23:15:50,206 INFO  a.r.RemoteActorRefProvider$RemoteDeadLetterActorRef [ServerSystem-akka.actor.default-dispatcher-2] [akka://ServerSystem/deadLetters]- Message [ro.cosu.vampires.server.values.jobs.AutoValue_Workload] from Actor[akka://ServerSystem/user/bootstrap/workloads#-485140909] to Actor[akka://ServerSystem/deadLetters] was not delivered. [1] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
-2016-11-05 23:15:50,220 DEBUG r.c.v.s.actors.ConfigurationsActor [ServerSystem-akka.actor.default-dispatcher-3] [akka://ServerSystem/user/bootstrap/configurations]- Created configuration Configuration{id=f0700f21-e1c9-4065-af9b-63b70ed4f5a5, createdAt=2016-11-05T23:15:47.937, updatedAt=2016-11-05T23:15:47.937, description=integration testt, cost=1.0, resources=[ResourceDemand{resourceDescription=ResourceDescription{type=local, provider=LOCAL, cost=0.0, id=d278e656-1abf-3f00-8cee-bddc84d0445b, createdAt=2016-11-05T23:15:47.879, updatedAt=2016-11-05T23:15:47.880}, count=1}]}
-2016-11-05 23:15:50,255 INFO  a.r.RemoteActorRefProvider$RemoteDeadLetterActorRef [ServerSystem-akka.actor.default-dispatcher-3] [akka://ServerSystem/deadLetters]- Message [ro.cosu.vampires.server.values.resources.AutoValue_Configuration] from Actor[akka://ServerSystem/user/bootstrap/configurations#-1583246513] to Actor[akka://ServerSystem/deadLetters] was not delivered. [2] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
-STARTING
-2016-11-05 23:15:50,487 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
-2016-11-05 23:15:50,488 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
-2016-11-05 23:15:50,501 INFO  r.c.v.server.actors.ResultActor [ServerSystem-akka.actor.default-dispatcher-19] [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resultActor]- results so far: 0/6
-2016-11-05 23:15:50,738 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local a80b8d04-d6f5-4c4c-9139-eb7749726a33 = UNKNOWN =&gt; SLEEPING
-2016-11-05 23:15:50,746 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local a80b8d04-d6f5-4c4c-9139-eb7749726a33 = SLEEPING =&gt; STARTING
-2016-11-05 23:15:50,751 DEBUG r.c.v.s.r.local.LocalResource [] []- local starting [/bin/sh, -c, nohup ../client/build/install/client/scripts/vampires.sh 127.0.0.1 5b2f46b0-eadc-4ca2-98b6-dad9d027c664 a80b8d04-d6f5-4c4c-9139-eb7749726a33 2&gt;&amp;1 0&lt;/dev/null &amp;]
-2016-11-05 23:15:50,755 DEBUG r.c.v.s.r.local.LocalResource [] []- execute [/bin/sh, -c, nohup ../client/build/install/client/scripts/vampires.sh 127.0.0.1 5b2f46b0-eadc-4ca2-98b6-dad9d027c664 a80b8d04-d6f5-4c4c-9139-eb7749726a33 2&gt;&amp;1 0&lt;/dev/null &amp;]
-2016-11-05 23:15:50,782 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local a80b8d04-d6f5-4c4c-9139-eb7749726a33 = STARTING =&gt; RUNNING
-2016-11-05 23:15:50,784 DEBUG r.c.v.s.a.resource.ResourceActor [ForkJoinPool.commonPool-worker-25] [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resourceManagerActor/$a]- sending ResourceInfo{parameters=LocalResourceParameters{command=../client/build/install/client/scripts/vampires.sh 127.0.0.1, providerType=LOCAL, serverId=5b2f46b0-eadc-4ca2-98b6-dad9d027c664, id=a80b8d04-d6f5-4c4c-9139-eb7749726a33, cost=1.0, instanceType=local}, status=RUNNING, createdAt=2016-11-05T23:15:50.784} to Actor[akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664#14709097]
-2016-11-05 23:15:50,785 DEBUG r.c.v.s.a.r.ResourceManagerActor [ServerSystem-akka.actor.default-dispatcher-5] [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resourceManagerActor]- resource register ResourceInfo{parameters=LocalResourceParameters{command=../client/build/install/client/scripts/vampires.sh 127.0.0.1, providerType=LOCAL, serverId=5b2f46b0-eadc-4ca2-98b6-dad9d027c664, id=a80b8d04-d6f5-4c4c-9139-eb7749726a33, cost=1.0, instanceType=local}, status=RUNNING, createdAt=2016-11-05T23:15:50.784}
-STARTING
-STARTING
-STARTING
-2016-11-05 23:15:56,591 DEBUG akka.remote.Remoting [ServerSystem-akka.remote.default-remote-dispatcher-16] [akka.remote.Remoting]- Associated [akka.tcp://ServerSystem@127.0.0.1:2552] &lt;- [akka.tcp://ClientSystem@127.0.0.1:43927]
-2016-11-05 23:15:57,493 DEBUG a.s.Serialization(akka://ServerSystem) [ServerSystem-akka.remote.default-remote-dispatcher-22] [akka.serialization.Serialization(akka://ServerSystem)]- Using serializer[akka.serialization.JavaSerializer] for message [akka.actor.ActorIdentity]
-2016-11-05 23:15:57,718 DEBUG a.s.Serialization(akka://ServerSystem) [ServerSystem-akka.remote.default-remote-dispatcher-18] [akka.serialization.Serialization(akka://ServerSystem)]- Using serializer[akka.serialization.JavaSerializer] for message [akka.remote.RemoteWatcher$HeartbeatRsp]
-2016-11-05 23:15:57,723 DEBUG r.c.v.server.actors.ResultActor [ServerSystem-akka.actor.default-dispatcher-19] [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resultActor]- got client info ClientInfo{id=a80b8d04-d6f5-4c4c-9139-eb7749726a33, start=2016-11-05T23:15:57.605, executors={FORK=32}, metrics=Metrics{metrics=[Metric{values={cpu-average-load=21.03, cpu-load=0.41894869373622917, cpu-load-tick-idle-0=1747814.0, cpu-load-tick-idle-1=1651580.0, cpu-load-tick-idle-10=1828111.0, cpu-load-tick-idle-11=1869918.0, cpu-load-tick-idle-12=1698320.0, cpu-load-tick-idle-13=1752520.0, cpu-load-tick-idle-14=1912241.0, cpu-load-tick-idle-15=1931678.0, cpu-load-tick-idle-16=2089560.0, cpu-load-tick-idle-17=2097580.0, cpu-load-tick-idle-18=1944309.0, cpu-load-tick-idle-19=1983305.0, cpu-load-tick-idle-2=2037001.0, cpu-load-tick-idle-20=1795862.0, cpu-load-tick-idle-21=1805125.0, cpu-load-tick-idle-22=1891626.0, cpu-load-tick-idle-23=1877469.0, cpu-load-tick-idle-24=1981487.0, cpu-load-tick-idle-25=1960411.0, cpu-load-tick-idle-26=1910709.0, cpu-load-tick-idle-27=1901295.0, cpu-load-tick-idle-28=2264263.0, cpu-load-tick-idle-29=2314048.0, cpu-load-tick-idle-3=1903389.0, cpu-load-tick-idle-30=1961352.0, cpu-load-tick-idle-31=1955537.0, cpu-load-tick-idle-4=1722535.0, cpu-load-tick-idle-5=1714166.0, cpu-load-tick-idle-6=1817847.0, cpu-load-tick-idle-7=1940421.0, cpu-load-tick-idle-8=1866548.0, cpu-load-tick-idle-9=1865711.0, cpu-load-tick-nice-0=0.0, cpu-load-tick-nice-1=0.0, cpu-load-tick-nice-10=0.0, cpu-load-tick-nice-11=0.0, cpu-load-tick-nice-12=1.0, cpu-load-tick-nice-13=2.0, cpu-load-tick-nice-14=0.0, cpu-load-tick-nice-15=0.0, cpu-load-tick-nice-16=167.0, cpu-load-tick-nice-17=188.0, cpu-load-tick-nice-18=1.0, cpu-load-tick-nice-19=0.0, cpu-load-tick-nice-2=112.0, cpu-load-tick-nice-20=382.0, cpu-load-tick-nice-21=716.0, cpu-load-tick-nice-22=0.0, cpu-load-tick-nice-23=0.0, cpu-load-tick-nice-24=0.0, cpu-load-tick-nice-25=0.0, cpu-load-tick-nice-26=2.0, cpu-load-tick-nice-27=0.0, cpu-load-tick-nice-28=0.0, cpu-load-tick-nice-29=0.0, cpu-load-tick-nice-3=96.0, cpu-load-tick-nice-30=4526.0, cpu-load-tick-nice-31=5099.0, cpu-load-tick-nice-4=0.0, cpu-load-tick-nice-5=0.0, cpu-load-tick-nice-6=0.0, cpu-load-tick-nice-7=0.0, cpu-load-tick-nice-8=39.0, cpu-load-tick-nice-9=8.0, cpu-load-tick-system-0=144656.0, cpu-load-tick-system-1=97723.0, cpu-load-tick-system-10=89752.0, cpu-load-tick-system-11=88214.0, cpu-load-tick-system-12=131321.0, cpu-load-tick-system-13=132647.0, cpu-load-tick-system-14=97498.0, cpu-load-tick-system-15=94002.0, cpu-load-tick-system-16=108053.0, cpu-load-tick-system-17=90043.0, cpu-load-tick-system-18=98553.0, cpu-load-tick-system-19=95973.0, cpu-load-tick-system-2=90705.0, cpu-load-tick-system-20=83049.0, cpu-load-tick-system-21=80398.0, cpu-load-tick-system-22=102304.0, cpu-load-tick-system-23=106980.0, cpu-load-tick-system-24=86782.0, cpu-load-tick-system-25=90696.0, cpu-load-tick-system-26=95594.0, cpu-load-tick-system-27=96559.0, cpu-load-tick-system-28=76171.0, cpu-load-tick-system-29=66483.0, cpu-load-tick-system-3=96676.0, cpu-load-tick-system-30=89439.0, cpu-load-tick-system-31=86976.0, cpu-load-tick-system-4=107106.0, cpu-load-tick-system-5=109561.0, cpu-load-tick-system-6=99561.0, cpu-load-tick-system-7=100781.0, cpu-load-tick-system-8=108438.0, cpu-load-tick-system-9=105105.0, cpu-load-tick-user-0=763704.0, cpu-load-tick-user-1=1280778.0, cpu-load-tick-user-10=1140931.0, cpu-load-tick-user-11=1097156.0, cpu-load-tick-user-12=1216858.0, cpu-load-tick-user-13=1161912.0, cpu-load-tick-user-14=1036030.0, cpu-load-tick-user-15=1024679.0, cpu-load-tick-user-16=827131.0, cpu-load-tick-user-17=855196.0, cpu-load-tick-user-18=1014987.0, cpu-load-tick-user-19=988388.0, cpu-load-tick-user-2=882449.0, cpu-load-tick-user-20=1192975.0, cpu-load-tick-user-21=1183248.0, cpu-load-tick-user-22=1058800.0, cpu-load-tick-user-23=1061581.0, cpu-load-tick-user-24=995102.0, cpu-load-tick-user-25=1010124.0, cpu-load-tick-user-26=1057942.0, cpu-load-tick-user-27=1072328.0, cpu-load-tick-user-28=732060.0, cpu-load-tick-user-29=691192.0, cpu-load-tick-user-3=905942.0, cpu-load-tick-user-30=1007087.0, cpu-load-tick-user-31=1007651.0, cpu-load-tick-user-4=1227368.0, cpu-load-tick-user-5=1228642.0, cpu-load-tick-user-6=1112688.0, cpu-load-tick-user-7=987733.0, cpu-load-tick-user-8=1074669.0, cpu-load-tick-user-9=1073914.0, network-rx-bytes-eth0=2.81643163E8, network-rx-speed-eth0=0.0, network-tx-bytes-eth0=4636806.0, network-tx-speed-eth0=0.0}, time=2016-11-05T23:15:56.535}], metadata={host-address-eth0=172.17.5.240, host-cpu-cores=16, host-cpu-family=6, host-cpu-frequency=2800000000, host-cpu-logical-processors=32, host-cpu-model=62, host-cpu-name=Intel(R) Xeon(R) CPU E5-2680 v2 @ 2.80GHz, host-cpu-stepping=4, host-cpu-vendor=GenuineIntel, host-mac-eth0=9a:78:8c:32:b1:7f, host-ram=54507143168}, id=de1ed19f-da4f-4488-aad3-f2a57a4bed58}}
-2016-11-05 23:15:57,739 INFO  r.c.v.s.a.r.ResourceManagerActor [ServerSystem-akka.actor.default-dispatcher-3] [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resourceManagerActor]- clients 1 / resourceActors 1 
-2016-11-05 23:15:57,741 WARN  r.c.v.s.actors.settings.Settings [] []- missing executor cpu-set-size . Using default value: 1
-2016-11-05 23:15:57,741 WARN  r.c.v.s.actors.settings.Settings [] []- missing executor cpu-set-size . Using default value: 1
-2016-11-05 23:15:57,747 DEBUG r.c.v.s.actors.ClientConfigActor [ServerSystem-akka.actor.default-dispatcher-4] [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resultActor/clientConfig-a80b8d04-d6f5-4c4c-9139-eb7749726a33]- config for client a80b8d04-d6f5-4c4c-9139-eb7749726a33 null ClientConfig{executor=FORK, cpuSetSize=1, numberOfExecutors=32}
-2016-11-05 23:15:57,754 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-18] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Watching: [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resourceManagerActor -&gt; akka.tcp://ClientSystem@127.0.0.1:43927/user/client]
-2016-11-05 23:15:57,756 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local a80b8d04-d6f5-4c4c-9139-eb7749726a33 = RUNNING =&gt; CONNECTED
-2016-11-05 23:15:57,757 INFO  r.c.v.s.a.resource.ResourceActor [ServerSystem-akka.actor.default-dispatcher-3] [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resourceManagerActor/$a]- Connected: LOCAL local
-2016-11-05 23:15:57,759 DEBUG r.c.v.s.a.resource.ResourceActor [ServerSystem-akka.actor.default-dispatcher-3] [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resourceManagerActor/$a]- sending ResourceInfo{parameters=LocalResourceParameters{command=../client/build/install/client/scripts/vampires.sh 127.0.0.1, providerType=LOCAL, serverId=5b2f46b0-eadc-4ca2-98b6-dad9d027c664, id=a80b8d04-d6f5-4c4c-9139-eb7749726a33, cost=1.0, instanceType=local}, status=CONNECTED, createdAt=2016-11-05T23:15:57.758} to Actor[akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resourceManagerActor#291541663]
-2016-11-05 23:15:57,759 DEBUG r.c.v.s.a.r.ResourceManagerActor [ServerSystem-akka.actor.default-dispatcher-2] [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resourceManagerActor]- resource register ResourceInfo{parameters=LocalResourceParameters{command=../client/build/install/client/scripts/vampires.sh 127.0.0.1, providerType=LOCAL, serverId=5b2f46b0-eadc-4ca2-98b6-dad9d027c664, id=a80b8d04-d6f5-4c4c-9139-eb7749726a33, cost=1.0, instanceType=local}, status=CONNECTED, createdAt=2016-11-05T23:15:57.758}
-2016-11-05 23:15:57,760 DEBUG r.c.v.s.a.r.ResourceManagerActor [ServerSystem-akka.actor.default-dispatcher-2] [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resourceManagerActor]- resource register ResourceInfo{parameters=LocalResourceParameters{command=../client/build/install/client/scripts/vampires.sh 127.0.0.1, providerType=LOCAL, serverId=5b2f46b0-eadc-4ca2-98b6-dad9d027c664, id=a80b8d04-d6f5-4c4c-9139-eb7749726a33, cost=1.0, instanceType=local}, status=CONNECTED, createdAt=2016-11-05T23:15:57.758}
-2016-11-05 23:15:57,774 DEBUG a.s.Serialization(akka://ServerSystem) [ServerSystem-akka.remote.default-remote-dispatcher-8] [akka.serialization.Serialization(akka://ServerSystem)]- Using serializer[akka.serialization.JavaSerializer] for message [ro.cosu.vampires.server.values.AutoValue_ClientConfig]
-2016-11-05 23:15:57,782 DEBUG a.s.Serialization(akka://ServerSystem) [ServerSystem-akka.remote.default-remote-dispatcher-21] [akka.serialization.Serialization(akka://ServerSystem)]- Using serializer[akka.serialization.JavaSerializer] for message [akka.dispatch.sysmsg.Watch]
-2016-11-05 23:15:57,837 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-18] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Sending first Heartbeat to [akka.tcp://ClientSystem@127.0.0.1:43927]
-2016-11-05 23:15:57,838 DEBUG a.s.Serialization(akka://ServerSystem) [ServerSystem-akka.remote.default-remote-dispatcher-18] [akka.serialization.Serialization(akka://ServerSystem)]- Using serializer[akka.serialization.JavaSerializer] for message [akka.remote.RemoteWatcher$Heartbeat$]
-2016-11-05 23:15:57,938 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-23] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Received first heartbeat rsp from [akka.tcp://ClientSystem@127.0.0.1:43927]
-2016-11-05 23:15:57,943 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-23] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Re-watch [akka://ServerSystem/system/remote-watcher -&gt; akka.tcp://ClientSystem@127.0.0.1:43927/user/client]
-STARTING
-2016-11-05 23:15:58,635 DEBUG a.s.Serialization(akka://ServerSystem) [ServerSystem-akka.remote.default-remote-dispatcher-24] [akka.serialization.Serialization(akka://ServerSystem)]- Using serializer[akka.serialization.JavaSerializer] for message [ro.cosu.vampires.server.values.jobs.AutoValue_Job]
-2016-11-05 23:15:58,760 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-21] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Sending Heartbeat to [akka.tcp://ClientSystem@127.0.0.1:43927]
-2016-11-05 23:15:58,774 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-18] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Received heartbeat rsp from [akka.tcp://ClientSystem@127.0.0.1:43927]
-2016-11-05 23:15:59,770 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-23] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Sending Heartbeat to [akka.tcp://ClientSystem@127.0.0.1:43927]
-2016-11-05 23:15:59,778 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-23] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Received heartbeat rsp from [akka.tcp://ClientSystem@127.0.0.1:43927]
-STARTING
-2016-11-05 23:16:00,381 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from a80b8d04-d6f5-4c4c-9139-eb7749726a33. pending 6 remaining 0
-2016-11-05 23:16:00,770 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-24] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Sending Heartbeat to [akka.tcp://ClientSystem@127.0.0.1:43927]
-2016-11-05 23:16:00,780 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-7] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Received heartbeat rsp from [akka.tcp://ClientSystem@127.0.0.1:43927]
-2016-11-05 23:16:01,391 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from a80b8d04-d6f5-4c4c-9139-eb7749726a33. pending 5 remaining 0
-2016-11-05 23:16:01,771 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-18] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Sending Heartbeat to [akka.tcp://ClientSystem@127.0.0.1:43927]
-2016-11-05 23:16:01,776 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-18] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Received heartbeat rsp from [akka.tcp://ClientSystem@127.0.0.1:43927]
-RUNNING
-2016-11-05 23:16:02,341 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from a80b8d04-d6f5-4c4c-9139-eb7749726a33. pending 4 remaining 0
-2016-11-05 23:16:02,771 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-17] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Sending Heartbeat to [akka.tcp://ClientSystem@127.0.0.1:43927]
-2016-11-05 23:16:02,777 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-21] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Received heartbeat rsp from [akka.tcp://ClientSystem@127.0.0.1:43927]
-2016-11-05 23:16:03,397 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from a80b8d04-d6f5-4c4c-9139-eb7749726a33. pending 3 remaining 0
-2016-11-05 23:16:03,770 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-23] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Sending Heartbeat to [akka.tcp://ClientSystem@127.0.0.1:43927]
-2016-11-05 23:16:03,774 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-18] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Received heartbeat rsp from [akka.tcp://ClientSystem@127.0.0.1:43927]
-RUNNING
-2016-11-05 23:16:04,348 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from a80b8d04-d6f5-4c4c-9139-eb7749726a33. pending 2 remaining 0
-2016-11-05 23:16:04,770 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-23] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Sending Heartbeat to [akka.tcp://ClientSystem@127.0.0.1:43927]
-2016-11-05 23:16:04,780 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-16] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Received heartbeat rsp from [akka.tcp://ClientSystem@127.0.0.1:43927]
-2016-11-05 23:16:05,357 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from a80b8d04-d6f5-4c4c-9139-eb7749726a33. pending 1 remaining 0
-2016-11-05 23:16:05,374 DEBUG r.c.vampires.server.actors.WorkActor [ServerSystem-akka.actor.default-dispatcher-6] [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resultActor/workActor]- work actor exiting
-2016-11-05 23:16:05,407 DEBUG r.c.v.server.actors.ResultActor [ServerSystem-akka.actor.default-dispatcher-19] [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resultActor]- result actor exiting 6
-2016-11-05 23:16:05,411 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local a80b8d04-d6f5-4c4c-9139-eb7749726a33 = CONNECTED =&gt; STOPPING
-2016-11-05 23:16:05,411 DEBUG r.c.v.s.r.local.LocalResource [] []- local  a80b8d04-d6f5-4c4c-9139-eb7749726a33 stopping
-2016-11-05 23:16:05,411 DEBUG r.c.v.s.r.local.LocalResource [] []- execute [/bin/sh, -c, pgrep a80b8d04-d6f5-4c4c-9139-eb7749726a33; if [ $? -eq 0 ]; then pkill a80b8d04-d6f5-4c4c-9139-eb7749726a33; fi]
-2016-11-05 23:16:05,448 DEBUG r.c.v.s.r.local.LocalResource [] []- LOCAL local a80b8d04-d6f5-4c4c-9139-eb7749726a33 = STOPPING =&gt; STOPPED
-2016-11-05 23:16:05,449 DEBUG r.c.v.s.a.resource.ResourceActor [ForkJoinPool.commonPool-worker-25] [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resourceManagerActor/$a]- sending ResourceInfo{parameters=LocalResourceParameters{command=../client/build/install/client/scripts/vampires.sh 127.0.0.1, providerType=LOCAL, serverId=5b2f46b0-eadc-4ca2-98b6-dad9d027c664, id=a80b8d04-d6f5-4c4c-9139-eb7749726a33, cost=1.0, instanceType=local}, status=STOPPED, createdAt=2016-11-05T23:16:05.448} to Actor[akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resultActor#2074507500]
-2016-11-05 23:16:05,450 DEBUG r.c.v.s.a.r.ResourceManagerActor [ServerSystem-akka.actor.default-dispatcher-19] [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resourceManagerActor]- resource register ResourceInfo{parameters=LocalResourceParameters{command=../client/build/install/client/scripts/vampires.sh 127.0.0.1, providerType=LOCAL, serverId=5b2f46b0-eadc-4ca2-98b6-dad9d027c664, id=a80b8d04-d6f5-4c4c-9139-eb7749726a33, cost=1.0, instanceType=local}, status=STOPPED, createdAt=2016-11-05T23:16:05.448}
-2016-11-05 23:16:05,455 DEBUG r.c.v.s.a.r.ResourceManagerActor [ServerSystem-akka.actor.default-dispatcher-19] [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resourceManagerActor]- terminated Actor[akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resourceManagerActor/$a#1617842243]
-2016-11-05 23:16:05,455 DEBUG r.c.v.s.a.r.ResourceManagerActor [ServerSystem-akka.actor.default-dispatcher-19] [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resourceManagerActor]- shutting down resource manager
-2016-11-05 23:16:05,463 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-17] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Unwatching: [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resourceManagerActor -&gt; akka.tcp://ClientSystem@127.0.0.1:43927/user/client]
-2016-11-05 23:16:05,488 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-17] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Cleanup self watch of [akka.tcp://ClientSystem@127.0.0.1:43927/user/client]
-2016-11-05 23:16:05,488 DEBUG a.s.Serialization(akka://ServerSystem) [ServerSystem-akka.remote.default-remote-dispatcher-16] [akka.serialization.Serialization(akka://ServerSystem)]- Using serializer[akka.serialization.JavaSerializer] for message [akka.dispatch.sysmsg.Unwatch]
-2016-11-05 23:16:05,488 INFO  r.c.v.server.actors.ResultActor [ServerSystem-akka.actor.default-dispatcher-4] [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resultActor]- Total Duration: 0:00:15
-2016-11-05 23:16:05,488 INFO  r.c.v.server.actors.ResultActor [ServerSystem-akka.actor.default-dispatcher-4] [akka://ServerSystem/user/bootstrap/5b2f46b0-eadc-4ca2-98b6-dad9d027c664/resultActor]- shutting down
-2016-11-05 23:16:05,489 DEBUG akka.remote.RemoteWatcher [ServerSystem-akka.remote.default-remote-dispatcher-17] [akka.tcp://ServerSystem@127.0.0.1:2552/system/remote-watcher]- Unwatched last watchee of node: [akka.tcp://ClientSystem@127.0.0.1:43927]
-2016-11-05 23:16:05,651 INFO  r.c.v.s.w.json.JsonResultsWriter [] []- wrote results to /tmp/results-all-2016-11-05T23:16:05.651.json
-2016-11-05 23:16:05,704 INFO  r.c.v.server.actors.BootstrapActor [ServerSystem-akka.actor.default-dispatcher-20] [akka://ServerSystem/user/bootstrap]- 5b2f46b0-eadc-4ca2-98b6-dad9d027c664 terminated 
-2016-11-05 23:16:05,711 DEBUG a.s.Serialization(akka://ServerSystem) [ServerSystem-akka.remote.default-remote-dispatcher-23] [akka.serialization.Serialization(akka://ServerSystem)]- Using serializer[akka.serialization.JavaSerializer] for message [akka.dispatch.sysmsg.DeathWatchNotification]
-FINISHED
+2016-11-06 09:55:17,245 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
+2016-11-06 09:55:17,262 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://ServerSystem)]- logger log1-Slf4jLogger started
+2016-11-06 09:55:17,267 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://ServerSystem)]- Default Loggers started
+2016-11-06 09:55:17,416 INFO  akka.remote.Remoting [Test worker] [akka.remote.Remoting]- Starting remoting
+2016-11-06 09:55:18,070 INFO  akka.remote.Remoting [Test worker] [akka.remote.Remoting]- Remoting started; listening on addresses :[akka.tcp://ServerSystem@127.0.0.1:2552]
+2016-11-06 09:55:18,074 INFO  akka.remote.Remoting [Test worker] [akka.remote.Remoting]- Remoting now listens on addresses: [akka.tcp://ServerSystem@127.0.0.1:2552]
+2016-11-06 09:55:18,323 DEBUG r.c.v.s.actors.settings.Settings [] []- Providers: [LOCAL]
+2016-11-06 09:55:18,902 INFO  s.e.jetty.EmbeddedJettyServer [] []- == Spark has ignited ...
+2016-11-06 09:55:18,903 INFO  s.e.jetty.EmbeddedJettyServer [] []- &gt;&gt; Listening on 0.0.0.0:9876
+2016-11-06 09:55:20,362 DEBUG spark.route.Routes [] []- Adds route: get, /providers, spark.ResponseTransformerRouteImpl$1@25582cc9
+2016-11-06 09:55:20,409 DEBUG spark.route.Routes [] []- Adds route: get, /configurations, spark.ResponseTransformerRouteImpl$1@58edddda
+2016-11-06 09:55:20,411 DEBUG spark.route.Routes [] []- Adds route: get, /configurations/:id, spark.ResponseTransformerRouteImpl$1@20fe4627
+2016-11-06 09:55:20,413 DEBUG spark.route.Routes [] []- Adds route: delete, /configurations/:id, spark.ResponseTransformerRouteImpl$1@8058db4
+2016-11-06 09:55:20,414 DEBUG spark.route.Routes [] []- Adds route: post, /configurations, spark.ResponseTransformerRouteImpl$1@5f12b17e
+2016-11-06 09:55:20,417 DEBUG spark.route.Routes [] []- Adds route: post, /configurations/:id, spark.ResponseTransformerRouteImpl$1@4171da2b
+2016-11-06 09:55:20,418 DEBUG spark.route.Routes [] []- Adds route: get, /executions, spark.ResponseTransformerRouteImpl$1@77f82fe9
+2016-11-06 09:55:20,422 DEBUG spark.route.Routes [] []- Adds route: get, /executions/:id, spark.ResponseTransformerRouteImpl$1@381713bf
+2016-11-06 09:55:20,422 DEBUG spark.route.Routes [] []- Adds route: delete, /executions/:id, spark.ResponseTransformerRouteImpl$1@331ee66f
+2016-11-06 09:55:20,422 DEBUG spark.route.Routes [] []- Adds route: post, /executions, spark.ResponseTransformerRouteImpl$1@6c659257
+2016-11-06 09:55:20,423 DEBUG spark.route.Routes [] []- Adds route: post, /executions/:id, spark.ResponseTransformerRouteImpl$1@5ad47f55
+2016-11-06 09:55:20,425 DEBUG spark.route.Routes [] []- Adds route: get, /workloads, spark.ResponseTransformerRouteImpl$1@5e00634a
+2016-11-06 09:55:20,426 DEBUG spark.route.Routes [] []- Adds route: get, /workloads/:id, spark.ResponseTransformerRouteImpl$1@27d78108
+2016-11-06 09:55:20,427 DEBUG spark.route.Routes [] []- Adds route: delete, /workloads/:id, spark.ResponseTransformerRouteImpl$1@d89bc64
+2016-11-06 09:55:20,427 DEBUG spark.route.Routes [] []- Adds route: post, /workloads, spark.ResponseTransformerRouteImpl$1@2e72d091
+2016-11-06 09:55:20,428 DEBUG spark.route.Routes [] []- Adds route: post, /workloads/:id, spark.ResponseTransformerRouteImpl$1@73b5ec26
+2016-11-06 09:55:20,438 DEBUG spark.route.Routes [] []- Adds route: options, /*, spark.RouteImpl$1@39aae0f1
+2016-11-06 09:55:20,450 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@750e3509
+2016-11-06 09:55:20,558 DEBUG r.c.v.s.r.c.FilesController [] []- Upload dir /tmp/vampires
+2016-11-06 09:55:20,559 DEBUG spark.route.Routes [] []- Adds route: post, /upload, spark.ResponseTransformerRouteImpl$1@19e62f4a
+2016-11-06 09:55:20,559 DEBUG spark.route.Routes [] []- Adds route: get, /upload, spark.ResponseTransformerRouteImpl$1@c66ad80
+2016-11-06 09:55:20,560 DEBUG spark.route.Routes [] []- Adds route: get, /upload/:id, spark.RouteImpl$1@34caaebe
+2016-11-06 09:55:20,563 DEBUG spark.route.Routes [] []- Adds route: delete, /upload/:id, spark.ResponseTransformerRouteImpl$1@283b61a0
+2016-11-06 09:55:20,573 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@1d592896
+2016-11-06 09:55:20,574 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
+2016-11-06 09:55:20,595 DEBUG r.c.v.server.actors.BootstrapActor [ServerSystem-akka.actor.default-dispatcher-3] [akka://ServerSystem/user/bootstrap]- Started webserver
+2016-11-06 09:55:20,612 DEBUG r.c.v.server.actors.Terminator [ServerSystem-akka.actor.default-dispatcher-2] [akka://ServerSystem/user/terminator]- watching Actor[akka://ServerSystem/user/bootstrap#1782966876]
+2016-11-06 09:55:20,619 DEBUG r.c.v.server.actors.BootstrapActor [ServerSystem-akka.actor.default-dispatcher-3] [akka://ServerSystem/user/bootstrap]- Bootstrap actor is up
+2016-11-06 09:55:20,625 DEBUG r.c.v.server.actors.WorkloadsActor [ServerSystem-akka.actor.default-dispatcher-4] [akka://ServerSystem/user/bootstrap/workloads]- Created workload Workload{id=84e25034-8330-44d5-817c-f70a6077f7a7, createdAt=2016-11-06T09:55:18.473, updatedAt=2016-11-06T09:55:18.473, sequenceStart=0, sequenceStop=5, task=sleep 1, format=%s, url=, file=, description=}
+2016-11-06 09:55:20,627 INFO  a.r.RemoteActorRefProvider$RemoteDeadLetterActorRef [ServerSystem-akka.actor.default-dispatcher-6] [akka://ServerSystem/deadLetters]- Message [ro.cosu.vampires.server.values.jobs.AutoValue_Workload] from Actor[akka://ServerSystem/user/bootstrap/workloads#909469374] to Actor[akka://ServerSystem/deadLetters] was not delivered. [1] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
+2016-11-06 09:55:20,651 DEBUG r.c.v.s.actors.ConfigurationsActor [ServerSystem-akka.actor.default-dispatcher-4] [akka://ServerSystem/user/bootstrap/configurations]- Created configuration Configuration{id=5ccd0faf-e669-4354-ac1f-3daeab96636a, createdAt=2016-11-06T09:55:18.212, updatedAt=2016-11-06T09:55:18.212, description=integration testt, cost=1.0, resources=[ResourceDemand{resourceDescription=ResourceDescription{type=local, provider=LOCAL, cost=0.0, id=d278e656-1abf-3f00-8cee-bddc84d0445b, createdAt=2016-11-06T09:55:18.164, updatedAt=2016-11-06T09:55:18.164}, count=1}]}
+2016-11-06 09:55:20,651 INFO  a.r.RemoteActorRefProvider$RemoteDeadLetterActorRef [ServerSystem-akka.actor.default-dispatcher-2] [akka://ServerSystem/deadLetters]- Message [ro.cosu.vampires.server.values.resources.AutoValue_Configuration] from Actor[akka://ServerSystem/user/bootstrap/configurations#-1840493068] to Actor[akka://ServerSystem/deadLetters] was not delivered. [2] dead letters encountered. This logging can be turned off or adjusted with configuration settings 'akka.log-dead-letters' and 'akka.log-dead-letters-during-shutdown'.
 </pre>
 </span>
 </div>
@@ -234,7 +220,7 @@ FINISHED
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 3.0</a> at Nov 5, 2016 11:16:06 PM</p>
+<a href="http://www.gradle.org">Gradle 3.0</a> at Nov 6, 2016 9:55:21 AM</p>
 </div>
 </div>
 </body>

@@ -42,7 +42,7 @@ import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
 import ro.cosu.vampires.server.resources.ResourceInfo;
-import ro.cosu.vampires.server.schedulers.SamplingScheduler;
+import ro.cosu.vampires.server.schedulers.SamplingWithReplicationScheduler;
 import ro.cosu.vampires.server.schedulers.Scheduler;
 import ro.cosu.vampires.server.schedulers.SimpleScheduler;
 import ro.cosu.vampires.server.values.ClientInfo;
@@ -124,13 +124,13 @@ public class ResultActor extends UntypedActor {
 <span class="fc bfc" id="L124" title="All 2 branches covered.">        } else if (message instanceof ResourceInfo) {</span>
 <span class="fc" id="L125">            handleResourceInfo((ResourceInfo) message);</span>
 <span class="pc bpc" id="L126" title="1 of 2 branches missed.">        } else if (message instanceof ResourceControl.Shutdown) {</span>
-<span class="fc" id="L127">            handleShutdown((ResourceControl.Shutdown) message);</span>
+<span class="fc" id="L127">            handleShutdown();</span>
         } else {
 <span class="nc" id="L129">            unhandled(message);</span>
         }
 <span class="fc" id="L131">    }</span>
 
-    private void handleShutdown(ResourceControl.Shutdown message) {
+    private void handleShutdown() {
         // if all jobs done then set status to finished
 <span class="pc bpc" id="L135" title="1 of 2 branches missed.">        if (results.size() == totalSize) {</span>
 <span class="nc" id="L136">            shutdown(ExecutionInfo.Status.FINISHED);</span>
@@ -194,7 +194,7 @@ public class ResultActor extends UntypedActor {
 <span class="fc" id="L194">        List&lt;Job&gt; jobs = execution.workload().jobs();</span>
 <span class="fc bfc" id="L195" title="All 2 branches covered.">        if (execution.type().equals(ExecutionMode.SAMPLE)) {</span>
 <span class="fc" id="L196">            log.info(&quot;running in sampling mode : sampling from {} jobs&quot;, jobs.size());</span>
-<span class="fc" id="L197">            return new SamplingScheduler(jobs, settings.getJobDeadline(),</span>
+<span class="fc" id="L197">            return new SamplingWithReplicationScheduler(jobs, settings.getJobDeadline(),</span>
 <span class="fc" id="L198">                    settings.getBackoffInterval(), settings.getNumberOfJobsToSample());</span>
         } else
 <span class="fc" id="L200">            return new SimpleScheduler(jobs, settings.getJobDeadline(), TimeUnit.SECONDS,</span>

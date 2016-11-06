@@ -43,7 +43,6 @@ import java.util.stream.Collectors;
 
 import akka.actor.Extension;
 import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.jobs.Job;
 import ro.cosu.vampires.server.values.jobs.JobUtil;
 import ro.cosu.vampires.server.values.resources.ProviderDescription;
@@ -63,7 +62,7 @@ public class SettingsImpl implements Extension {
     private static final String ENABLED_WRITERS = &quot;enabled-writers&quot;;
     private static final String BACKOFF_INTERVAL_SECONDS = &quot;backoff-interval-seconds&quot;;
     private static final int DEFAULT_CPU_SET_SIZE = 1;
-<span class="fc" id="L66">    private static final Logger LOG = LoggerFactory.getLogger(Settings.class);</span>
+<span class="fc" id="L65">    private static final Logger LOG = LoggerFactory.getLogger(Settings.class);</span>
     private final static int DEFAULT_MAX_JOB_DEADLINE = 60;
     private final static int DEFAULT_BACK_OFF_INTERVAL = 20;
     private final static String DEFAULT_EXECUTOR = &quot;FORK&quot;;
@@ -71,8 +70,9 @@ public class SettingsImpl implements Extension {
     public final Config vampires;
 
 
-<span class="fc" id="L74">    public SettingsImpl(Config config) {</span>
-<span class="fc" id="L75">        vampires = config.getConfig(&quot;vampires&quot;);</span>
+<span class="fc" id="L73">    public SettingsImpl(Config config) {</span>
+<span class="fc" id="L74">        vampires = config.getConfig(&quot;vampires&quot;);</span>
+<span class="fc" id="L75">        LOG.debug(&quot;Providers: {}&quot;, getProviders().keySet());</span>
 <span class="fc" id="L76">    }</span>
 
     public List&lt;ResultsWriter&gt; getWriters() {
@@ -174,11 +174,6 @@ public class SettingsImpl implements Extension {
 
                 }
 <span class="fc" id="L176">        ).collect(Collectors.toMap(ProviderDescription::provider, Function.identity()));</span>
-    }
-
-
-    public User getDefaultUser() {
-<span class="nc" id="L181">        return User.admin();</span>
     }
 }
 
