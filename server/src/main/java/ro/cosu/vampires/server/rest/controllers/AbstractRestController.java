@@ -79,6 +79,7 @@ public abstract class AbstractRestController<T extends Id, P> implements Control
         Spark.post(idPath, update(), JsonTransformer.get());
     }
 
+    @Override
     public Route list() {
         return (request, response) -> {
             logRequest("list", request);
@@ -97,6 +98,7 @@ public abstract class AbstractRestController<T extends Id, P> implements Control
         };
     }
 
+    @Override
     public Route get() {
         return (request, response) -> {
             logRequest("get", request);
@@ -110,6 +112,7 @@ public abstract class AbstractRestController<T extends Id, P> implements Control
         };
     }
 
+    @Override
     public Route delete() {
         return ((request, response) -> {
             logRequest("delete", request);
@@ -121,6 +124,7 @@ public abstract class AbstractRestController<T extends Id, P> implements Control
         });
     }
 
+    @Override
     public Route update() {
         return (request, response) -> {
             logRequest("update", request);

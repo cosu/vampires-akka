@@ -47,6 +47,7 @@ public abstract class Execution implements Id {
                 .id(UUID.randomUUID().toString());
     }
 
+    @Override
     public abstract String id();
 
     public abstract Configuration configuration();
@@ -57,9 +58,10 @@ public abstract class Execution implements Id {
 
     public abstract ExecutionInfo info();
 
-
+    @Override
     public abstract LocalDateTime createdAt();
 
+    @Override
     public abstract LocalDateTime updatedAt();
 
     public abstract Builder toBuilder();

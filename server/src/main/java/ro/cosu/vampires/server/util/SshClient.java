@@ -103,10 +103,12 @@ public class SshClient {
 
     public static class JSCHLogger implements com.jcraft.jsch.Logger {
 
+        @Override
         public boolean isEnabled(int level) {
             return true;
         }
 
+        @Override
         public void log(int level, String message) {
             if (level == DEBUG) {
                 LOG.debug(message);

@@ -46,6 +46,7 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
                 .serverId("");
     }
 
+    @Override
     public abstract String command();
 
     public abstract String user();
@@ -56,23 +57,30 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
 
     public abstract int port();
 
+    @Override
     public abstract double cost();
 
+    @Override
     public abstract Resource.ProviderType providerType();
 
+    @Override
     public abstract String serverId();
 
     public abstract Builder toBuilder();
 
+    @Override
     public abstract String id();
 
+    @Override
     public abstract String instanceType();
 
 
+    @Override
     public Das5ResourceParameters withServerId(String serverId) {
         return toBuilder().serverId(serverId).build();
     }
 
+    @Override
     public Resource.Parameters withId(String id) {
         return toBuilder().id(id).build();
     }
@@ -96,8 +104,10 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
 
         public abstract Builder serverId(String s);
 
+        @Override
         public abstract Builder instanceType(String instanceType);
 
+        @Override
         public Builder fromConfig(Config config) {
 
             this.command(config.getString("command"));
@@ -113,6 +123,7 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
 
         public abstract Builder id(String id);
 
+        @Override
         public abstract Das5ResourceParameters build();
 
     }

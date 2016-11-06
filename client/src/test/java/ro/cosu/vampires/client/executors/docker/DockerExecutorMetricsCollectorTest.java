@@ -53,6 +53,7 @@ import ro.cosu.vampires.client.executors.ExecutorMetricsCollector;
 import ro.cosu.vampires.server.values.jobs.metrics.Metric;
 import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -120,7 +121,7 @@ public class DockerExecutorMetricsCollectorTest {
                 .create();
 
         InputStream resourceAsStream = this.getClass().getResourceAsStream("/statistics.json");
-        JsonReader read = new JsonReader(new InputStreamReader(resourceAsStream));
+        JsonReader read = new JsonReader(new InputStreamReader(resourceAsStream, UTF_8));
         Statistics statistics = gson.fromJson(read, Statistics.class);
 
         Metric metric = DockerExecutorMetricsCollector.convertDockerStatsToMetrics(statistics);

@@ -27,6 +27,7 @@
 package ro.cosu.vampires.server.values.resources;
 
 import com.google.auto.value.AutoValue;
+import com.google.common.base.Charsets;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -52,10 +53,13 @@ public abstract class ResourceDescription implements Id {
 
     public abstract double cost();
 
+    @Override
     public abstract String id();
 
+    @Override
     public abstract LocalDateTime createdAt();
 
+    @Override
     public abstract LocalDateTime updatedAt();
 
     @AutoValue.Builder
@@ -80,7 +84,7 @@ public abstract class ResourceDescription implements Id {
         abstract ResourceDescription autoBuild();
 
         public ResourceDescription build() {
-            String result = UUID.nameUUIDFromBytes((provider().toString() + type()).getBytes()).toString();
+            String result = UUID.nameUUIDFromBytes((provider().toString() + type()).getBytes(Charsets.UTF_8)).toString();
             id(result);
             return autoBuild();
         }

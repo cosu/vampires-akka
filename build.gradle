@@ -32,7 +32,16 @@ wrapper {
     gradleVersion = '3.0'
 }
 
-
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath 'net.ltgt.gradle:gradle-errorprone-plugin:0.0.8'
+    }
+}
 
 allprojects {
     gradle.projectsEvaluated {
@@ -43,12 +52,13 @@ allprojects {
 
 }
 
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'application'
     apply plugin: 'idea'
     apply plugin: 'jacoco'
-//    apply plugin: 'findbugs'
+    apply plugin: 'net.ltgt.errorprone'
 
     idea {
         module {
@@ -57,6 +67,10 @@ subprojects {
             downloadJavadoc = true
             downloadSources = true
         }
+    }
+
+    configurations.errorprone {
+        resolutionStrategy.force 'com.google.errorprone:error_prone_core:2.0.14'
     }
 
     compileJava {

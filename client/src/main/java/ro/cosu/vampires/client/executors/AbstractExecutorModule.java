@@ -60,6 +60,7 @@ public abstract class AbstractExecutorModule extends AbstractModule {
         return this.config;
     }
 
+    @Override
     protected abstract void configure();
 
     @Provides

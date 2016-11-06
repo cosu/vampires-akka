@@ -1,5 +1,6 @@
 package ro.cosu.vampires.server.rest.controllers;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
@@ -74,7 +75,7 @@ public class FilesControllerTest {
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 
-        builder.addBinaryBody("file", BODY.getBytes(), ContentType.APPLICATION_OCTET_STREAM, "test.txt");
+        builder.addBinaryBody("file", BODY.getBytes(Charsets.UTF_8), ContentType.APPLICATION_OCTET_STREAM, "test.txt");
         HttpEntity entity = builder.build();
         HttpPost post = new HttpPost(url + "/upload");
         post.setEntity(entity);

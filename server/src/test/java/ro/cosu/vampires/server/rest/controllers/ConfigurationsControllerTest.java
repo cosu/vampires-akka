@@ -48,6 +48,7 @@ public class ConfigurationsControllerTest extends AbstractControllerTest<Configu
         return actorSystem.actorOf(ConfigurationsActor.props());
     }
 
+    @Override
     protected AbstractModule getModule() {
         return new AbstractModule() {
             @Override

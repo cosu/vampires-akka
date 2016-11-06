@@ -44,10 +44,12 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
                 .serverId("");
     }
 
+    @Override
     public abstract String command();
 
     public abstract String imageId();
 
+    @Override
     public abstract String instanceType();
 
     public abstract String keyName();
@@ -56,20 +58,26 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
 
     public abstract String securityGroup();
 
+    @Override
     public abstract Resource.ProviderType providerType();
 
+    @Override
     public abstract String serverId();
 
+    @Override
     public abstract String id();
 
+    @Override
     public abstract double cost();
 
     public abstract Builder toBuilder();
 
+    @Override
     public EC2ResourceParameters withServerId(String serverId) {
         return toBuilder().serverId(serverId).build();
     }
 
+    @Override
     public Resource.Parameters withId(String id) {
         return toBuilder().id(id).build();
     }
@@ -85,6 +93,7 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
 
         public abstract Builder id(String id);
 
+        @Override
         public abstract Builder instanceType(String s);
 
         public abstract Builder keyName(String s);
@@ -97,6 +106,7 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
 
         public abstract Builder providerType(Resource.ProviderType providerType);
 
+        @Override
         public Builder fromConfig(Config config) {
             String region = config.getString("region");
             Preconditions.checkArgument(region.split("-").length == 3, "Invalid region: " + region);
@@ -111,6 +121,7 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
         }
 
 
+        @Override
         public abstract EC2ResourceParameters build();
     }
 }

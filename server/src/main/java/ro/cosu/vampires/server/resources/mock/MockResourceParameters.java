@@ -46,36 +46,43 @@ public abstract class MockResourceParameters implements Resource.Parameters {
                 .serverId("");
     }
 
+    @Override
     public abstract String command();
 
+    @Override
     public abstract Resource.ProviderType providerType();
 
+    @Override
     public abstract String serverId();
 
     public abstract Builder toBuilder();
 
+    @Override
     public abstract String instanceType();
 
+    @Override
     public abstract String id();
 
-
+    @Override
     public abstract double cost();
 
+    @Override
     public MockResourceParameters withServerId(String serverId) {
         return toBuilder().serverId("").build();
     }
 
+    @Override
     public Resource.Parameters withId(String id) {
         return toBuilder().id(id).build();
     }
 
     @AutoValue.Builder
     public abstract static class Builder implements Resource.Parameters.Builder {
+        @Override
         public Builder fromConfig(Config config) {
             this.command(config.getString("command"));
             return this;
         }
-
 
         public abstract Builder providerType(Resource.ProviderType providerType);
 
@@ -83,12 +90,14 @@ public abstract class MockResourceParameters implements Resource.Parameters {
 
         public abstract Builder serverId(String serverId);
 
+        @Override
         public abstract Builder instanceType(String instanceType);
 
         public abstract Builder id(String id);
 
         public abstract Builder cost(double cost);
 
+        @Override
         public abstract MockResourceParameters build();
 
     }

@@ -45,30 +45,39 @@ public abstract class LocalResourceParameters implements Resource.Parameters {
                 .serverId("");
     }
 
+    @Override
     public abstract String command();
 
+    @Override
     public abstract Resource.ProviderType providerType();
 
+    @Override
     public abstract String serverId();
 
+    @Override
     public abstract String id();
 
+    @Override
     public abstract double cost();
 
+    @Override
     public abstract String instanceType();
 
     public abstract Builder toBuilder();
 
+    @Override
     public LocalResourceParameters withServerId(String serverId) {
         return toBuilder().serverId(serverId).build();
     }
 
+    @Override
     public Resource.Parameters withId(String id) {
         return toBuilder().id(id).build();
     }
 
     @AutoValue.Builder
     public abstract static class Builder implements Resource.Parameters.Builder {
+        @Override
         public Builder fromConfig(Config config) {
             this.cost(config.getDouble("cost"));
             this.command(config.getString("command"));
@@ -85,8 +94,10 @@ public abstract class LocalResourceParameters implements Resource.Parameters {
 
         public abstract Builder serverId(String serverId);
 
+        @Override
         public abstract Builder instanceType(String instanceType);
 
+        @Override
         public abstract LocalResourceParameters build();
 
     }

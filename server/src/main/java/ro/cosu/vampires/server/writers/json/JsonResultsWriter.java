@@ -91,6 +91,7 @@ public class JsonResultsWriter implements ResultsWriter {
         clients.add(clientInfo);
     }
 
+    @Override
     public void close() {
         //write results to disk
         try (BufferedWriter fileWriter = Files.newWriter(getPath("results-all").toFile(), Charsets.UTF_8)) {

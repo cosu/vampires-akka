@@ -75,10 +75,13 @@ public abstract class Configuration implements Id {
         return toBuilder().cost(cost).build();
     }
 
+    @Override
     public abstract String id();
 
+    @Override
     public abstract LocalDateTime createdAt();
 
+    @Override
     public abstract LocalDateTime updatedAt();
 
     public abstract String description();

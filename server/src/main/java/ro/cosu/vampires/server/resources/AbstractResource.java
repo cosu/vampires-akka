@@ -46,18 +46,20 @@ public abstract class AbstractResource implements Resource {
 
     protected abstract Logger getLogger();
 
+    @Override
     public CompletableFuture<Resource> start() {
         return CompletableFuture.supplyAsync(this::startCall)
                 .exceptionally(this::fail);
     }
 
+    @Override
     public CompletableFuture<Resource> stop() {
         return CompletableFuture.supplyAsync(this::stopCall)
                 .exceptionally(this::fail);
 
     }
 
-    public Resource startCall() {
+    private Resource startCall() {
         setStatus(Status.STARTING);
         try {
             this.onStart();
@@ -68,7 +70,7 @@ public abstract class AbstractResource implements Resource {
         return this;
     }
 
-    public Resource fail(Throwable ex) {
+    private Resource fail(Throwable ex) {
         getLogger().debug("failed resource", ex);
         try {
             this.onFail();
@@ -80,7 +82,7 @@ public abstract class AbstractResource implements Resource {
         return this;
     }
 
-    public Resource stopCall() {
+    private Resource stopCall() {
         Set<Status> invalidStatus = Sets.immutableEnumSet(Status.STOPPED,
                 Status.FAILED, Status.STOPPING, Status.UNKNOWN);
         if (invalidStatus.contains(status))
@@ -105,7 +107,6 @@ public abstract class AbstractResource implements Resource {
     public Parameters parameters() {
         return parameters;
     }
-
 
     @Override
     public Status status() {

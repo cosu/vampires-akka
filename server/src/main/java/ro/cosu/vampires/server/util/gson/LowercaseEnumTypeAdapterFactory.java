@@ -42,6 +42,7 @@ import java.util.Map;
 
 public class LowercaseEnumTypeAdapterFactory implements TypeAdapterFactory {
     @SuppressWarnings("unchecked")
+    @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
         Class<T> rawType = (Class<T>) type.getRawType();
         if (!rawType.isEnum()) {
@@ -54,6 +55,7 @@ public class LowercaseEnumTypeAdapterFactory implements TypeAdapterFactory {
         }
 
         return new TypeAdapter<T>() {
+            @Override
             public void write(JsonWriter out, T value) throws IOException {
                 if (value == null) {
                     out.nullValue();
@@ -62,6 +64,7 @@ public class LowercaseEnumTypeAdapterFactory implements TypeAdapterFactory {
                 }
             }
 
+            @Override
             public T read(JsonReader reader) throws IOException {
                 if (reader.peek() == JsonToken.NULL) {
                     reader.nextNull();

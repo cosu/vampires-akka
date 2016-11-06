@@ -63,6 +63,7 @@ public class NetworkSource implements Source {
 
     }
 
+    @Override
     public void register() {
         NetworkIF[] netArray = hal.getNetworkIFs();
         for (NetworkIF net : netArray) {

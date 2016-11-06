@@ -65,6 +65,7 @@ public class ConfigurationIterator implements Iterator<Configuration> {
         return Configuration.builder().resources(ImmutableList.copyOf(collect)).build();
     }
 
+    @Override
     public boolean hasNext() {
         Integer current = lastSchedule.values().stream().reduce(0, (a, b) -> a + b);
         Integer max = maxResources.values().stream().reduce(0, (a, b) -> a + b);

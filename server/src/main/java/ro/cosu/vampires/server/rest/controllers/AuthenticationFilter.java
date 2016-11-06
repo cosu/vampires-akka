@@ -38,6 +38,7 @@ import spark.Request;
 import spark.Response;
 
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static spark.Spark.before;
 import static spark.Spark.halt;
 
@@ -88,7 +89,7 @@ public class AuthenticationFilter {
 
     private static String getCredentialsFromHeader(String auth) {
         String b64Credentials = auth.substring("Basic".length()).trim();
-        return new String(Base64.getDecoder().decode(b64Credentials));
+        return new String(Base64.getDecoder().decode(b64Credentials), UTF_8);
     }
 
     private void unauthorized(Request request, Response response) {

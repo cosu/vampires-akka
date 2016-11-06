@@ -53,8 +53,6 @@ import ro.cosu.vampires.server.writers.mongo.MongoWriter;
 
 public class SettingsImpl implements Extension {
 
-    public static final String SAMPLING_MODE = "sampling";
-    public static final String MODE = "mode";
     private static final String SAMPLE_SIZE = "sample-size";
     private static final String EXECUTORS = "executors";
     private static final String CPU_SET_SIZE = "cpu-set-size";

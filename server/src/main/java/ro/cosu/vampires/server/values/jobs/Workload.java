@@ -73,10 +73,13 @@ public abstract class Workload implements Id {
     }
 
 
+    @Override
     public abstract String id();
 
+    @Override
     public abstract LocalDateTime createdAt();
 
+    @Override
     public abstract LocalDateTime updatedAt();
 
     public abstract int sequenceStart();

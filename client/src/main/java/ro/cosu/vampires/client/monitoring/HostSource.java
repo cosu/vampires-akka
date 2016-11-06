@@ -54,7 +54,7 @@ public class HostSource implements Source {
         this.si = si;
     }
 
-
+    @Override
     public void register() {
         metricRegistry.register(name(getName(), "ram"), ramGauge());
         metricRegistry.register(name(getName(), "cpu-vendor"), cpuVendorGague());

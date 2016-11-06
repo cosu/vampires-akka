@@ -36,10 +36,12 @@ public class Settings extends AbstractExtensionId<SettingsImpl>
     private Settings() {
     }
 
+    @Override
     public Settings lookup() {
         return Settings.SettingsProvider;
     }
 
+    @Override
     public SettingsImpl createExtension(ExtendedActorSystem system) {
         return new SettingsImpl(system.settings().config());
     }

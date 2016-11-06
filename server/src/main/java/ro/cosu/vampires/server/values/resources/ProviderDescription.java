@@ -27,6 +27,7 @@
 package ro.cosu.vampires.server.values.resources;
 
 import com.google.auto.value.AutoValue;
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 
@@ -58,10 +59,13 @@ public abstract class ProviderDescription implements Id {
 
     public abstract ImmutableMap<String, ResourceDescription> resourceDescriptions();
 
+    @Override
     public abstract String id();
 
+    @Override
     public abstract LocalDateTime createdAt();
 
+    @Override
     public abstract LocalDateTime updatedAt();
 
     @AutoValue.Builder
@@ -83,7 +87,7 @@ public abstract class ProviderDescription implements Id {
         abstract ProviderDescription autoBuild();
 
         public ProviderDescription build() {
-            String result = UUID.nameUUIDFromBytes(provider().toString().getBytes()).toString();
+            String result = UUID.nameUUIDFromBytes(provider().toString().getBytes(Charsets.UTF_8)).toString();
             id(result);
             return autoBuild();
         }

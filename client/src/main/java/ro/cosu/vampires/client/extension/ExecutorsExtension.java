@@ -36,10 +36,12 @@ public class ExecutorsExtension extends AbstractExtensionId<ExecutorsExtensionIm
     private ExecutorsExtension() {
     }
 
+    @Override
     public ExecutorsExtension lookup() {
         return ExecutorsExtension.ExecutorsProvider;
     }
 
+    @Override
     public ExecutorsExtensionImpl createExtension(ExtendedActorSystem system) {
         return new ExecutorsExtensionImpl(system.settings().config());
     }
