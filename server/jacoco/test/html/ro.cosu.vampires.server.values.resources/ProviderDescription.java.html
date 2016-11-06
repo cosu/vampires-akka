@@ -27,6 +27,7 @@
 package ro.cosu.vampires.server.values.resources;
 
 import com.google.auto.value.AutoValue;
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 
@@ -40,12 +41,12 @@ import ro.cosu.vampires.server.values.Id;
 @AutoValue
 @AutoGson
 
-<span class="fc" id="L43">public abstract class ProviderDescription implements Id {</span>
+<span class="fc" id="L44">public abstract class ProviderDescription implements Id {</span>
 
     public static ProviderDescription.Builder builder() {
-<span class="fc" id="L46">        return new AutoValue_ProviderDescription.Builder()</span>
-<span class="fc" id="L47">                .createdAt(LocalDateTime.now())</span>
-<span class="fc" id="L48">                .updatedAt(LocalDateTime.now());</span>
+<span class="fc" id="L47">        return new AutoValue_ProviderDescription.Builder()</span>
+<span class="fc" id="L48">                .createdAt(LocalDateTime.now())</span>
+<span class="fc" id="L49">                .updatedAt(LocalDateTime.now());</span>
     }
 
     public abstract Resource.ProviderType provider();
@@ -53,19 +54,22 @@ import ro.cosu.vampires.server.values.Id;
     public abstract String description();
 
     public ImmutableCollection&lt;ResourceDescription&gt; resources() {
-<span class="nc" id="L56">        return resourceDescriptions().values();</span>
+<span class="nc" id="L57">        return resourceDescriptions().values();</span>
     }
 
     public abstract ImmutableMap&lt;String, ResourceDescription&gt; resourceDescriptions();
 
+    @Override
     public abstract String id();
 
+    @Override
     public abstract LocalDateTime createdAt();
 
+    @Override
     public abstract LocalDateTime updatedAt();
 
-<span class="fc" id="L67">    @AutoValue.Builder</span>
-<span class="fc" id="L68">    public static abstract class Builder {</span>
+    @AutoValue.Builder
+<span class="fc" id="L72">    public static abstract class Builder {</span>
         public abstract Builder provider(Resource.ProviderType provider);
 
         public abstract Resource.ProviderType provider();
@@ -83,9 +87,9 @@ import ro.cosu.vampires.server.values.Id;
         abstract ProviderDescription autoBuild();
 
         public ProviderDescription build() {
-<span class="fc" id="L86">            String result = UUID.nameUUIDFromBytes(provider().toString().getBytes()).toString();</span>
-<span class="fc" id="L87">            id(result);</span>
-<span class="fc" id="L88">            return autoBuild();</span>
+<span class="fc" id="L90">            String result = UUID.nameUUIDFromBytes(provider().toString().getBytes(Charsets.UTF_8)).toString();</span>
+<span class="fc" id="L91">            id(result);</span>
+<span class="fc" id="L92">            return autoBuild();</span>
         }
     }
 }

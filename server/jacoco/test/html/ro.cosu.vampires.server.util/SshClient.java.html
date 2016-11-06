@@ -103,23 +103,25 @@ import java.util.Properties;
 
 <span class="fc" id="L104">    public static class JSCHLogger implements com.jcraft.jsch.Logger {</span>
 
+        @Override
         public boolean isEnabled(int level) {
-<span class="fc" id="L107">            return true;</span>
+<span class="fc" id="L108">            return true;</span>
         }
 
+        @Override
         public void log(int level, String message) {
-<span class="pc bpc" id="L111" title="1 of 2 branches missed.">            if (level == DEBUG) {</span>
-<span class="nc" id="L112">                LOG.debug(message);</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">            } else if (level == INFO) {</span>
-<span class="fc" id="L114">                LOG.info(message);</span>
-<span class="pc bpc" id="L115" title="1 of 2 branches missed.">            } else if (level == WARN) {</span>
-<span class="fc" id="L116">                LOG.warn(message);</span>
-<span class="nc bnc" id="L117" title="All 2 branches missed.">            } else if (level == ERROR) {</span>
-<span class="nc" id="L118">                LOG.error(message);</span>
-<span class="nc bnc" id="L119" title="All 2 branches missed.">            } else if (level == FATAL) {</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">            if (level == DEBUG) {</span>
+<span class="nc" id="L114">                LOG.debug(message);</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">            } else if (level == INFO) {</span>
+<span class="fc" id="L116">                LOG.info(message);</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">            } else if (level == WARN) {</span>
+<span class="fc" id="L118">                LOG.warn(message);</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">            } else if (level == ERROR) {</span>
 <span class="nc" id="L120">                LOG.error(message);</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">            } else if (level == FATAL) {</span>
+<span class="nc" id="L122">                LOG.error(message);</span>
             }
-<span class="fc" id="L122">        }</span>
+<span class="fc" id="L124">        }</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

@@ -65,10 +65,11 @@ public class ConfigurationIterator implements Iterator&lt;Configuration&gt; {
 <span class="fc" id="L65">        return Configuration.builder().resources(ImmutableList.copyOf(collect)).build();</span>
     }
 
+    @Override
     public boolean hasNext() {
-<span class="fc" id="L69">        Integer current = lastSchedule.values().stream().reduce(0, (a, b) -&gt; a + b);</span>
-<span class="fc" id="L70">        Integer max = maxResources.values().stream().reduce(0, (a, b) -&gt; a + b);</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">        return current &lt; max;</span>
+<span class="fc" id="L70">        Integer current = lastSchedule.values().stream().reduce(0, (a, b) -&gt; a + b);</span>
+<span class="fc" id="L71">        Integer max = maxResources.values().stream().reduce(0, (a, b) -&gt; a + b);</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        return current &lt; max;</span>
     }
 
 

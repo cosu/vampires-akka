@@ -160,50 +160,51 @@ import ro.cosu.vampires.server.values.jobs.metrics.Trace;
 <span class="fc" id="L160">        return trace;</span>
     }
 
+    @Override
     public int getNCpu() {
-<span class="nc" id="L164">        final Info exec = dockerClient.infoCmd().exec();</span>
-<span class="nc" id="L165">        return exec.getNCPU();</span>
+<span class="nc" id="L165">        final Info exec = dockerClient.infoCmd().exec();</span>
+<span class="nc" id="L166">        return exec.getNCPU();</span>
     }
 
     @Override
     public boolean isAvailable() {
         try {
-<span class="nc" id="L171">            dockerClient.pingCmd().exec();</span>
-<span class="nc" id="L172">            LOG.info(&quot;docker is available&quot;);</span>
-<span class="nc" id="L173">            return true;</span>
-<span class="fc" id="L174">        } catch (DockerException | ProcessingException e) {</span>
-<span class="fc" id="L175">            LOG.info(&quot;docker is not available: {}&quot;, e.getMessage());</span>
-<span class="fc" id="L176">            return false;</span>
+<span class="nc" id="L172">            dockerClient.pingCmd().exec();</span>
+<span class="nc" id="L173">            LOG.info(&quot;docker is available&quot;);</span>
+<span class="nc" id="L174">            return true;</span>
+<span class="fc" id="L175">        } catch (DockerException | ProcessingException e) {</span>
+<span class="fc" id="L176">            LOG.info(&quot;docker is not available: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L177">            return false;</span>
         }
     }
 
     @Override
     public void acquireResources() {
-<span class="pc" id="L182">        cpuSet = cpuAllocator.acquireCpuSet().orElseThrow(() -&gt; new RuntimeException(&quot;Unable to acquire CPUs&quot;));</span>
-<span class="fc" id="L183">    }</span>
+<span class="pc" id="L183">        cpuSet = cpuAllocator.acquireCpuSet().orElseThrow(() -&gt; new RuntimeException(&quot;Unable to acquire CPUs&quot;));</span>
+<span class="fc" id="L184">    }</span>
 
     @Override
     public void releaseResources() {
-<span class="fc" id="L187">        cpuAllocator.releaseCpuSets(cpuSet);</span>
-<span class="fc" id="L188">    }</span>
+<span class="fc" id="L188">        cpuAllocator.releaseCpuSets(cpuSet);</span>
+<span class="fc" id="L189">    }</span>
 
     @Override
     public Type getType() {
-<span class="fc" id="L192">        return Type.DOCKER;</span>
+<span class="fc" id="L193">        return Type.DOCKER;</span>
     }
 
-<span class="fc" id="L195">    static class DockerLogResultCallback extends LogContainerResultCallback {</span>
-<span class="fc" id="L196">        protected final StringBuffer log = new StringBuffer();</span>
+<span class="fc" id="L196">    static class DockerLogResultCallback extends LogContainerResultCallback {</span>
+<span class="fc" id="L197">        protected final StringBuffer log = new StringBuffer();</span>
 
         @Override
         public void onNext(Frame frame) {
-<span class="nc" id="L200">            log.append(new String(frame.getPayload(), StandardCharsets.UTF_8));</span>
-<span class="nc" id="L201">            super.onNext(frame);</span>
-<span class="nc" id="L202">        }</span>
+<span class="nc" id="L201">            log.append(new String(frame.getPayload(), StandardCharsets.UTF_8));</span>
+<span class="nc" id="L202">            super.onNext(frame);</span>
+<span class="nc" id="L203">        }</span>
 
         @Override
         public String toString() {
-<span class="nc" id="L206">            return log.toString();</span>
+<span class="nc" id="L207">            return log.toString();</span>
         }
     }
 

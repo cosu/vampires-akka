@@ -46,36 +46,43 @@ import ro.cosu.vampires.server.resources.Resource;
 <span class="fc" id="L46">                .serverId(&quot;&quot;);</span>
     }
 
+    @Override
     public abstract String command();
 
+    @Override
     public abstract Resource.ProviderType providerType();
 
+    @Override
     public abstract String serverId();
 
     public abstract Builder toBuilder();
 
+    @Override
     public abstract String instanceType();
 
+    @Override
     public abstract String id();
 
-
+    @Override
     public abstract double cost();
 
+    @Override
     public MockResourceParameters withServerId(String serverId) {
-<span class="fc" id="L65">        return toBuilder().serverId(&quot;&quot;).build();</span>
+<span class="fc" id="L71">        return toBuilder().serverId(&quot;&quot;).build();</span>
     }
 
+    @Override
     public Resource.Parameters withId(String id) {
-<span class="fc" id="L69">        return toBuilder().id(id).build();</span>
+<span class="fc" id="L76">        return toBuilder().id(id).build();</span>
     }
 
-<span class="fc" id="L72">    @AutoValue.Builder</span>
-<span class="fc" id="L73">    public abstract static class Builder implements Resource.Parameters.Builder {</span>
+    @AutoValue.Builder
+<span class="fc" id="L80">    public abstract static class Builder implements Resource.Parameters.Builder {</span>
+        @Override
         public Builder fromConfig(Config config) {
-<span class="fc" id="L75">            this.command(config.getString(&quot;command&quot;));</span>
-<span class="fc" id="L76">            return this;</span>
+<span class="fc" id="L83">            this.command(config.getString(&quot;command&quot;));</span>
+<span class="fc" id="L84">            return this;</span>
         }
-
 
         public abstract Builder providerType(Resource.ProviderType providerType);
 
@@ -83,12 +90,14 @@ import ro.cosu.vampires.server.resources.Resource;
 
         public abstract Builder serverId(String serverId);
 
+        @Override
         public abstract Builder instanceType(String instanceType);
 
         public abstract Builder id(String id);
 
         public abstract Builder cost(double cost);
 
+        @Override
         public abstract MockResourceParameters build();
 
     }

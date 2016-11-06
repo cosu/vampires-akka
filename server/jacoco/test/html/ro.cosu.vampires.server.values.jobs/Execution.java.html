@@ -47,6 +47,7 @@ import ro.cosu.vampires.server.values.resources.Configuration;
 <span class="fc" id="L47">                .id(UUID.randomUUID().toString());</span>
     }
 
+    @Override
     public abstract String id();
 
     public abstract Configuration configuration();
@@ -57,21 +58,22 @@ import ro.cosu.vampires.server.values.resources.Configuration;
 
     public abstract ExecutionInfo info();
 
-
+    @Override
     public abstract LocalDateTime createdAt();
 
+    @Override
     public abstract LocalDateTime updatedAt();
 
     public abstract Builder toBuilder();
 
     public Execution withInfo(ExecutionInfo info) {
-<span class="fc" id="L68">        return toBuilder()</span>
-<span class="fc" id="L69">                .updatedAt(LocalDateTime.now())</span>
-<span class="fc" id="L70">                .info(info).build();</span>
+<span class="fc" id="L70">        return toBuilder()</span>
+<span class="fc" id="L71">                .updatedAt(LocalDateTime.now())</span>
+<span class="fc" id="L72">                .info(info).build();</span>
     }
 
-<span class="fc" id="L73">    @AutoValue.Builder</span>
-<span class="fc" id="L74">    public abstract static class Builder {</span>
+    @AutoValue.Builder
+<span class="fc" id="L76">    public abstract static class Builder {</span>
 
         public abstract Builder configuration(Configuration configuration);
 

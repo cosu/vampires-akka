@@ -63,54 +63,55 @@ public class NetworkSource implements Source {
 
 <span class="fc" id="L64">    }</span>
 
+    @Override
     public void register() {
-<span class="fc" id="L67">        NetworkIF[] netArray = hal.getNetworkIFs();</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">        for (NetworkIF net : netArray) {</span>
-<span class="fc" id="L69">            metricRegistry.register(name(getName(), &quot;tx-bytes&quot;, net.getName()), this.txBytesGague(net));</span>
-<span class="fc" id="L70">            metricRegistry.register(name(getName(), &quot;rx-bytes&quot;, net.getName()), this.rxBytesGague(net));</span>
-<span class="fc" id="L71">            metricRegistry.register(name(getName(), &quot;rx-speed&quot;, net.getName()), this.rxBytesSpeedGauge(net));</span>
-<span class="fc" id="L72">            metricRegistry.register(name(getName(), &quot;tx-speed&quot;, net.getName()), this.txBytesSpeedGauge(net));</span>
+<span class="fc" id="L68">        NetworkIF[] netArray = hal.getNetworkIFs();</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        for (NetworkIF net : netArray) {</span>
+<span class="fc" id="L70">            metricRegistry.register(name(getName(), &quot;tx-bytes&quot;, net.getName()), this.txBytesGague(net));</span>
+<span class="fc" id="L71">            metricRegistry.register(name(getName(), &quot;rx-bytes&quot;, net.getName()), this.rxBytesGague(net));</span>
+<span class="fc" id="L72">            metricRegistry.register(name(getName(), &quot;rx-speed&quot;, net.getName()), this.rxBytesSpeedGauge(net));</span>
+<span class="fc" id="L73">            metricRegistry.register(name(getName(), &quot;tx-speed&quot;, net.getName()), this.txBytesSpeedGauge(net));</span>
         }
 
 
-<span class="fc" id="L76">        LOG.debug(&quot;registered network source&quot;);</span>
+<span class="fc" id="L77">        LOG.debug(&quot;registered network source&quot;);</span>
 
-<span class="fc" id="L78">    }</span>
+<span class="fc" id="L79">    }</span>
 
     @Override
     public String getName() {
-<span class="fc" id="L82">        return NAME;</span>
+<span class="fc" id="L83">        return NAME;</span>
     }
 
 
     private Gauge&lt;Long&gt; txBytesGague(final NetworkIF iface) {
-<span class="fc" id="L87">        return () -&gt; {</span>
-<span class="fc" id="L88">            LinuxNetworks.updateNetworkStats(iface);</span>
-<span class="fc" id="L89">            return iface.getBytesSent();</span>
+<span class="fc" id="L88">        return () -&gt; {</span>
+<span class="fc" id="L89">            LinuxNetworks.updateNetworkStats(iface);</span>
+<span class="fc" id="L90">            return iface.getBytesSent();</span>
         };
     }
 
     private Gauge&lt;Long&gt; rxBytesGague(final NetworkIF iface) {
 
-<span class="fc" id="L95">        return () -&gt; {</span>
-<span class="fc" id="L96">            LinuxNetworks.updateNetworkStats(iface);</span>
-<span class="fc" id="L97">            return iface.getBytesRecv();</span>
+<span class="fc" id="L96">        return () -&gt; {</span>
+<span class="fc" id="L97">            LinuxNetworks.updateNetworkStats(iface);</span>
+<span class="fc" id="L98">            return iface.getBytesRecv();</span>
         };
     }
 
     private Gauge&lt;Long&gt; txBytesSpeedGauge(final NetworkIF iface) {
 
-<span class="fc" id="L103">        return new Gauge&lt;Long&gt;() {</span>
-<span class="fc" id="L104">            long previousValue = iface.getBytesRecv();</span>
-<span class="fc" id="L105">            LocalDateTime previousSample = LocalDateTime.now();</span>
+<span class="fc" id="L104">        return new Gauge&lt;Long&gt;() {</span>
+<span class="fc" id="L105">            long previousValue = iface.getBytesRecv();</span>
+<span class="fc" id="L106">            LocalDateTime previousSample = LocalDateTime.now();</span>
 
             @Override
             public Long getValue() {
-<span class="fc" id="L109">                LinuxNetworks.updateNetworkStats(iface);</span>
-<span class="fc" id="L110">                previousValue = iface.getBytesSent();</span>
-<span class="fc" id="L111">                Duration between = Duration.between(previousSample, LocalDateTime.now());</span>
-<span class="fc" id="L112">                double delta = iface.getBytesSent() - previousValue;</span>
-<span class="pc bpc" id="L113" title="1 of 2 branches missed.">                return (delta &gt; 0) ? Math.round(delta / between.toMillis() * 1000) : 0;</span>
+<span class="fc" id="L110">                LinuxNetworks.updateNetworkStats(iface);</span>
+<span class="fc" id="L111">                previousValue = iface.getBytesSent();</span>
+<span class="fc" id="L112">                Duration between = Duration.between(previousSample, LocalDateTime.now());</span>
+<span class="fc" id="L113">                double delta = iface.getBytesSent() - previousValue;</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">                return (delta &gt; 0) ? Math.round(delta / between.toMillis() * 1000) : 0;</span>
 
             }
         };
@@ -118,18 +119,18 @@ public class NetworkSource implements Source {
 
     private Gauge&lt;Long&gt; rxBytesSpeedGauge(final NetworkIF iface) {
 
-<span class="fc" id="L121">        return new Gauge&lt;Long&gt;() {</span>
-<span class="fc" id="L122">            long previousValue = iface.getBytesRecv();</span>
-<span class="fc" id="L123">            LocalDateTime previousSample = LocalDateTime.now();</span>
+<span class="fc" id="L122">        return new Gauge&lt;Long&gt;() {</span>
+<span class="fc" id="L123">            long previousValue = iface.getBytesRecv();</span>
+<span class="fc" id="L124">            LocalDateTime previousSample = LocalDateTime.now();</span>
 
             @Override
             public Long getValue() {
-<span class="fc" id="L127">                LinuxNetworks.updateNetworkStats(iface);</span>
+<span class="fc" id="L128">                LinuxNetworks.updateNetworkStats(iface);</span>
 
-<span class="fc" id="L129">                Duration between = Duration.between(previousSample, LocalDateTime.now());</span>
-<span class="fc" id="L130">                double delta = iface.getBytesRecv() - previousValue;</span>
-<span class="fc" id="L131">                previousValue = iface.getBytesRecv();</span>
-<span class="pc bpc" id="L132" title="1 of 2 branches missed.">                return (delta &gt; 0) ? Math.round(delta / between.toMillis() * 1000) : 0;</span>
+<span class="fc" id="L130">                Duration between = Duration.between(previousSample, LocalDateTime.now());</span>
+<span class="fc" id="L131">                double delta = iface.getBytesRecv() - previousValue;</span>
+<span class="fc" id="L132">                previousValue = iface.getBytesRecv();</span>
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">                return (delta &gt; 0) ? Math.round(delta / between.toMillis() * 1000) : 0;</span>
 
             }
         };

@@ -36,12 +36,14 @@ public class ExecutorsExtension extends AbstractExtensionId&lt;ExecutorsExtensio
 <span class="fc" id="L36">    private ExecutorsExtension() {</span>
 <span class="fc" id="L37">    }</span>
 
+    @Override
     public ExecutorsExtension lookup() {
-<span class="nc" id="L40">        return ExecutorsExtension.ExecutorsProvider;</span>
+<span class="nc" id="L41">        return ExecutorsExtension.ExecutorsProvider;</span>
     }
 
+    @Override
     public ExecutorsExtensionImpl createExtension(ExtendedActorSystem system) {
-<span class="fc" id="L44">        return new ExecutorsExtensionImpl(system.settings().config());</span>
+<span class="fc" id="L46">        return new ExecutorsExtensionImpl(system.settings().config());</span>
     }
 
 }

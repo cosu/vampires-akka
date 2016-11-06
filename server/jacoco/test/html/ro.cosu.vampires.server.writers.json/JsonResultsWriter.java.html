@@ -91,23 +91,24 @@ public class JsonResultsWriter implements ResultsWriter {
 <span class="nc" id="L91">        clients.add(clientInfo);</span>
 <span class="nc" id="L92">    }</span>
 
+    @Override
     public void close() {
         //write results to disk
-<span class="pc" id="L96">        try (BufferedWriter fileWriter = Files.newWriter(getPath(&quot;results-all&quot;).toFile(), Charsets.UTF_8)) {</span>
-<span class="fc" id="L97">            Gson gson = new GsonBuilder()</span>
-<span class="fc" id="L98">                    .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())</span>
-<span class="fc" id="L99">                    .setPrettyPrinting()</span>
-<span class="fc" id="L100">                    .create();</span>
+<span class="pc" id="L97">        try (BufferedWriter fileWriter = Files.newWriter(getPath(&quot;results-all&quot;).toFile(), Charsets.UTF_8)) {</span>
+<span class="fc" id="L98">            Gson gson = new GsonBuilder()</span>
+<span class="fc" id="L99">                    .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())</span>
+<span class="fc" id="L100">                    .setPrettyPrinting()</span>
+<span class="fc" id="L101">                    .create();</span>
 
-<span class="fc" id="L102">            AllResults allResults = AllResults.builder().results(results).clients(clients).build();</span>
+<span class="fc" id="L103">            AllResults allResults = AllResults.builder().results(results).clients(clients).build();</span>
 
-<span class="fc" id="L104">            gson.toJson(allResults, fileWriter);</span>
-<span class="fc" id="L105">            fileWriter.close();</span>
-<span class="fc" id="L106">            LOG.info(&quot;wrote results to {}&quot;, getPath(&quot;results-all&quot;).toAbsolutePath());</span>
-<span class="pc bpc" id="L107" title="6 of 8 branches missed.">        } catch (IOException e) {</span>
-<span class="nc" id="L108">            LOG.error(&quot;Error writing results to file&quot;, e);</span>
-<span class="fc" id="L109">        }</span>
-<span class="fc" id="L110">    }</span>
+<span class="fc" id="L105">            gson.toJson(allResults, fileWriter);</span>
+<span class="fc" id="L106">            fileWriter.close();</span>
+<span class="fc" id="L107">            LOG.info(&quot;wrote results to {}&quot;, getPath(&quot;results-all&quot;).toAbsolutePath());</span>
+<span class="pc bpc" id="L108" title="6 of 8 branches missed.">        } catch (IOException e) {</span>
+<span class="nc" id="L109">            LOG.error(&quot;Error writing results to file&quot;, e);</span>
+<span class="fc" id="L110">        }</span>
+<span class="fc" id="L111">    }</span>
 
 
 }

@@ -45,34 +45,43 @@ import ro.cosu.vampires.server.resources.Resource;
 <span class="fc" id="L45">                .serverId(&quot;&quot;);</span>
     }
 
+    @Override
     public abstract String command();
 
+    @Override
     public abstract Resource.ProviderType providerType();
 
+    @Override
     public abstract String serverId();
 
+    @Override
     public abstract String id();
 
+    @Override
     public abstract double cost();
 
+    @Override
     public abstract String instanceType();
 
     public abstract Builder toBuilder();
 
+    @Override
     public LocalResourceParameters withServerId(String serverId) {
-<span class="nc" id="L63">        return toBuilder().serverId(serverId).build();</span>
+<span class="nc" id="L70">        return toBuilder().serverId(serverId).build();</span>
     }
 
+    @Override
     public Resource.Parameters withId(String id) {
-<span class="nc" id="L67">        return toBuilder().id(id).build();</span>
+<span class="nc" id="L75">        return toBuilder().id(id).build();</span>
     }
 
-<span class="fc" id="L70">    @AutoValue.Builder</span>
-<span class="fc" id="L71">    public abstract static class Builder implements Resource.Parameters.Builder {</span>
+    @AutoValue.Builder
+<span class="fc" id="L79">    public abstract static class Builder implements Resource.Parameters.Builder {</span>
+        @Override
         public Builder fromConfig(Config config) {
-<span class="fc" id="L73">            this.cost(config.getDouble(&quot;cost&quot;));</span>
-<span class="fc" id="L74">            this.command(config.getString(&quot;command&quot;));</span>
-<span class="fc" id="L75">            return this;</span>
+<span class="fc" id="L82">            this.cost(config.getDouble(&quot;cost&quot;));</span>
+<span class="fc" id="L83">            this.command(config.getString(&quot;command&quot;));</span>
+<span class="fc" id="L84">            return this;</span>
         }
 
         public abstract Builder providerType(Resource.ProviderType providerType);
@@ -85,8 +94,10 @@ import ro.cosu.vampires.server.resources.Resource;
 
         public abstract Builder serverId(String serverId);
 
+        @Override
         public abstract Builder instanceType(String instanceType);
 
+        @Override
         public abstract LocalResourceParameters build();
 
     }

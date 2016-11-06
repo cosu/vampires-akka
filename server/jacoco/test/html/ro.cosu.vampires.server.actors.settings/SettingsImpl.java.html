@@ -53,8 +53,6 @@ import ro.cosu.vampires.server.writers.mongo.MongoWriter;
 
 public class SettingsImpl implements Extension {
 
-    public static final String SAMPLING_MODE = &quot;sampling&quot;;
-    public static final String MODE = &quot;mode&quot;;
     private static final String SAMPLE_SIZE = &quot;sample-size&quot;;
     private static final String EXECUTORS = &quot;executors&quot;;
     private static final String CPU_SET_SIZE = &quot;cpu-set-size&quot;;
@@ -62,7 +60,7 @@ public class SettingsImpl implements Extension {
     private static final String ENABLED_WRITERS = &quot;enabled-writers&quot;;
     private static final String BACKOFF_INTERVAL_SECONDS = &quot;backoff-interval-seconds&quot;;
     private static final int DEFAULT_CPU_SET_SIZE = 1;
-<span class="fc" id="L65">    private static final Logger LOG = LoggerFactory.getLogger(Settings.class);</span>
+<span class="fc" id="L63">    private static final Logger LOG = LoggerFactory.getLogger(Settings.class);</span>
     private final static int DEFAULT_MAX_JOB_DEADLINE = 60;
     private final static int DEFAULT_BACK_OFF_INTERVAL = 20;
     private final static String DEFAULT_EXECUTOR = &quot;FORK&quot;;
@@ -70,110 +68,110 @@ public class SettingsImpl implements Extension {
     public final Config vampires;
 
 
-<span class="fc" id="L73">    public SettingsImpl(Config config) {</span>
-<span class="fc" id="L74">        vampires = config.getConfig(&quot;vampires&quot;);</span>
-<span class="fc" id="L75">        LOG.debug(&quot;Providers: {}&quot;, getProviders().keySet());</span>
-<span class="fc" id="L76">    }</span>
+<span class="fc" id="L71">    public SettingsImpl(Config config) {</span>
+<span class="fc" id="L72">        vampires = config.getConfig(&quot;vampires&quot;);</span>
+<span class="fc" id="L73">        LOG.debug(&quot;Providers: {}&quot;, getProviders().keySet());</span>
+<span class="fc" id="L74">    }</span>
 
     public List&lt;ResultsWriter&gt; getWriters() {
-<span class="fc" id="L79">        List&lt;ResultsWriter&gt; writers = new LinkedList&lt;&gt;();</span>
-<span class="fc" id="L80">        List&lt;String&gt; enabledWriters = vampires.getStringList(ENABLED_WRITERS);</span>
-<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        if (enabledWriters.contains(&quot;json&quot;)) {</span>
-<span class="nc" id="L82">            writers.add(new JsonResultsWriter(vampires));</span>
+<span class="fc" id="L77">        List&lt;ResultsWriter&gt; writers = new LinkedList&lt;&gt;();</span>
+<span class="fc" id="L78">        List&lt;String&gt; enabledWriters = vampires.getStringList(ENABLED_WRITERS);</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        if (enabledWriters.contains(&quot;json&quot;)) {</span>
+<span class="nc" id="L80">            writers.add(new JsonResultsWriter(vampires));</span>
         }
 
-<span class="fc bfc" id="L85" title="All 2 branches covered.">        if (enabledWriters.contains(&quot;mongo&quot;)) {</span>
-<span class="fc" id="L86">            writers.add(MongoWriter.newDefaultWriter());</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        if (enabledWriters.contains(&quot;mongo&quot;)) {</span>
+<span class="fc" id="L84">            writers.add(MongoWriter.newDefaultWriter());</span>
         }
 
-<span class="fc bfc" id="L89" title="All 2 branches covered.">        if (writers.isEmpty()) {</span>
-<span class="fc" id="L90">            LOG.warn(&quot;no writers configured!&quot;);</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (writers.isEmpty()) {</span>
+<span class="fc" id="L88">            LOG.warn(&quot;no writers configured!&quot;);</span>
         }
 
-<span class="fc" id="L93">        return writers;</span>
+<span class="fc" id="L91">        return writers;</span>
 
     }
 
     public List&lt;Job&gt; getWorkload() {
-<span class="fc" id="L98">        return JobUtil.fromConfig(vampires.getConfig(&quot;workload&quot;));</span>
+<span class="fc" id="L96">        return JobUtil.fromConfig(vampires.getConfig(&quot;workload&quot;));</span>
     }
 
     public int getNumberOfJobsToSample() {
-<span class="pc bpc" id="L102" title="1 of 2 branches missed.">        if (vampires.hasPath(SAMPLE_SIZE)) {</span>
-<span class="nc" id="L103">            return vampires.getInt(SAMPLE_SIZE);</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">        if (vampires.hasPath(SAMPLE_SIZE)) {</span>
+<span class="nc" id="L101">            return vampires.getInt(SAMPLE_SIZE);</span>
         } else {
-<span class="fc" id="L105">            LOG.warn(&quot;Missing sampleSize config value. using default {}&quot;, JOBS_TO_SAMPLE);</span>
-<span class="fc" id="L106">            return JOBS_TO_SAMPLE;</span>
+<span class="fc" id="L103">            LOG.warn(&quot;Missing sampleSize config value. using default {}&quot;, JOBS_TO_SAMPLE);</span>
+<span class="fc" id="L104">            return JOBS_TO_SAMPLE;</span>
         }
     }
 
     public List&lt;String&gt; getExecutors() {
-<span class="fc bfc" id="L111" title="All 2 branches covered.">        if (vampires.hasPath(EXECUTORS)) {</span>
-<span class="fc" id="L112">            return vampires.getStringList(EXECUTORS).stream().map(String::toUpperCase).collect(Collectors.toList());</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        if (vampires.hasPath(EXECUTORS)) {</span>
+<span class="fc" id="L110">            return vampires.getStringList(EXECUTORS).stream().map(String::toUpperCase).collect(Collectors.toList());</span>
         } else {
-<span class="fc" id="L114">            LOG.warn(&quot;Missing executors config value. using default {}&quot;, DEFAULT_EXECUTOR);</span>
-<span class="fc" id="L115">            return Collections.singletonList(DEFAULT_EXECUTOR);</span>
+<span class="fc" id="L112">            LOG.warn(&quot;Missing executors config value. using default {}&quot;, DEFAULT_EXECUTOR);</span>
+<span class="fc" id="L113">            return Collections.singletonList(DEFAULT_EXECUTOR);</span>
         }
 
     }
 
     public int getBackoffInterval() {
-<span class="pc bpc" id="L121" title="1 of 2 branches missed.">        if (vampires.hasPath(BACKOFF_INTERVAL_SECONDS)) {</span>
-<span class="nc" id="L122">            return vampires.getInt(BACKOFF_INTERVAL_SECONDS);</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">        if (vampires.hasPath(BACKOFF_INTERVAL_SECONDS)) {</span>
+<span class="nc" id="L120">            return vampires.getInt(BACKOFF_INTERVAL_SECONDS);</span>
         } else {
-<span class="fc" id="L124">            LOG.warn(&quot;missing &quot; + BACKOFF_INTERVAL_SECONDS + &quot; . Using default value: {}&quot;, DEFAULT_BACK_OFF_INTERVAL);</span>
+<span class="fc" id="L122">            LOG.warn(&quot;missing &quot; + BACKOFF_INTERVAL_SECONDS + &quot; . Using default value: {}&quot;, DEFAULT_BACK_OFF_INTERVAL);</span>
         }
-<span class="fc" id="L126">        return DEFAULT_BACK_OFF_INTERVAL;</span>
+<span class="fc" id="L124">        return DEFAULT_BACK_OFF_INTERVAL;</span>
 
     }
 
     public int getCpuSetSize() {
-<span class="fc bfc" id="L131" title="All 2 branches covered.">        if (vampires.hasPath(CPU_SET_SIZE)) {</span>
-<span class="fc" id="L132">            return vampires.getInt(CPU_SET_SIZE);</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">        if (vampires.hasPath(CPU_SET_SIZE)) {</span>
+<span class="fc" id="L130">            return vampires.getInt(CPU_SET_SIZE);</span>
         } else {
-<span class="fc" id="L134">            LOG.warn(&quot;missing executor &quot; + CPU_SET_SIZE + &quot; . Using default value: {}&quot;, DEFAULT_CPU_SET_SIZE);</span>
+<span class="fc" id="L132">            LOG.warn(&quot;missing executor &quot; + CPU_SET_SIZE + &quot; . Using default value: {}&quot;, DEFAULT_CPU_SET_SIZE);</span>
         }
-<span class="fc" id="L136">        return DEFAULT_CPU_SET_SIZE;</span>
+<span class="fc" id="L134">        return DEFAULT_CPU_SET_SIZE;</span>
     }
 
     public int getJobDeadline() {
 
-<span class="fc" id="L141">        int maxJobSeconds = DEFAULT_MAX_JOB_DEADLINE;</span>
-<span class="pc bpc" id="L142" title="1 of 2 branches missed.">        if (vampires.hasPath(JOB_DEADLINE_SECONDS)) {</span>
-<span class="nc" id="L143">            maxJobSeconds = vampires.getInt(JOB_DEADLINE_SECONDS);</span>
+<span class="fc" id="L139">        int maxJobSeconds = DEFAULT_MAX_JOB_DEADLINE;</span>
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">        if (vampires.hasPath(JOB_DEADLINE_SECONDS)) {</span>
+<span class="nc" id="L141">            maxJobSeconds = vampires.getInt(JOB_DEADLINE_SECONDS);</span>
         } else {
-<span class="fc" id="L145">            LOG.warn(&quot;maxJobSeconds not provided. Using default value of {}&quot;, DEFAULT_MAX_JOB_DEADLINE);</span>
+<span class="fc" id="L143">            LOG.warn(&quot;maxJobSeconds not provided. Using default value of {}&quot;, DEFAULT_MAX_JOB_DEADLINE);</span>
         }
-<span class="fc" id="L147">        return maxJobSeconds;</span>
+<span class="fc" id="L145">        return maxJobSeconds;</span>
     }
 
     public Map&lt;Resource.ProviderType, ProviderDescription&gt; getProviders() {
-<span class="fc" id="L151">        Config resourcesConfig = vampires.getConfig(&quot;resources&quot;);</span>
-<span class="fc" id="L152">        return vampires.getStringList(&quot;enabled-resources&quot;).stream().map(</span>
+<span class="fc" id="L149">        Config resourcesConfig = vampires.getConfig(&quot;resources&quot;);</span>
+<span class="fc" id="L150">        return vampires.getStringList(&quot;enabled-resources&quot;).stream().map(</span>
                 enabledProvider -&gt; {
-<span class="fc" id="L154">                    Config providerConfig = resourcesConfig.getConfig(enabledProvider);</span>
-<span class="pc bpc" id="L155" title="1 of 2 branches missed.">                    String name = providerConfig.hasPath(&quot;name&quot;) ? providerConfig.getString(&quot;name&quot;) : enabledProvider;</span>
+<span class="fc" id="L152">                    Config providerConfig = resourcesConfig.getConfig(enabledProvider);</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">                    String name = providerConfig.hasPath(&quot;name&quot;) ? providerConfig.getString(&quot;name&quot;) : enabledProvider;</span>
                     // iterate over the keys of resourcesConfig
-<span class="fc" id="L157">                    Map&lt;String, ResourceDescription&gt; resourceDescriptions = resourcesConfig.getObject(enabledProvider).keySet().stream()</span>
+<span class="fc" id="L155">                    Map&lt;String, ResourceDescription&gt; resourceDescriptions = resourcesConfig.getObject(enabledProvider).keySet().stream()</span>
                             // only objects are associated with providers.
                             // single values are overrides
-<span class="fc" id="L160">                            .filter(key -&gt; providerConfig.getValue(key).valueType().equals(ConfigValueType.OBJECT))</span>
-<span class="fc" id="L161">                            .map(key -&gt; {</span>
-<span class="fc" id="L162">                                Config resourceConfig = providerConfig.getConfig(key);</span>
-<span class="fc bfc" id="L163" title="All 2 branches covered.">                                double cost = resourceConfig.hasPath(&quot;cost&quot;) ? resourceConfig.getDouble(&quot;cost&quot;) : 0.;</span>
-<span class="fc" id="L164">                                Resource.ProviderType pt = Resource.ProviderType.valueOf(enabledProvider.toUpperCase());</span>
+<span class="fc" id="L158">                            .filter(key -&gt; providerConfig.getValue(key).valueType().equals(ConfigValueType.OBJECT))</span>
+<span class="fc" id="L159">                            .map(key -&gt; {</span>
+<span class="fc" id="L160">                                Config resourceConfig = providerConfig.getConfig(key);</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">                                double cost = resourceConfig.hasPath(&quot;cost&quot;) ? resourceConfig.getDouble(&quot;cost&quot;) : 0.;</span>
+<span class="fc" id="L162">                                Resource.ProviderType pt = Resource.ProviderType.valueOf(enabledProvider.toUpperCase());</span>
                                 return
-<span class="fc" id="L166">                                        ResourceDescription.builder().provider(pt).type(key).cost(cost).build();</span>
+<span class="fc" id="L164">                                        ResourceDescription.builder().provider(pt).type(key).cost(cost).build();</span>
                             })
-<span class="fc" id="L168">                            .collect(Collectors.toMap(ResourceDescription::type, Function.identity()));</span>
-<span class="fc" id="L169">                    return ProviderDescription.builder()</span>
-<span class="fc" id="L170">                            .description(name)</span>
-<span class="fc" id="L171">                            .provider(Resource.ProviderType.valueOf(enabledProvider.toUpperCase()))</span>
-<span class="fc" id="L172">                            .resourceDescriptions(ImmutableMap.copyOf(resourceDescriptions))</span>
-<span class="fc" id="L173">                            .build();</span>
+<span class="fc" id="L166">                            .collect(Collectors.toMap(ResourceDescription::type, Function.identity()));</span>
+<span class="fc" id="L167">                    return ProviderDescription.builder()</span>
+<span class="fc" id="L168">                            .description(name)</span>
+<span class="fc" id="L169">                            .provider(Resource.ProviderType.valueOf(enabledProvider.toUpperCase()))</span>
+<span class="fc" id="L170">                            .resourceDescriptions(ImmutableMap.copyOf(resourceDescriptions))</span>
+<span class="fc" id="L171">                            .build();</span>
 
                 }
-<span class="fc" id="L176">        ).collect(Collectors.toMap(ProviderDescription::provider, Function.identity()));</span>
+<span class="fc" id="L174">        ).collect(Collectors.toMap(ProviderDescription::provider, Function.identity()));</span>
     }
 }
 

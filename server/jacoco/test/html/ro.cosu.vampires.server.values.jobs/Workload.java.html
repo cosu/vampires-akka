@@ -73,10 +73,13 @@ import ro.cosu.vampires.server.values.Id;
     }
 
 
+    @Override
     public abstract String id();
 
+    @Override
     public abstract LocalDateTime createdAt();
 
+    @Override
     public abstract LocalDateTime updatedAt();
 
     public abstract int sequenceStart();
@@ -96,40 +99,40 @@ import ro.cosu.vampires.server.values.Id;
     public abstract Builder toBuilder();
 
     public Builder update() {
-<span class="fc" id="L99">        return toBuilder()</span>
-<span class="fc" id="L100">                .updatedAt(LocalDateTime.now());</span>
+<span class="fc" id="L102">        return toBuilder()</span>
+<span class="fc" id="L103">                .updatedAt(LocalDateTime.now());</span>
     }
 
     public int size() {
-<span class="fc" id="L104">        return jobs().size();</span>
+<span class="fc" id="L107">        return jobs().size();</span>
     }
 
     public List&lt;Job&gt; jobs() {
-<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (!file().equals(&quot;&quot;)) {</span>
-<span class="fc" id="L109">            return getJobsFromFile();</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        if (!file().equals(&quot;&quot;)) {</span>
+<span class="fc" id="L112">            return getJobsFromFile();</span>
         } else {
-<span class="fc" id="L111">            return getJobsFromSequence();</span>
+<span class="fc" id="L114">            return getJobsFromSequence();</span>
         }
     }
 
 
     private List&lt;Job&gt; getJobsFromFile() {
-<span class="fc" id="L117">        return Splitter.on(&quot;\n&quot;).splitToList(file()).stream()</span>
-<span class="fc" id="L118">                .map(Job.empty()::withCommand)</span>
-<span class="fc" id="L119">                .collect(Collectors.toList());</span>
+<span class="fc" id="L120">        return Splitter.on(&quot;\n&quot;).splitToList(file()).stream()</span>
+<span class="fc" id="L121">                .map(Job.empty()::withCommand)</span>
+<span class="fc" id="L122">                .collect(Collectors.toList());</span>
     }
 
     private List&lt;Job&gt; getJobsFromSequence() {
-<span class="fc" id="L123">        final String finalUrl = url();</span>
-<span class="fc" id="L124">        final String finalFormat = format();</span>
-<span class="fc" id="L125">        return IntStream.rangeClosed(sequenceStart(), sequenceStop()).mapToObj(i -&gt; String.format(finalFormat, i))</span>
-<span class="fc" id="L126">                .map(f -&gt; String.format(&quot;%s %s%s&quot;, task(), finalUrl, f).trim())</span>
-<span class="fc" id="L127">                .map(command -&gt; Job.empty().withCommand(command))</span>
-<span class="fc" id="L128">                .collect(Collectors.toList());</span>
+<span class="fc" id="L126">        final String finalUrl = url();</span>
+<span class="fc" id="L127">        final String finalFormat = format();</span>
+<span class="fc" id="L128">        return IntStream.rangeClosed(sequenceStart(), sequenceStop()).mapToObj(i -&gt; String.format(finalFormat, i))</span>
+<span class="fc" id="L129">                .map(f -&gt; String.format(&quot;%s %s%s&quot;, task(), finalUrl, f).trim())</span>
+<span class="fc" id="L130">                .map(command -&gt; Job.empty().withCommand(command))</span>
+<span class="fc" id="L131">                .collect(Collectors.toList());</span>
     }
 
-<span class="fc" id="L131">    @AutoValue.Builder</span>
-<span class="fc" id="L132">    public abstract static class Builder {</span>
+    @AutoValue.Builder
+<span class="fc" id="L135">    public abstract static class Builder {</span>
 
         public abstract Builder id(String id);
 

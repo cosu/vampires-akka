@@ -75,10 +75,13 @@ import ro.cosu.vampires.server.values.jobs.ExecutionMode;
 <span class="fc" id="L75">        return toBuilder().cost(cost).build();</span>
     }
 
+    @Override
     public abstract String id();
 
+    @Override
     public abstract LocalDateTime createdAt();
 
+    @Override
     public abstract LocalDateTime updatedAt();
 
     public abstract String description();
@@ -90,16 +93,16 @@ import ro.cosu.vampires.server.values.jobs.ExecutionMode;
     public abstract Builder toBuilder();
 
     public Configuration withMode(ExecutionMode mode) {
-<span class="fc bfc" id="L93" title="All 2 branches covered.">        if (mode.equals(ExecutionMode.SAMPLE))</span>
-<span class="fc" id="L94">            return toBuilder().resources(</span>
-<span class="fc" id="L95">                    ImmutableList.copyOf(</span>
-<span class="fc" id="L96">                            resources().stream().map(r -&gt; r.withCount(1)</span>
-<span class="fc" id="L97">                            ).collect(Collectors.toList()))).build();</span>
-<span class="fc" id="L98">        else return this;</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        if (mode.equals(ExecutionMode.SAMPLE))</span>
+<span class="fc" id="L97">            return toBuilder().resources(</span>
+<span class="fc" id="L98">                    ImmutableList.copyOf(</span>
+<span class="fc" id="L99">                            resources().stream().map(r -&gt; r.withCount(1)</span>
+<span class="fc" id="L100">                            ).collect(Collectors.toList()))).build();</span>
+<span class="fc" id="L101">        else return this;</span>
     }
 
-<span class="fc" id="L101">    @AutoValue.Builder</span>
-<span class="fc" id="L102">    public abstract static class Builder {</span>
+    @AutoValue.Builder
+<span class="fc" id="L105">    public abstract static class Builder {</span>
 
         public abstract Builder id(String id);
 

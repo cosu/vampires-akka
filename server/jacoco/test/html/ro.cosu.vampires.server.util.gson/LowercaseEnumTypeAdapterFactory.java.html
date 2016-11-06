@@ -42,39 +42,42 @@ import java.util.Map;
 
 <span class="fc" id="L43">public class LowercaseEnumTypeAdapterFactory implements TypeAdapterFactory {</span>
     @SuppressWarnings(&quot;unchecked&quot;)
+    @Override
     public &lt;T&gt; TypeAdapter&lt;T&gt; create(Gson gson, TypeToken&lt;T&gt; type) {
-<span class="fc" id="L46">        Class&lt;T&gt; rawType = (Class&lt;T&gt;) type.getRawType();</span>
-<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (!rawType.isEnum()) {</span>
-<span class="fc" id="L48">            return null;</span>
+<span class="fc" id="L47">        Class&lt;T&gt; rawType = (Class&lt;T&gt;) type.getRawType();</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        if (!rawType.isEnum()) {</span>
+<span class="fc" id="L49">            return null;</span>
         }
 
-<span class="fc" id="L51">        final Map&lt;String, T&gt; lowercaseToConstant = new HashMap&lt;String, T&gt;();</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">        for (T constant : rawType.getEnumConstants()) {</span>
-<span class="fc" id="L53">            lowercaseToConstant.put(toLowercase(constant), constant);</span>
+<span class="fc" id="L52">        final Map&lt;String, T&gt; lowercaseToConstant = new HashMap&lt;String, T&gt;();</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        for (T constant : rawType.getEnumConstants()) {</span>
+<span class="fc" id="L54">            lowercaseToConstant.put(toLowercase(constant), constant);</span>
         }
 
-<span class="fc" id="L56">        return new TypeAdapter&lt;T&gt;() {</span>
+<span class="fc" id="L57">        return new TypeAdapter&lt;T&gt;() {</span>
+            @Override
             public void write(JsonWriter out, T value) throws IOException {
-<span class="pc bpc" id="L58" title="1 of 2 branches missed.">                if (value == null) {</span>
-<span class="nc" id="L59">                    out.nullValue();</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">                if (value == null) {</span>
+<span class="nc" id="L61">                    out.nullValue();</span>
                 } else {
-<span class="fc" id="L61">                    out.value(toLowercase(value));</span>
+<span class="fc" id="L63">                    out.value(toLowercase(value));</span>
                 }
-<span class="fc" id="L63">            }</span>
+<span class="fc" id="L65">            }</span>
 
+            @Override
             public T read(JsonReader reader) throws IOException {
-<span class="pc bpc" id="L66" title="1 of 2 branches missed.">                if (reader.peek() == JsonToken.NULL) {</span>
-<span class="nc" id="L67">                    reader.nextNull();</span>
-<span class="nc" id="L68">                    return null;</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">                if (reader.peek() == JsonToken.NULL) {</span>
+<span class="nc" id="L70">                    reader.nextNull();</span>
+<span class="nc" id="L71">                    return null;</span>
                 } else {
-<span class="fc" id="L70">                    return lowercaseToConstant.get(reader.nextString());</span>
+<span class="fc" id="L73">                    return lowercaseToConstant.get(reader.nextString());</span>
                 }
             }
         };
     }
 
     private String toLowercase(Object o) {
-<span class="fc" id="L77">        return o.toString().toLowerCase(Locale.US);</span>
+<span class="fc" id="L80">        return o.toString().toLowerCase(Locale.US);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

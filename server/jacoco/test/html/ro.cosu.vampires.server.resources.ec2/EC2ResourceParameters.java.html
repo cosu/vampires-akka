@@ -44,10 +44,12 @@ import ro.cosu.vampires.server.resources.Resource;
 <span class="fc" id="L44">                .serverId(&quot;&quot;);</span>
     }
 
+    @Override
     public abstract String command();
 
     public abstract String imageId();
 
+    @Override
     public abstract String instanceType();
 
     public abstract String keyName();
@@ -56,26 +58,32 @@ import ro.cosu.vampires.server.resources.Resource;
 
     public abstract String securityGroup();
 
+    @Override
     public abstract Resource.ProviderType providerType();
 
+    @Override
     public abstract String serverId();
 
+    @Override
     public abstract String id();
 
+    @Override
     public abstract double cost();
 
     public abstract Builder toBuilder();
 
+    @Override
     public EC2ResourceParameters withServerId(String serverId) {
-<span class="nc" id="L70">        return toBuilder().serverId(serverId).build();</span>
+<span class="nc" id="L77">        return toBuilder().serverId(serverId).build();</span>
     }
 
+    @Override
     public Resource.Parameters withId(String id) {
-<span class="nc" id="L74">        return toBuilder().id(id).build();</span>
+<span class="nc" id="L82">        return toBuilder().id(id).build();</span>
     }
 
-<span class="fc" id="L77">    @AutoValue.Builder</span>
-<span class="fc" id="L78">    public abstract static class Builder implements Resource.Parameters.Builder {</span>
+    @AutoValue.Builder
+<span class="fc" id="L86">    public abstract static class Builder implements Resource.Parameters.Builder {</span>
 
         public abstract Builder command(String s);
 
@@ -85,6 +93,7 @@ import ro.cosu.vampires.server.resources.Resource;
 
         public abstract Builder id(String id);
 
+        @Override
         public abstract Builder instanceType(String s);
 
         public abstract Builder keyName(String s);
@@ -97,20 +106,22 @@ import ro.cosu.vampires.server.resources.Resource;
 
         public abstract Builder providerType(Resource.ProviderType providerType);
 
+        @Override
         public Builder fromConfig(Config config) {
-<span class="fc" id="L101">            String region = config.getString(&quot;region&quot;);</span>
-<span class="pc bpc" id="L102" title="1 of 2 branches missed.">            Preconditions.checkArgument(region.split(&quot;-&quot;).length == 3, &quot;Invalid region: &quot; + region);</span>
-<span class="fc" id="L103">            this.cost(config.getDouble(&quot;cost&quot;));</span>
-<span class="fc" id="L104">            this.command(config.getString(&quot;command&quot;));</span>
-<span class="fc" id="L105">            this.instanceType(config.getString(&quot;instanceType&quot;));</span>
-<span class="fc" id="L106">            this.imageId(config.getString(&quot;imageId&quot;));</span>
-<span class="fc" id="L107">            this.keyName(config.getString(&quot;keyName&quot;));</span>
-<span class="fc" id="L108">            this.region(region);</span>
-<span class="fc" id="L109">            this.securityGroup(config.getString(&quot;securityGroup&quot;));</span>
-<span class="fc" id="L110">            return this;</span>
+<span class="fc" id="L111">            String region = config.getString(&quot;region&quot;);</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">            Preconditions.checkArgument(region.split(&quot;-&quot;).length == 3, &quot;Invalid region: &quot; + region);</span>
+<span class="fc" id="L113">            this.cost(config.getDouble(&quot;cost&quot;));</span>
+<span class="fc" id="L114">            this.command(config.getString(&quot;command&quot;));</span>
+<span class="fc" id="L115">            this.instanceType(config.getString(&quot;instanceType&quot;));</span>
+<span class="fc" id="L116">            this.imageId(config.getString(&quot;imageId&quot;));</span>
+<span class="fc" id="L117">            this.keyName(config.getString(&quot;keyName&quot;));</span>
+<span class="fc" id="L118">            this.region(region);</span>
+<span class="fc" id="L119">            this.securityGroup(config.getString(&quot;securityGroup&quot;));</span>
+<span class="fc" id="L120">            return this;</span>
         }
 
 
+        @Override
         public abstract EC2ResourceParameters build();
     }
 }
