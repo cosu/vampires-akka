@@ -43,7 +43,6 @@ import java.util.stream.Collectors;
 
 import akka.actor.Extension;
 import ro.cosu.vampires.server.resources.Resource;
-import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.jobs.Job;
 import ro.cosu.vampires.server.values.jobs.JobUtil;
 import ro.cosu.vampires.server.values.resources.ProviderDescription;
@@ -73,6 +72,7 @@ public class SettingsImpl implements Extension {
 
     public SettingsImpl(Config config) {
         vampires = config.getConfig("vampires");
+        LOG.debug("Providers: {}", getProviders().keySet());
     }
 
     public List<ResultsWriter> getWriters() {
@@ -174,11 +174,6 @@ public class SettingsImpl implements Extension {
 
                 }
         ).collect(Collectors.toMap(ProviderDescription::provider, Function.identity()));
-    }
-
-
-    public User getDefaultUser() {
-        return User.admin();
     }
 }
 

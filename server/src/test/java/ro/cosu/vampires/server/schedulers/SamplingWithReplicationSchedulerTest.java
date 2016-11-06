@@ -38,14 +38,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 
-public class SamplingSchedulerTest {
+public class SamplingWithReplicationSchedulerTest {
 
     private Scheduler scheduler;
 
     @Before
     public void setUp() throws Exception {
         List<Job> jobs = Arrays.asList(Job.empty().withCommand("foo"), Job.empty().withCommand("bar"));
-        scheduler = new SamplingScheduler(jobs, 1, 1, 10);
+        scheduler = new SamplingWithReplicationScheduler(jobs, 1, 1, 10);
     }
 
     @Test

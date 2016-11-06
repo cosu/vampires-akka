@@ -42,7 +42,7 @@ import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
 import ro.cosu.vampires.server.resources.ResourceInfo;
-import ro.cosu.vampires.server.schedulers.SamplingScheduler;
+import ro.cosu.vampires.server.schedulers.SamplingWithReplicationScheduler;
 import ro.cosu.vampires.server.schedulers.Scheduler;
 import ro.cosu.vampires.server.schedulers.SimpleScheduler;
 import ro.cosu.vampires.server.values.ClientInfo;
@@ -124,13 +124,13 @@ public class ResultActor extends UntypedActor {
         } else if (message instanceof ResourceInfo) {
             handleResourceInfo((ResourceInfo) message);
         } else if (message instanceof ResourceControl.Shutdown) {
-            handleShutdown((ResourceControl.Shutdown) message);
+            handleShutdown();
         } else {
             unhandled(message);
         }
     }
 
-    private void handleShutdown(ResourceControl.Shutdown message) {
+    private void handleShutdown() {
         // if all jobs done then set status to finished
         if (results.size() == totalSize) {
             shutdown(ExecutionInfo.Status.FINISHED);
@@ -194,7 +194,7 @@ public class ResultActor extends UntypedActor {
         List<Job> jobs = execution.workload().jobs();
         if (execution.type().equals(ExecutionMode.SAMPLE)) {
             log.info("running in sampling mode : sampling from {} jobs", jobs.size());
-            return new SamplingScheduler(jobs, settings.getJobDeadline(),
+            return new SamplingWithReplicationScheduler(jobs, settings.getJobDeadline(),
                     settings.getBackoffInterval(), settings.getNumberOfJobsToSample());
         } else
             return new SimpleScheduler(jobs, settings.getJobDeadline(), TimeUnit.SECONDS,

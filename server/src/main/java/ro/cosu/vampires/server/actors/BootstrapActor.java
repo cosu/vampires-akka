@@ -156,10 +156,10 @@ public class BootstrapActor extends UntypedActor {
         executionActor.tell(ResourceControl.Shutdown.create(), getSelf());
 
         // update the current view of the execution
-        execution = execution.withInfo(execution.info()
-                .updateStatus(ExecutionInfo.Status.STOPPING));
+        Execution updatedExecution = execution.withInfo(execution.info().updateStatus(ExecutionInfo.Status.STOPPING));
         getResultsMap(user).put(execution.id(), execution);
-        return execution;
+
+        return updatedExecution;
     }
 
     private void handleTerminated() {

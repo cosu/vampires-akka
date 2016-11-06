@@ -40,30 +40,41 @@ import java.util.concurrent.TimeUnit;
 import ro.cosu.vampires.server.values.jobs.Job;
 
 
-public class SamplingScheduler implements Scheduler {
+public class SamplingWithReplicationScheduler implements Scheduler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SamplingScheduler.class);
-    private final long jobDeadline;
+    private static final Logger LOG = LoggerFactory.getLogger(SamplingWithReplicationScheduler.class);
     private final int backOffInterval;
+    private final int numberOfJobsToSample;
+    private long jobDeadline;
     private List<Job> jobList;
     private Random random = new Random(1111111111L);
 
 
     private Map<String, Scheduler> schedulerMap = new HashMap<>();
 
-    public SamplingScheduler(List<Job> jobs, long jobDeadline, int backOffInterval, int numberOfJobsToSample) {
+    /**
+     * This scheduler takes a list of jobs and samples `numberOfJobs`. The jobs are also replicated across clients.
+     * All clients will run the same jobs but in a different order.
+     */
+    public SamplingWithReplicationScheduler(List<Job> jobs, long jobDeadline, int backOffInterval, int numberOfJobsToSample) {
         jobList = new ArrayList<>(jobs);
         Collections.shuffle(jobList, random);
-        jobList = jobList.subList(0, Math.min(numberOfJobsToSample, jobs.size()));
-
+        jobList = jobList.subList(0, Math.min(numberOfJobsToSample, jobList.size()));
+        this.numberOfJobsToSample = numberOfJobsToSample;
         this.jobDeadline = jobDeadline;
         this.backOffInterval = backOffInterval;
     }
 
+    private List<Job> getJobsForScheduler() {
+        Collections.shuffle(jobList, random);
+        return new ArrayList<>(jobList);
+    }
+
     @Override
     public Job getJob(String from) {
+
         Scheduler scheduler = schedulerMap.getOrDefault(from,
-                new SimpleScheduler(jobList, jobDeadline, TimeUnit.SECONDS, backOffInterval));
+                new SimpleScheduler(getJobsForScheduler(), jobDeadline, TimeUnit.SECONDS, backOffInterval));
 
         schedulerMap.put(from, scheduler);
 
