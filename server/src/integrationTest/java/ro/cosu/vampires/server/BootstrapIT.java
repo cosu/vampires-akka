@@ -94,6 +94,8 @@ public class BootstrapIT {
         CreateWorkload createWorkload = CreateWorkload.create(workload, User.admin());
         CreateConfiguration createConfiguration = CreateConfiguration.create(configuration, User.admin());
 
+        Thread.sleep(5000);
+
         bootstrap.tell(createWorkload, ActorRef.noSender());
         bootstrap.tell(createConfiguration, ActorRef.noSender());
 
