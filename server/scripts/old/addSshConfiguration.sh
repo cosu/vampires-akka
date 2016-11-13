@@ -18,7 +18,7 @@ ${curl} --request POST \
             \"provider\": \"ssh\",
             \"type\": \"local\"
         },
-        \"count\": \"1\"
+        \"count\": \"4\"
     }
 ]
 }" \

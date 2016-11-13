@@ -29,6 +29,7 @@ package ro.cosu.vampires.server.actors;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -48,6 +49,7 @@ import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.resources.Configuration;
 import ro.cosu.vampires.server.values.resources.ProviderDescription;
+import ro.cosu.vampires.server.values.resources.ResourceDemand;
 import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 public class ConfigurationsActor extends UntypedActor {
@@ -69,6 +71,25 @@ public class ConfigurationsActor extends UntypedActor {
                 .map(ResourceDescription::cost)
                 .orElse(0.))
                 .collect(Collectors.summingDouble(Double::doubleValue));
+    }
+
+    private Optional<ResourceDemand> resolveResourceDemand(ResourceDemand resourceDemand) {
+        Map<Resource.ProviderType, ProviderDescription> providers = settings.getProviders();
+        ResourceDescription resourceDescription = resourceDemand.resourceDescription();
+
+        if (!providers.containsKey(resourceDescription.provider())) {
+            log.error("Unable to resolve provider {}", resourceDescription.provider());
+            return Optional.empty();
+        }
+
+        ProviderDescription provider = providers.get(resourceDescription.provider());
+        if (!provider.resourceDescriptions().containsKey(resourceDescription.type())) {
+            log.error("Unable to resolve resource {}", resourceDescription.type());
+            return Optional.empty();
+        }
+
+        ResourceDescription rd = provider.resourceDescriptions().get(resourceDescription.type());
+        return Optional.of(resourceDemand.withResourceDescription(rd));
     }
 
     private Map<String, Configuration> getUserStore(User user) {
@@ -115,12 +136,21 @@ public class ConfigurationsActor extends UntypedActor {
     }
 
     private void handleCreation(CreateConfiguration message) {
-        double sum = getCost(message.configuration(), settings.getProviders());
 
-        Configuration configuration = message.configuration().withCost(sum);
-        getUserStore(message.user()).put(configuration.id(), configuration);
-        log.debug("Created configuration {}", configuration);
-        getSender().tell(configuration, getSelf());
+        List<Optional<ResourceDemand>> resolvedDescriptions = message.configuration().resources().stream()
+                .map(this::resolveResourceDemand).collect(Collectors.toList());
+        boolean allResolved = resolvedDescriptions.stream().allMatch(Optional::isPresent);
+
+        if (allResolved) {
+            List<ResourceDemand> resourceDemands = resolvedDescriptions.stream().map(Optional::get).collect(Collectors.toList());
+            Configuration configuration = message.configuration().withResources(resourceDemands);
+            getUserStore(message.user()).put(configuration.id(), configuration);
+            log.debug("Created configuration {}", configuration);
+            getSender().tell(ResponseConfiguration.create(Collections.singletonList(configuration)), getSelf());
+        } else {
+            log.error("Unable to create configuration");
+            getSender().tell(ResponseConfiguration.create(Collections.emptyList(), "Unable to resolve resource demands"), getSelf());
+        }
     }
 
 }

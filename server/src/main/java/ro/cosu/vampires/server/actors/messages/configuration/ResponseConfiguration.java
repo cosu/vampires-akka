@@ -36,9 +36,15 @@ import ro.cosu.vampires.server.values.resources.Configuration;
 public abstract class ResponseConfiguration implements ConfigurationMessage {
 
     public static ResponseConfiguration create(List<Configuration> configurations) {
-        return new AutoValue_ResponseConfiguration(ImmutableList.copyOf(configurations));
+        return create(ImmutableList.copyOf(configurations), "OK");
+    }
+
+    public static ResponseConfiguration create(List<Configuration> configurations, String message) {
+        return new AutoValue_ResponseConfiguration(ImmutableList.copyOf(configurations), message);
     }
 
     public abstract List<Configuration> configurations();
+
+    public abstract String message();
 
 }

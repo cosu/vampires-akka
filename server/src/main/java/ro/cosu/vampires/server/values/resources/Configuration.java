@@ -30,6 +30,7 @@ import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -71,8 +72,10 @@ public abstract class Configuration implements Id {
         return builder.build();
     }
 
-    public Configuration withCost(Double cost) {
-        return toBuilder().cost(cost).build();
+    public Configuration withResources(List<ResourceDemand> resourceDemands) {
+        double cost = resourceDemands.stream().map(rd -> rd.resourceDescription().cost() * rd.count())
+                .collect(Collectors.summingDouble(Double::doubleValue));
+        return toBuilder().resources(ImmutableList.copyOf(resourceDemands)).cost(cost).build();
     }
 
     @Override

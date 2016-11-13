@@ -49,6 +49,10 @@ public abstract class ResourceDemand {
         return toBuilder().count(i).build();
     }
 
+    public ResourceDemand withResourceDescription(ResourceDescription resourceDescription) {
+        return toBuilder().resourceDescription(resourceDescription).build();
+    }
+
     @AutoValue.Builder
     public abstract static class Builder {
 

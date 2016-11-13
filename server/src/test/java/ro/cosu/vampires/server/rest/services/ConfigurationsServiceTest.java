@@ -84,7 +84,7 @@ public class ConfigurationsServiceTest extends AbstractServiceTest<Configuration
     protected ConfigurationPayload getPayload() {
         ImmutableList<ResourceDemand> resourceDemands = ImmutableList.of(ResourceDemand.builder().count(1)
                 .resourceDescription(
-                        ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("small").cost(10).build()
+                        ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("foo").cost(10).build()
                 )
                 .build());
         return ConfigurationPayload.builder().description("foo").resources(resourceDemands).build();

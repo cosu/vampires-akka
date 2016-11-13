@@ -70,9 +70,15 @@ public class ConfigurationsService implements Service<Configuration, Configurati
     public Configuration create(ConfigurationPayload payload, User user) {
         Configuration created = Configuration.fromPayload(payload);
 
-        Optional<Configuration> ask = ActorUtil.ask(CreateConfiguration.create(created, user), actorRef);
+        Optional<ResponseConfiguration> ask = ActorUtil.ask(CreateConfiguration.create(created, user), actorRef);
 
-        return ask.orElseThrow(() -> new RuntimeException("failed to create"));
+        ResponseConfiguration responseConfiguration = ask.orElseThrow(() -> new RuntimeException("failed to create"));
+
+        if (responseConfiguration.configurations().isEmpty()) {
+            throw new RuntimeException(responseConfiguration.message());
+        }
+
+        return responseConfiguration.configurations().get(0);
     }
 
     @Override

@@ -76,7 +76,7 @@ public class ConfigurationsControllerTest extends AbstractControllerTest<Configu
                 ResourceDemand.builder()
                         .count(1)
                         .resourceDescription(
-                                ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("bar").cost(0).build()
+                                ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("foo").cost(0).build()
                                 )
                         .build());
         return ConfigurationPayload.builder().description("foo").resources(resourceDemands).build();

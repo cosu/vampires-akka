@@ -18,7 +18,7 @@ ${curl} --request POST \
             \"provider\": \"local\",
             \"type\": \"local\"
         },
-        \"count\": \"1\"
+        \"count\": \"2\"
     }
 ]
 }" \

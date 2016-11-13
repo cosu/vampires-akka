@@ -40,10 +40,10 @@ import ro.cosu.vampires.server.actors.messages.configuration.DeleteConfiguration
 import ro.cosu.vampires.server.actors.messages.configuration.QueryConfiguration;
 import ro.cosu.vampires.server.actors.messages.configuration.ResponseConfiguration;
 import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.resources.Configuration;
 import ro.cosu.vampires.server.values.resources.ResourceDemand;
 import ro.cosu.vampires.server.values.resources.ResourceDescription;
-import ro.cosu.vampires.server.values.User;
 import scala.concurrent.duration.Duration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -75,10 +75,10 @@ public class ConfigurationsActorTest extends AbstractActorTest {
         configurationsActorTestActorRef.tell(getCreate(), testProbe.ref());
 
         // send a config with no price
-        testProbe.expectMsgClass(Duration.create(1, TimeUnit.SECONDS), Configuration.class);
-        Configuration configuration = (Configuration) testProbe.lastMessage().msg();
+        testProbe.expectMsgClass(Duration.create(1, TimeUnit.SECONDS), ResponseConfiguration.class);
+        ResponseConfiguration responseConfiguration = (ResponseConfiguration) testProbe.lastMessage().msg();
 
-        assertThat(configuration.cost(), not(0.));
+        assertThat(responseConfiguration.configurations().get(0).cost(), not(0.));
 
     }
 
