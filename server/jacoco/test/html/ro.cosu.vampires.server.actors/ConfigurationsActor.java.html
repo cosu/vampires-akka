@@ -29,6 +29,7 @@ package ro.cosu.vampires.server.actors;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -48,80 +49,109 @@ import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.resources.Configuration;
 import ro.cosu.vampires.server.values.resources.ProviderDescription;
+import ro.cosu.vampires.server.values.resources.ResourceDemand;
 import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
-<span class="fc" id="L53">public class ConfigurationsActor extends UntypedActor {</span>
+<span class="fc" id="L55">public class ConfigurationsActor extends UntypedActor {</span>
 
-<span class="fc" id="L55">    private final SettingsImpl settings = Settings.SettingsProvider.get(getContext().system());</span>
-<span class="fc" id="L56">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
+<span class="fc" id="L57">    private final SettingsImpl settings = Settings.SettingsProvider.get(getContext().system());</span>
+<span class="fc" id="L58">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
 
-<span class="fc" id="L58">    private HashBasedTable&lt;User, String, Configuration&gt; table = HashBasedTable.create();</span>
+<span class="fc" id="L60">    private HashBasedTable&lt;User, String, Configuration&gt; table = HashBasedTable.create();</span>
 
     public static Props props() {
-<span class="fc" id="L61">        return Props.create(ConfigurationsActor.class);</span>
+<span class="fc" id="L63">        return Props.create(ConfigurationsActor.class);</span>
     }
 
     private static double getCost(Configuration configuration, Map&lt;Resource.ProviderType, ProviderDescription&gt; providers) {
 
-<span class="fc" id="L66">        return configuration.resources().stream().map(resource -&gt; Optional</span>
-<span class="fc" id="L67">                .ofNullable(providers.get(resource.resourceDescription().provider()))</span>
-<span class="fc" id="L68">                .map(provider -&gt; provider.resourceDescriptions().get(resource.resourceDescription().type()))</span>
-<span class="fc" id="L69">                .map(ResourceDescription::cost)</span>
-<span class="fc" id="L70">                .orElse(0.))</span>
-<span class="fc" id="L71">                .collect(Collectors.summingDouble(Double::doubleValue));</span>
+<span class="nc" id="L68">        return configuration.resources().stream().map(resource -&gt; Optional</span>
+<span class="nc" id="L69">                .ofNullable(providers.get(resource.resourceDescription().provider()))</span>
+<span class="nc" id="L70">                .map(provider -&gt; provider.resourceDescriptions().get(resource.resourceDescription().type()))</span>
+<span class="nc" id="L71">                .map(ResourceDescription::cost)</span>
+<span class="nc" id="L72">                .orElse(0.))</span>
+<span class="nc" id="L73">                .collect(Collectors.summingDouble(Double::doubleValue));</span>
+    }
+
+    private Optional&lt;ResourceDemand&gt; resolveResourceDemand(ResourceDemand resourceDemand) {
+<span class="fc" id="L77">        Map&lt;Resource.ProviderType, ProviderDescription&gt; providers = settings.getProviders();</span>
+<span class="fc" id="L78">        ResourceDescription resourceDescription = resourceDemand.resourceDescription();</span>
+
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        if (!providers.containsKey(resourceDescription.provider())) {</span>
+<span class="nc" id="L81">            log.error(&quot;Unable to resolve provider {}&quot;, resourceDescription.provider());</span>
+<span class="nc" id="L82">            return Optional.empty();</span>
+        }
+
+<span class="fc" id="L85">        ProviderDescription provider = providers.get(resourceDescription.provider());</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">        if (!provider.resourceDescriptions().containsKey(resourceDescription.type())) {</span>
+<span class="nc" id="L87">            log.error(&quot;Unable to resolve resource {}&quot;, resourceDescription.type());</span>
+<span class="nc" id="L88">            return Optional.empty();</span>
+        }
+
+<span class="fc" id="L91">        ResourceDescription rd = provider.resourceDescriptions().get(resourceDescription.type());</span>
+<span class="fc" id="L92">        return Optional.of(resourceDemand.withResourceDescription(rd));</span>
     }
 
     private Map&lt;String, Configuration&gt; getUserStore(User user) {
-<span class="fc" id="L75">        return table.row(user);</span>
+<span class="fc" id="L96">        return table.row(user);</span>
     }
 
     @Override
     public void onReceive(Object message) throws Exception {
-<span class="fc bfc" id="L80" title="All 2 branches covered.">        if (message instanceof CreateConfiguration) {</span>
-<span class="fc" id="L81">            handleCreation((CreateConfiguration) message);</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">        } else if (message instanceof QueryConfiguration) {</span>
-<span class="fc" id="L83">            handleQuery((QueryConfiguration) message);</span>
-<span class="pc bpc" id="L84" title="1 of 2 branches missed.">        } else if (message instanceof DeleteConfiguration) {</span>
-<span class="fc" id="L85">            handleDeletion((DeleteConfiguration) message);</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        if (message instanceof CreateConfiguration) {</span>
+<span class="fc" id="L102">            handleCreation((CreateConfiguration) message);</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        } else if (message instanceof QueryConfiguration) {</span>
+<span class="fc" id="L104">            handleQuery((QueryConfiguration) message);</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">        } else if (message instanceof DeleteConfiguration) {</span>
+<span class="fc" id="L106">            handleDeletion((DeleteConfiguration) message);</span>
         } else {
-<span class="nc" id="L87">            log.error(&quot;unhandled {}&quot;, message);</span>
-<span class="nc" id="L88">            unhandled(message);</span>
+<span class="nc" id="L108">            log.error(&quot;unhandled {}&quot;, message);</span>
+<span class="nc" id="L109">            unhandled(message);</span>
         }
-<span class="fc" id="L90">    }</span>
+<span class="fc" id="L111">    }</span>
 
     private void handleDeletion(DeleteConfiguration deleteConfiguration) {
 
-<span class="fc" id="L94">        Map&lt;String, Configuration&gt; userStore = getUserStore(deleteConfiguration.user());</span>
+<span class="fc" id="L115">        Map&lt;String, Configuration&gt; userStore = getUserStore(deleteConfiguration.user());</span>
 
-<span class="fc" id="L96">        List&lt;Configuration&gt; deleted = deleteConfiguration.configurations().stream().filter(userStore::containsKey)</span>
-<span class="fc" id="L97">                .map(userStore::remove).collect(Collectors.toList());</span>
+<span class="fc" id="L117">        List&lt;Configuration&gt; deleted = deleteConfiguration.configurations().stream().filter(userStore::containsKey)</span>
+<span class="fc" id="L118">                .map(userStore::remove).collect(Collectors.toList());</span>
 
-<span class="fc" id="L99">        getSender().tell(ResponseConfiguration.create(deleted), getSelf());</span>
-<span class="fc" id="L100">    }</span>
+<span class="fc" id="L120">        getSender().tell(ResponseConfiguration.create(deleted), getSelf());</span>
+<span class="fc" id="L121">    }</span>
 
     private void handleQuery(QueryConfiguration message) {
-<span class="fc" id="L103">        Map&lt;String, Configuration&gt; userStore = getUserStore(message.user());</span>
+<span class="fc" id="L124">        Map&lt;String, Configuration&gt; userStore = getUserStore(message.user());</span>
 
         List&lt;Configuration&gt; configurations;
-<span class="fc bfc" id="L106" title="All 2 branches covered.">        if (message.resources().isEmpty())</span>
-<span class="fc" id="L107">            configurations = ImmutableList.copyOf(userStore.values());</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">        if (message.resources().isEmpty())</span>
+<span class="fc" id="L128">            configurations = ImmutableList.copyOf(userStore.values());</span>
         else
-<span class="fc" id="L109">            configurations = message.resources().stream().filter(userStore::containsKey)</span>
-<span class="fc" id="L110">                    .map(userStore::get).collect(Collectors.toList());</span>
+<span class="fc" id="L130">            configurations = message.resources().stream().filter(userStore::containsKey)</span>
+<span class="fc" id="L131">                    .map(userStore::get).collect(Collectors.toList());</span>
 
-<span class="fc" id="L112">        ResponseConfiguration responseConfiguration = ResponseConfiguration.create(configurations);</span>
+<span class="fc" id="L133">        ResponseConfiguration responseConfiguration = ResponseConfiguration.create(configurations);</span>
 
-<span class="fc" id="L114">        getSender().tell(responseConfiguration, getSelf());</span>
-<span class="fc" id="L115">    }</span>
+<span class="fc" id="L135">        getSender().tell(responseConfiguration, getSelf());</span>
+<span class="fc" id="L136">    }</span>
 
     private void handleCreation(CreateConfiguration message) {
-<span class="fc" id="L118">        double sum = getCost(message.configuration(), settings.getProviders());</span>
 
-<span class="fc" id="L120">        Configuration configuration = message.configuration().withCost(sum);</span>
-<span class="fc" id="L121">        getUserStore(message.user()).put(configuration.id(), configuration);</span>
-<span class="fc" id="L122">        log.debug(&quot;Created configuration {}&quot;, configuration);</span>
-<span class="fc" id="L123">        getSender().tell(configuration, getSelf());</span>
-<span class="fc" id="L124">    }</span>
+<span class="fc" id="L140">        List&lt;Optional&lt;ResourceDemand&gt;&gt; resolvedDescriptions = message.configuration().resources().stream()</span>
+<span class="fc" id="L141">                .map(this::resolveResourceDemand).collect(Collectors.toList());</span>
+<span class="fc" id="L142">        boolean allResolved = resolvedDescriptions.stream().allMatch(Optional::isPresent);</span>
+
+<span class="pc bpc" id="L144" title="1 of 2 branches missed.">        if (allResolved) {</span>
+<span class="fc" id="L145">            List&lt;ResourceDemand&gt; resourceDemands = resolvedDescriptions.stream().map(Optional::get).collect(Collectors.toList());</span>
+<span class="fc" id="L146">            Configuration configuration = message.configuration().withResources(resourceDemands);</span>
+<span class="fc" id="L147">            getUserStore(message.user()).put(configuration.id(), configuration);</span>
+<span class="fc" id="L148">            log.debug(&quot;Created configuration {}&quot;, configuration);</span>
+<span class="fc" id="L149">            getSender().tell(ResponseConfiguration.create(Collections.singletonList(configuration)), getSelf());</span>
+<span class="fc" id="L150">        } else {</span>
+<span class="nc" id="L151">            log.error(&quot;Unable to create configuration&quot;);</span>
+<span class="nc" id="L152">            getSender().tell(ResponseConfiguration.create(Collections.emptyList(), &quot;Unable to resolve resource demands&quot;), getSelf());</span>
+        }
+<span class="fc" id="L154">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
