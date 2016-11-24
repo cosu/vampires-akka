@@ -29,28 +29,20 @@ package ro.cosu.vampires.server.rest.controllers;
 
 import com.google.inject.AbstractModule;
 
-public class ControllersModule extends AbstractModule {
-
-
-    private final boolean withAuth;
-
-<span class="fc" id="L37">    public ControllersModule(boolean withAuth) {</span>
-<span class="fc" id="L38">        this.withAuth = withAuth;</span>
-<span class="fc" id="L39">    }</span>
+<span class="fc" id="L32">public class ControllersModule extends AbstractModule {</span>
 
     @Override
     protected void configure() {
-<span class="fc" id="L43">        bind(ProvidersController.class).asEagerSingleton();</span>
-<span class="fc" id="L44">        bind(ConfigurationsController.class).asEagerSingleton();</span>
-<span class="fc" id="L45">        bind(ExecutionsController.class).asEagerSingleton();</span>
-<span class="fc" id="L46">        bind(WorkloadsController.class).asEagerSingleton();</span>
-<span class="fc" id="L47">        bind(ExceptionMapper.class).asEagerSingleton();</span>
-<span class="fc" id="L48">        bind(CorsFilter.class).asEagerSingleton();</span>
-<span class="fc" id="L49">        bind(FilesController.class).asEagerSingleton();</span>
-<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        if (withAuth) {</span>
-<span class="fc" id="L51">            bind(AuthenticationFilter.class).asEagerSingleton();</span>
-        }
+<span class="fc" id="L36">        bind(ProvidersController.class).asEagerSingleton();</span>
+<span class="fc" id="L37">        bind(ConfigurationsController.class).asEagerSingleton();</span>
+<span class="fc" id="L38">        bind(ExecutionsController.class).asEagerSingleton();</span>
+<span class="fc" id="L39">        bind(WorkloadsController.class).asEagerSingleton();</span>
+<span class="fc" id="L40">        bind(ExceptionMapper.class).asEagerSingleton();</span>
+<span class="fc" id="L41">        bind(CorsFilter.class).asEagerSingleton();</span>
+<span class="fc" id="L42">        bind(FilesController.class).asEagerSingleton();</span>
+<span class="fc" id="L43">        bind(AuthController.class).asEagerSingleton();</span>
+<span class="fc" id="L44">        bind(AuthenticationFilter.class).asEagerSingleton();</span>
 
-<span class="fc" id="L54">    }</span>
+<span class="fc" id="L46">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

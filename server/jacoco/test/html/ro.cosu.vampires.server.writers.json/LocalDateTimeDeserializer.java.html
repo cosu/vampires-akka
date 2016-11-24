@@ -31,14 +31,21 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 
-<span class="fc" id="L36">public class LocalDateTimeDeserializer implements JsonDeserializer&lt;LocalDateTime&gt; {</span>
+<span class="fc" id="L38">public class LocalDateTimeDeserializer implements JsonDeserializer&lt;LocalDateTime&gt; {</span>
 
     @Override
     public LocalDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
-<span class="fc" id="L41">        return LocalDateTime.parse(json.getAsString());</span>
+        try {
+<span class="nc" id="L44">            return LocalDateTime.ofInstant(ZonedDateTime.parse(json.getAsString()).toInstant(), ZoneOffset.UTC);</span>
+        }
+<span class="fc" id="L46">        catch (Exception e){</span>
+<span class="fc" id="L47">            return LocalDateTime.parse(json.getAsString());</span>
+        }
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
