@@ -98,10 +98,6 @@ public abstract class Job implements Serializable {
                 .build();
     }
 
-    public Job withComputation(Computation computation) {
-        return toBuilder().computation(computation).build();
-    }
-
     @AutoValue.Builder
     public abstract static class Builder {
         public abstract Builder computation(Computation computation);

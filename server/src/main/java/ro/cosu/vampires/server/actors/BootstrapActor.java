@@ -136,9 +136,10 @@ public class BootstrapActor extends UntypedActor {
         User user = deleteExecution.user();
 
         boolean userHasExecution = getResultsMap(user).containsKey(deleteExecution.resourceId());
-        boolean executionHasActor = executionsToActors.containsKey(deleteExecution.resourceId());
 
-        if (userHasExecution && executionHasActor) {
+        if (userHasExecution) {
+            boolean executionHasActor = executionsToActors.containsKey(deleteExecution.resourceId());
+            if (executionHasActor) {
             Execution execution = getResultsMap(user).get(deleteExecution.resourceId());
             boolean executionCanShutdown = execution.info().status().isActiveStatus();
 
@@ -148,6 +149,11 @@ public class BootstrapActor extends UntypedActor {
                 log.error("shutting down a non-running execution {}", execution);
             }
             getSender().tell(ResponseExecution.create(ImmutableList.of(execution)), getSelf());
+            }
+        }
+        else {
+            log.warning("Invalid execution id");
+            getSender().tell(ResponseExecution.create(ImmutableList.of()), getSelf());
         }
     }
 

@@ -56,7 +56,7 @@ public class RestModule extends AbstractModule {
     @Override
     protected void configure() {
         install(new ServicesModule());
-        install(new ControllersModule(withAuth()));
+        install(new ControllersModule());
     }
 
     @Provides

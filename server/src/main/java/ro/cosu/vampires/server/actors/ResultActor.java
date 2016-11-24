@@ -167,7 +167,7 @@ public class ResultActor extends UntypedActor {
         }
         if (results.size() == totalSize) {
             // signal parent we're done
-            log.debug("result actor exiting {}", results.size());
+            log.debug("result actor exiting! result count: {}", results.size());
             getContext().parent().tell(ResourceControl.Shutdown.create(), getSelf());
         }
     }

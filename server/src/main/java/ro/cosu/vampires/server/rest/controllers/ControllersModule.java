@@ -31,13 +31,6 @@ import com.google.inject.AbstractModule;
 
 public class ControllersModule extends AbstractModule {
 
-
-    private final boolean withAuth;
-
-    public ControllersModule(boolean withAuth) {
-        this.withAuth = withAuth;
-    }
-
     @Override
     protected void configure() {
         bind(ProvidersController.class).asEagerSingleton();
@@ -47,9 +40,8 @@ public class ControllersModule extends AbstractModule {
         bind(ExceptionMapper.class).asEagerSingleton();
         bind(CorsFilter.class).asEagerSingleton();
         bind(FilesController.class).asEagerSingleton();
-        if (withAuth) {
-            bind(AuthenticationFilter.class).asEagerSingleton();
-        }
+        bind(AuthController.class).asEagerSingleton();
+        bind(AuthenticationFilter.class).asEagerSingleton();
 
     }
 }

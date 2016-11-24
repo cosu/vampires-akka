@@ -31,6 +31,8 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 
 public class LocalDateTimeDeserializer implements JsonDeserializer<LocalDateTime> {
@@ -38,6 +40,11 @@ public class LocalDateTimeDeserializer implements JsonDeserializer<LocalDateTime
     @Override
     public LocalDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
-        return LocalDateTime.parse(json.getAsString());
+        try {
+            return LocalDateTime.ofInstant(ZonedDateTime.parse(json.getAsString()).toInstant(), ZoneOffset.UTC);
+        }
+        catch (Exception e){
+            return LocalDateTime.parse(json.getAsString());
+        }
     }
 }

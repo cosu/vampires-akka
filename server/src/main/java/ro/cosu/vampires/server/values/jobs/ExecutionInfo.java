@@ -141,7 +141,6 @@ public abstract class ExecutionInfo {
 
         public abstract Builder stats(Stats stats);
 
-
         public abstract Builder completed(int i);
 
         public abstract Builder elapsed(long i);

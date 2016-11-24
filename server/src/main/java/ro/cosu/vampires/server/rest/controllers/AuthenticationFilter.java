@@ -59,7 +59,6 @@ public class AuthenticationFilter {
         before((request, response) -> {
             boolean authenticated = !request.session().isNew();
             String auth = request.headers("Authorization");
-            // options calls are allowed unauthenticated
             if (request.requestMethod().equals("OPTIONS"))
                 authenticated = true;
 
