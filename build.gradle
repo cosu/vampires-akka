@@ -132,14 +132,14 @@ subprojects {
     integrationTest.dependsOn installDist
 
     dependencies {
-        def akkaVersion = "2.11:2.4.14"
+        def akkaVersion = "2.11:2.4.17"
         def guiceVersion = "4.1.0"
 
         compile "com.typesafe.akka:akka-actor_${akkaVersion}"
         compile "com.typesafe.akka:akka-remote_${akkaVersion}"
         compile "com.typesafe.akka:akka-slf4j_${akkaVersion}"
 
-        compile 'com.google.guava:guava:20.0'
+        compile 'com.google.guava:guava:21.0'
         compile "com.google.inject:guice:${guiceVersion}"
         compile "com.google.inject.extensions:guice-multibindings:${guiceVersion}"
         compile "com.google.inject.extensions:guice-assistedinject:${guiceVersion}"
@@ -150,8 +150,8 @@ subprojects {
 
         compile 'ch.qos.logback:logback-classic:1.1.7'
         compile 'org.apache.commons:commons-exec:1.3'
-        compile 'org.slf4j:jul-to-slf4j:1.7.21'
-        compile 'io.dropwizard.metrics:metrics-core:3.1.2'
+        compile 'org.slf4j:jul-to-slf4j:1.7.24'
+        compile 'io.dropwizard.metrics:metrics-core:3.2.0'
 
 
         testCompile 'junit:junit:4.12'
@@ -181,19 +181,19 @@ project(':client') {
     mainClassName = "ro.cosu.vampires.client.Client"
     dependencies {
         compile project(':server')
-        compile 'com.github.docker-java:docker-java:3.0.6'
-        compile 'com.github.dblock:oshi-core:3.2'
+        compile 'com.github.docker-java:docker-java:3.0.7'
+        compile 'com.github.dblock:oshi-core:3.3'
     }
 }
 
 project(':server'){
     mainClassName = "ro.cosu.vampires.server.Server"
     dependencies {
-        compile 'org.mongodb.morphia:morphia:1.3.0'
+        compile 'org.mongodb.morphia:morphia:1.3.2'
         compile 'com.jcraft:jsch:0.1.54'
         compile 'org.mongodb.morphia:morphia-logging-slf4j:1.2.1'
         compile 'com.amazonaws:aws-java-sdk-ec2:1.11.+'
-        compile 'com.sparkjava:spark-core:2.5.4'
+        compile 'com.sparkjava:spark-core:2.5.5'
         compile 'javax.ws.rs:javax.ws.rs-api:2.0.1'
         testCompile 'org.apache.httpcomponents:httpmime:4.5.2'
     }
