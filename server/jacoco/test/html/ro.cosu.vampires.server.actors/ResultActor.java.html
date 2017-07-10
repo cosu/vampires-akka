@@ -32,10 +32,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Cancellable;
 import akka.actor.Props;
-import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
@@ -54,7 +54,7 @@ import ro.cosu.vampires.server.values.jobs.Job;
 import ro.cosu.vampires.server.writers.ResultsWriter;
 
 
-public class ResultActor extends UntypedActor {
+public class ResultActor extends AbstractActor {
 <span class="fc" id="L58">    private final SettingsImpl settings =</span>
 <span class="fc" id="L59">            Settings.SettingsProvider.get(getContext().system());</span>
 <span class="fc" id="L60">    private final LocalDateTime startTime = LocalDateTime.now();</span>
@@ -116,89 +116,85 @@ public class ResultActor extends UntypedActor {
 <span class="fc" id="L116">    }</span>
 
     @Override
-    public void onReceive(Object message) throws Exception {
-<span class="fc bfc" id="L120" title="All 2 branches covered.">        if (message instanceof Job) {</span>
-<span class="fc" id="L121">            handleJob((Job) message);</span>
-<span class="fc bfc" id="L122" title="All 2 branches covered.">        } else if (message instanceof ClientInfo) {</span>
-<span class="fc" id="L123">            handleClientInfo((ClientInfo) message);</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">        } else if (message instanceof ResourceInfo) {</span>
-<span class="fc" id="L125">            handleResourceInfo((ResourceInfo) message);</span>
-<span class="pc bpc" id="L126" title="1 of 2 branches missed.">        } else if (message instanceof ResourceControl.Shutdown) {</span>
-<span class="fc" id="L127">            handleShutdown();</span>
-        } else {
-<span class="nc" id="L129">            unhandled(message);</span>
-        }
-<span class="fc" id="L131">    }</span>
+    public Receive createReceive() {
+<span class="fc" id="L120">        return receiveBuilder()</span>
+<span class="fc" id="L121">                .match(Job.class, this::handleJob)</span>
+<span class="fc" id="L122">                .match(ClientInfo.class, this::handleClientInfo)</span>
+<span class="fc" id="L123">                .match(ResourceInfo.class, this::handleResourceInfo)</span>
+<span class="fc" id="L124">                .match(ResourceControl.Shutdown.class, message -&gt; this.handleShutdown())</span>
+<span class="fc" id="L125">                .build();</span>
+    }
+
 
     private void handleShutdown() {
         // if all jobs done then set status to finished
-<span class="pc bpc" id="L135" title="1 of 2 branches missed.">        if (results.size() == totalSize) {</span>
-<span class="nc" id="L136">            shutdown(ExecutionInfo.Status.FINISHED);</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">        if (results.size() == totalSize) {</span>
+<span class="nc" id="L132">            shutdown(ExecutionInfo.Status.FINISHED);</span>
         } else {
-<span class="fc" id="L138">            shutdown(ExecutionInfo.Status.CANCELED);</span>
+<span class="fc" id="L134">            shutdown(ExecutionInfo.Status.CANCELED);</span>
         }
-<span class="fc" id="L140">    }</span>
+<span class="fc" id="L136">    }</span>
 
     private void handleResourceInfo(ResourceInfo resourceInfo) {
-<span class="fc" id="L143">        statsProcessor.process(resourceInfo);</span>
-<span class="fc" id="L144">    }</span>
+<span class="fc" id="L139">        statsProcessor.process(resourceInfo);</span>
+<span class="fc" id="L140">    }</span>
 
     private void sendCurrentExecutionInfo(ExecutionInfo.Status status) {
-<span class="fc" id="L147">        ExecutionInfo executionInfo = ExecutionInfo.empty()</span>
-<span class="fc" id="L148">                .updateTotal(totalSize)</span>
-<span class="fc" id="L149">                .updateCompleted(results.size())</span>
-<span class="fc" id="L150">                .updateStatus(status)</span>
-<span class="fc" id="L151">                .updateStats(statsProcessor.getStats())</span>
-<span class="fc" id="L152">                .updateElapsed(Duration.between(startTime, LocalDateTime.now()).toMillis())</span>
-<span class="fc" id="L153">                .updateRemaining(totalSize - results.size());</span>
+<span class="fc" id="L143">        ExecutionInfo executionInfo = ExecutionInfo.empty()</span>
+<span class="fc" id="L144">                .updateTotal(totalSize)</span>
+<span class="fc" id="L145">                .updateCompleted(results.size())</span>
+<span class="fc" id="L146">                .updateStatus(status)</span>
+<span class="fc" id="L147">                .updateStats(statsProcessor.getStats())</span>
+<span class="fc" id="L148">                .updateElapsed(Duration.between(startTime, LocalDateTime.now()).toMillis())</span>
+<span class="fc" id="L149">                .updateRemaining(totalSize - results.size());</span>
 
-<span class="fc" id="L155">        Execution execution = this.execution.withInfo(executionInfo);</span>
-<span class="fc" id="L156">        getContext().parent().tell(execution, getSelf());</span>
-<span class="fc" id="L157">    }</span>
+<span class="fc" id="L151">        Execution execution = this.execution.withInfo(executionInfo);</span>
+<span class="fc" id="L152">        getContext().parent().tell(execution, getSelf());</span>
+<span class="fc" id="L153">    }</span>
 
     private void handleJob(Job job) {
-<span class="fc" id="L160">        workActor.forward(job, getContext());</span>
-<span class="pc bpc" id="L161" title="1 of 2 branches missed.">        if (!job.computation().id().equals(Computation.BACKOFF)</span>
-<span class="pc bpc" id="L162" title="1 of 2 branches missed.">                &amp;&amp; !job.computation().id().equals(Computation.EMPTY)) {</span>
-<span class="fc" id="L163">            results.add(job);</span>
-<span class="pc" id="L164">            writers.forEach(r -&gt; r.addResult(job));</span>
-<span class="fc" id="L165">            statsProcessor.process(job);</span>
-<span class="fc" id="L166">            sendCurrentExecutionInfo(ExecutionInfo.Status.RUNNING);</span>
+<span class="fc" id="L156">        workActor.forward(job, getContext());</span>
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">        if (!job.computation().id().equals(Computation.BACKOFF)</span>
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">                &amp;&amp; !job.computation().id().equals(Computation.EMPTY)) {</span>
+<span class="fc" id="L159">            results.add(job);</span>
+<span class="pc" id="L160">            writers.forEach(r -&gt; r.addResult(job));</span>
+<span class="fc" id="L161">            statsProcessor.process(job);</span>
+<span class="fc" id="L162">            sendCurrentExecutionInfo(ExecutionInfo.Status.RUNNING);</span>
         }
-<span class="pc bpc" id="L168" title="1 of 2 branches missed.">        if (results.size() == totalSize) {</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">        if (results.size() == totalSize) {</span>
             // signal parent we're done
-<span class="nc" id="L170">            log.debug(&quot;result actor exiting! result count: {}&quot;, results.size());</span>
-<span class="nc" id="L171">            getContext().parent().tell(ResourceControl.Shutdown.create(), getSelf());</span>
+<span class="nc" id="L166">            log.debug(&quot;result actor exiting! result count: {}&quot;, results.size());</span>
+<span class="nc" id="L167">            getContext().parent().tell(ResourceControl.Shutdown.create(), getSelf());</span>
         }
-<span class="fc" id="L173">    }</span>
+<span class="fc" id="L169">    }</span>
 
     private void handleClientInfo(ClientInfo clientInfo) {
-<span class="fc" id="L176">        ActorRef configActor = getContext().actorOf(ClientConfigActor.props(), &quot;clientConfig-&quot; + clientInfo.id());</span>
-<span class="fc" id="L177">        log.debug(&quot;got client info {}&quot;, clientInfo);</span>
-<span class="fc" id="L178">        configActor.forward(clientInfo, getContext());</span>
-<span class="pc" id="L179">        writers.forEach(r -&gt; r.addClient(clientInfo));</span>
-<span class="fc" id="L180">        statsProcessor.process(clientInfo);</span>
-<span class="fc" id="L181">    }</span>
+<span class="fc" id="L172">        ActorRef configActor = getContext().actorOf(ClientConfigActor.props(), &quot;clientConfig-&quot; + clientInfo.id());</span>
+<span class="fc" id="L173">        log.debug(&quot;got client info {}&quot;, clientInfo);</span>
+<span class="fc" id="L174">        configActor.forward(clientInfo, getContext());</span>
+<span class="pc" id="L175">        writers.forEach(r -&gt; r.addClient(clientInfo));</span>
+<span class="fc" id="L176">        statsProcessor.process(clientInfo);</span>
+<span class="fc" id="L177">    }</span>
 
     private void shutdown(ExecutionInfo.Status status) {
-<span class="fc" id="L184">        log.info(&quot;Total Duration: {}&quot;, formatDuration(Duration.between(startTime, LocalDateTime.now())));</span>
-<span class="fc" id="L185">        log.info(&quot;shutting down&quot;);</span>
-<span class="fc" id="L186">        writers.forEach(ResultsWriter::close);</span>
+<span class="fc" id="L180">        log.info(&quot;Total Duration: {}&quot;, formatDuration(Duration.between(startTime, LocalDateTime.now())));</span>
+<span class="fc" id="L181">        log.info(&quot;shutting down&quot;);</span>
+<span class="fc" id="L182">        writers.forEach(ResultsWriter::close);</span>
         // init shutdown
-<span class="fc" id="L188">        statsProcessor.flush();</span>
-<span class="fc" id="L189">        sendCurrentExecutionInfo(status);</span>
-<span class="fc" id="L190">        getContext().stop(getSelf());</span>
-<span class="fc" id="L191">    }</span>
+<span class="fc" id="L184">        statsProcessor.flush();</span>
+<span class="fc" id="L185">        sendCurrentExecutionInfo(status);</span>
+<span class="fc" id="L186">        getContext().stop(getSelf());</span>
+<span class="fc" id="L187">    }</span>
 
     private Scheduler getScheduler(Execution execution) {
-<span class="fc" id="L194">        List&lt;Job&gt; jobs = execution.workload().jobs();</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">        if (execution.type().equals(ExecutionMode.SAMPLE)) {</span>
-<span class="fc" id="L196">            log.info(&quot;running in sampling mode : sampling from {} jobs&quot;, jobs.size());</span>
-<span class="fc" id="L197">            return new SamplingWithReplicationScheduler(jobs, settings.getJobDeadline(),</span>
-<span class="fc" id="L198">                    settings.getBackoffInterval(), settings.getNumberOfJobsToSample());</span>
+<span class="fc" id="L190">        List&lt;Job&gt; jobs = execution.workload().jobs();</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">        if (execution.type().equals(ExecutionMode.SAMPLE)) {</span>
+<span class="fc" id="L192">            log.info(&quot;running in sampling mode : sampling from {} jobs&quot;, jobs.size());</span>
+<span class="fc" id="L193">            return new SamplingWithReplicationScheduler(jobs, settings.getJobDeadline(),</span>
+<span class="fc" id="L194">                    settings.getBackoffInterval(), settings.getNumberOfJobsToSample());</span>
         } else
-<span class="fc" id="L200">            return new SimpleScheduler(jobs, settings.getJobDeadline(), TimeUnit.SECONDS,</span>
-<span class="fc" id="L201">                    settings.getBackoffInterval());</span>
+<span class="fc" id="L196">            return new SimpleScheduler(jobs, settings.getJobDeadline(), TimeUnit.SECONDS,</span>
+<span class="fc" id="L197">                    settings.getBackoffInterval());</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

@@ -29,16 +29,16 @@ package ro.cosu.vampires.server.actors;
 import java.util.LinkedList;
 import java.util.List;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.PoisonPill;
 import akka.actor.Props;
 import akka.actor.Terminated;
-import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 
-<span class="fc" id="L41">public class Terminator extends UntypedActor {</span>
+<span class="fc" id="L41">public class Terminator extends AbstractActor {</span>
 
 <span class="fc" id="L43">    private final LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
 <span class="fc" id="L44">    private final List&lt;ActorRef&gt; refs = new LinkedList&lt;&gt;();</span>
@@ -49,26 +49,30 @@ import ro.cosu.vampires.server.actors.resource.ResourceControl;
     }
 
 
-    @Override
-    public void onReceive(Object msg) {
-<span class="fc" id="L54">        ActorRef sender = getSender();</span>
-<span class="fc bfc" id="L55" title="All 2 branches covered.">        if (msg instanceof ResourceControl.Shutdown) {</span>
-<span class="fc" id="L56">            refs.forEach(r -&gt; r.tell(PoisonPill.getInstance(), getSelf()));</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">        } else if (msg instanceof ResourceControl.Up) {</span>
-<span class="fc" id="L58">            refs.add(sender);</span>
-<span class="fc" id="L59">            getContext().watch(sender);</span>
-<span class="fc" id="L60">            log.debug(&quot;watching {}&quot;, sender);</span>
-<span class="pc bpc" id="L61" title="1 of 2 branches missed.">        } else if (msg instanceof Terminated) {</span>
-<span class="fc" id="L62">            refs.remove(sender);</span>
-<span class="pc bpc" id="L63" title="1 of 2 branches missed.">            if (refs.isEmpty()) {</span>
-<span class="fc" id="L64">                log.info(&quot;shutting down system&quot;);</span>
-<span class="fc" id="L65">                getContext().system().terminate();</span>
-            } else {
-<span class="nc" id="L67">                log.info(&quot;waiting for {} more&quot;, refs.size());</span>
-            }
+    private void handleTerminated() {
+<span class="fc" id="L53">        refs.remove(getSender());</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">        if (refs.isEmpty()) {</span>
+<span class="fc" id="L55">            log.info(&quot;shutting down system&quot;);</span>
+<span class="fc" id="L56">            getContext().system().terminate();</span>
         } else {
-<span class="nc" id="L70">            unhandled(msg);</span>
+<span class="nc" id="L58">            log.info(&quot;waiting for {} more&quot;, refs.size());</span>
         }
-<span class="fc" id="L72">    }</span>
+<span class="fc" id="L60">    }</span>
+
+    private void handleUp() {
+<span class="fc" id="L63">        ActorRef sender = getSender();</span>
+<span class="fc" id="L64">        refs.add(getSender());</span>
+<span class="fc" id="L65">        getContext().watch(sender);</span>
+<span class="fc" id="L66">        log.debug(&quot;watching {}&quot;, sender);</span>
+<span class="fc" id="L67">    }</span>
+
+    @Override
+    public Receive createReceive() {
+<span class="fc" id="L71">        return receiveBuilder()</span>
+<span class="fc" id="L72">                .match(ResourceControl.Shutdown.class, message -&gt; refs.forEach(r -&gt; r.tell(PoisonPill.getInstance(), getSelf())))</span>
+<span class="fc" id="L73">                .match(ResourceControl.Up.class, message -&gt; handleUp())</span>
+<span class="fc" id="L74">                .match(Terminated.class, message -&gt; handleTerminated())</span>
+<span class="fc" id="L75">                .build();</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

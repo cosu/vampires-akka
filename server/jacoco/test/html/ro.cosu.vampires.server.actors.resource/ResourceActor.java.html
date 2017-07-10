@@ -3,17 +3,17 @@
 
 import java.util.concurrent.ExecutionException;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.PoisonPill;
 import akka.actor.Props;
-import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.values.ClientInfo;
 
-public class ResourceActor extends UntypedActor {
+public class ResourceActor extends AbstractActor {
 
     private final Resource resource;
 <span class="fc" id="L19">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
@@ -27,56 +27,51 @@ public class ResourceActor extends UntypedActor {
     }
 
     @Override
-    public void onReceive(Object message) throws Throwable {
-<span class="fc" id="L31">        ActorRef sender = getSender();</span>
-<span class="fc bfc" id="L32" title="All 2 branches covered.">        if (message instanceof QueryResource) {</span>
-<span class="fc" id="L33">            sendResourceInfo(sender);</span>
-<span class="fc bfc" id="L34" title="All 2 branches covered.">        } else if (message instanceof ClientInfo) {</span>
-<span class="fc" id="L35">            connectClient((ClientInfo) message);</span>
-<span class="fc bfc" id="L36" title="All 2 branches covered.">        } else if (message instanceof ResourceControl.Shutdown) {</span>
-<span class="fc" id="L37">            stop();</span>
-<span class="pc bpc" id="L38" title="1 of 2 branches missed.">        } else if (message instanceof ResourceControl.Start) {</span>
-<span class="fc" id="L39">            start();</span>
-        } else {
-<span class="nc" id="L41">            log.error(&quot;unhandled {}&quot;, message);</span>
-<span class="nc" id="L42">            unhandled(message);</span>
-        }
-<span class="fc" id="L44">    }</span>
+    public Receive createReceive() {
+<span class="fc" id="L31">        return receiveBuilder()</span>
+<span class="fc" id="L32">                .match(QueryResource.class, message -&gt; sendResourceInfo(getSender()))</span>
+<span class="fc" id="L33">                .match(ClientInfo.class, this::connectClient)</span>
+<span class="fc" id="L34">                .match(ResourceControl.Shutdown.class, message -&gt; stop())</span>
+<span class="fc" id="L35">                .match(ResourceControl.Start.class, message -&gt; start())</span>
+<span class="fc" id="L36">                .build();</span>
+    }
 
 
     private void stop() throws ExecutionException, InterruptedException {
-<span class="fc" id="L48">        ActorRef sender = getSender();</span>
-<span class="fc" id="L49">        resource.stop()</span>
-<span class="fc" id="L50">                .thenAccept(resource -&gt;</span>
+<span class="fc" id="L41">        ActorRef sender = getSender();</span>
+<span class="fc" id="L42">        resource.stop()</span>
+<span class="fc" id="L43">                .thenAccept(resource -&gt;</span>
                 {
-<span class="fc" id="L52">                    sendResourceInfo(sender);</span>
-<span class="fc" id="L53">                    getSelf().tell(PoisonPill.getInstance(), ActorRef.noSender());</span>
-<span class="fc" id="L54">                });</span>
-<span class="fc" id="L55">    }</span>
+<span class="fc" id="L45">                    sendResourceInfo(sender);</span>
+<span class="fc" id="L46">                    getSelf().tell(PoisonPill.getInstance(), ActorRef.noSender());</span>
+<span class="fc" id="L47">                });</span>
+<span class="fc" id="L48">    }</span>
 
     private void start() {
-<span class="fc" id="L58">        ActorRef sender = getSender();</span>
-<span class="fc" id="L59">        this.resource</span>
-<span class="fc" id="L60">                .start()</span>
-<span class="fc" id="L61">                .thenAccept(resource -&gt; sendResourceInfo(sender));</span>
-<span class="fc" id="L62">    }</span>
+<span class="fc" id="L51">        ActorRef sender = getSender();</span>
+<span class="fc" id="L52">        this.resource</span>
+<span class="fc" id="L53">                .start()</span>
+<span class="fc" id="L54">                .thenAccept(resource -&gt; sendResourceInfo(sender));</span>
+<span class="fc" id="L55">    }</span>
 
 
     private void connectClient(ClientInfo clientInfo) {
-<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        if (clientInfo.id().equals(resource.parameters().id())) {</span>
-<span class="fc" id="L67">            resource.connected();</span>
-<span class="fc" id="L68">            log.info(&quot;Connected: {} {}&quot;, resource.info().parameters().providerType(), resource.info().parameters().instanceType());</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        if (clientInfo.id().equals(resource.parameters().id())) {</span>
+<span class="fc" id="L60">            resource.connected();</span>
+<span class="fc" id="L61">            log.info(&quot;Connected: {} {}&quot;, resource.info().parameters().providerType(), resource.info().parameters().instanceType());</span>
         } else {
-<span class="nc" id="L70">            log.error(&quot;client info and resource info don't match {}, {}&quot;, clientInfo, resource.info());</span>
+<span class="nc" id="L63">            log.error(&quot;client info and resource info don't match {}, {}&quot;, clientInfo, resource.info());</span>
         }
-<span class="fc" id="L72">        sendResourceInfo(getContext().parent());</span>
-<span class="fc" id="L73">    }</span>
+<span class="fc" id="L65">        sendResourceInfo(getContext().parent());</span>
+<span class="fc" id="L66">    }</span>
 
     private void sendResourceInfo(ActorRef toActor) {
-<span class="fc" id="L76">        log.debug(&quot;sending {} to {}&quot;, resource.info(), toActor);</span>
-<span class="fc" id="L77">        toActor.tell(resource.info(), getSelf());</span>
+<span class="fc" id="L69">        log.debug(&quot;sending {} to {}&quot;, resource.info(), toActor);</span>
+<span class="fc" id="L70">        toActor.tell(resource.info(), getSelf());</span>
         // also update the parent
-<span class="fc" id="L79">        getContext().parent().tell(resource.info(), getSelf());</span>
-<span class="fc" id="L80">    }</span>
+<span class="fc" id="L72">        getContext().parent().tell(resource.info(), getSelf());</span>
+<span class="fc" id="L73">    }</span>
+
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

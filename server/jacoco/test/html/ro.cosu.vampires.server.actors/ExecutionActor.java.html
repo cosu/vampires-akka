@@ -34,10 +34,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.Terminated;
-import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.resource.BootstrapResource;
@@ -49,7 +49,7 @@ import ro.cosu.vampires.server.values.jobs.Execution;
 import ro.cosu.vampires.server.values.jobs.Job;
 import ro.cosu.vampires.server.values.resources.ResourceDemand;
 
-class ExecutionActor extends UntypedActor {
+class ExecutionActor extends AbstractActor {
 
 <span class="fc" id="L54">    private Set&lt;ActorRef&gt; watchees = Sets.newLinkedHashSet();</span>
     private ActorRef resourceManagerActor;
@@ -88,32 +88,26 @@ class ExecutionActor extends UntypedActor {
 <span class="fc" id="L88">                .collect(Collectors.toList());</span>
     }
 
+    private void handleTerminated() {
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        if (getSender().equals(resultActor)) {</span>
+<span class="fc" id="L93">            getContext().stop(getSelf());</span>
+        }
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        if (getSender().equals(resourceManagerActor)) {</span>
+<span class="fc" id="L96">            resultActor.tell(ResourceControl.Shutdown.create(), getContext().parent());</span>
+        }
+<span class="fc" id="L98">        watchees.remove(getSender());</span>
+<span class="fc" id="L99">    }</span>
 
     @Override
-    public void onReceive(Object message) throws Exception {
-<span class="fc bfc" id="L94" title="All 2 branches covered.">        if (message instanceof ClientInfo) {</span>
-<span class="fc" id="L95">            watchees.forEach(actorRef -&gt; actorRef.forward(message, getContext()));</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">        } else if (message instanceof Job) {</span>
-<span class="fc" id="L97">            resultActor.tell(message, getSender());</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">        } else if (message instanceof ResourceControl.Shutdown) {</span>
-<span class="fc" id="L99">            resourceManagerActor.forward(message, getContext());</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">        } else if (message instanceof ResourceInfo) {</span>
-<span class="fc" id="L101">            resultActor.forward(message, getContext());</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">        } else if (message instanceof Execution) {</span>
-            // send exec info back to parent
-<span class="fc" id="L104">            getContext().parent().forward(message, getContext());</span>
-<span class="pc bpc" id="L105" title="1 of 2 branches missed.">        } else if (message instanceof Terminated) {</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">            if (getSender().equals(resultActor)) {</span>
-<span class="fc" id="L107">                getContext().stop(getSelf());</span>
-            }
-<span class="fc bfc" id="L109" title="All 2 branches covered.">            if (getSender().equals(resourceManagerActor)) {</span>
-<span class="fc" id="L110">                resultActor.tell(ResourceControl.Shutdown.create(), getContext().parent());</span>
-            }
-<span class="fc" id="L112">            watchees.remove(getSender());</span>
-        } else {
-<span class="nc" id="L114">            unhandled(message);</span>
-        }
-<span class="fc" id="L116">    }</span>
-
+    public Receive createReceive() {
+<span class="fc" id="L103">        return receiveBuilder()</span>
+<span class="fc" id="L104">                .match(ClientInfo.class, message-&gt; watchees.forEach(actorRef -&gt; actorRef.forward(message, getContext())))</span>
+<span class="fc" id="L105">                .match(Job.class, message-&gt; resultActor.tell(message, getSender()))</span>
+<span class="fc" id="L106">                .match(ResourceControl.Shutdown.class , message -&gt; resourceManagerActor.forward(message, getContext()))</span>
+<span class="fc" id="L107">                .match(ResourceInfo.class, message -&gt; resultActor.forward(message, getContext()))</span>
+<span class="fc" id="L108">                .match(Execution.class, message -&gt; getContext().parent().forward(message, getContext()))</span>
+<span class="fc" id="L109">                .match(Terminated.class, message-&gt; handleTerminated())</span>
+<span class="fc" id="L110">                .build();</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

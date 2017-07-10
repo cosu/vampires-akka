@@ -26,15 +26,15 @@
 
 package ro.cosu.vampires.server.actors;
 
+import akka.actor.AbstractActor;
 import akka.actor.Props;
-import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.schedulers.Scheduler;
 import ro.cosu.vampires.server.values.jobs.Computation;
 import ro.cosu.vampires.server.values.jobs.Job;
 
-public class WorkActor extends UntypedActor {
+public class WorkActor extends AbstractActor {
 
 <span class="fc" id="L39">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
     private Scheduler scheduler;
@@ -47,29 +47,29 @@ public class WorkActor extends UntypedActor {
 <span class="fc" id="L47">        return Props.create(WorkActor.class, scheduler);</span>
     }
 
-    @Override
-    public void onReceive(Object message) throws Exception {
-<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (message instanceof Job) {</span>
-<span class="fc" id="L53">            receiveJob((Job) message);</span>
-        } else {
-<span class="fc" id="L55">            log.warning(&quot;unhandled message from {}&quot;, getSender());</span>
-<span class="fc" id="L56">            unhandled(message);</span>
-        }
-<span class="fc" id="L58">    }</span>
-
     private void receiveJob(Job receivedJob) {
-<span class="pc bpc" id="L61" title="1 of 2 branches missed.">        if (!receivedJob.computation().id().equals(Computation.BACKOFF)</span>
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">                &amp;&amp; !receivedJob.computation().id().equals(Computation.EMPTY)) {</span>
-<span class="fc" id="L63">            scheduler.markDone(receivedJob);</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">        if (!receivedJob.computation().id().equals(Computation.BACKOFF)</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">                &amp;&amp; !receivedJob.computation().id().equals(Computation.EMPTY)) {</span>
+<span class="fc" id="L53">            scheduler.markDone(receivedJob);</span>
         }
 
-<span class="fc" id="L66">        Job work = scheduler.getJob(receivedJob.from());</span>
-<span class="fc" id="L67">        getSender().tell(work, getSelf());</span>
+<span class="fc" id="L56">        Job work = scheduler.getJob(receivedJob.from());</span>
+<span class="fc" id="L57">        getSender().tell(work, getSelf());</span>
 
-<span class="fc bfc" id="L69" title="All 2 branches covered.">        if (scheduler.isDone()) {</span>
-<span class="fc" id="L70">            log.debug(&quot;work actor exiting&quot;);</span>
-<span class="fc" id="L71">            getContext().stop(getSelf());</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (scheduler.isDone()) {</span>
+<span class="fc" id="L60">            log.debug(&quot;work actor exiting&quot;);</span>
+<span class="fc" id="L61">            getContext().stop(getSelf());</span>
         }
-<span class="fc" id="L73">    }</span>
+<span class="fc" id="L63">    }</span>
+
+    @Override
+    public Receive createReceive() {
+<span class="fc" id="L67">        return receiveBuilder().match(Job.class , this::receiveJob)</span>
+<span class="fc" id="L68">                .matchAny(message -&gt; {</span>
+<span class="fc" id="L69">                    log.warning(&quot;unhandled message from {}&quot;, getSender());</span>
+<span class="fc" id="L70">                    unhandled(message);</span>
+<span class="fc" id="L71">                })</span>
+<span class="fc" id="L72">                .build();</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
