@@ -34,10 +34,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.Terminated;
-import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.resource.BootstrapResource;
@@ -49,7 +49,7 @@ import ro.cosu.vampires.server.values.jobs.Execution;
 import ro.cosu.vampires.server.values.jobs.Job;
 import ro.cosu.vampires.server.values.resources.ResourceDemand;
 
-class ExecutionActor extends UntypedActor {
+class ExecutionActor extends AbstractActor {
 
     private Set<ActorRef> watchees = Sets.newLinkedHashSet();
     private ActorRef resourceManagerActor;
@@ -88,31 +88,25 @@ class ExecutionActor extends UntypedActor {
                 .collect(Collectors.toList());
     }
 
-
-    @Override
-    public void onReceive(Object message) throws Exception {
-        if (message instanceof ClientInfo) {
-            watchees.forEach(actorRef -> actorRef.forward(message, getContext()));
-        } else if (message instanceof Job) {
-            resultActor.tell(message, getSender());
-        } else if (message instanceof ResourceControl.Shutdown) {
-            resourceManagerActor.forward(message, getContext());
-        } else if (message instanceof ResourceInfo) {
-            resultActor.forward(message, getContext());
-        } else if (message instanceof Execution) {
-            // send exec info back to parent
-            getContext().parent().forward(message, getContext());
-        } else if (message instanceof Terminated) {
-            if (getSender().equals(resultActor)) {
-                getContext().stop(getSelf());
-            }
-            if (getSender().equals(resourceManagerActor)) {
-                resultActor.tell(ResourceControl.Shutdown.create(), getContext().parent());
-            }
-            watchees.remove(getSender());
-        } else {
-            unhandled(message);
+    private void handleTerminated() {
+        if (getSender().equals(resultActor)) {
+            getContext().stop(getSelf());
         }
+        if (getSender().equals(resourceManagerActor)) {
+            resultActor.tell(ResourceControl.Shutdown.create(), getContext().parent());
+        }
+        watchees.remove(getSender());
     }
 
+    @Override
+    public Receive createReceive() {
+        return receiveBuilder()
+                .match(ClientInfo.class, message-> watchees.forEach(actorRef -> actorRef.forward(message, getContext())))
+                .match(Job.class, message-> resultActor.tell(message, getSender()))
+                .match(ResourceControl.Shutdown.class , message -> resourceManagerActor.forward(message, getContext()))
+                .match(ResourceInfo.class, message -> resultActor.forward(message, getContext()))
+                .match(Execution.class, message -> getContext().parent().forward(message, getContext()))
+                .match(Terminated.class, message-> handleTerminated())
+                .build();
+    }
 }

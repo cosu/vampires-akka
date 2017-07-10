@@ -33,8 +33,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
+import akka.actor.AbstractActor;
 import akka.actor.Props;
-import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.workload.CreateWorkload;
@@ -44,7 +45,7 @@ import ro.cosu.vampires.server.actors.messages.workload.ResponseWorkload;
 import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.jobs.Workload;
 
-public class WorkloadsActor extends UntypedActor {
+public class WorkloadsActor extends AbstractActor {
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
@@ -59,17 +60,12 @@ public class WorkloadsActor extends UntypedActor {
     }
 
     @Override
-    public void onReceive(Object message) throws Exception {
-        if (message instanceof CreateWorkload) {
-            createWorkload((CreateWorkload) message);
-        } else if (message instanceof QueryWorkload) {
-            sendResponse((QueryWorkload) message);
-        } else if (message instanceof DeleteWorkload) {
-            deleteWorkload((DeleteWorkload) message);
-        } else {
-            log.error("unhandled {}", message);
-            unhandled(message);
-        }
+    public Receive createReceive() {
+        return receiveBuilder()
+                .match(CreateWorkload.class, this::createWorkload)
+                .match(QueryWorkload.class, this::sendResponse)
+                .match(DeleteWorkload.class, this::deleteWorkload)
+                .build();
     }
 
     private void createWorkload(CreateWorkload message) {

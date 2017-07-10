@@ -48,7 +48,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
+import akka.testkit.TestKit;
 import ro.cosu.vampires.server.rest.JsonTransformer;
 import ro.cosu.vampires.server.rest.services.ServicesTestModule;
 import ro.cosu.vampires.server.values.jobs.Execution;
@@ -56,6 +56,7 @@ import ro.cosu.vampires.server.values.jobs.ExecutionMode;
 import ro.cosu.vampires.server.values.jobs.ExecutionPayload;
 import ro.cosu.vampires.server.values.jobs.Workload;
 import ro.cosu.vampires.server.values.resources.Configuration;
+import scala.concurrent.duration.Duration;
 import spark.Spark;
 
 import static java.net.HttpURLConnection.HTTP_CREATED;
@@ -80,7 +81,7 @@ public class ExecutionsControllerTest {
 
     @AfterClass
     public static void teardown() {
-        JavaTestKit.shutdownActorSystem(system);
+        TestKit.shutdownActorSystem(system, Duration.create("1 second"), true);
         system = null;
     }
 

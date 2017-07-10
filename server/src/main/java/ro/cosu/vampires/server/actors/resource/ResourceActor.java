@@ -3,17 +3,17 @@ package ro.cosu.vampires.server.actors.resource;
 
 import java.util.concurrent.ExecutionException;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.PoisonPill;
 import akka.actor.Props;
-import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.values.ClientInfo;
 
-public class ResourceActor extends UntypedActor {
+public class ResourceActor extends AbstractActor {
 
     private final Resource resource;
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
@@ -27,20 +27,13 @@ public class ResourceActor extends UntypedActor {
     }
 
     @Override
-    public void onReceive(Object message) throws Throwable {
-        ActorRef sender = getSender();
-        if (message instanceof QueryResource) {
-            sendResourceInfo(sender);
-        } else if (message instanceof ClientInfo) {
-            connectClient((ClientInfo) message);
-        } else if (message instanceof ResourceControl.Shutdown) {
-            stop();
-        } else if (message instanceof ResourceControl.Start) {
-            start();
-        } else {
-            log.error("unhandled {}", message);
-            unhandled(message);
-        }
+    public Receive createReceive() {
+        return receiveBuilder()
+                .match(QueryResource.class, message -> sendResourceInfo(getSender()))
+                .match(ClientInfo.class, this::connectClient)
+                .match(ResourceControl.Shutdown.class, message -> stop())
+                .match(ResourceControl.Start.class, message -> start())
+                .build();
     }
 
 
@@ -78,4 +71,6 @@ public class ResourceActor extends UntypedActor {
         // also update the parent
         getContext().parent().tell(resource.info(), getSelf());
     }
+
+
 }

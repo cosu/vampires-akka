@@ -36,7 +36,7 @@ import akka.actor.ActorRef;
 import akka.actor.PoisonPill;
 import akka.actor.Props;
 import akka.actor.Terminated;
-import akka.testkit.JavaTestKit;
+import akka.testkit.TestKit;
 import ch.qos.logback.classic.Level;
 import ro.cosu.vampires.server.schedulers.Scheduler;
 import ro.cosu.vampires.server.schedulers.SimpleScheduler;
@@ -50,6 +50,7 @@ import ro.cosu.vampires.server.values.jobs.Result;
 import ro.cosu.vampires.server.values.jobs.Workload;
 import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 import ro.cosu.vampires.server.values.resources.Configuration;
+import scala.concurrent.duration.Duration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -71,10 +72,10 @@ public class WorkActorTest extends AbstractActorTest {
     @Test
     public void testWork() {
 
-        new JavaTestKit(system) {
+        new TestKit(system) {
             {
                 // create a test probe
-                final JavaTestKit workProbe = new JavaTestKit(system);
+                final TestKit workProbe = new TestKit(system);
 
                 // create a work actor
                 final Props props = WorkActor.props(getScheduler());
@@ -86,19 +87,19 @@ public class WorkActorTest extends AbstractActorTest {
                         .result(Result.empty())
                         .build();
                 // send the job request
-                workActor.tell(job, workProbe.getRef());
+                workActor.tell(job, workProbe.testActor());
 
                 // receive the first job
                 Job receivedJob = workProbe.expectMsgClass(Job.class);
 
                 // send the processed job
-                workActor.tell(receivedJob.withResult(Result.empty()).withHostMetrics(Metrics.empty()), workProbe.getRef());
+                workActor.tell(receivedJob.withResult(Result.empty()).withHostMetrics(Metrics.empty()), workProbe.testActor());
 
                 // receive a 2nd job
                 receivedJob = workProbe.expectMsgClass(Job.class);
 
                 // send the processed job
-                workActor.tell(receivedJob.withResult(Result.empty()).withHostMetrics(Metrics.empty()), workProbe.getRef());
+                workActor.tell(receivedJob.withResult(Result.empty()).withHostMetrics(Metrics.empty()), workProbe.testActor());
 
                 // receive the 3rd job
                 receivedJob = workProbe.expectMsgClass(Job.class);
@@ -117,10 +118,10 @@ public class WorkActorTest extends AbstractActorTest {
     @Test
     public void unhandled() throws Exception {
         TestAppender.clear();
-        new JavaTestKit(system) {
+        new TestKit(system) {
             {
                 // create a test probe
-                final JavaTestKit workProbe = new JavaTestKit(system);
+                final TestKit workProbe = new TestKit(system);
 
                 // create a work actor
                 final Props props = WorkActor.props(getScheduler());
@@ -129,7 +130,7 @@ public class WorkActorTest extends AbstractActorTest {
                 // send it a bogus message
                 workActor.tell(new Object(), ActorRef.noSender());
                 workActor.tell(PoisonPill.getInstance(), ActorRef.noSender());
-                workProbe.expectTerminated(workActor);
+                workProbe.expectTerminated(workActor, Duration.apply("1 second"));
             }
         };
         // logging might be async

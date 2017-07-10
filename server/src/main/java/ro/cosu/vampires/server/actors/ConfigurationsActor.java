@@ -35,8 +35,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import akka.actor.AbstractActor;
 import akka.actor.Props;
-import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.configuration.CreateConfiguration;
@@ -52,7 +52,7 @@ import ro.cosu.vampires.server.values.resources.ProviderDescription;
 import ro.cosu.vampires.server.values.resources.ResourceDemand;
 import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
-public class ConfigurationsActor extends UntypedActor {
+public class ConfigurationsActor extends AbstractActor {
 
     private final SettingsImpl settings = Settings.SettingsProvider.get(getContext().system());
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
@@ -96,18 +96,13 @@ public class ConfigurationsActor extends UntypedActor {
         return table.row(user);
     }
 
-    @Override
-    public void onReceive(Object message) throws Exception {
-        if (message instanceof CreateConfiguration) {
-            handleCreation((CreateConfiguration) message);
-        } else if (message instanceof QueryConfiguration) {
-            handleQuery((QueryConfiguration) message);
-        } else if (message instanceof DeleteConfiguration) {
-            handleDeletion((DeleteConfiguration) message);
-        } else {
-            log.error("unhandled {}", message);
-            unhandled(message);
-        }
+   @Override
+    public Receive createReceive() {
+        return receiveBuilder()
+                .match(CreateConfiguration.class, this::handleCreation)
+                .match(QueryConfiguration.class, this::handleQuery)
+                .match(DeleteConfiguration.class, this::handleDeletion)
+                .build();
     }
 
     private void handleDeletion(DeleteConfiguration deleteConfiguration) {
@@ -152,5 +147,6 @@ public class ConfigurationsActor extends UntypedActor {
             getSender().tell(ResponseConfiguration.create(Collections.emptyList(), "Unable to resolve resource demands"), getSelf());
         }
     }
+
 
 }

@@ -32,10 +32,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Cancellable;
 import akka.actor.Props;
-import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
@@ -54,7 +54,7 @@ import ro.cosu.vampires.server.values.jobs.Job;
 import ro.cosu.vampires.server.writers.ResultsWriter;
 
 
-public class ResultActor extends UntypedActor {
+public class ResultActor extends AbstractActor {
     private final SettingsImpl settings =
             Settings.SettingsProvider.get(getContext().system());
     private final LocalDateTime startTime = LocalDateTime.now();
@@ -116,19 +116,15 @@ public class ResultActor extends UntypedActor {
     }
 
     @Override
-    public void onReceive(Object message) throws Exception {
-        if (message instanceof Job) {
-            handleJob((Job) message);
-        } else if (message instanceof ClientInfo) {
-            handleClientInfo((ClientInfo) message);
-        } else if (message instanceof ResourceInfo) {
-            handleResourceInfo((ResourceInfo) message);
-        } else if (message instanceof ResourceControl.Shutdown) {
-            handleShutdown();
-        } else {
-            unhandled(message);
-        }
+    public Receive createReceive() {
+        return receiveBuilder()
+                .match(Job.class, this::handleJob)
+                .match(ClientInfo.class, this::handleClientInfo)
+                .match(ResourceInfo.class, this::handleResourceInfo)
+                .match(ResourceControl.Shutdown.class, message -> this.handleShutdown())
+                .build();
     }
+
 
     private void handleShutdown() {
         // if all jobs done then set status to finished

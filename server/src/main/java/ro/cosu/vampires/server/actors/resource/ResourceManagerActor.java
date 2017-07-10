@@ -32,10 +32,10 @@ import com.google.inject.Injector;
 import java.util.Optional;
 import java.util.UUID;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.Terminated;
-import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.QueryResource;
@@ -49,7 +49,7 @@ import ro.cosu.vampires.server.resources.ResourceModule;
 import ro.cosu.vampires.server.resources.ResourceProvider;
 import ro.cosu.vampires.server.values.ClientInfo;
 
-public class ResourceManagerActor extends UntypedActor {
+public class ResourceManagerActor extends AbstractActor{
     private final SettingsImpl settings =
             Settings.SettingsProvider.get(getContext().system());
     private ResourceRegistry resourceRegistry = new ResourceRegistry();
@@ -67,33 +67,16 @@ public class ResourceManagerActor extends UntypedActor {
 
 
     @Override
-    public void onReceive(Object message) throws Exception {
-        ActorRef sender = getSender();
-
-        if (message instanceof BootstrapResource) {
-            // start a resource
-            bootstrapResource((BootstrapResource) message);
-        } else if (message instanceof QueryResource) {
-            // query a specific resource
-            queryResource((QueryResource) message, sender);
-        } else if (message instanceof ResourceControl.Shutdown) {
-            // shutdown everything
-            shutdownResources();
-        } else if (message instanceof ResourceInfo) {
-            // sent by the resource when the state changes
-            registerResource((ResourceInfo) message, sender);
-        } else if (message instanceof ClientInfo) {
-            // sent when a client registers
-            registerClient((ClientInfo) message);
-        } else if (message instanceof Terminated) {
-            // resource terminates
-            terminatedResource(sender);
-        } else {
-            log.debug("unhandled {}", message);
-            unhandled(message);
-        }
+    public Receive createReceive() {
+        return receiveBuilder()
+                .match(BootstrapResource.class, this::bootstrapResource)
+                .match(QueryResource.class, message -> this.queryResource(message, getSender()))
+                .match(ResourceControl.Shutdown.class, message -> shutdownResources())
+                .match(ResourceInfo.class, message -> registerResource(message, getSender()))
+                .match(ClientInfo.class, this::registerClient)
+                .match(Terminated.class , message -> terminatedResource(getSender()))
+                .build();
     }
-
 
     private void bootstrapResource(BootstrapResource bootstrap) {
         ResourceProvider resourceProvider = resourceManager.getProvider(bootstrap.type()).orElseThrow(()
@@ -160,6 +143,7 @@ public class ResourceManagerActor extends UntypedActor {
             getContext().stop(getSelf());
         }
     }
+
 
 
 }

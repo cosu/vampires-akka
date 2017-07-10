@@ -33,7 +33,7 @@ import org.junit.Test;
 import java.util.concurrent.TimeUnit;
 
 import akka.actor.ActorRef;
-import akka.testkit.JavaTestKit;
+import akka.testkit.TestKit;
 import ro.cosu.vampires.server.actors.messages.execution.DeleteExecution;
 import ro.cosu.vampires.server.actors.messages.execution.QueryExecution;
 import ro.cosu.vampires.server.actors.messages.execution.ResponseExecution;
@@ -61,29 +61,29 @@ public class BootstrapActorTest extends AbstractActorTest {
 
     @Test
     public void start() throws Exception {
-        new JavaTestKit(system) {
+        new TestKit(system) {
             {
                 // create a test probe
-                final JavaTestKit terminator = new JavaTestKit(system);
-                final JavaTestKit restService = new JavaTestKit(system);
-                final ActorRef bootstrapActor = system.actorOf(BootstrapActor.props(terminator.getRef()), "bootstrap");
+                final TestKit terminator = new TestKit(system);
+                final TestKit restService = new TestKit(system);
+                final ActorRef bootstrapActor = system.actorOf(BootstrapActor.props(terminator.testActor()), "bootstrap");
 
                 terminator.expectMsgClass(Duration.create(10, TimeUnit.SECONDS), ResourceControl.Up.class);
 
                 // start exec is fire and forget.
                 Execution execution = getExecution();
                 StartExecution startExecution = StartExecution.create(User.admin(), execution);
-                bootstrapActor.tell(startExecution, restService.getRef());
+                bootstrapActor.tell(startExecution, restService.testActor());
 
                 // query the state
-                bootstrapActor.tell(QueryExecution.create(execution.id(), User.admin()), restService.getRef());
+                bootstrapActor.tell(QueryExecution.create(execution.id(), User.admin()), restService.testActor());
                 ResponseExecution responseExecution = restService.expectMsgClass(ResponseExecution.class);
                 Execution startedExecution = responseExecution.values().get(0);
                 assertThat(startedExecution.id(), is(execution.id()));
                 assertThat(startedExecution.info().status(), is(ExecutionInfo.Status.STARTING));
 
                 // shutdown
-                bootstrapActor.tell(DeleteExecution.create(execution.id(), User.admin()), restService.getRef());
+                bootstrapActor.tell(DeleteExecution.create(execution.id(), User.admin()), restService.testActor());
 
                 responseExecution = restService.expectMsgClass(ResponseExecution.class);
 
@@ -94,7 +94,7 @@ public class BootstrapActorTest extends AbstractActorTest {
                 // let things stop cleanly
 
                 // ask for the status
-                bootstrapActor.tell(QueryExecution.create(execution.id(), User.admin()), restService.getRef());
+                bootstrapActor.tell(QueryExecution.create(execution.id(), User.admin()), restService.testActor());
                 responseExecution = restService.expectMsgClass(ResponseExecution.class);
                 Execution canceledExecution = responseExecution.values().get(0);
 
@@ -103,7 +103,7 @@ public class BootstrapActorTest extends AbstractActorTest {
                 while (count < 3 && !canceledExecution.info().status().equals(ExecutionInfo.Status.CANCELED)) {
                     Thread.sleep(2000);
                     count++;
-                    bootstrapActor.tell(QueryExecution.create(execution.id(), User.admin()), restService.getRef());
+                    bootstrapActor.tell(QueryExecution.create(execution.id(), User.admin()), restService.testActor());
                     responseExecution = restService.expectMsgClass(ResponseExecution.class);
                     canceledExecution = responseExecution.values().get(0);
                 }

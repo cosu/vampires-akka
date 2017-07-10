@@ -48,7 +48,7 @@ public class JobUtilTest {
         File tempFile = File.createTempFile("foo", "bar");
         tempFile.deleteOnExit();
 
-        Files.write("foo\nbar\nbaz", tempFile, Charsets.UTF_8);
+        Files.asCharSink(tempFile, Charsets.UTF_8).write("foo\nbar\nbaz");
 
         List<Job> jobs = JobUtil.bagFromFile("foo", tempFile);
 

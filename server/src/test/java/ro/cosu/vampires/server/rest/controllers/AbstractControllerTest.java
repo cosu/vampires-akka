@@ -58,11 +58,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
+import akka.testkit.TestKit;
 import ro.cosu.vampires.server.rest.JsonTransformer;
 import ro.cosu.vampires.server.rest.services.Service;
 import ro.cosu.vampires.server.values.Id;
 import ro.cosu.vampires.server.values.User;
+import scala.concurrent.duration.Duration;
 import spark.Spark;
 
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
@@ -87,7 +88,7 @@ public abstract class AbstractControllerTest<T extends Id, P> {
 
     @AfterClass
     public static void teardown() {
-        JavaTestKit.shutdownActorSystem(actorSystem);
+        TestKit.shutdownActorSystem(actorSystem, Duration.create("1 second"), true);
         actorSystem = null;
 
     }

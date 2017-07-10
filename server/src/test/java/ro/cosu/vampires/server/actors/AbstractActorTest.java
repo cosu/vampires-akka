@@ -30,14 +30,12 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
+import akka.testkit.TestKit;
+import scala.concurrent.duration.Duration;
 
 public class AbstractActorTest {
     static ActorSystem system;
 
-    public static ActorSystem getActorSystem() {
-        return system;
-    }
     @BeforeClass
     public static void setup() {
         system = ActorSystem.create("test", ConfigFactory.load("application-dev.conf"));
@@ -45,7 +43,7 @@ public class AbstractActorTest {
 
     @AfterClass
     public static void teardown() {
-        JavaTestKit.shutdownActorSystem(system);
+        TestKit.shutdownActorSystem(system, Duration.create("10 seconds"), true);
         system = null;
     }
 }

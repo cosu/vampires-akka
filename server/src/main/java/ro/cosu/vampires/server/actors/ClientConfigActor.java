@@ -26,8 +26,8 @@
 
 package ro.cosu.vampires.server.actors;
 
+import akka.actor.AbstractActor;
 import akka.actor.Props;
-import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.settings.Settings;
@@ -35,7 +35,7 @@ import ro.cosu.vampires.server.actors.settings.SettingsImpl;
 import ro.cosu.vampires.server.values.ClientConfig;
 import ro.cosu.vampires.server.values.ClientInfo;
 
-public class ClientConfigActor extends UntypedActor {
+public class ClientConfigActor extends AbstractActor {
     private final SettingsImpl settings =
             Settings.SettingsProvider.get(getContext().system());
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
@@ -45,16 +45,13 @@ public class ClientConfigActor extends UntypedActor {
     }
 
     @Override
-    public void onReceive(Object message) throws Exception {
-        if (message instanceof ClientInfo) {
-            ClientInfo clientInfo = (ClientInfo) message;
+    public Receive createReceive() {
+        return receiveBuilder().match(ClientInfo.class, clientInfo-> {
             final ClientConfig configFor = getConfigFor(clientInfo);
             log.debug("config for client {} {} {}", clientInfo.id(),
                     clientInfo.metrics().metadata().get("host-hostname"), configFor);
             getSender().tell(configFor, getSelf());
-        } else {
-            unhandled(message);
-        }
+        }).build();
     }
 
     private ClientConfig getConfigFor(ClientInfo clientInfo) {
@@ -87,4 +84,6 @@ public class ClientConfigActor extends UntypedActor {
                 .numberOfExecutors(numberOfExecutors)
                 .build();
     }
+
+
 }

@@ -42,7 +42,7 @@ import java.util.Optional;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
+import akka.testkit.TestKit;
 import akka.testkit.TestActor;
 import ro.cosu.vampires.server.actors.messages.execution.DeleteExecution;
 import ro.cosu.vampires.server.actors.messages.execution.QueryExecution;
@@ -73,7 +73,7 @@ public class ServicesTestModule extends AbstractModule {
     private Workload workload = Workload.fromPayload(getWorkloadPayload());
 
     public ServicesTestModule(ActorSystem actorSystem) {
-        JavaTestKit probe = new JavaTestKit(actorSystem);
+        TestKit probe = new TestKit(actorSystem);
         probe.setAutoPilot(new TestActor.AutoPilot() {
             Map<String, Execution> executionMap = Maps.newHashMap();
 
@@ -114,7 +114,7 @@ public class ServicesTestModule extends AbstractModule {
                 return keepRunning();
             }
         });
-        this.actorRef = probe.getRef();
+        this.actorRef = probe.testActor();
     }
 
     private WorkloadPayload getWorkloadPayload() {

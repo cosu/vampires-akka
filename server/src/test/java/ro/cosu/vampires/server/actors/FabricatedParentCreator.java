@@ -30,7 +30,7 @@ import akka.actor.Actor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.Terminated;
-import akka.actor.UntypedActor;
+import akka.actor.UntypedAbstractActor;
 import akka.japi.Creator;
 import akka.testkit.TestProbe;
 
@@ -45,7 +45,7 @@ class FabricatedParentCreator implements Creator<Actor> {
 
     @Override
     public Actor create() throws Exception {
-        return new UntypedActor() {
+        return new UntypedAbstractActor() {
             final ActorRef child = context().actorOf(props, "child");
 
             @Override

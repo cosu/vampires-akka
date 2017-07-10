@@ -38,10 +38,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.Terminated;
-import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.configuration.ConfigurationMessage;
@@ -60,7 +60,7 @@ import ro.cosu.vampires.server.values.jobs.Execution;
 import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
 import spark.Spark;
 
-public class BootstrapActor extends UntypedActor {
+public class BootstrapActor extends AbstractActor {
 
     private final ActorRef terminator;
     private final ActorRef configurationsActor;
@@ -104,21 +104,16 @@ public class BootstrapActor extends UntypedActor {
     }
 
     @Override
-    public void onReceive(Object message) throws Exception {
-        if (message instanceof Execution) {
-            handleExecution((Execution) message);
-        } else if (message instanceof ExecutionMessage) {
-            handleExecutionMessage((ExecutionMessage) message);
-        } else if (message instanceof ConfigurationMessage) {
-            configurationsActor.forward(message, getContext());
-        } else if (message instanceof WorkloadMessage) {
-            workloadsActor.forward(message, getContext());
-        } else if (message instanceof Terminated) {
-            handleTerminated();
-        } else {
-            unhandled(message);
-        }
+    public Receive createReceive() {
+        return receiveBuilder()
+                .match(Execution.class, this::handleExecution)
+                .match(ExecutionMessage.class, this::handleExecutionMessage)
+                .match(ConfigurationMessage.class, configurationMessage -> configurationsActor.forward(configurationMessage, getContext()))
+                .match(WorkloadMessage.class, workloadMessage -> workloadsActor.forward(workloadMessage, getContext()))
+                .match(Terminated.class, message -> handleTerminated())
+                .build();
     }
+
 
     private void handleExecutionMessage(ExecutionMessage message) {
         if (message instanceof StartExecution) {
@@ -140,18 +135,17 @@ public class BootstrapActor extends UntypedActor {
         if (userHasExecution) {
             boolean executionHasActor = executionsToActors.containsKey(deleteExecution.resourceId());
             if (executionHasActor) {
-            Execution execution = getResultsMap(user).get(deleteExecution.resourceId());
-            boolean executionCanShutdown = execution.info().status().isActiveStatus();
+                Execution execution = getResultsMap(user).get(deleteExecution.resourceId());
+                boolean executionCanShutdown = execution.info().status().isActiveStatus();
 
-            if (executionCanShutdown) {
-                execution = shutdownExecution(deleteExecution, user, execution);
-            } else {
-                log.error("shutting down a non-running execution {}", execution);
+                if (executionCanShutdown) {
+                    execution = shutdownExecution(deleteExecution, user, execution);
+                } else {
+                    log.error("shutting down a non-running execution {}", execution);
+                }
+                getSender().tell(ResponseExecution.create(ImmutableList.of(execution)), getSelf());
             }
-            getSender().tell(ResponseExecution.create(ImmutableList.of(execution)), getSelf());
-            }
-        }
-        else {
+        } else {
             log.warning("Invalid execution id");
             getSender().tell(ResponseExecution.create(ImmutableList.of()), getSelf());
         }

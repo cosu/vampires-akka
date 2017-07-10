@@ -29,16 +29,16 @@ package ro.cosu.vampires.server.actors;
 import java.util.LinkedList;
 import java.util.List;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.PoisonPill;
 import akka.actor.Props;
 import akka.actor.Terminated;
-import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 
-public class Terminator extends UntypedActor {
+public class Terminator extends AbstractActor {
 
     private final LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private final List<ActorRef> refs = new LinkedList<>();
@@ -49,25 +49,29 @@ public class Terminator extends UntypedActor {
     }
 
 
-    @Override
-    public void onReceive(Object msg) {
-        ActorRef sender = getSender();
-        if (msg instanceof ResourceControl.Shutdown) {
-            refs.forEach(r -> r.tell(PoisonPill.getInstance(), getSelf()));
-        } else if (msg instanceof ResourceControl.Up) {
-            refs.add(sender);
-            getContext().watch(sender);
-            log.debug("watching {}", sender);
-        } else if (msg instanceof Terminated) {
-            refs.remove(sender);
-            if (refs.isEmpty()) {
-                log.info("shutting down system");
-                getContext().system().terminate();
-            } else {
-                log.info("waiting for {} more", refs.size());
-            }
+    private void handleTerminated() {
+        refs.remove(getSender());
+        if (refs.isEmpty()) {
+            log.info("shutting down system");
+            getContext().system().terminate();
         } else {
-            unhandled(msg);
+            log.info("waiting for {} more", refs.size());
         }
+    }
+
+    private void handleUp() {
+        ActorRef sender = getSender();
+        refs.add(getSender());
+        getContext().watch(sender);
+        log.debug("watching {}", sender);
+    }
+
+    @Override
+    public Receive createReceive() {
+        return receiveBuilder()
+                .match(ResourceControl.Shutdown.class, message -> refs.forEach(r -> r.tell(PoisonPill.getInstance(), getSelf())))
+                .match(ResourceControl.Up.class, message -> handleUp())
+                .match(Terminated.class, message -> handleTerminated())
+                .build();
     }
 }

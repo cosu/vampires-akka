@@ -64,12 +64,9 @@ public class ResultActorTest extends AbstractActorTest {
     }
     @Test
     public void testShutdown() throws Exception {
-
         final TestProbe testProbe = new TestProbe(system);
         Execution execution = getExec();
-        ActorRef parent = system.actorOf(Props.create(
-                new FabricatedParentCreator(testProbe,
-                        ResultActor.props(execution))));
+        ActorRef parent = system.actorOf(Props.create(new FabricatedParentCreator(testProbe, ResultActor.props(execution))));
 
         testProbe.watch(parent);
 
@@ -96,8 +93,6 @@ public class ResultActorTest extends AbstractActorTest {
         sut.tell(job, testProbe.ref());
 
         Object o = testProbe.receiveOne(Duration.create("1s"));
-
-
     }
 
 }

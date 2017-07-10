@@ -34,7 +34,7 @@ import org.junit.Test;
 import java.util.Map;
 
 import akka.actor.ActorRef;
-import akka.testkit.JavaTestKit;
+import akka.testkit.TestKit;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
@@ -85,10 +85,10 @@ public class ExecutionActorTest extends AbstractActorTest {
     @Test
     public void testDispatchOfJob() {
 
-        new JavaTestKit(system) {
+        new TestKit(system) {
             {
                 // create a test probe
-                final JavaTestKit workProbe = new JavaTestKit(system);
+                final TestKit workProbe = new TestKit(system);
 
                 final ActorRef executionActor = system.actorOf(ExecutionActor.props(getExec(FULL)));
 
@@ -99,7 +99,7 @@ public class ExecutionActorTest extends AbstractActorTest {
                         .result(Result.empty())
                         .build();
                 // send it
-                executionActor.tell(job, workProbe.getRef());
+                executionActor.tell(job, workProbe.testActor());
 
                 // expect a full job back
                 workProbe.expectMsgClass(Job.class);
@@ -109,15 +109,15 @@ public class ExecutionActorTest extends AbstractActorTest {
 
     @Test
     public void testDispatchOfConfig() {
-        new JavaTestKit(system) {
+        new TestKit(system) {
             {
-                final JavaTestKit workProbe = new JavaTestKit(system);
+                final TestKit workProbe = new TestKit(system);
 
                 final ActorRef executionActor = system.actorOf(ExecutionActor.props(getExec(FULL)));
 
                 ClientInfo clientInfo = getClientInfo();
 
-                executionActor.tell(clientInfo, workProbe.getRef());
+                executionActor.tell(clientInfo, workProbe.testActor());
 
                 ClientConfig clientConfig = (ClientConfig) workProbe.receiveOne(Duration.create("1 second"));
                 assertThat(clientConfig.cpuSetSize(), not(0));
@@ -140,17 +140,17 @@ public class ExecutionActorTest extends AbstractActorTest {
     @Test
     public void testShutdown() throws InterruptedException {
 
-        new JavaTestKit(system) {
+        new TestKit(system) {
             {
                 Execution exec = getExec(ExecutionMode.FULL);
                 // create a test probe
-                final JavaTestKit workProbe = new JavaTestKit(system);
+                final TestKit workProbe = new TestKit(system);
 
                 final ActorRef executionActor = system.actorOf(ExecutionActor.props(exec));
 
                 workProbe.watch(executionActor);
 
-                executionActor.tell(ResourceControl.Shutdown.create(), workProbe.getRef());
+                executionActor.tell(ResourceControl.Shutdown.create(), workProbe.testActor());
 
                 ResourceInfo resourceInfo = workProbe.expectMsgClass(ResourceInfo.class);
 
@@ -165,10 +165,10 @@ public class ExecutionActorTest extends AbstractActorTest {
     public void testDispatchSample() {
         // create sample execution and expect that after 30 job requests (default sample val)
         // we'll get backoff  jobs
-        new JavaTestKit(system) {
+        new TestKit(system) {
             {
                 // create a test probe
-                final JavaTestKit workProbe = new JavaTestKit(system);
+                final TestKit workProbe = new TestKit(system);
 
                 final ActorRef executionActor = system.actorOf(ExecutionActor.props(getExec(SAMPLE)));
 
@@ -178,10 +178,10 @@ public class ExecutionActorTest extends AbstractActorTest {
                             .hostMetrics(Metrics.empty())
                             .result(Result.empty())
                             .build();
-                    executionActor.tell(job, workProbe.getRef());
+                    executionActor.tell(job, workProbe.testActor());
 
                     Job job1 = workProbe.expectMsgClass(Job.class);
-                    workProbe.getLastSender().tell(job1.withResult(Result.empty()), workProbe.getRef());
+                    workProbe.lastSender().tell(job1.withResult(Result.empty()), workProbe.testActor());
                 }
 
                 Job job = Job.builder()
@@ -189,7 +189,7 @@ public class ExecutionActorTest extends AbstractActorTest {
                         .hostMetrics(Metrics.empty())
                         .result(Result.empty())
                         .build();
-                executionActor.tell(job, workProbe.getRef());
+                executionActor.tell(job, workProbe.testActor());
                 Job job1 = workProbe.expectMsgClass(Job.class);
                 assertThat(job1.computation().id().equals("BACKOFF"), is(true));
             }

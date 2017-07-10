@@ -39,7 +39,7 @@ import com.typesafe.config.ConfigFactory;
 import org.junit.Test;
 
 import akka.actor.ActorRef;
-import akka.testkit.JavaTestKit;
+import akka.testkit.TestKit;
 import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.actors.messages.resource.CreateResource;
 import ro.cosu.vampires.server.actors.resource.ResourceActor;
@@ -52,6 +52,7 @@ import ro.cosu.vampires.server.resources.mock.MockResourceModule;
 import ro.cosu.vampires.server.resources.mock.MockResourceParameters;
 import ro.cosu.vampires.server.values.ClientInfo;
 import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
+import scala.concurrent.duration.Duration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -86,35 +87,35 @@ public class ResourceActorTest extends AbstractActorTest {
 
     @Test
     public void testEnhancedStart() throws Exception {
-        new JavaTestKit(system) {
+        new TestKit(system) {
             {
                 ResourceInfo resourceInfo;
-                final JavaTestKit resourceProbe = new JavaTestKit(system);
+                final TestKit resourceProbe = new TestKit(system);
                 Resource resource = getLocalProvider().create(getCreateResource("foo").parameters()).get();
                 ActorRef resourceActor = system.actorOf(ResourceActor.props(resource));
                 resourceProbe.watch(resourceActor);
 
                 // start resource
-                resourceActor.tell(ResourceControl.Start.create(), resourceProbe.getRef());
+                resourceActor.tell(ResourceControl.Start.create(), resourceProbe.testActor());
                 resourceInfo = assertResourceStatus(resourceProbe, Resource.Status.RUNNING);
 
                 // check that it's running
-                resourceActor.tell(QueryResource.create(resourceInfo.parameters().id()), resourceProbe.getRef());
+                resourceActor.tell(QueryResource.create(resourceInfo.parameters().id()), resourceProbe.testActor());
                 assertResourceStatus(resourceProbe, Resource.Status.RUNNING);
 
                 // tell it the client attached to the resource has connected
-                resourceActor.tell(getClientInfo(resourceInfo), resourceProbe.getRef());
+                resourceActor.tell(getClientInfo(resourceInfo), resourceProbe.testActor());
 
                 // check the status
-                resourceActor.tell(QueryResource.create(resourceInfo.parameters().id()), resourceProbe.getRef());
+                resourceActor.tell(QueryResource.create(resourceInfo.parameters().id()), resourceProbe.testActor());
                 assertResourceStatus(resourceProbe, Resource.Status.CONNECTED);
 
                 // stop it
-                resourceActor.tell(ResourceControl.Shutdown.create(), resourceProbe.getRef());
+                resourceActor.tell(ResourceControl.Shutdown.create(), resourceProbe.testActor());
                 assertResourceStatus(resourceProbe, Resource.Status.STOPPED);
 
                 // actor should terminate
-                resourceProbe.expectTerminated(resourceActor);
+                resourceProbe.expectTerminated(resourceActor, Duration.create("1 second"));
             }
 
             private ClientInfo getClientInfo(ResourceInfo resourceInfo) {
@@ -129,30 +130,30 @@ public class ResourceActorTest extends AbstractActorTest {
         };
     }
 
-    private ResourceInfo assertResourceStatus(JavaTestKit resourceProbe, Resource.Status status) {
+    private ResourceInfo assertResourceStatus(TestKit resourceProbe, Resource.Status status) {
         ResourceInfo resourceInfo = resourceProbe.expectMsgClass(ResourceInfo.class);
         assertThat(resourceInfo.status(), is(status));
         return resourceInfo;
     }
     @Test
     public void testEnhancedFail() throws Exception {
-        new JavaTestKit(system) {
+        new TestKit(system) {
             {
-                final JavaTestKit resourceProbe = new JavaTestKit(system);
+                final TestKit resourceProbe = new TestKit(system);
                 Resource resource = getLocalProvider().create(getCreateResource("fail").parameters()).get();
                 ActorRef resourceActor = system.actorOf(ResourceActor.props(resource));
                 resourceProbe.watch(resourceActor);
 
                 // starting will fail
-                resourceActor.tell(ResourceControl.Start.create(), resourceProbe.getRef());
+                resourceActor.tell(ResourceControl.Start.create(), resourceProbe.testActor());
                 assertResourceStatus(resourceProbe, Resource.Status.FAILED);
 
                 // stop it
-                resourceActor.tell(ResourceControl.Shutdown.create(), resourceProbe.getRef());
+                resourceActor.tell(ResourceControl.Shutdown.create(), resourceProbe.testActor());
                 assertResourceStatus(resourceProbe, Resource.Status.FAILED);
 
                 // actor should terminate
-                resourceProbe.expectTerminated(resourceActor);
+                resourceProbe.expectTerminated(resourceActor, Duration.create("1 second"));
             }
         };
     }

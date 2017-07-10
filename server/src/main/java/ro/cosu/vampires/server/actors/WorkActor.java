@@ -26,15 +26,15 @@
 
 package ro.cosu.vampires.server.actors;
 
+import akka.actor.AbstractActor;
 import akka.actor.Props;
-import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.schedulers.Scheduler;
 import ro.cosu.vampires.server.values.jobs.Computation;
 import ro.cosu.vampires.server.values.jobs.Job;
 
-public class WorkActor extends UntypedActor {
+public class WorkActor extends AbstractActor {
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private Scheduler scheduler;
@@ -45,16 +45,6 @@ public class WorkActor extends UntypedActor {
 
     public static Props props(Scheduler scheduler) {
         return Props.create(WorkActor.class, scheduler);
-    }
-
-    @Override
-    public void onReceive(Object message) throws Exception {
-        if (message instanceof Job) {
-            receiveJob((Job) message);
-        } else {
-            log.warning("unhandled message from {}", getSender());
-            unhandled(message);
-        }
     }
 
     private void receiveJob(Job receivedJob) {
@@ -70,5 +60,15 @@ public class WorkActor extends UntypedActor {
             log.debug("work actor exiting");
             getContext().stop(getSelf());
         }
+    }
+
+    @Override
+    public Receive createReceive() {
+        return receiveBuilder().match(Job.class , this::receiveJob)
+                .matchAny(message -> {
+                    log.warning("unhandled message from {}", getSender());
+                    unhandled(message);
+                })
+                .build();
     }
 }

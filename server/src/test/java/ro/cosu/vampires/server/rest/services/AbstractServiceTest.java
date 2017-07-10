@@ -43,9 +43,10 @@ import org.junit.Test;
 import java.util.Optional;
 
 import akka.actor.ActorSystem;
-import akka.testkit.JavaTestKit;
+import akka.testkit.TestKit;
 import ro.cosu.vampires.server.values.Id;
 import ro.cosu.vampires.server.values.User;
+import scala.concurrent.duration.Duration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -63,7 +64,7 @@ public abstract class AbstractServiceTest<T extends Id, P> {
 
     @AfterClass
     public static void teardown() {
-        JavaTestKit.shutdownActorSystem(actorSystem);
+        TestKit.shutdownActorSystem(actorSystem, Duration.create("1 second"), true);
         actorSystem = null;
     }
 
