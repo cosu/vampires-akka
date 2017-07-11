@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.175s</div>
+<div class="counter">0.334s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,27 +79,27 @@
 </thead>
 <tr>
 <td class="success">create</td>
-<td>0.039s</td>
+<td>0.036s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">delete</td>
-<td>0.049s</td>
+<td>0.055s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">get</td>
-<td>0.037s</td>
+<td>0.198s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">list</td>
-<td>0.041s</td>
+<td>0.039s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">options</td>
-<td>0.009s</td>
+<td>0.006s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -107,58 +107,58 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2017-07-11 05:55:11,913 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
-2017-07-11 05:55:11,914 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- logger log1-Slf4jLogger started
-2017-07-11 05:55:11,914 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- Default Loggers started
-2017-07-11 05:55:11,938 DEBUG spark.route.Routes [] []- Adds route: get, /executions, spark.ResponseTransformerRouteImpl$1@520b090f
-2017-07-11 05:55:11,939 DEBUG spark.route.Routes [] []- Adds route: get, /executions/:id, spark.ResponseTransformerRouteImpl$1@7c543c7b
-2017-07-11 05:55:11,939 DEBUG spark.route.Routes [] []- Adds route: delete, /executions/:id, spark.ResponseTransformerRouteImpl$1@5112383b
-2017-07-11 05:55:11,939 DEBUG spark.route.Routes [] []- Adds route: post, /executions, spark.ResponseTransformerRouteImpl$1@5466d04c
-2017-07-11 05:55:11,939 DEBUG spark.route.Routes [] []- Adds route: post, /executions/:id, spark.ResponseTransformerRouteImpl$1@5eafe8be
-2017-07-11 05:55:11,981 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@223f61be
-2017-07-11 05:55:11,981 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
-2017-07-11 05:55:11,981 DEBUG spark.route.Routes [] []- Adds route: options, /*, spark.RouteImpl$1@7b1818
-2017-07-11 05:55:11,981 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@5910ab38
-2017-07-11 05:55:11,993 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2017-07-11 05:55:11,994 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
-2017-07-11 05:55:11,995 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:create url: http://localhost:4567/executions
-2017-07-11 05:55:11,998 INFO  r.c.v.s.r.services.ExecutionsService [] []- user User{id=admin} starting execution: b1618abd-680e-4d0a-812f-27faba6316c8
-2017-07-11 05:55:11,999 DEBUG r.c.v.s.r.services.ExecutionsService [] []- Execution:
-Execution{id=b1618abd-680e-4d0a-812f-27faba6316c8, configuration=Configuration{id=94bfad2e-e1c1-49a5-a229-83964821cee0, createdAt=2017-07-11T05:55:11.919, updatedAt=2017-07-11T05:55:11.919, description=foo, cost=0.0, resources=[ResourceDemand{resourceDescription=ResourceDescription{type=bar, provider=MOCK, cost=0.0, id=48af3837-ac5a-32a2-a344-b29ec497a31f, createdAt=2017-07-11T05:55:11.919, updatedAt=2017-07-11T05:55:11.919}, count=1}]}, workload=Workload{id=aa4e33ab-b14a-42cd-94bf-235008cca440, createdAt=2017-07-11T05:55:11.920, updatedAt=2017-07-11T05:55:11.920, sequenceStart=0, sequenceStop=10, task=echo, format=%08d.tif, url=, file=, description=}, type=FULL, info=ExecutionInfo{status=STARTING, updatedAt=2017-07-11T05:55:11.998, failed=0, remaining=11, total=0, completed=0, elapsed=0, stats=Stats{resources=[], values={}, counters={}, meters={}, histograms={}}}, createdAt=2017-07-11T05:55:11.998, updatedAt=2017-07-11T05:55:11.998}
-2017-07-11 05:55:12,027 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2017-07-11 05:55:12,027 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
-2017-07-11 05:55:12,029 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:create url: http://localhost:4567/executions
-2017-07-11 05:55:12,030 INFO  r.c.v.s.r.services.ExecutionsService [] []- user User{id=admin} starting execution: f44e4f55-293d-48c3-acf1-c02f2ed9bd16
-2017-07-11 05:55:12,030 DEBUG r.c.v.s.r.services.ExecutionsService [] []- Execution:
-Execution{id=f44e4f55-293d-48c3-acf1-c02f2ed9bd16, configuration=Configuration{id=94bfad2e-e1c1-49a5-a229-83964821cee0, createdAt=2017-07-11T05:55:11.919, updatedAt=2017-07-11T05:55:11.919, description=foo, cost=0.0, resources=[ResourceDemand{resourceDescription=ResourceDescription{type=bar, provider=MOCK, cost=0.0, id=48af3837-ac5a-32a2-a344-b29ec497a31f, createdAt=2017-07-11T05:55:11.919, updatedAt=2017-07-11T05:55:11.919}, count=1}]}, workload=Workload{id=aa4e33ab-b14a-42cd-94bf-235008cca440, createdAt=2017-07-11T05:55:11.920, updatedAt=2017-07-11T05:55:11.920, sequenceStart=0, sequenceStop=10, task=echo, format=%08d.tif, url=, file=, description=}, type=FULL, info=ExecutionInfo{status=STARTING, updatedAt=2017-07-11T05:55:12.030, failed=0, remaining=11, total=0, completed=0, elapsed=0, stats=Stats{resources=[], values={}, counters={}, meters={}, histograms={}}}, createdAt=2017-07-11T05:55:12.029, updatedAt=2017-07-11T05:55:12.029}
-2017-07-11 05:55:12,049 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2017-07-11 05:55:12,049 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
-2017-07-11 05:55:12,051 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:list url: http://localhost:4567/executions
-2017-07-11 05:55:12,064 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2017-07-11 05:55:12,064 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions/b1618abd-680e-4d0a-812f-27faba6316c8 headers null
-2017-07-11 05:55:12,066 DEBUG spark.Request [] []- matchedPart: :id = b1618abd-680e-4d0a-812f-27faba6316c8
-2017-07-11 05:55:12,067 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:delete url: http://localhost:4567/executions/b1618abd-680e-4d0a-812f-27faba6316c8
-2017-07-11 05:55:12,084 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2017-07-11 05:55:12,084 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
-2017-07-11 05:55:12,085 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:create url: http://localhost:4567/executions
-2017-07-11 05:55:12,087 INFO  r.c.v.s.r.services.ExecutionsService [] []- user User{id=admin} starting execution: e63a2abc-d6bd-4ec5-8a15-d3e717913ea6
-2017-07-11 05:55:12,087 DEBUG r.c.v.s.r.services.ExecutionsService [] []- Execution:
-Execution{id=e63a2abc-d6bd-4ec5-8a15-d3e717913ea6, configuration=Configuration{id=94bfad2e-e1c1-49a5-a229-83964821cee0, createdAt=2017-07-11T05:55:11.919, updatedAt=2017-07-11T05:55:11.919, description=foo, cost=0.0, resources=[ResourceDemand{resourceDescription=ResourceDescription{type=bar, provider=MOCK, cost=0.0, id=48af3837-ac5a-32a2-a344-b29ec497a31f, createdAt=2017-07-11T05:55:11.919, updatedAt=2017-07-11T05:55:11.919}, count=1}]}, workload=Workload{id=aa4e33ab-b14a-42cd-94bf-235008cca440, createdAt=2017-07-11T05:55:11.920, updatedAt=2017-07-11T05:55:11.920, sequenceStart=0, sequenceStop=10, task=echo, format=%08d.tif, url=, file=, description=}, type=FULL, info=ExecutionInfo{status=STARTING, updatedAt=2017-07-11T05:55:12.087, failed=0, remaining=11, total=0, completed=0, elapsed=0, stats=Stats{resources=[], values={}, counters={}, meters={}, histograms={}}}, createdAt=2017-07-11T05:55:12.087, updatedAt=2017-07-11T05:55:12.087}
-2017-07-11 05:55:12,099 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2017-07-11 05:55:12,099 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
-2017-07-11 05:55:12,100 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:list url: http://localhost:4567/executions
-2017-07-11 05:55:12,109 DEBUG spark.Request [] []- matchedPart: :id = e63a2abc-d6bd-4ec5-8a15-d3e717913ea6
-2017-07-11 05:55:12,109 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:get url: http://localhost:4567/executions/e63a2abc-d6bd-4ec5-8a15-d3e717913ea6
-2017-07-11 05:55:12,120 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2017-07-11 05:55:12,121 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
-2017-07-11 05:55:12,122 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:create url: http://localhost:4567/executions
-2017-07-11 05:55:12,124 INFO  r.c.v.s.r.services.ExecutionsService [] []- user User{id=admin} starting execution: ff06b750-d07d-455f-af20-2c7910f9cf45
-2017-07-11 05:55:12,124 DEBUG r.c.v.s.r.services.ExecutionsService [] []- Execution:
-Execution{id=ff06b750-d07d-455f-af20-2c7910f9cf45, configuration=Configuration{id=94bfad2e-e1c1-49a5-a229-83964821cee0, createdAt=2017-07-11T05:55:11.919, updatedAt=2017-07-11T05:55:11.919, description=foo, cost=0.0, resources=[ResourceDemand{resourceDescription=ResourceDescription{type=bar, provider=MOCK, cost=0.0, id=48af3837-ac5a-32a2-a344-b29ec497a31f, createdAt=2017-07-11T05:55:11.919, updatedAt=2017-07-11T05:55:11.919}, count=1}]}, workload=Workload{id=aa4e33ab-b14a-42cd-94bf-235008cca440, createdAt=2017-07-11T05:55:11.920, updatedAt=2017-07-11T05:55:11.920, sequenceStart=0, sequenceStop=10, task=echo, format=%08d.tif, url=, file=, description=}, type=FULL, info=ExecutionInfo{status=STARTING, updatedAt=2017-07-11T05:55:12.124, failed=0, remaining=11, total=0, completed=0, elapsed=0, stats=Stats{resources=[], values={}, counters={}, meters={}, histograms={}}}, createdAt=2017-07-11T05:55:12.123, updatedAt=2017-07-11T05:55:12.123}
-2017-07-11 05:55:12,136 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
-2017-07-11 05:55:12,136 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
-2017-07-11 05:55:12,138 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:list url: http://localhost:4567/executions
-2017-07-11 05:55:12,360 DEBUG akka.event.EventStream [test-akka.actor.default-dispatcher-6] [EventStream]- shutting down: StandardOutLogger started
+<pre>2017-07-11 06:11:29,125 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
+2017-07-11 06:11:29,126 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- logger log1-Slf4jLogger started
+2017-07-11 06:11:29,126 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- Default Loggers started
+2017-07-11 06:11:29,152 DEBUG spark.route.Routes [] []- Adds route: get, /executions, spark.ResponseTransformerRouteImpl$1@654c5f49
+2017-07-11 06:11:29,152 DEBUG spark.route.Routes [] []- Adds route: get, /executions/:id, spark.ResponseTransformerRouteImpl$1@7309fad8
+2017-07-11 06:11:29,152 DEBUG spark.route.Routes [] []- Adds route: delete, /executions/:id, spark.ResponseTransformerRouteImpl$1@797088c3
+2017-07-11 06:11:29,152 DEBUG spark.route.Routes [] []- Adds route: post, /executions, spark.ResponseTransformerRouteImpl$1@36d21733
+2017-07-11 06:11:29,152 DEBUG spark.route.Routes [] []- Adds route: post, /executions/:id, spark.ResponseTransformerRouteImpl$1@3163a0b7
+2017-07-11 06:11:29,193 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@6086a9b3
+2017-07-11 06:11:29,193 INFO  r.c.v.s.r.c.AuthenticationFilter [] []- Authentication filter enabled
+2017-07-11 06:11:29,194 DEBUG spark.route.Routes [] []- Adds route: options, /*, spark.RouteImpl$1@6e3d2ef5
+2017-07-11 06:11:29,194 DEBUG spark.route.Routes [] []- Adds route: before, +/*paths, spark.FilterImpl$1@3ba3d9b0
+2017-07-11 06:11:29,202 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2017-07-11 06:11:29,203 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
+2017-07-11 06:11:29,205 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:create url: http://localhost:4567/executions
+2017-07-11 06:11:29,209 INFO  r.c.v.s.r.services.ExecutionsService [] []- user User{id=admin} starting execution: 8df6855a-b1f8-4fbc-abe3-b535f7cec72f
+2017-07-11 06:11:29,209 DEBUG r.c.v.s.r.services.ExecutionsService [] []- Execution:
+Execution{id=8df6855a-b1f8-4fbc-abe3-b535f7cec72f, configuration=Configuration{id=76214737-2225-403d-98eb-dedd0cb0a578, createdAt=2017-07-11T06:11:29.132, updatedAt=2017-07-11T06:11:29.132, description=foo, cost=0.0, resources=[ResourceDemand{resourceDescription=ResourceDescription{type=bar, provider=MOCK, cost=0.0, id=48af3837-ac5a-32a2-a344-b29ec497a31f, createdAt=2017-07-11T06:11:29.131, updatedAt=2017-07-11T06:11:29.131}, count=1}]}, workload=Workload{id=ce5d5fd1-0e20-4d37-b563-cc5a7b686034, createdAt=2017-07-11T06:11:29.132, updatedAt=2017-07-11T06:11:29.132, sequenceStart=0, sequenceStop=10, task=echo, format=%08d.tif, url=, file=, description=}, type=FULL, info=ExecutionInfo{status=STARTING, updatedAt=2017-07-11T06:11:29.209, failed=0, remaining=11, total=0, completed=0, elapsed=0, stats=Stats{resources=[], values={}, counters={}, meters={}, histograms={}}}, createdAt=2017-07-11T06:11:29.208, updatedAt=2017-07-11T06:11:29.208}
+2017-07-11 06:11:29,243 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2017-07-11 06:11:29,244 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
+2017-07-11 06:11:29,245 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:create url: http://localhost:4567/executions
+2017-07-11 06:11:29,247 INFO  r.c.v.s.r.services.ExecutionsService [] []- user User{id=admin} starting execution: 9a2584f4-ee39-43ad-9c18-6ea793407480
+2017-07-11 06:11:29,247 DEBUG r.c.v.s.r.services.ExecutionsService [] []- Execution:
+Execution{id=9a2584f4-ee39-43ad-9c18-6ea793407480, configuration=Configuration{id=76214737-2225-403d-98eb-dedd0cb0a578, createdAt=2017-07-11T06:11:29.132, updatedAt=2017-07-11T06:11:29.132, description=foo, cost=0.0, resources=[ResourceDemand{resourceDescription=ResourceDescription{type=bar, provider=MOCK, cost=0.0, id=48af3837-ac5a-32a2-a344-b29ec497a31f, createdAt=2017-07-11T06:11:29.131, updatedAt=2017-07-11T06:11:29.131}, count=1}]}, workload=Workload{id=ce5d5fd1-0e20-4d37-b563-cc5a7b686034, createdAt=2017-07-11T06:11:29.132, updatedAt=2017-07-11T06:11:29.132, sequenceStart=0, sequenceStop=10, task=echo, format=%08d.tif, url=, file=, description=}, type=FULL, info=ExecutionInfo{status=STARTING, updatedAt=2017-07-11T06:11:29.247, failed=0, remaining=11, total=0, completed=0, elapsed=0, stats=Stats{resources=[], values={}, counters={}, meters={}, histograms={}}}, createdAt=2017-07-11T06:11:29.246, updatedAt=2017-07-11T06:11:29.246}
+2017-07-11 06:11:29,260 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2017-07-11 06:11:29,261 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
+2017-07-11 06:11:29,262 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:list url: http://localhost:4567/executions
+2017-07-11 06:11:29,278 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2017-07-11 06:11:29,279 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions/8df6855a-b1f8-4fbc-abe3-b535f7cec72f headers null
+2017-07-11 06:11:29,281 DEBUG spark.Request [] []- matchedPart: :id = 8df6855a-b1f8-4fbc-abe3-b535f7cec72f
+2017-07-11 06:11:29,282 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:delete url: http://localhost:4567/executions/8df6855a-b1f8-4fbc-abe3-b535f7cec72f
+2017-07-11 06:11:29,298 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2017-07-11 06:11:29,299 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
+2017-07-11 06:11:29,300 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:create url: http://localhost:4567/executions
+2017-07-11 06:11:29,302 INFO  r.c.v.s.r.services.ExecutionsService [] []- user User{id=admin} starting execution: 6f551573-8e3f-4b4a-93f9-15b0ee748393
+2017-07-11 06:11:29,302 DEBUG r.c.v.s.r.services.ExecutionsService [] []- Execution:
+Execution{id=6f551573-8e3f-4b4a-93f9-15b0ee748393, configuration=Configuration{id=76214737-2225-403d-98eb-dedd0cb0a578, createdAt=2017-07-11T06:11:29.132, updatedAt=2017-07-11T06:11:29.132, description=foo, cost=0.0, resources=[ResourceDemand{resourceDescription=ResourceDescription{type=bar, provider=MOCK, cost=0.0, id=48af3837-ac5a-32a2-a344-b29ec497a31f, createdAt=2017-07-11T06:11:29.131, updatedAt=2017-07-11T06:11:29.131}, count=1}]}, workload=Workload{id=ce5d5fd1-0e20-4d37-b563-cc5a7b686034, createdAt=2017-07-11T06:11:29.132, updatedAt=2017-07-11T06:11:29.132, sequenceStart=0, sequenceStop=10, task=echo, format=%08d.tif, url=, file=, description=}, type=FULL, info=ExecutionInfo{status=STARTING, updatedAt=2017-07-11T06:11:29.302, failed=0, remaining=11, total=0, completed=0, elapsed=0, stats=Stats{resources=[], values={}, counters={}, meters={}, histograms={}}}, createdAt=2017-07-11T06:11:29.302, updatedAt=2017-07-11T06:11:29.302}
+2017-07-11 06:11:29,315 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2017-07-11 06:11:29,315 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
+2017-07-11 06:11:29,317 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:list url: http://localhost:4567/executions
+2017-07-11 06:11:29,328 DEBUG spark.Request [] []- matchedPart: :id = 6f551573-8e3f-4b4a-93f9-15b0ee748393
+2017-07-11 06:11:29,328 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:get url: http://localhost:4567/executions/6f551573-8e3f-4b4a-93f9-15b0ee748393
+2017-07-11 06:11:29,497 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2017-07-11 06:11:29,497 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
+2017-07-11 06:11:29,499 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:create url: http://localhost:4567/executions
+2017-07-11 06:11:29,500 INFO  r.c.v.s.r.services.ExecutionsService [] []- user User{id=admin} starting execution: 29261f81-60dd-461e-ab35-dc741be72886
+2017-07-11 06:11:29,500 DEBUG r.c.v.s.r.services.ExecutionsService [] []- Execution:
+Execution{id=29261f81-60dd-461e-ab35-dc741be72886, configuration=Configuration{id=76214737-2225-403d-98eb-dedd0cb0a578, createdAt=2017-07-11T06:11:29.132, updatedAt=2017-07-11T06:11:29.132, description=foo, cost=0.0, resources=[ResourceDemand{resourceDescription=ResourceDescription{type=bar, provider=MOCK, cost=0.0, id=48af3837-ac5a-32a2-a344-b29ec497a31f, createdAt=2017-07-11T06:11:29.131, updatedAt=2017-07-11T06:11:29.131}, count=1}]}, workload=Workload{id=ce5d5fd1-0e20-4d37-b563-cc5a7b686034, createdAt=2017-07-11T06:11:29.132, updatedAt=2017-07-11T06:11:29.132, sequenceStart=0, sequenceStop=10, task=echo, format=%08d.tif, url=, file=, description=}, type=FULL, info=ExecutionInfo{status=STARTING, updatedAt=2017-07-11T06:11:29.500, failed=0, remaining=11, total=0, completed=0, elapsed=0, stats=Stats{resources=[], values={}, counters={}, meters={}, histograms={}}}, createdAt=2017-07-11T06:11:29.500, updatedAt=2017-07-11T06:11:29.500}
+2017-07-11 06:11:29,515 ERROR r.c.v.s.r.c.AuthenticationFilter [] []- Missing or Incomplete Authorization Header
+2017-07-11 06:11:29,515 WARN  r.c.v.s.r.c.AuthenticationFilter [] []- unauthorized client 127.0.0.1 url http://localhost:4567/executions headers null
+2017-07-11 06:11:29,517 DEBUG r.c.v.s.r.c.ExecutionsController [] []- User:admin action:list url: http://localhost:4567/executions
+2017-07-11 06:11:29,530 DEBUG akka.event.EventStream [test-akka.actor.default-dispatcher-5] [EventStream]- shutting down: StandardOutLogger started
 </pre>
 </span>
 </div>
@@ -170,7 +170,7 @@ Execution{id=ff06b750-d07d-455f-af20-2c7910f9cf45, configuration=Configuration{i
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 3.0</a> at Jul 11, 2017 5:55:14 AM</p>
+<a href="http://www.gradle.org">Gradle 3.0</a> at Jul 11, 2017 6:11:32 AM</p>
 </div>
 </div>
 </body>
