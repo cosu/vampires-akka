@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.NetworkIF;
@@ -103,13 +103,13 @@ public class NetworkSource implements Source {
 
         return new Gauge<Long>() {
             long previousValue = iface.getBytesRecv();
-            LocalDateTime previousSample = LocalDateTime.now();
+            ZonedDateTime previousSample = ZonedDateTime.now();
 
             @Override
             public Long getValue() {
                 LinuxNetworks.updateNetworkStats(iface);
                 previousValue = iface.getBytesSent();
-                Duration between = Duration.between(previousSample, LocalDateTime.now());
+                Duration between = Duration.between(previousSample, ZonedDateTime.now());
                 double delta = iface.getBytesSent() - previousValue;
                 return (delta > 0) ? Math.round(delta / between.toMillis() * 1000) : 0;
 
@@ -121,13 +121,13 @@ public class NetworkSource implements Source {
 
         return new Gauge<Long>() {
             long previousValue = iface.getBytesRecv();
-            LocalDateTime previousSample = LocalDateTime.now();
+            ZonedDateTime previousSample = ZonedDateTime.now();
 
             @Override
             public Long getValue() {
                 LinuxNetworks.updateNetworkStats(iface);
 
-                Duration between = Duration.between(previousSample, LocalDateTime.now());
+                Duration between = Duration.between(previousSample, ZonedDateTime.now());
                 double delta = iface.getBytesRecv() - previousValue;
                 previousValue = iface.getBytesRecv();
                 return (delta > 0) ? Math.round(delta / between.toMillis() * 1000) : 0;

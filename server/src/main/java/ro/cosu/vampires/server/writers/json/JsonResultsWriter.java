@@ -42,7 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
@@ -70,7 +70,7 @@ public class JsonResultsWriter implements ResultsWriter {
     }
 
     private Path getPath(String prefix) {
-        LocalDateTime date = LocalDateTime.now();
+        ZonedDateTime date = ZonedDateTime.now();
         return Paths.get(uploadDirName, prefix + "-" + date.format
                 (DateTimeFormatter.ISO_LOCAL_DATE_TIME) + ".json");
 
@@ -79,7 +79,7 @@ public class JsonResultsWriter implements ResultsWriter {
     @Override
     public void addResult(Job result) {
 //        Gson gson = ng GsonBuilder().setPrettyPrinting()
-//                .registerTypeAdapter(LocalDateTime.class, ng LocalDateTimeSerializer())
+//                .registerTypeAdapter(ZonedDateTime.class, ng ZonedDateTimeSerializer())
 //                .create();
 //        WebsocketHandler.broadcastMessage("foo", gson.toJson(result));
 
@@ -96,7 +96,7 @@ public class JsonResultsWriter implements ResultsWriter {
         //write results to disk
         try (BufferedWriter fileWriter = Files.newWriter(getPath("results-all").toFile(), Charsets.UTF_8)) {
             Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
+                    .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeSerializer())
                     .setPrettyPrinting()
                     .create();
 

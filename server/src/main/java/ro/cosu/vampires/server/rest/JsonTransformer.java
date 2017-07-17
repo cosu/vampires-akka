@@ -30,14 +30,14 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import ro.cosu.vampires.server.util.gson.AutoValueAdapterFactory;
 import ro.cosu.vampires.server.util.gson.ImmutableListTypeAdapterFactory;
 import ro.cosu.vampires.server.util.gson.ImmutableMapTypeAdapterFactory;
 import ro.cosu.vampires.server.util.gson.LowercaseEnumTypeAdapterFactory;
-import ro.cosu.vampires.server.writers.json.LocalDateTimeDeserializer;
-import ro.cosu.vampires.server.writers.json.LocalDateTimeSerializer;
+import ro.cosu.vampires.server.writers.json.ZonedDateTimeDeserializer;
+import ro.cosu.vampires.server.writers.json.ZonedDateTimeSerializer;
 import spark.ResponseTransformer;
 
 
@@ -45,8 +45,8 @@ public class JsonTransformer implements ResponseTransformer {
 
     private Gson gson = new GsonBuilder().setPrettyPrinting()
             .registerTypeAdapterFactory(new AutoValueAdapterFactory())
-            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
-            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer())
+            .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeSerializer())
+            .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeDeserializer())
             .registerTypeAdapterFactory(new ImmutableListTypeAdapterFactory())
             .registerTypeAdapterFactory(new ImmutableMapTypeAdapterFactory())
             .registerTypeAdapterFactory(new AutoValueAdapterFactory())

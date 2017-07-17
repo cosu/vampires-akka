@@ -31,7 +31,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.resources.Resource;
@@ -45,8 +45,8 @@ public abstract class ProviderDescription implements Id {
 
     public static ProviderDescription.Builder builder() {
         return new AutoValue_ProviderDescription.Builder()
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now());
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now());
     }
 
     public abstract Resource.ProviderType provider();
@@ -63,10 +63,10 @@ public abstract class ProviderDescription implements Id {
     public abstract String id();
 
     @Override
-    public abstract LocalDateTime createdAt();
+    public abstract ZonedDateTime createdAt();
 
     @Override
-    public abstract LocalDateTime updatedAt();
+    public abstract ZonedDateTime updatedAt();
 
     @AutoValue.Builder
     public static abstract class Builder {
@@ -80,9 +80,9 @@ public abstract class ProviderDescription implements Id {
 
         public abstract Builder id(String id);
 
-        public abstract Builder createdAt(LocalDateTime createdAt);
+        public abstract Builder createdAt(ZonedDateTime createdAt);
 
-        public abstract Builder updatedAt(LocalDateTime createdAt);
+        public abstract Builder updatedAt(ZonedDateTime createdAt);
 
         abstract ProviderDescription autoBuild();
 

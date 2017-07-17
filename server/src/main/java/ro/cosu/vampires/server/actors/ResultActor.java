@@ -27,7 +27,7 @@
 package ro.cosu.vampires.server.actors;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -57,7 +57,7 @@ import ro.cosu.vampires.server.writers.ResultsWriter;
 public class ResultActor extends AbstractActor {
     private final SettingsImpl settings =
             Settings.SettingsProvider.get(getContext().system());
-    private final LocalDateTime startTime = LocalDateTime.now();
+    private final ZonedDateTime startTime = ZonedDateTime.now();
     private final Execution execution;
 
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
@@ -145,7 +145,7 @@ public class ResultActor extends AbstractActor {
                 .updateCompleted(results.size())
                 .updateStatus(status)
                 .updateStats(statsProcessor.getStats())
-                .updateElapsed(Duration.between(startTime, LocalDateTime.now()).toMillis())
+                .updateElapsed(Duration.between(startTime, ZonedDateTime.now()).toMillis())
                 .updateRemaining(totalSize - results.size());
 
         Execution execution = this.execution.withInfo(executionInfo);
@@ -177,7 +177,7 @@ public class ResultActor extends AbstractActor {
     }
 
     private void shutdown(ExecutionInfo.Status status) {
-        log.info("Total Duration: {}", formatDuration(Duration.between(startTime, LocalDateTime.now())));
+        log.info("Total Duration: {}", formatDuration(Duration.between(startTime, ZonedDateTime.now())));
         log.info("shutting down");
         writers.forEach(ResultsWriter::close);
         // init shutdown

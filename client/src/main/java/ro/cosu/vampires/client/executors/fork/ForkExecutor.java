@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -85,11 +85,11 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
 
         DefaultExecuteResultHandler resultHandler = new DefaultExecuteResultHandler();
 
-        LocalDateTime start = LocalDateTime.now();
+        ZonedDateTime start = ZonedDateTime.now();
 
         int exitCode = runAndGetExitCode(commandLine, resultHandler);
 
-        LocalDateTime stop = LocalDateTime.now();
+        ZonedDateTime stop = ZonedDateTime.now();
 
         releaseResources();
 
@@ -143,7 +143,7 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
         return Type.FORK;
     }
 
-    private Trace getTrace(LocalDateTime start, LocalDateTime stop) {
+    private Trace getTrace(ZonedDateTime start, ZonedDateTime stop) {
         final Trace.Builder builder = Trace
                 .withNoMetrics()
                 .executor(getType().toString())

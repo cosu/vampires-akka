@@ -35,13 +35,13 @@ import com.typesafe.config.ConfigFactory;
 
 import org.junit.Test;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import ro.cosu.vampires.server.util.gson.AutoValueAdapterFactory;
 import ro.cosu.vampires.server.values.jobs.Workload;
 import ro.cosu.vampires.server.values.jobs.WorkloadPayload;
-import ro.cosu.vampires.server.writers.json.LocalDateTimeDeserializer;
-import ro.cosu.vampires.server.writers.json.LocalDateTimeSerializer;
+import ro.cosu.vampires.server.writers.json.ZonedDateTimeDeserializer;
+import ro.cosu.vampires.server.writers.json.ZonedDateTimeSerializer;
 
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.core.Is.is;
@@ -66,8 +66,8 @@ public class WorkloadTest {
                 .build().update().sequenceStart(10).build();
 
         Gson gson = new GsonBuilder().setPrettyPrinting()
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer())
+                .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeSerializer())
+                .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeDeserializer())
                 .registerTypeAdapterFactory(new AutoValueAdapterFactory())
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .create();

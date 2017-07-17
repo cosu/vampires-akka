@@ -29,7 +29,7 @@ package ro.cosu.vampires.server.values.jobs;
 
 import com.google.auto.value.AutoValue;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.util.gson.AutoGson;
@@ -42,8 +42,8 @@ public abstract class Execution implements Id {
 
     public static Builder builder() {
         return new AutoValue_Execution.Builder()
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .id(UUID.randomUUID().toString());
     }
 
@@ -59,16 +59,16 @@ public abstract class Execution implements Id {
     public abstract ExecutionInfo info();
 
     @Override
-    public abstract LocalDateTime createdAt();
+    public abstract ZonedDateTime createdAt();
 
     @Override
-    public abstract LocalDateTime updatedAt();
+    public abstract ZonedDateTime updatedAt();
 
     public abstract Builder toBuilder();
 
     public Execution withInfo(ExecutionInfo info) {
         return toBuilder()
-                .updatedAt(LocalDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .info(info).build();
     }
 
@@ -85,9 +85,9 @@ public abstract class Execution implements Id {
 
         public abstract Builder info(ExecutionInfo status);
 
-        public abstract Builder createdAt(LocalDateTime createdAt);
+        public abstract Builder createdAt(ZonedDateTime createdAt);
 
-        public abstract Builder updatedAt(LocalDateTime createdAt);
+        public abstract Builder updatedAt(ZonedDateTime createdAt);
 
         public abstract Execution build();
 

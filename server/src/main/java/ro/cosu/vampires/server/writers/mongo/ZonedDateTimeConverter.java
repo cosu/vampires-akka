@@ -22,29 +22,35 @@
  *
  */
 
-package ro.cosu.vampires.server.writers.json;
+package ro.cosu.vampires.server.writers.mongo;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
+import org.mongodb.morphia.converters.DateConverter;
+import org.mongodb.morphia.mapping.MappedField;
+import org.mongodb.morphia.mapping.MappingException;
 
-import java.lang.reflect.Type;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
 
-
-public class LocalDateTimeDeserializer implements JsonDeserializer<LocalDateTime> {
+public class ZonedDateTimeConverter extends DateConverter {
+    public ZonedDateTimeConverter() {
+        super(ZonedDateTime.class);
+    }
 
     @Override
-    public LocalDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-            throws JsonParseException {
-        try {
-            return LocalDateTime.ofInstant(ZonedDateTime.parse(json.getAsString()).toInstant(), ZoneOffset.UTC);
+    public Object decode(final Class targetClass, final Object val, final MappedField optionalExtraInfo)
+            throws MappingException {
+        Date date = (Date) super.decode(targetClass, val, optionalExtraInfo);
+        Instant instant = Instant.ofEpochMilli(date.getTime());
+        return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
+    }
+
+    @Override
+    public Object encode(final Object value, final MappedField optionalExtraInfo) {
+        if (value == null) {
+            return null;
         }
-        catch (Exception e){
-            return LocalDateTime.parse(json.getAsString());
-        }
+        return new Date(((ZonedDateTime) value).toInstant().toEpochMilli());
     }
 }

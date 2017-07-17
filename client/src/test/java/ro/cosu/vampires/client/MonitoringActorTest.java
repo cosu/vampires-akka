@@ -45,7 +45,7 @@ import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
@@ -72,7 +72,7 @@ public class MonitoringActorTest {
                 .props(TestUtil.getMetricRegistryMock()));
 
         Computation computation = Computation.builder().command("test").id("test").build();
-        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now();
 
         Result result = Result.builder()
                 .duration(1)

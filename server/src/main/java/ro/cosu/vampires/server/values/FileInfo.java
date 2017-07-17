@@ -48,7 +48,7 @@ public abstract class FileInfo {
         String hash = null;
         FileInfo result = null;
         try {
-            hash = Files.asByteSource(file).hash(Hashing.sha1()).toString();
+            hash = Files.asByteSource(file).hash(Hashing.sha256()).toString();
             String name = file.getName();
             long size = file.length();
             result = new AutoValue_FileInfo(size, hash, name);

@@ -30,14 +30,14 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 
-public class LocalDateTimeSerializer implements JsonSerializer<LocalDateTime> {
+public class ZonedDateTimeSerializer implements JsonSerializer<ZonedDateTime> {
     @Override
-    public JsonElement serialize(LocalDateTime localDateTime, Type type, JsonSerializationContext
+    public JsonElement serialize(ZonedDateTime zonedDateTime, Type type, JsonSerializationContext
             jsonSerializationContext) {
 
-        return new JsonPrimitive(localDateTime.toString());
+        return new JsonPrimitive(zonedDateTime.toString());
     }
 }

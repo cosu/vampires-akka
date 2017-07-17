@@ -32,7 +32,7 @@ import com.google.common.collect.ImmutableMap;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.SortedMap;
 
@@ -80,7 +80,7 @@ public class MonitoringActor extends UntypedActor {
     }
 
     private void recordMetrics() {
-        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now();
         metricsWindow.add(now, gauges);
     }
 
@@ -101,7 +101,7 @@ public class MonitoringActor extends UntypedActor {
             // the client will ask for metrics to send to the server at boot time
             log.debug("got metrics request ");
             ImmutableList<Metric> interval = metricsWindow.getInterval(
-                    LocalDateTime.now().minus(MONITORING_INTERVAL_MILLIS, ChronoUnit.MILLIS), LocalDateTime.now());
+                    ZonedDateTime.now().minus(MONITORING_INTERVAL_MILLIS, ChronoUnit.MILLIS), ZonedDateTime.now());
             Metrics metrics = Metrics.builder().metadata(getHostMetrics()).metrics(interval).build();
             getSender().tell(metrics, getSelf());
         } else {

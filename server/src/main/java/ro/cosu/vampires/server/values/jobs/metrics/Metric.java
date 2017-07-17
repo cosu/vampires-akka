@@ -30,7 +30,7 @@ import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableMap;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import ro.cosu.vampires.server.util.gson.AutoGson;
 
@@ -38,7 +38,7 @@ import ro.cosu.vampires.server.util.gson.AutoGson;
 @AutoGson
 public abstract class Metric implements Serializable {
 
-    private static LocalDateTime emptyTime = LocalDateTime.parse("2000-01-01T00:00:00");
+    private static ZonedDateTime emptyTime = ZonedDateTime.parse("2000-01-01T00:00:00Z");
 
     public static Builder builder() {
         return new AutoValue_Metric.Builder();
@@ -54,13 +54,13 @@ public abstract class Metric implements Serializable {
 
     public abstract ImmutableMap<String, Double> values();
 
-    public abstract LocalDateTime time();
+    public abstract ZonedDateTime time();
 
     @AutoValue.Builder
     public abstract static class Builder {
 
 
-        public abstract Builder time(LocalDateTime time);
+        public abstract Builder time(ZonedDateTime time);
 
         public abstract Builder values(ImmutableMap<String, Double> values);
 

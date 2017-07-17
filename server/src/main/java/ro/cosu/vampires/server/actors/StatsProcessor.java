@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -66,7 +66,7 @@ public class StatsProcessor {
 
     private MetricRegistry metricRegistry = new MetricRegistry();
 
-    private Map<String, LocalDateTime> clientsCreatedAt = Maps.newHashMap();
+    private Map<String, ZonedDateTime> clientsCreatedAt = Maps.newHashMap();
     private Map<String, ClientInfo> clientsInfo = Maps.newHashMap();
     private Map<String, ResourceInfo> resourcesInfo = Maps.newHashMap();
 
@@ -218,8 +218,8 @@ public class StatsProcessor {
     }
 
     private Duration getDurationForClient(String id) {
-        LocalDateTime createdAt = clientsCreatedAt.get(id);
-        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime createdAt = clientsCreatedAt.get(id);
+        ZonedDateTime now = ZonedDateTime.now();
 
         return Duration.between(createdAt, now);
     }

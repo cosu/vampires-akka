@@ -26,7 +26,7 @@ package ro.cosu.vampires.server.resources.ec2;
 
 import com.google.inject.Inject;
 
-import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.ec2.AmazonEC2;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class EC2ResourceProvider extends AbstractResourceProvider {
 
     @Inject
     @Nullable
-    private AmazonEC2Client amazonEC2Client;
+    private AmazonEC2 amazonEC2Client;
 
     @Override
     public Optional<Resource> create(Resource.Parameters parameters) {

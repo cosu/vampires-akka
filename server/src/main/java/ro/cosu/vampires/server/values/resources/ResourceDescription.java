@@ -29,7 +29,7 @@ package ro.cosu.vampires.server.values.resources;
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Charsets;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.resources.Resource;
@@ -43,8 +43,8 @@ public abstract class ResourceDescription implements Id {
 
     public static Builder builder() {
         return new AutoValue_ResourceDescription.Builder()
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now());
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now());
     }
 
     public abstract String type();
@@ -57,10 +57,10 @@ public abstract class ResourceDescription implements Id {
     public abstract String id();
 
     @Override
-    public abstract LocalDateTime createdAt();
+    public abstract ZonedDateTime createdAt();
 
     @Override
-    public abstract LocalDateTime updatedAt();
+    public abstract ZonedDateTime updatedAt();
 
     @AutoValue.Builder
     public static abstract class Builder {
@@ -77,9 +77,9 @@ public abstract class ResourceDescription implements Id {
 
         public abstract Builder id(String id);
 
-        public abstract Builder createdAt(LocalDateTime createdAt);
+        public abstract Builder createdAt(ZonedDateTime createdAt);
 
-        public abstract Builder updatedAt(LocalDateTime createdAt);
+        public abstract Builder updatedAt(ZonedDateTime createdAt);
 
         abstract ResourceDescription autoBuild();
 

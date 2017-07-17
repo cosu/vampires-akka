@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -75,7 +75,7 @@ public class DockerExecutorMetricsCollector implements ExecutorMetricsCollector 
 //        data.putAll(flattenMap("io", stat.getBlkioStats()));
         data.putAll(flattenMap("cpu", stat.getCpuStats()));
 
-        return Metric.builder().values(ImmutableMap.copyOf(data)).time(LocalDateTime.now()).build();
+        return Metric.builder().values(ImmutableMap.copyOf(data)).time(ZonedDateTime.now()).build();
     }
 
     @SuppressWarnings("unchecked")

@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -104,13 +104,13 @@ public class DockerExecutor implements Executor {
         acquireResources();
         createContainer(computation.command().split(" "));
         LOG.info("running docker job {}", computation);
-        LocalDateTime start = LocalDateTime.now();
+        ZonedDateTime start = ZonedDateTime.now();
         dockerClient.startContainerCmd(containerId).exec();
         executorMetricsCollector.startMonitoring(containerId);
         int exitCode = dockerClient.waitContainerCmd(containerId).exec(new WaitContainerResultCallback())
                 .awaitStatusCode();
 
-        LocalDateTime stop = LocalDateTime.now();
+        ZonedDateTime stop = ZonedDateTime.now();
         List<String> output = Collections.emptyList();
         try {
             output = getOutput();
@@ -145,7 +145,7 @@ public class DockerExecutor implements Executor {
                 .map(Arrays::asList).orElse(Collections.emptyList());
     }
 
-    private Trace getTrace(LocalDateTime start, LocalDateTime stop) {
+    private Trace getTrace(ZonedDateTime start, ZonedDateTime stop) {
         final Trace.Builder builder = Trace.builder()
                 .executorMetrics(executorMetricsCollector.getMetrics())
                 .executor(getType().toString())

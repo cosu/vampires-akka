@@ -33,6 +33,7 @@ import com.google.inject.Provides;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Named;
 
+import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
@@ -86,7 +87,7 @@ public class EC2ResourceTest {
             }
 
             @Provides
-            private AmazonEC2Client provideAmazonEc2(@Named("Config") Config config) {
+            private AmazonEC2 provideAmazonEc2(@Named("Config") Config config) {
                 AmazonEC2Client ec2Client = mock(AmazonEC2Client.class);
                 RunInstancesResult runInstancesResult = mock(RunInstancesResult.class, RETURNS_DEEP_STUBS);
                 DescribeInstancesResult describeInstancesResult = mock(DescribeInstancesResult.class, RETURNS_DEEP_STUBS);
@@ -139,7 +140,7 @@ public class EC2ResourceTest {
 
     @Test
     public void testEC2ClientFail() throws Exception {
-        AmazonEC2Client foo = EC2ResourceModule.getAmazonEC2Client("foo");
+        AmazonEC2 foo = EC2ResourceModule.getAmazonEC2Client("foo");
         assertThat(foo, is(nullValue()));
     }
 
@@ -149,7 +150,7 @@ public class EC2ResourceTest {
         File file = path.toFile();
         file.deleteOnExit();
         Files.write(path, "foo\nbar".getBytes(StandardCharsets.UTF_8));
-        AmazonEC2Client foo = EC2ResourceModule.getAmazonEC2Client(file.getAbsolutePath());
+        AmazonEC2 foo = EC2ResourceModule.getAmazonEC2Client(file.getAbsolutePath());
         assertThat(foo, is(nullValue()));
     }
 
@@ -159,7 +160,7 @@ public class EC2ResourceTest {
         File file = path.toFile();
         file.deleteOnExit();
         Files.write(path, "accessKey=foo\nsecretKey=bar".getBytes(StandardCharsets.UTF_8));
-        AmazonEC2Client foo = EC2ResourceModule.getAmazonEC2Client(file.getAbsolutePath());
+        AmazonEC2 foo = EC2ResourceModule.getAmazonEC2Client(file.getAbsolutePath());
         assertThat(foo, not(nullValue()));
     }
 

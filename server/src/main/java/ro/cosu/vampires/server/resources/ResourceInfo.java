@@ -28,18 +28,18 @@ package ro.cosu.vampires.server.resources;
 
 import com.google.auto.value.AutoValue;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @AutoValue
 public abstract class ResourceInfo {
     public static ResourceInfo create(Resource.Parameters parameters, Resource.Status status) {
-        return new AutoValue_ResourceInfo(parameters, status, LocalDateTime.now());
+        return new AutoValue_ResourceInfo(parameters, status, ZonedDateTime.now());
     }
 
     public abstract Resource.Parameters parameters();
 
     public abstract Resource.Status status();
 
-    public abstract LocalDateTime createdAt();
+    public abstract ZonedDateTime createdAt();
 
 }

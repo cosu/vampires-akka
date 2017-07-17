@@ -29,7 +29,7 @@ package ro.cosu.vampires.server.values.resources;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -49,8 +49,8 @@ public abstract class Configuration implements Id {
                 .id(UUID.randomUUID().toString())
                 .description("")
                 .cost(0.)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now());
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now());
     }
 
     public static Configuration fromPayload(ConfigurationPayload payload) {
@@ -82,10 +82,10 @@ public abstract class Configuration implements Id {
     public abstract String id();
 
     @Override
-    public abstract LocalDateTime createdAt();
+    public abstract ZonedDateTime createdAt();
 
     @Override
-    public abstract LocalDateTime updatedAt();
+    public abstract ZonedDateTime updatedAt();
 
     public abstract String description();
 
@@ -113,9 +113,9 @@ public abstract class Configuration implements Id {
 
         public abstract Builder description(String format);
 
-        public abstract Builder createdAt(LocalDateTime createdAt);
+        public abstract Builder createdAt(ZonedDateTime createdAt);
 
-        public abstract Builder updatedAt(LocalDateTime createdAt);
+        public abstract Builder updatedAt(ZonedDateTime createdAt);
 
         public abstract Builder cost(Double cost);
 

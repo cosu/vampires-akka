@@ -26,12 +26,12 @@
 
 package ro.cosu.vampires.server.values;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 public interface Id {
     String id();
 
-    LocalDateTime createdAt();
+    ZonedDateTime createdAt();
 
-    LocalDateTime updatedAt();
+    ZonedDateTime updatedAt();
 }

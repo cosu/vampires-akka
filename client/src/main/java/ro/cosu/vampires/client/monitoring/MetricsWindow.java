@@ -34,7 +34,7 @@ import com.google.common.collect.ImmutableMap;
 
 import com.codahale.metrics.Gauge;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -46,14 +46,14 @@ import ro.cosu.vampires.server.values.jobs.metrics.Metric;
 public class MetricsWindow {
 
     private int MAX_JOB_LENGTH = 5;
-    private ConcurrentSkipListMap<LocalDateTime, ImmutableMap<String, Double>> metricWindow =
+    private ConcurrentSkipListMap<ZonedDateTime, ImmutableMap<String, Double>> metricWindow =
             new ConcurrentSkipListMap<>();
 
-    private Cache<LocalDateTime, Object> cache = CacheBuilder.newBuilder()
+    private Cache<ZonedDateTime, Object> cache = CacheBuilder.newBuilder()
             .expireAfterWrite(MAX_JOB_LENGTH, TimeUnit.MINUTES)
             .removalListener(notification -> {
-                if (notification.getKey() != null && notification.getKey() instanceof LocalDateTime) {
-                    LocalDateTime key = (LocalDateTime) notification.getKey();
+                if (notification.getKey() != null && notification.getKey() instanceof ZonedDateTime) {
+                    ZonedDateTime key = (ZonedDateTime) notification.getKey();
                     metricWindow.remove(key);
                 }
             }).build();
@@ -89,12 +89,12 @@ public class MetricsWindow {
         return builder.build();
     }
 
-    public void add(LocalDateTime time, SortedMap<String, Gauge> metrics) {
+    public void add(ZonedDateTime time, SortedMap<String, Gauge> metrics) {
         metricWindow.put(time, convertGaugesToDouble(metrics));
         cache.put(time, time);
     }
 
-    public ImmutableList<Metric> getInterval(LocalDateTime start, LocalDateTime stop) {
+    public ImmutableList<Metric> getInterval(ZonedDateTime start, ZonedDateTime stop) {
         List<Metric> metricList = metricWindow.subMap(start, stop).entrySet().stream().map(
                 entry -> Metric.builder()
                         .time(entry.getKey())

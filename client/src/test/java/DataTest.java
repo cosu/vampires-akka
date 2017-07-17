@@ -40,14 +40,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import ro.cosu.vampires.server.util.gson.AutoValueAdapterFactory;
 import ro.cosu.vampires.server.util.gson.ImmutableListTypeAdapterFactory;
 import ro.cosu.vampires.server.util.gson.ImmutableMapTypeAdapterFactory;
 import ro.cosu.vampires.server.writers.json.AllResults;
-import ro.cosu.vampires.server.writers.json.LocalDateTimeDeserializer;
-import ro.cosu.vampires.server.writers.json.LocalDateTimeSerializer;
+import ro.cosu.vampires.server.writers.json.ZonedDateTimeDeserializer;
+import ro.cosu.vampires.server.writers.json.ZonedDateTimeSerializer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNot.not;
@@ -59,8 +59,8 @@ public class DataTest {
 
     private static AllResults loadFromJson(File jsonFile) throws FileNotFoundException {
         Gson gson = new GsonBuilder().setPrettyPrinting()
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())
-                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer())
+                .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeSerializer())
+                .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeDeserializer())
                 .registerTypeAdapterFactory(new AutoValueAdapterFactory())
                 .registerTypeAdapterFactory(new ImmutableMapTypeAdapterFactory())
                 .registerTypeAdapterFactory(new ImmutableListTypeAdapterFactory())

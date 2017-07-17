@@ -30,8 +30,11 @@ import com.google.inject.Scopes;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Named;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.PropertiesCredentials;
-import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.ec2.AmazonEC2;
+import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.typesafe.config.Config;
 
 import org.slf4j.Logger;
@@ -49,13 +52,15 @@ import ro.cosu.vampires.server.resources.ResourceProvider;
 public class EC2ResourceModule extends AbstractModule {
     private static final Logger LOG = LoggerFactory.getLogger(EC2ResourceModule.class);
 
-    protected static AmazonEC2Client getAmazonEC2Client(String credentialsFile) {
-        AmazonEC2Client amazonEC2Client = null;
+    protected static AmazonEC2 getAmazonEC2Client(String credentialsFile) {
+        AmazonEC2 amazonEC2Client = null;
 
         LOG.debug("reading credentials  AWS from {}", credentialsFile);
         try {
             PropertiesCredentials credentials = new PropertiesCredentials(new FileInputStream(credentialsFile));
-            amazonEC2Client = new AmazonEC2Client(credentials);
+            amazonEC2Client = AmazonEC2ClientBuilder.standard()
+                    .withRegion(Regions.DEFAULT_REGION)
+                    .withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
 
         } catch (IllegalArgumentException e) {
             LOG.error("Invalid EC2 file format", e);
@@ -77,8 +82,8 @@ public class EC2ResourceModule extends AbstractModule {
 
     @Provides
     @Nullable
-    private AmazonEC2Client provideAmazonEc2(@Named("Config") Config config) {
-        AmazonEC2Client amazonEC2Client = null;
+    private AmazonEC2 provideAmazonEc2(@Named("Config") Config config) {
+        AmazonEC2 amazonEC2Client = null;
         if (config.hasPath("resources.ec2.credentialsFile")) {
             String credentialsFile = config.getString("resources.ec2.credentialsFile");
             amazonEC2Client = getAmazonEC2Client(credentialsFile);

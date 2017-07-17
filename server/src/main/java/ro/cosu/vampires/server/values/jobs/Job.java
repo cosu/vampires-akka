@@ -29,7 +29,8 @@ package ro.cosu.vampires.server.values.jobs;
 import com.google.auto.value.AutoValue;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.util.gson.AutoGson;
@@ -54,7 +55,7 @@ public abstract class Job implements Serializable {
 
     public static Builder builder() {
         return new AutoValue_Job.Builder()
-                .created(LocalDateTime.now())
+                .created(ZonedDateTime.now(ZoneOffset.UTC))
                 .id(UUID.randomUUID().toString())
                 .from("")
                 .status(JobStatus.NEW);
@@ -64,7 +65,7 @@ public abstract class Job implements Serializable {
 
     public abstract String from();
 
-    public abstract LocalDateTime created();
+    public abstract ZonedDateTime created();
 
     public abstract JobStatus status();
 
@@ -106,7 +107,7 @@ public abstract class Job implements Serializable {
 
         public abstract Builder hostMetrics(Metrics metrics);
 
-        public abstract Builder created(LocalDateTime created);
+        public abstract Builder created(ZonedDateTime created);
 
         public abstract Builder from(String from);
 

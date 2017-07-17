@@ -30,7 +30,7 @@ import com.google.auto.value.AutoValue;
 import com.google.common.collect.Sets;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Set;
 
 import ro.cosu.vampires.server.util.gson.AutoGson;
@@ -40,7 +40,7 @@ import ro.cosu.vampires.server.util.gson.AutoGson;
 @AutoGson
 public abstract class Trace implements Serializable {
 
-    private static LocalDateTime emptyTime = LocalDateTime.parse("2000-01-01T00:00:00");
+    private static ZonedDateTime emptyTime = ZonedDateTime.parse("2000-01-01T00:00:00Z");
 
     public static Trace empty() {
         return builder().cpuSet(Sets.newHashSet())
@@ -61,9 +61,9 @@ public abstract class Trace implements Serializable {
         return new AutoValue_Trace.Builder();
     }
 
-    public abstract LocalDateTime start();
+    public abstract ZonedDateTime start();
 
-    public abstract LocalDateTime stop();
+    public abstract ZonedDateTime stop();
 
     public abstract Metrics executorMetrics();
 
@@ -82,9 +82,9 @@ public abstract class Trace implements Serializable {
 
         public abstract Builder cpuSet(Set<Integer> cpuSet);
 
-        public abstract Builder start(LocalDateTime start);
+        public abstract Builder start(ZonedDateTime start);
 
-        public abstract Builder stop(LocalDateTime stop);
+        public abstract Builder stop(ZonedDateTime stop);
 
         public abstract Builder totalCpuCount(int totalCpuCount);
 

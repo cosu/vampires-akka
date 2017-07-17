@@ -29,7 +29,7 @@ package ro.cosu.vampires.server.values;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 import ro.cosu.vampires.server.values.jobs.metrics.Trace;
@@ -42,8 +42,8 @@ public class TraceTest {
     @Test
     public void testWithNoMetrics() {
         Trace trace = Trace.withNoMetrics()
-                .start(LocalDateTime.now())
-                .stop(LocalDateTime.now())
+                .start(ZonedDateTime.now())
+                .stop(ZonedDateTime.now())
                 .cpuSet(Sets.newSet(1))
                 .totalCpuCount(1)
                 .executor("foo")

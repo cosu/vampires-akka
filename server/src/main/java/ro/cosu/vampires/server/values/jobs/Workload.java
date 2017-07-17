@@ -30,7 +30,7 @@ package ro.cosu.vampires.server.values.jobs;
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Splitter;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -47,8 +47,8 @@ public abstract class Workload implements Id {
 
     public static Workload.Builder builder() {
         return new AutoValue_Workload.Builder().id(UUID.randomUUID().toString())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now())
                 .format("")
                 .task("")
                 .description("")
@@ -77,10 +77,10 @@ public abstract class Workload implements Id {
     public abstract String id();
 
     @Override
-    public abstract LocalDateTime createdAt();
+    public abstract ZonedDateTime createdAt();
 
     @Override
-    public abstract LocalDateTime updatedAt();
+    public abstract ZonedDateTime updatedAt();
 
     public abstract int sequenceStart();
 
@@ -100,7 +100,7 @@ public abstract class Workload implements Id {
 
     public Builder update() {
         return toBuilder()
-                .updatedAt(LocalDateTime.now());
+                .updatedAt(ZonedDateTime.now());
     }
 
     public int size() {
@@ -138,9 +138,9 @@ public abstract class Workload implements Id {
 
         public abstract Builder sequenceStart(int sequenceStrat);
 
-        public abstract Builder createdAt(LocalDateTime createdAt);
+        public abstract Builder createdAt(ZonedDateTime createdAt);
 
-        public abstract Builder updatedAt(LocalDateTime createdAt);
+        public abstract Builder updatedAt(ZonedDateTime createdAt);
 
         public abstract Builder sequenceStop(int sequenceStop);
 

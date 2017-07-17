@@ -47,7 +47,7 @@ public class MongoWriter implements ResultsWriter {
     protected static Morphia getMorphia() {
         Morphia morphia = new Morphia();
         morphia.mapPackage("ro.cosu.vampires.server.writers.mongo");
-        morphia.getMapper().getConverters().addConverter(LocalDateTimeConverter.class);
+        morphia.getMapper().getConverters().addConverter(ZonedDateTimeConverter.class);
         return morphia;
     }
 
