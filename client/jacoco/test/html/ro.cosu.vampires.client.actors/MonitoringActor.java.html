@@ -32,7 +32,7 @@ import com.google.common.collect.ImmutableMap;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.SortedMap;
 
@@ -80,7 +80,7 @@ public class MonitoringActor extends UntypedActor {
 <span class="fc" id="L80">    }</span>
 
     private void recordMetrics() {
-<span class="fc" id="L83">        LocalDateTime now = LocalDateTime.now();</span>
+<span class="fc" id="L83">        ZonedDateTime now = ZonedDateTime.now();</span>
 <span class="fc" id="L84">        metricsWindow.add(now, gauges);</span>
 <span class="fc" id="L85">    }</span>
 
@@ -101,7 +101,7 @@ public class MonitoringActor extends UntypedActor {
             // the client will ask for metrics to send to the server at boot time
 <span class="fc" id="L102">            log.debug(&quot;got metrics request &quot;);</span>
 <span class="fc" id="L103">            ImmutableList&lt;Metric&gt; interval = metricsWindow.getInterval(</span>
-<span class="fc" id="L104">                    LocalDateTime.now().minus(MONITORING_INTERVAL_MILLIS, ChronoUnit.MILLIS), LocalDateTime.now());</span>
+<span class="fc" id="L104">                    ZonedDateTime.now().minus(MONITORING_INTERVAL_MILLIS, ChronoUnit.MILLIS), ZonedDateTime.now());</span>
 <span class="fc" id="L105">            Metrics metrics = Metrics.builder().metadata(getHostMetrics()).metrics(interval).build();</span>
 <span class="fc" id="L106">            getSender().tell(metrics, getSelf());</span>
 <span class="fc" id="L107">        } else {</span>

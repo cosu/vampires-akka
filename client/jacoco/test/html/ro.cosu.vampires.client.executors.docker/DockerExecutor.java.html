@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -104,13 +104,13 @@ import ro.cosu.vampires.server.values.jobs.metrics.Trace;
 <span class="fc" id="L104">        acquireResources();</span>
 <span class="fc" id="L105">        createContainer(computation.command().split(&quot; &quot;));</span>
 <span class="fc" id="L106">        LOG.info(&quot;running docker job {}&quot;, computation);</span>
-<span class="fc" id="L107">        LocalDateTime start = LocalDateTime.now();</span>
+<span class="fc" id="L107">        ZonedDateTime start = ZonedDateTime.now();</span>
 <span class="fc" id="L108">        dockerClient.startContainerCmd(containerId).exec();</span>
 <span class="fc" id="L109">        executorMetricsCollector.startMonitoring(containerId);</span>
 <span class="fc" id="L110">        int exitCode = dockerClient.waitContainerCmd(containerId).exec(new WaitContainerResultCallback())</span>
 <span class="fc" id="L111">                .awaitStatusCode();</span>
 
-<span class="fc" id="L113">        LocalDateTime stop = LocalDateTime.now();</span>
+<span class="fc" id="L113">        ZonedDateTime stop = ZonedDateTime.now();</span>
 <span class="fc" id="L114">        List&lt;String&gt; output = Collections.emptyList();</span>
         try {
 <span class="fc" id="L116">            output = getOutput();</span>
@@ -145,7 +145,7 @@ import ro.cosu.vampires.server.values.jobs.metrics.Trace;
 <span class="fc" id="L145">                .map(Arrays::asList).orElse(Collections.emptyList());</span>
     }
 
-    private Trace getTrace(LocalDateTime start, LocalDateTime stop) {
+    private Trace getTrace(ZonedDateTime start, ZonedDateTime stop) {
 <span class="fc" id="L149">        final Trace.Builder builder = Trace.builder()</span>
 <span class="fc" id="L150">                .executorMetrics(executorMetricsCollector.getMetrics())</span>
 <span class="fc" id="L151">                .executor(getType().toString())</span>

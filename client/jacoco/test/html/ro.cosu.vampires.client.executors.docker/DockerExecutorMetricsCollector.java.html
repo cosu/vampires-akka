@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -75,7 +75,7 @@ import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 //        data.putAll(flattenMap(&quot;io&quot;, stat.getBlkioStats()));
 <span class="fc" id="L76">        data.putAll(flattenMap(&quot;cpu&quot;, stat.getCpuStats()));</span>
 
-<span class="fc" id="L78">        return Metric.builder().values(ImmutableMap.copyOf(data)).time(LocalDateTime.now()).build();</span>
+<span class="fc" id="L78">        return Metric.builder().values(ImmutableMap.copyOf(data)).time(ZonedDateTime.now()).build();</span>
     }
 
     @SuppressWarnings(&quot;unchecked&quot;)

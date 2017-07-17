@@ -34,7 +34,7 @@ import com.google.common.collect.ImmutableMap;
 
 import com.codahale.metrics.Gauge;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -46,14 +46,14 @@ import ro.cosu.vampires.server.values.jobs.metrics.Metric;
 <span class="fc" id="L46">public class MetricsWindow {</span>
 
 <span class="fc" id="L48">    private int MAX_JOB_LENGTH = 5;</span>
-<span class="fc" id="L49">    private ConcurrentSkipListMap&lt;LocalDateTime, ImmutableMap&lt;String, Double&gt;&gt; metricWindow =</span>
+<span class="fc" id="L49">    private ConcurrentSkipListMap&lt;ZonedDateTime, ImmutableMap&lt;String, Double&gt;&gt; metricWindow =</span>
             new ConcurrentSkipListMap&lt;&gt;();
 
-<span class="fc" id="L52">    private Cache&lt;LocalDateTime, Object&gt; cache = CacheBuilder.newBuilder()</span>
+<span class="fc" id="L52">    private Cache&lt;ZonedDateTime, Object&gt; cache = CacheBuilder.newBuilder()</span>
 <span class="fc" id="L53">            .expireAfterWrite(MAX_JOB_LENGTH, TimeUnit.MINUTES)</span>
 <span class="fc" id="L54">            .removalListener(notification -&gt; {</span>
-<span class="pc bpc" id="L55" title="2 of 4 branches missed.">                if (notification.getKey() != null &amp;&amp; notification.getKey() instanceof LocalDateTime) {</span>
-<span class="fc" id="L56">                    LocalDateTime key = (LocalDateTime) notification.getKey();</span>
+<span class="pc bpc" id="L55" title="2 of 4 branches missed.">                if (notification.getKey() != null &amp;&amp; notification.getKey() instanceof ZonedDateTime) {</span>
+<span class="fc" id="L56">                    ZonedDateTime key = (ZonedDateTime) notification.getKey();</span>
 <span class="fc" id="L57">                    metricWindow.remove(key);</span>
                 }
 <span class="fc" id="L59">            }).build();</span>
@@ -89,12 +89,12 @@ import ro.cosu.vampires.server.values.jobs.metrics.Metric;
 <span class="fc" id="L89">        return builder.build();</span>
     }
 
-    public void add(LocalDateTime time, SortedMap&lt;String, Gauge&gt; metrics) {
+    public void add(ZonedDateTime time, SortedMap&lt;String, Gauge&gt; metrics) {
 <span class="fc" id="L93">        metricWindow.put(time, convertGaugesToDouble(metrics));</span>
 <span class="fc" id="L94">        cache.put(time, time);</span>
 <span class="fc" id="L95">    }</span>
 
-    public ImmutableList&lt;Metric&gt; getInterval(LocalDateTime start, LocalDateTime stop) {
+    public ImmutableList&lt;Metric&gt; getInterval(ZonedDateTime start, ZonedDateTime stop) {
 <span class="fc" id="L98">        List&lt;Metric&gt; metricList = metricWindow.subMap(start, stop).entrySet().stream().map(</span>
 <span class="fc" id="L99">                entry -&gt; Metric.builder()</span>
 <span class="fc" id="L100">                        .time(entry.getKey())</span>

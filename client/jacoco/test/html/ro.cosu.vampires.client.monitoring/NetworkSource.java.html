@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.hardware.NetworkIF;
@@ -103,13 +103,13 @@ public class NetworkSource implements Source {
 
 <span class="fc" id="L104">        return new Gauge&lt;Long&gt;() {</span>
 <span class="fc" id="L105">            long previousValue = iface.getBytesRecv();</span>
-<span class="fc" id="L106">            LocalDateTime previousSample = LocalDateTime.now();</span>
+<span class="fc" id="L106">            ZonedDateTime previousSample = ZonedDateTime.now();</span>
 
             @Override
             public Long getValue() {
 <span class="fc" id="L110">                LinuxNetworks.updateNetworkStats(iface);</span>
 <span class="fc" id="L111">                previousValue = iface.getBytesSent();</span>
-<span class="fc" id="L112">                Duration between = Duration.between(previousSample, LocalDateTime.now());</span>
+<span class="fc" id="L112">                Duration between = Duration.between(previousSample, ZonedDateTime.now());</span>
 <span class="fc" id="L113">                double delta = iface.getBytesSent() - previousValue;</span>
 <span class="pc bpc" id="L114" title="1 of 2 branches missed.">                return (delta &gt; 0) ? Math.round(delta / between.toMillis() * 1000) : 0;</span>
 
@@ -121,13 +121,13 @@ public class NetworkSource implements Source {
 
 <span class="fc" id="L122">        return new Gauge&lt;Long&gt;() {</span>
 <span class="fc" id="L123">            long previousValue = iface.getBytesRecv();</span>
-<span class="fc" id="L124">            LocalDateTime previousSample = LocalDateTime.now();</span>
+<span class="fc" id="L124">            ZonedDateTime previousSample = ZonedDateTime.now();</span>
 
             @Override
             public Long getValue() {
 <span class="fc" id="L128">                LinuxNetworks.updateNetworkStats(iface);</span>
 
-<span class="fc" id="L130">                Duration between = Duration.between(previousSample, LocalDateTime.now());</span>
+<span class="fc" id="L130">                Duration between = Duration.between(previousSample, ZonedDateTime.now());</span>
 <span class="fc" id="L131">                double delta = iface.getBytesRecv() - previousValue;</span>
 <span class="fc" id="L132">                previousValue = iface.getBytesRecv();</span>
 <span class="pc bpc" id="L133" title="1 of 2 branches missed.">                return (delta &gt; 0) ? Math.round(delta / between.toMillis() * 1000) : 0;</span>
