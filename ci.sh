@@ -18,7 +18,7 @@ export VAMPIRES_CLIENT="client/build/install/client/scripts/vampires.sh 127.0.0.
 ${VAMPIRES_HOME}/scripts/vampires_server.sh conf/local.conf local&
 
 
-sleep 5
+sleep 15
 
 exec_id=$(./server/scripts/all.sh  |grep execution | awk ' {print $2}')
 
