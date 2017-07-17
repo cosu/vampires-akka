@@ -30,7 +30,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.io.Resources;
 
-import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.model.CreateTagsRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
@@ -53,11 +53,11 @@ public class EC2Resource extends AbstractResource {
     private static final int TRY_INTERVAL_MILLI = 2000;
 
 
-    private final AmazonEC2Client amazonEC2Client;
+    private final AmazonEC2 amazonEC2Client;
     private final EC2ResourceParameters parameters;
     private String instanceId;
 
-    public EC2Resource(EC2ResourceParameters parameters, AmazonEC2Client amazonEC2Client) {
+    public EC2Resource(EC2ResourceParameters parameters, AmazonEC2 amazonEC2Client) {
 <span class="fc" id="L61">        super(parameters);</span>
 <span class="fc" id="L62">        this.amazonEC2Client = amazonEC2Client;</span>
 <span class="fc" id="L63">        this.parameters = parameters;</span>

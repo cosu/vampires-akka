@@ -31,7 +31,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.resources.Resource;
@@ -45,8 +45,8 @@ import ro.cosu.vampires.server.values.Id;
 
     public static ProviderDescription.Builder builder() {
 <span class="fc" id="L47">        return new AutoValue_ProviderDescription.Builder()</span>
-<span class="fc" id="L48">                .createdAt(LocalDateTime.now())</span>
-<span class="fc" id="L49">                .updatedAt(LocalDateTime.now());</span>
+<span class="fc" id="L48">                .createdAt(ZonedDateTime.now())</span>
+<span class="fc" id="L49">                .updatedAt(ZonedDateTime.now());</span>
     }
 
     public abstract Resource.ProviderType provider();
@@ -63,10 +63,10 @@ import ro.cosu.vampires.server.values.Id;
     public abstract String id();
 
     @Override
-    public abstract LocalDateTime createdAt();
+    public abstract ZonedDateTime createdAt();
 
     @Override
-    public abstract LocalDateTime updatedAt();
+    public abstract ZonedDateTime updatedAt();
 
     @AutoValue.Builder
 <span class="fc" id="L72">    public static abstract class Builder {</span>
@@ -80,9 +80,9 @@ import ro.cosu.vampires.server.values.Id;
 
         public abstract Builder id(String id);
 
-        public abstract Builder createdAt(LocalDateTime createdAt);
+        public abstract Builder createdAt(ZonedDateTime createdAt);
 
-        public abstract Builder updatedAt(LocalDateTime createdAt);
+        public abstract Builder updatedAt(ZonedDateTime createdAt);
 
         abstract ProviderDescription autoBuild();
 

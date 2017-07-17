@@ -30,8 +30,11 @@ import com.google.inject.Scopes;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Named;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.PropertiesCredentials;
-import com.amazonaws.services.ec2.AmazonEC2Client;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.ec2.AmazonEC2;
+import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.typesafe.config.Config;
 
 import org.slf4j.Logger;
@@ -46,44 +49,46 @@ import javax.annotation.Nullable;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceProvider;
 
-<span class="fc" id="L49">public class EC2ResourceModule extends AbstractModule {</span>
-<span class="fc" id="L50">    private static final Logger LOG = LoggerFactory.getLogger(EC2ResourceModule.class);</span>
+<span class="fc" id="L52">public class EC2ResourceModule extends AbstractModule {</span>
+<span class="fc" id="L53">    private static final Logger LOG = LoggerFactory.getLogger(EC2ResourceModule.class);</span>
 
-    protected static AmazonEC2Client getAmazonEC2Client(String credentialsFile) {
-<span class="fc" id="L53">        AmazonEC2Client amazonEC2Client = null;</span>
+    protected static AmazonEC2 getAmazonEC2Client(String credentialsFile) {
+<span class="fc" id="L56">        AmazonEC2 amazonEC2Client = null;</span>
 
-<span class="fc" id="L55">        LOG.debug(&quot;reading credentials  AWS from {}&quot;, credentialsFile);</span>
+<span class="fc" id="L58">        LOG.debug(&quot;reading credentials  AWS from {}&quot;, credentialsFile);</span>
         try {
-<span class="fc" id="L57">            PropertiesCredentials credentials = new PropertiesCredentials(new FileInputStream(credentialsFile));</span>
-<span class="fc" id="L58">            amazonEC2Client = new AmazonEC2Client(credentials);</span>
+<span class="fc" id="L60">            PropertiesCredentials credentials = new PropertiesCredentials(new FileInputStream(credentialsFile));</span>
+<span class="fc" id="L61">            amazonEC2Client = AmazonEC2ClientBuilder.standard()</span>
+<span class="fc" id="L62">                    .withRegion(Regions.DEFAULT_REGION)</span>
+<span class="fc" id="L63">                    .withCredentials(new AWSStaticCredentialsProvider(credentials)).build();</span>
 
-<span class="fc" id="L60">        } catch (IllegalArgumentException e) {</span>
-<span class="fc" id="L61">            LOG.error(&quot;Invalid EC2 file format&quot;, e);</span>
-<span class="fc" id="L62">        } catch (FileNotFoundException e) {</span>
-<span class="fc" id="L63">            LOG.error(&quot;could not find ec2 credentials file: &quot; + credentialsFile);</span>
-<span class="nc" id="L64">        } catch (IOException e) {</span>
-<span class="nc" id="L65">            LOG.error(&quot;failed to create amazon client&quot;, e);</span>
-<span class="fc" id="L66">        }</span>
+<span class="fc" id="L65">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L66">            LOG.error(&quot;Invalid EC2 file format&quot;, e);</span>
+<span class="fc" id="L67">        } catch (FileNotFoundException e) {</span>
+<span class="fc" id="L68">            LOG.error(&quot;could not find ec2 credentials file: &quot; + credentialsFile);</span>
+<span class="nc" id="L69">        } catch (IOException e) {</span>
+<span class="nc" id="L70">            LOG.error(&quot;failed to create amazon client&quot;, e);</span>
+<span class="fc" id="L71">        }</span>
 
-<span class="fc" id="L68">        return amazonEC2Client;</span>
+<span class="fc" id="L73">        return amazonEC2Client;</span>
     }
 
     @Override
     protected void configure() {
-<span class="fc" id="L73">        MapBinder&lt;Resource.ProviderType, ResourceProvider&gt; mapbinder</span>
-<span class="fc" id="L74">                = MapBinder.newMapBinder(binder(), Resource.ProviderType.class, ResourceProvider.class);</span>
-<span class="fc" id="L75">        mapbinder.addBinding(Resource.ProviderType.EC2).to(EC2ResourceProvider.class).in(Scopes.SINGLETON);</span>
-<span class="fc" id="L76">    }</span>
+<span class="fc" id="L78">        MapBinder&lt;Resource.ProviderType, ResourceProvider&gt; mapbinder</span>
+<span class="fc" id="L79">                = MapBinder.newMapBinder(binder(), Resource.ProviderType.class, ResourceProvider.class);</span>
+<span class="fc" id="L80">        mapbinder.addBinding(Resource.ProviderType.EC2).to(EC2ResourceProvider.class).in(Scopes.SINGLETON);</span>
+<span class="fc" id="L81">    }</span>
 
     @Provides
     @Nullable
-    private AmazonEC2Client provideAmazonEc2(@Named(&quot;Config&quot;) Config config) {
-<span class="fc" id="L81">        AmazonEC2Client amazonEC2Client = null;</span>
-<span class="pc bpc" id="L82" title="1 of 2 branches missed.">        if (config.hasPath(&quot;resources.ec2.credentialsFile&quot;)) {</span>
-<span class="nc" id="L83">            String credentialsFile = config.getString(&quot;resources.ec2.credentialsFile&quot;);</span>
-<span class="nc" id="L84">            amazonEC2Client = getAmazonEC2Client(credentialsFile);</span>
+    private AmazonEC2 provideAmazonEc2(@Named(&quot;Config&quot;) Config config) {
+<span class="fc" id="L86">        AmazonEC2 amazonEC2Client = null;</span>
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">        if (config.hasPath(&quot;resources.ec2.credentialsFile&quot;)) {</span>
+<span class="nc" id="L88">            String credentialsFile = config.getString(&quot;resources.ec2.credentialsFile&quot;);</span>
+<span class="nc" id="L89">            amazonEC2Client = getAmazonEC2Client(credentialsFile);</span>
         }
-<span class="fc" id="L86">        return amazonEC2Client;</span>
+<span class="fc" id="L91">        return amazonEC2Client;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

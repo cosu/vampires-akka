@@ -30,7 +30,7 @@ package ro.cosu.vampires.server.values.jobs;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.Sets;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 
 import ro.cosu.vampires.server.util.gson.AutoGson;
@@ -45,7 +45,7 @@ import ro.cosu.vampires.server.values.jobs.metrics.Stats;
 
     public static Builder builder() {
 <span class="fc" id="L47">        return new AutoValue_ExecutionInfo.Builder()</span>
-<span class="fc" id="L48">                .updatedAt(LocalDateTime.now());</span>
+<span class="fc" id="L48">                .updatedAt(ZonedDateTime.now());</span>
     }
 
     public static ExecutionInfo empty() {
@@ -63,7 +63,7 @@ import ro.cosu.vampires.server.values.jobs.metrics.Stats;
 
     public abstract Status status();
 
-    public abstract LocalDateTime updatedAt();
+    public abstract ZonedDateTime updatedAt();
 
     public abstract int failed();
 
@@ -80,7 +80,7 @@ import ro.cosu.vampires.server.values.jobs.metrics.Stats;
     public abstract Builder toBuilder();
 
     private Builder update() {
-<span class="fc" id="L83">        return toBuilder().updatedAt(LocalDateTime.now());</span>
+<span class="fc" id="L83">        return toBuilder().updatedAt(ZonedDateTime.now());</span>
     }
 
     public ExecutionInfo updateCompleted(int completed) {
@@ -135,7 +135,7 @@ import ro.cosu.vampires.server.values.jobs.metrics.Stats;
 
         public abstract Builder status(Status status);
 
-        public abstract Builder updatedAt(LocalDateTime createdAt);
+        public abstract Builder updatedAt(ZonedDateTime createdAt);
 
         public abstract Builder total(int i);
 

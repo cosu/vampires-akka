@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -66,7 +66,7 @@ import ro.cosu.vampires.server.values.jobs.metrics.ValueSnapshot;
 
 <span class="fc" id="L67">    private MetricRegistry metricRegistry = new MetricRegistry();</span>
 
-<span class="fc" id="L69">    private Map&lt;String, LocalDateTime&gt; clientsCreatedAt = Maps.newHashMap();</span>
+<span class="fc" id="L69">    private Map&lt;String, ZonedDateTime&gt; clientsCreatedAt = Maps.newHashMap();</span>
 <span class="fc" id="L70">    private Map&lt;String, ClientInfo&gt; clientsInfo = Maps.newHashMap();</span>
 <span class="fc" id="L71">    private Map&lt;String, ResourceInfo&gt; resourcesInfo = Maps.newHashMap();</span>
 
@@ -218,8 +218,8 @@ import ro.cosu.vampires.server.values.jobs.metrics.ValueSnapshot;
     }
 
     private Duration getDurationForClient(String id) {
-<span class="fc" id="L221">        LocalDateTime createdAt = clientsCreatedAt.get(id);</span>
-<span class="fc" id="L222">        LocalDateTime now = LocalDateTime.now();</span>
+<span class="fc" id="L221">        ZonedDateTime createdAt = clientsCreatedAt.get(id);</span>
+<span class="fc" id="L222">        ZonedDateTime now = ZonedDateTime.now();</span>
 
 <span class="fc" id="L224">        return Duration.between(createdAt, now);</span>
     }

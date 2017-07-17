@@ -29,7 +29,7 @@ package ro.cosu.vampires.server.values.jobs;
 
 import com.google.auto.value.AutoValue;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.util.gson.AutoGson;
@@ -42,8 +42,8 @@ import ro.cosu.vampires.server.values.resources.Configuration;
 
     public static Builder builder() {
 <span class="fc" id="L44">        return new AutoValue_Execution.Builder()</span>
-<span class="fc" id="L45">                .createdAt(LocalDateTime.now())</span>
-<span class="fc" id="L46">                .updatedAt(LocalDateTime.now())</span>
+<span class="fc" id="L45">                .createdAt(ZonedDateTime.now())</span>
+<span class="fc" id="L46">                .updatedAt(ZonedDateTime.now())</span>
 <span class="fc" id="L47">                .id(UUID.randomUUID().toString());</span>
     }
 
@@ -59,16 +59,16 @@ import ro.cosu.vampires.server.values.resources.Configuration;
     public abstract ExecutionInfo info();
 
     @Override
-    public abstract LocalDateTime createdAt();
+    public abstract ZonedDateTime createdAt();
 
     @Override
-    public abstract LocalDateTime updatedAt();
+    public abstract ZonedDateTime updatedAt();
 
     public abstract Builder toBuilder();
 
     public Execution withInfo(ExecutionInfo info) {
 <span class="fc" id="L70">        return toBuilder()</span>
-<span class="fc" id="L71">                .updatedAt(LocalDateTime.now())</span>
+<span class="fc" id="L71">                .updatedAt(ZonedDateTime.now())</span>
 <span class="fc" id="L72">                .info(info).build();</span>
     }
 
@@ -85,9 +85,9 @@ import ro.cosu.vampires.server.values.resources.Configuration;
 
         public abstract Builder info(ExecutionInfo status);
 
-        public abstract Builder createdAt(LocalDateTime createdAt);
+        public abstract Builder createdAt(ZonedDateTime createdAt);
 
-        public abstract Builder updatedAt(LocalDateTime createdAt);
+        public abstract Builder updatedAt(ZonedDateTime createdAt);
 
         public abstract Execution build();
 

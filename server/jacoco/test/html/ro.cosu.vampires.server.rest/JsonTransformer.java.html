@@ -30,14 +30,14 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import ro.cosu.vampires.server.util.gson.AutoValueAdapterFactory;
 import ro.cosu.vampires.server.util.gson.ImmutableListTypeAdapterFactory;
 import ro.cosu.vampires.server.util.gson.ImmutableMapTypeAdapterFactory;
 import ro.cosu.vampires.server.util.gson.LowercaseEnumTypeAdapterFactory;
-import ro.cosu.vampires.server.writers.json.LocalDateTimeDeserializer;
-import ro.cosu.vampires.server.writers.json.LocalDateTimeSerializer;
+import ro.cosu.vampires.server.writers.json.ZonedDateTimeDeserializer;
+import ro.cosu.vampires.server.writers.json.ZonedDateTimeSerializer;
 import spark.ResponseTransformer;
 
 
@@ -45,8 +45,8 @@ import spark.ResponseTransformer;
 
 <span class="fc" id="L46">    private Gson gson = new GsonBuilder().setPrettyPrinting()</span>
 <span class="fc" id="L47">            .registerTypeAdapterFactory(new AutoValueAdapterFactory())</span>
-<span class="fc" id="L48">            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeSerializer())</span>
-<span class="fc" id="L49">            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer())</span>
+<span class="fc" id="L48">            .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeSerializer())</span>
+<span class="fc" id="L49">            .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeDeserializer())</span>
 <span class="fc" id="L50">            .registerTypeAdapterFactory(new ImmutableListTypeAdapterFactory())</span>
 <span class="fc" id="L51">            .registerTypeAdapterFactory(new ImmutableMapTypeAdapterFactory())</span>
 <span class="fc" id="L52">            .registerTypeAdapterFactory(new AutoValueAdapterFactory())</span>

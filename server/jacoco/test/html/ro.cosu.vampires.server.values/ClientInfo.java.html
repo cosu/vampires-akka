@@ -29,7 +29,7 @@ package ro.cosu.vampires.server.values;
 import com.google.auto.value.AutoValue;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Map;
 
 import ro.cosu.vampires.server.util.gson.AutoGson;
@@ -41,12 +41,12 @@ import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 <span class="fc" id="L41">public abstract class ClientInfo implements Serializable {</span>
 
     public static Builder builder() {
-<span class="fc" id="L44">        return new AutoValue_ClientInfo.Builder().start(LocalDateTime.now());</span>
+<span class="fc" id="L44">        return new AutoValue_ClientInfo.Builder().start(ZonedDateTime.now());</span>
     }
 
     public abstract String id();
 
-    public abstract LocalDateTime start();
+    public abstract ZonedDateTime start();
 
     public abstract Map&lt;String, Integer&gt; executors();
 
@@ -55,7 +55,7 @@ import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
     @AutoValue.Builder
 <span class="fc" id="L56">    public abstract static class Builder {</span>
 
-        public abstract Builder start(LocalDateTime start);
+        public abstract Builder start(ZonedDateTime start);
 
         public abstract Builder executors(Map&lt;String, Integer&gt; executors);
 

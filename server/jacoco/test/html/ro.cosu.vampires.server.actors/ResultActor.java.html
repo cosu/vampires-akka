@@ -27,7 +27,7 @@
 package ro.cosu.vampires.server.actors;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -57,7 +57,7 @@ import ro.cosu.vampires.server.writers.ResultsWriter;
 public class ResultActor extends AbstractActor {
 <span class="fc" id="L58">    private final SettingsImpl settings =</span>
 <span class="fc" id="L59">            Settings.SettingsProvider.get(getContext().system());</span>
-<span class="fc" id="L60">    private final LocalDateTime startTime = LocalDateTime.now();</span>
+<span class="fc" id="L60">    private final ZonedDateTime startTime = ZonedDateTime.now();</span>
     private final Execution execution;
 
 <span class="fc" id="L63">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
@@ -145,7 +145,7 @@ public class ResultActor extends AbstractActor {
 <span class="fc" id="L145">                .updateCompleted(results.size())</span>
 <span class="fc" id="L146">                .updateStatus(status)</span>
 <span class="fc" id="L147">                .updateStats(statsProcessor.getStats())</span>
-<span class="fc" id="L148">                .updateElapsed(Duration.between(startTime, LocalDateTime.now()).toMillis())</span>
+<span class="fc" id="L148">                .updateElapsed(Duration.between(startTime, ZonedDateTime.now()).toMillis())</span>
 <span class="fc" id="L149">                .updateRemaining(totalSize - results.size());</span>
 
 <span class="fc" id="L151">        Execution execution = this.execution.withInfo(executionInfo);</span>
@@ -177,7 +177,7 @@ public class ResultActor extends AbstractActor {
 <span class="fc" id="L177">    }</span>
 
     private void shutdown(ExecutionInfo.Status status) {
-<span class="fc" id="L180">        log.info(&quot;Total Duration: {}&quot;, formatDuration(Duration.between(startTime, LocalDateTime.now())));</span>
+<span class="fc" id="L180">        log.info(&quot;Total Duration: {}&quot;, formatDuration(Duration.between(startTime, ZonedDateTime.now())));</span>
 <span class="fc" id="L181">        log.info(&quot;shutting down&quot;);</span>
 <span class="fc" id="L182">        writers.forEach(ResultsWriter::close);</span>
         // init shutdown

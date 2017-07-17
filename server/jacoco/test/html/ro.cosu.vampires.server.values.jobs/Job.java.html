@@ -29,7 +29,8 @@ package ro.cosu.vampires.server.values.jobs;
 import com.google.auto.value.AutoValue;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.util.gson.AutoGson;
@@ -37,34 +38,34 @@ import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 
 @AutoValue
 @AutoGson
-<span class="fc" id="L40">public abstract class Job implements Serializable {</span>
+<span class="fc" id="L41">public abstract class Job implements Serializable {</span>
 
 
     public static Job empty() {
-<span class="fc" id="L44">        return builder().computation(Computation.empty())</span>
-<span class="fc" id="L45">                .hostMetrics(Metrics.empty())</span>
-<span class="fc" id="L46">                .result(Result.empty()).build();</span>
+<span class="fc" id="L45">        return builder().computation(Computation.empty())</span>
+<span class="fc" id="L46">                .hostMetrics(Metrics.empty())</span>
+<span class="fc" id="L47">                .result(Result.empty()).build();</span>
     }
 
     public static Job backoff(double backoffInterval) {
-<span class="fc" id="L50">        return builder().computation(Computation.backoff(backoffInterval))</span>
-<span class="fc" id="L51">                .hostMetrics(Metrics.empty())</span>
-<span class="fc" id="L52">                .result(Result.empty()).build();</span>
+<span class="fc" id="L51">        return builder().computation(Computation.backoff(backoffInterval))</span>
+<span class="fc" id="L52">                .hostMetrics(Metrics.empty())</span>
+<span class="fc" id="L53">                .result(Result.empty()).build();</span>
     }
 
     public static Builder builder() {
-<span class="fc" id="L56">        return new AutoValue_Job.Builder()</span>
-<span class="fc" id="L57">                .created(LocalDateTime.now())</span>
-<span class="fc" id="L58">                .id(UUID.randomUUID().toString())</span>
-<span class="fc" id="L59">                .from(&quot;&quot;)</span>
-<span class="fc" id="L60">                .status(JobStatus.NEW);</span>
+<span class="fc" id="L57">        return new AutoValue_Job.Builder()</span>
+<span class="fc" id="L58">                .created(ZonedDateTime.now(ZoneOffset.UTC))</span>
+<span class="fc" id="L59">                .id(UUID.randomUUID().toString())</span>
+<span class="fc" id="L60">                .from(&quot;&quot;)</span>
+<span class="fc" id="L61">                .status(JobStatus.NEW);</span>
     }
 
     public abstract String id();
 
     public abstract String from();
 
-    public abstract LocalDateTime created();
+    public abstract ZonedDateTime created();
 
     public abstract JobStatus status();
 
@@ -77,36 +78,36 @@ import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
     public abstract Builder toBuilder();
 
     public Job withCommand(String command) {
-<span class="fc" id="L80">        return toBuilder().computation(Computation.withCommand(command)).build();</span>
+<span class="fc" id="L81">        return toBuilder().computation(Computation.withCommand(command)).build();</span>
     }
 
     public Job from(String from) {
-<span class="fc" id="L84">        return toBuilder()</span>
-<span class="fc" id="L85">                .from(from)</span>
-<span class="fc" id="L86">                .build();</span>
+<span class="fc" id="L85">        return toBuilder()</span>
+<span class="fc" id="L86">                .from(from)</span>
+<span class="fc" id="L87">                .build();</span>
     }
 
     public Job withHostMetrics(Metrics metrics) {
-<span class="fc" id="L90">        return toBuilder().hostMetrics(metrics)</span>
-<span class="fc" id="L91">                .status(JobStatus.COMPLETE)</span>
-<span class="fc" id="L92">                .build();</span>
+<span class="fc" id="L91">        return toBuilder().hostMetrics(metrics)</span>
+<span class="fc" id="L92">                .status(JobStatus.COMPLETE)</span>
+<span class="fc" id="L93">                .build();</span>
     }
 
     public Job withResult(Result result) {
-<span class="fc" id="L96">        return toBuilder().result(result)</span>
-<span class="fc" id="L97">                .status(JobStatus.EXECUTED)</span>
-<span class="fc" id="L98">                .build();</span>
+<span class="fc" id="L97">        return toBuilder().result(result)</span>
+<span class="fc" id="L98">                .status(JobStatus.EXECUTED)</span>
+<span class="fc" id="L99">                .build();</span>
     }
 
     @AutoValue.Builder
-<span class="fc" id="L102">    public abstract static class Builder {</span>
+<span class="fc" id="L103">    public abstract static class Builder {</span>
         public abstract Builder computation(Computation computation);
 
         public abstract Builder result(Result result);
 
         public abstract Builder hostMetrics(Metrics metrics);
 
-        public abstract Builder created(LocalDateTime created);
+        public abstract Builder created(ZonedDateTime created);
 
         public abstract Builder from(String from);
 

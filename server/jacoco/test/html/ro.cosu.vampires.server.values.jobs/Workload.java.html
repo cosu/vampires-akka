@@ -30,7 +30,7 @@ package ro.cosu.vampires.server.values.jobs;
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Splitter;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -47,8 +47,8 @@ import ro.cosu.vampires.server.values.Id;
 
     public static Workload.Builder builder() {
 <span class="fc" id="L49">        return new AutoValue_Workload.Builder().id(UUID.randomUUID().toString())</span>
-<span class="fc" id="L50">                .createdAt(LocalDateTime.now())</span>
-<span class="fc" id="L51">                .updatedAt(LocalDateTime.now())</span>
+<span class="fc" id="L50">                .createdAt(ZonedDateTime.now())</span>
+<span class="fc" id="L51">                .updatedAt(ZonedDateTime.now())</span>
 <span class="fc" id="L52">                .format(&quot;&quot;)</span>
 <span class="fc" id="L53">                .task(&quot;&quot;)</span>
 <span class="fc" id="L54">                .description(&quot;&quot;)</span>
@@ -77,10 +77,10 @@ import ro.cosu.vampires.server.values.Id;
     public abstract String id();
 
     @Override
-    public abstract LocalDateTime createdAt();
+    public abstract ZonedDateTime createdAt();
 
     @Override
-    public abstract LocalDateTime updatedAt();
+    public abstract ZonedDateTime updatedAt();
 
     public abstract int sequenceStart();
 
@@ -100,7 +100,7 @@ import ro.cosu.vampires.server.values.Id;
 
     public Builder update() {
 <span class="fc" id="L102">        return toBuilder()</span>
-<span class="fc" id="L103">                .updatedAt(LocalDateTime.now());</span>
+<span class="fc" id="L103">                .updatedAt(ZonedDateTime.now());</span>
     }
 
     public int size() {
@@ -138,9 +138,9 @@ import ro.cosu.vampires.server.values.Id;
 
         public abstract Builder sequenceStart(int sequenceStrat);
 
-        public abstract Builder createdAt(LocalDateTime createdAt);
+        public abstract Builder createdAt(ZonedDateTime createdAt);
 
-        public abstract Builder updatedAt(LocalDateTime createdAt);
+        public abstract Builder updatedAt(ZonedDateTime createdAt);
 
         public abstract Builder sequenceStop(int sequenceStop);
 
