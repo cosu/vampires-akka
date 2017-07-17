@@ -2,27 +2,43 @@
 
 import com.google.auto.value.AutoValue;
 
-import java.time.ZonedDateTime;
+import java.time.Duration;
+import java.util.List;
 
 @AutoValue
-<span class="nc" id="L8">public abstract class ScalingStrategy {</span>
+<span class="nc" id="L9">public abstract class ScalingStrategy {</span>
+
+    /**
+     * The name of the strategy
+     * @return
+     */
+    public abstract String name();
+
+    /**
+     * The number of instances to scale up
+     * @return
+     */
     public abstract int limit();
+
+    /**
+     * Lis
+     * @return
+     */
     public abstract Threshold threshold();
 
     @AutoValue
-<span class="nc" id="L13">    public static abstract class Threshold {</span>
-
+<span class="nc" id="L30">    public static abstract class Threshold {</span>
+        public  abstract List&lt;Condition&gt;  conditions();
     }
 
-<span class="nc" id="L17">    public static abstract class  Condition {</span>
+    @AutoValue
+<span class="nc" id="L35">    public static abstract class  Condition {</span>
 
         public abstract String scope();
 
         public abstract double value();
 
-        public abstract ZonedDateTime startTime();
-
-        public abstract ZonedDateTime endTime();
+        public abstract Duration timeWindow();
 
         public abstract String aggregationFunction();
 
