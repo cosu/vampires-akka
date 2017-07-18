@@ -29,6 +29,7 @@ package ro.cosu.vampires.server.values.resources;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -41,41 +42,41 @@ import ro.cosu.vampires.server.values.jobs.ExecutionMode;
 
 @AutoValue
 @AutoGson
-<span class="fc" id="L44">public abstract class Configuration implements Id {</span>
+<span class="fc" id="L45">public abstract class Configuration implements Id {</span>
 
 
     public static Builder builder() {
-<span class="fc" id="L48">        return new AutoValue_Configuration.Builder()</span>
-<span class="fc" id="L49">                .id(UUID.randomUUID().toString())</span>
-<span class="fc" id="L50">                .description(&quot;&quot;)</span>
-<span class="fc" id="L51">                .cost(0.)</span>
-<span class="fc" id="L52">                .createdAt(ZonedDateTime.now())</span>
-<span class="fc" id="L53">                .updatedAt(ZonedDateTime.now());</span>
+<span class="fc" id="L49">        return new AutoValue_Configuration.Builder()</span>
+<span class="fc" id="L50">                .id(UUID.randomUUID().toString())</span>
+<span class="fc" id="L51">                .description(&quot;&quot;)</span>
+<span class="fc" id="L52">                .cost(0.)</span>
+<span class="fc" id="L53">                .createdAt(ZonedDateTime.now(ZoneOffset.UTC))</span>
+<span class="fc" id="L54">                .updatedAt(ZonedDateTime.now(ZoneOffset.UTC));</span>
     }
 
     public static Configuration fromPayload(ConfigurationPayload payload) {
-<span class="fc" id="L57">        return builder().description(payload.description())</span>
-<span class="fc" id="L58">                .resources(payload.resources()).build();</span>
+<span class="fc" id="L58">        return builder().description(payload.description())</span>
+<span class="fc" id="L59">                .resources(payload.resources()).build();</span>
     }
 
     public static Configuration empty() {
-<span class="nc" id="L62">        return builder().resources(ImmutableList.of()).build();</span>
+<span class="nc" id="L63">        return builder().resources(ImmutableList.of()).build();</span>
     }
 
     public Configuration updateFromPayload(ConfigurationPayload payload) {
-<span class="fc" id="L66">        Builder builder = toBuilder();</span>
-<span class="fc" id="L67">        Optional.ofNullable(payload.description())</span>
-<span class="fc" id="L68">                .ifPresent(builder::description);</span>
-<span class="fc" id="L69">        Optional.ofNullable(payload.resources())</span>
-<span class="fc" id="L70">                .ifPresent(builder::resources);</span>
+<span class="fc" id="L67">        Builder builder = toBuilder();</span>
+<span class="fc" id="L68">        Optional.ofNullable(payload.description())</span>
+<span class="fc" id="L69">                .ifPresent(builder::description);</span>
+<span class="fc" id="L70">        Optional.ofNullable(payload.resources())</span>
+<span class="fc" id="L71">                .ifPresent(builder::resources);</span>
 
-<span class="fc" id="L72">        return builder.build();</span>
+<span class="fc" id="L73">        return builder.build();</span>
     }
 
     public Configuration withResources(List&lt;ResourceDemand&gt; resourceDemands) {
-<span class="fc" id="L76">        double cost = resourceDemands.stream().map(rd -&gt; rd.resourceDescription().cost() * rd.count())</span>
-<span class="fc" id="L77">                .collect(Collectors.summingDouble(Double::doubleValue));</span>
-<span class="fc" id="L78">        return toBuilder().resources(ImmutableList.copyOf(resourceDemands)).cost(cost).build();</span>
+<span class="fc" id="L77">        double cost = resourceDemands.stream().map(rd -&gt; rd.resourceDescription().cost() * rd.count())</span>
+<span class="fc" id="L78">                .collect(Collectors.summingDouble(Double::doubleValue));</span>
+<span class="fc" id="L79">        return toBuilder().resources(ImmutableList.copyOf(resourceDemands)).cost(cost).build();</span>
     }
 
     @Override
@@ -96,16 +97,16 @@ import ro.cosu.vampires.server.values.jobs.ExecutionMode;
     public abstract Builder toBuilder();
 
     public Configuration withMode(ExecutionMode mode) {
-<span class="fc bfc" id="L99" title="All 2 branches covered.">        if (mode.equals(ExecutionMode.SAMPLE))</span>
-<span class="fc" id="L100">            return toBuilder().resources(</span>
-<span class="fc" id="L101">                    ImmutableList.copyOf(</span>
-<span class="fc" id="L102">                            resources().stream().map(r -&gt; r.withCount(1)</span>
-<span class="fc" id="L103">                            ).collect(Collectors.toList()))).build();</span>
-<span class="fc" id="L104">        else return this;</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        if (mode.equals(ExecutionMode.SAMPLE))</span>
+<span class="fc" id="L101">            return toBuilder().resources(</span>
+<span class="fc" id="L102">                    ImmutableList.copyOf(</span>
+<span class="fc" id="L103">                            resources().stream().map(r -&gt; r.withCount(1)</span>
+<span class="fc" id="L104">                            ).collect(Collectors.toList()))).build();</span>
+<span class="fc" id="L105">        else return this;</span>
     }
 
     @AutoValue.Builder
-<span class="fc" id="L108">    public abstract static class Builder {</span>
+<span class="fc" id="L109">    public abstract static class Builder {</span>
 
         public abstract Builder id(String id);
 

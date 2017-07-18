@@ -28,12 +28,13 @@ package ro.cosu.vampires.server.resources;
 
 import com.google.auto.value.AutoValue;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 @AutoValue
-<span class="fc" id="L34">public abstract class ResourceInfo {</span>
+<span class="fc" id="L35">public abstract class ResourceInfo {</span>
     public static ResourceInfo create(Resource.Parameters parameters, Resource.Status status) {
-<span class="fc" id="L36">        return new AutoValue_ResourceInfo(parameters, status, ZonedDateTime.now());</span>
+<span class="fc" id="L37">        return new AutoValue_ResourceInfo(parameters, status, ZonedDateTime.now(ZoneOffset.UTC));</span>
     }
 
     public abstract Resource.Parameters parameters();

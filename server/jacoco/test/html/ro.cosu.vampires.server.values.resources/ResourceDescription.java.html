@@ -29,6 +29,7 @@ package ro.cosu.vampires.server.values.resources;
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Charsets;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -39,12 +40,12 @@ import ro.cosu.vampires.server.values.Id;
 @AutoValue
 @AutoGson
 
-<span class="fc" id="L42">public abstract class ResourceDescription implements Id {</span>
+<span class="fc" id="L43">public abstract class ResourceDescription implements Id {</span>
 
     public static Builder builder() {
-<span class="fc" id="L45">        return new AutoValue_ResourceDescription.Builder()</span>
-<span class="fc" id="L46">                .createdAt(ZonedDateTime.now())</span>
-<span class="fc" id="L47">                .updatedAt(ZonedDateTime.now());</span>
+<span class="fc" id="L46">        return new AutoValue_ResourceDescription.Builder()</span>
+<span class="fc" id="L47">                .createdAt(ZonedDateTime.now(ZoneOffset.UTC))</span>
+<span class="fc" id="L48">                .updatedAt(ZonedDateTime.now(ZoneOffset.UTC));</span>
     }
 
     public abstract String type();
@@ -63,7 +64,7 @@ import ro.cosu.vampires.server.values.Id;
     public abstract ZonedDateTime updatedAt();
 
     @AutoValue.Builder
-<span class="fc" id="L66">    public static abstract class Builder {</span>
+<span class="fc" id="L67">    public static abstract class Builder {</span>
 
         public abstract Builder provider(Resource.ProviderType provider);
 
@@ -84,9 +85,9 @@ import ro.cosu.vampires.server.values.Id;
         abstract ResourceDescription autoBuild();
 
         public ResourceDescription build() {
-<span class="fc" id="L87">            String result = UUID.nameUUIDFromBytes((provider().toString() + type()).getBytes(Charsets.UTF_8)).toString();</span>
-<span class="fc" id="L88">            id(result);</span>
-<span class="fc" id="L89">            return autoBuild();</span>
+<span class="fc" id="L88">            String result = UUID.nameUUIDFromBytes((provider().toString() + type()).getBytes(Charsets.UTF_8)).toString();</span>
+<span class="fc" id="L89">            id(result);</span>
+<span class="fc" id="L90">            return autoBuild();</span>
         }
     }
 

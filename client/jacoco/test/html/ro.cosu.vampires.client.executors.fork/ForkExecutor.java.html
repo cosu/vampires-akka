@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,10 +53,10 @@ import ro.cosu.vampires.server.values.jobs.Result;
 import ro.cosu.vampires.server.values.jobs.metrics.Trace;
 
 
-<span class="fc" id="L55">public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor {</span>
+<span class="fc" id="L56">public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor {</span>
 
     private static final int TIMEOUT_IN_MILLIS = 600000;
-<span class="fc" id="L58">    private static final Logger LOG = LoggerFactory.getLogger(ForkExecutor.class);</span>
+<span class="fc" id="L59">    private static final Logger LOG = LoggerFactory.getLogger(ForkExecutor.class);</span>
     @Inject
     private CpuAllocator cpuAllocator;
 
@@ -65,128 +66,128 @@ import ro.cosu.vampires.server.values.jobs.metrics.Trace;
     private CpuSet cpuSet;
 
     private CommandLine getCommandLine(String command) {
-<span class="fc" id="L68">        String newCommand = command;</span>
-<span class="pc bpc" id="L69" title="1 of 2 branches missed.">        if (isNumaEnabled()) {</span>
-<span class="nc" id="L70">            final String cpus = Joiner.on(&quot;,&quot;).join(cpuSet.getCpuSet());</span>
-<span class="nc" id="L71">            newCommand = &quot;numactl --physcpubind=&quot; + cpus + &quot; &quot; + command;</span>
+<span class="fc" id="L69">        String newCommand = command;</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        if (isNumaEnabled()) {</span>
+<span class="nc" id="L71">            final String cpus = Joiner.on(&quot;,&quot;).join(cpuSet.getCpuSet());</span>
+<span class="nc" id="L72">            newCommand = &quot;numactl --physcpubind=&quot; + cpus + &quot; &quot; + command;</span>
         }
 
-<span class="fc" id="L74">        LOG.info(&quot;executing {} with timeout {} minutes&quot;, newCommand, TIMEOUT_IN_MILLIS / 1000 / 60);</span>
-<span class="fc" id="L75">        return CommandLine.parse(newCommand);</span>
+<span class="fc" id="L75">        LOG.info(&quot;executing {} with timeout {} minutes&quot;, newCommand, TIMEOUT_IN_MILLIS / 1000 / 60);</span>
+<span class="fc" id="L76">        return CommandLine.parse(newCommand);</span>
     }
 
     @Override
     public Result execute(Computation computation) {
-<span class="fc" id="L80">        acquireResources();</span>
+<span class="fc" id="L81">        acquireResources();</span>
 
-<span class="fc" id="L82">        CommandLine commandLine = getCommandLine(computation.command());</span>
+<span class="fc" id="L83">        CommandLine commandLine = getCommandLine(computation.command());</span>
 
-<span class="fc" id="L84">        CollectingLogOutputStream collectingLogOutputStream = configureExecutorAndGetLogOutputStream();</span>
+<span class="fc" id="L85">        CollectingLogOutputStream collectingLogOutputStream = configureExecutorAndGetLogOutputStream();</span>
 
-<span class="fc" id="L86">        DefaultExecuteResultHandler resultHandler = new DefaultExecuteResultHandler();</span>
+<span class="fc" id="L87">        DefaultExecuteResultHandler resultHandler = new DefaultExecuteResultHandler();</span>
 
-<span class="fc" id="L88">        ZonedDateTime start = ZonedDateTime.now();</span>
+<span class="fc" id="L89">        ZonedDateTime start = ZonedDateTime.now(ZoneOffset.UTC);</span>
 
-<span class="fc" id="L90">        int exitCode = runAndGetExitCode(commandLine, resultHandler);</span>
+<span class="fc" id="L91">        int exitCode = runAndGetExitCode(commandLine, resultHandler);</span>
 
-<span class="fc" id="L92">        ZonedDateTime stop = ZonedDateTime.now();</span>
+<span class="fc" id="L93">        ZonedDateTime stop = ZonedDateTime.now(ZoneOffset.UTC);</span>
 
-<span class="fc" id="L94">        releaseResources();</span>
+<span class="fc" id="L95">        releaseResources();</span>
 
-<span class="fc" id="L96">        return Result.builder()</span>
-<span class="fc" id="L97">                .duration(Duration.between(start, stop).toMillis())</span>
-<span class="fc" id="L98">                .exitCode(exitCode)</span>
-<span class="fc" id="L99">                .trace(getTrace(start, stop))</span>
-<span class="fc" id="L100">                .output(collectingLogOutputStream.getLines())</span>
-<span class="fc" id="L101">                .build();</span>
+<span class="fc" id="L97">        return Result.builder()</span>
+<span class="fc" id="L98">                .duration(Duration.between(start, stop).toMillis())</span>
+<span class="fc" id="L99">                .exitCode(exitCode)</span>
+<span class="fc" id="L100">                .trace(getTrace(start, stop))</span>
+<span class="fc" id="L101">                .output(collectingLogOutputStream.getLines())</span>
+<span class="fc" id="L102">                .build();</span>
 
     }
 
     private int runAndGetExitCode(CommandLine commandLine, DefaultExecuteResultHandler resultHandler) {
         try {
-<span class="fc" id="L107">            executor.execute(commandLine, resultHandler);</span>
-<span class="nc" id="L108">        } catch (IOException e) {</span>
-<span class="nc" id="L109">            LOG.error(&quot;failed to exec&quot;, resultHandler.getException());</span>
-<span class="fc" id="L110">        }</span>
+<span class="fc" id="L108">            executor.execute(commandLine, resultHandler);</span>
+<span class="nc" id="L109">        } catch (IOException e) {</span>
+<span class="nc" id="L110">            LOG.error(&quot;failed to exec&quot;, resultHandler.getException());</span>
+<span class="fc" id="L111">        }</span>
 
         try {
-<span class="fc" id="L113">            resultHandler.waitFor();</span>
-<span class="nc" id="L114">        } catch (InterruptedException e) {</span>
-<span class="nc" id="L115">            LOG.error(&quot;failed to exec&quot;, resultHandler.getException());</span>
-<span class="fc" id="L116">        }</span>
+<span class="fc" id="L114">            resultHandler.waitFor();</span>
+<span class="nc" id="L115">        } catch (InterruptedException e) {</span>
+<span class="nc" id="L116">            LOG.error(&quot;failed to exec&quot;, resultHandler.getException());</span>
+<span class="fc" id="L117">        }</span>
 
-<span class="pc bpc" id="L118" title="1 of 2 branches missed.">        return resultHandler.hasResult() ? resultHandler.getExitValue() : -1;</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">        return resultHandler.hasResult() ? resultHandler.getExitValue() : -1;</span>
     }
 
     private CollectingLogOutputStream configureExecutorAndGetLogOutputStream() {
-<span class="fc" id="L122">        CollectingLogOutputStream collectingLogOutputStream = new CollectingLogOutputStream();</span>
-<span class="fc" id="L123">        PumpStreamHandler handler = new PumpStreamHandler(collectingLogOutputStream);</span>
-<span class="fc" id="L124">        executor.setStreamHandler(handler);</span>
-<span class="fc" id="L125">        executor.setWatchdog(new ExecuteWatchdog(TIMEOUT_IN_MILLIS));</span>
-<span class="fc" id="L126">        executor.setWorkingDirectory(Paths.get(&quot;&quot;).toAbsolutePath().toFile());</span>
-<span class="fc" id="L127">        return collectingLogOutputStream;</span>
+<span class="fc" id="L123">        CollectingLogOutputStream collectingLogOutputStream = new CollectingLogOutputStream();</span>
+<span class="fc" id="L124">        PumpStreamHandler handler = new PumpStreamHandler(collectingLogOutputStream);</span>
+<span class="fc" id="L125">        executor.setStreamHandler(handler);</span>
+<span class="fc" id="L126">        executor.setWatchdog(new ExecuteWatchdog(TIMEOUT_IN_MILLIS));</span>
+<span class="fc" id="L127">        executor.setWorkingDirectory(Paths.get(&quot;&quot;).toAbsolutePath().toFile());</span>
+<span class="fc" id="L128">        return collectingLogOutputStream;</span>
     }
 
     @Override
     public void acquireResources() {
-<span class="pc" id="L132">        cpuSet = cpuAllocator.acquireCpuSet().orElseThrow(() -&gt; new RuntimeException(&quot;Unable to acquire cpus&quot;));</span>
-<span class="fc" id="L133">        LOG.debug(&quot;Acquired cpus {}&quot;, cpuSet);</span>
-<span class="fc" id="L134">    }</span>
+<span class="pc" id="L133">        cpuSet = cpuAllocator.acquireCpuSet().orElseThrow(() -&gt; new RuntimeException(&quot;Unable to acquire cpus&quot;));</span>
+<span class="fc" id="L134">        LOG.debug(&quot;Acquired cpus {}&quot;, cpuSet);</span>
+<span class="fc" id="L135">    }</span>
 
     @Override
     public void releaseResources() {
-<span class="fc" id="L138">        cpuAllocator.releaseCpuSets(cpuSet);</span>
-<span class="fc" id="L139">    }</span>
+<span class="fc" id="L139">        cpuAllocator.releaseCpuSets(cpuSet);</span>
+<span class="fc" id="L140">    }</span>
 
     @Override
     public Type getType() {
-<span class="fc" id="L143">        return Type.FORK;</span>
+<span class="fc" id="L144">        return Type.FORK;</span>
     }
 
     private Trace getTrace(ZonedDateTime start, ZonedDateTime stop) {
         final Trace.Builder builder = Trace
-<span class="fc" id="L148">                .withNoMetrics()</span>
-<span class="fc" id="L149">                .executor(getType().toString())</span>
-<span class="fc" id="L150">                .start(start)</span>
-<span class="fc" id="L151">                .stop(stop)</span>
-<span class="fc" id="L152">                .totalCpuCount(cpuAllocator.totalCpuCount());</span>
+<span class="fc" id="L149">                .withNoMetrics()</span>
+<span class="fc" id="L150">                .executor(getType().toString())</span>
+<span class="fc" id="L151">                .start(start)</span>
+<span class="fc" id="L152">                .stop(stop)</span>
+<span class="fc" id="L153">                .totalCpuCount(cpuAllocator.totalCpuCount());</span>
 
-<span class="fc" id="L154">        builder.cpuSet(cpuSet.getCpuSet());</span>
-<span class="fc" id="L155">        final Trace trace = builder.build();</span>
+<span class="fc" id="L155">        builder.cpuSet(cpuSet.getCpuSet());</span>
+<span class="fc" id="L156">        final Trace trace = builder.build();</span>
 
-<span class="fc" id="L157">        LOG.debug(&quot;{}&quot;, trace);</span>
-<span class="fc" id="L158">        return trace;</span>
+<span class="fc" id="L158">        LOG.debug(&quot;{}&quot;, trace);</span>
+<span class="fc" id="L159">        return trace;</span>
     }
 
     @Override
     public int getNCpu() {
         // this uses jvm info. We could use sigar to create this also but it adds a weird dependency here
-<span class="fc" id="L164">        return Runtime.getRuntime().availableProcessors();</span>
+<span class="fc" id="L165">        return Runtime.getRuntime().availableProcessors();</span>
     }
 
     private boolean isNumaEnabled() {
         int exitCode;
         try {
-<span class="fc" id="L170">            executor.setStreamHandler(new PumpStreamHandler(new CollectingLogOutputStream()));</span>
-<span class="nc" id="L171">            exitCode = executor.execute(CommandLine.parse(&quot;numactl --hardware&quot;));</span>
+<span class="fc" id="L171">            executor.setStreamHandler(new PumpStreamHandler(new CollectingLogOutputStream()));</span>
+<span class="nc" id="L172">            exitCode = executor.execute(CommandLine.parse(&quot;numactl --hardware&quot;));</span>
 
-<span class="fc" id="L173">        } catch (IOException e) {</span>
-<span class="fc" id="L174">            exitCode = -1;</span>
-<span class="nc" id="L175">        }</span>
-<span class="pc bpc" id="L176" title="1 of 2 branches missed.">        return (exitCode == 0);</span>
+<span class="fc" id="L174">        } catch (IOException e) {</span>
+<span class="fc" id="L175">            exitCode = -1;</span>
+<span class="nc" id="L176">        }</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">        return (exitCode == 0);</span>
 
     }
 
-<span class="fc" id="L180">    private static class CollectingLogOutputStream extends LogOutputStream {</span>
-<span class="fc" id="L181">        private final List&lt;String&gt; lines = new LinkedList&lt;&gt;();</span>
+<span class="fc" id="L181">    private static class CollectingLogOutputStream extends LogOutputStream {</span>
+<span class="fc" id="L182">        private final List&lt;String&gt; lines = new LinkedList&lt;&gt;();</span>
 
         @Override
         protected void processLine(String line, int level) {
-<span class="fc" id="L185">            lines.add(line);</span>
-<span class="fc" id="L186">        }</span>
+<span class="fc" id="L186">            lines.add(line);</span>
+<span class="fc" id="L187">        }</span>
 
         public List&lt;String&gt; getLines() {
-<span class="fc" id="L189">            return lines;</span>
+<span class="fc" id="L190">            return lines;</span>
         }
     }
 }
