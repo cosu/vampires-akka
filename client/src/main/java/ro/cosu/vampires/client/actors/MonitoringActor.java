@@ -32,6 +32,7 @@ import com.google.common.collect.ImmutableMap;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.SortedMap;
@@ -80,7 +81,7 @@ public class MonitoringActor extends UntypedActor {
     }
 
     private void recordMetrics() {
-        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
         metricsWindow.add(now, gauges);
     }
 

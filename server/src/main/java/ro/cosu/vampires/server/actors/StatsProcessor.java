@@ -32,16 +32,14 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -88,41 +86,25 @@ public class StatsProcessor {
 
     private Map<String, ValueSnapshot> getStringValueSnapshotMap() {
         Map<String, ValueSnapshot> values = Maps.newHashMap();
-        metricRegistry.getGauges().entrySet().forEach(m -> {
-            String name = m.getKey();
-            Gauge value = m.getValue();
-            values.put(name, ValueSnapshot.fromGauge(name, value));
-        });
+        metricRegistry.getGauges().forEach((name, value) -> values.put(name, ValueSnapshot.fromGauge(name, value)));
         return values;
     }
 
     private Map<String, CounterSnapshot> getStringCounterSnapshotMap() {
         Map<String, CounterSnapshot> counters = Maps.newHashMap();
-        metricRegistry.getCounters().entrySet().forEach(m -> {
-            String name = m.getKey();
-            Counter value = m.getValue();
-            counters.put(name, CounterSnapshot.fromCounter(name, value));
-        });
+        metricRegistry.getCounters().forEach((name, value) -> counters.put(name, CounterSnapshot.fromCounter(name, value)));
         return counters;
     }
 
     private Map<String, MeterSnapshot> getStringMeterSnapshotMap() {
         Map<String, MeterSnapshot> meters = Maps.newHashMap();
-        metricRegistry.getMeters().entrySet().forEach(m -> {
-            String name = m.getKey();
-            Meter value = m.getValue();
-            meters.put(name, MeterSnapshot.fromMeter(name, value));
-        });
+        metricRegistry.getMeters().forEach((name, value) -> meters.put(name, MeterSnapshot.fromMeter(name, value)));
         return meters;
     }
 
     private Map<String, HistogramSnapshot> getStringHistogramSnapshotMap() {
         Map<String, HistogramSnapshot> histograms = Maps.newHashMap();
-        metricRegistry.getHistograms().entrySet().forEach(m -> {
-            String name = m.getKey();
-            Histogram value = m.getValue();
-            histograms.put(name, HistogramSnapshot.fromHistogram(name, value, SCALE_DOWN_FACTOR));
-        });
+        metricRegistry.getHistograms().forEach((name, value) -> histograms.put(name, HistogramSnapshot.fromHistogram(name, value, SCALE_DOWN_FACTOR)));
         return histograms;
     }
 
@@ -219,7 +201,7 @@ public class StatsProcessor {
 
     private Duration getDurationForClient(String id) {
         ZonedDateTime createdAt = clientsCreatedAt.get(id);
-        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
 
         return Duration.between(createdAt, now);
     }

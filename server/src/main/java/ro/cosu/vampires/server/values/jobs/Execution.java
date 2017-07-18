@@ -29,6 +29,7 @@ package ro.cosu.vampires.server.values.jobs;
 
 import com.google.auto.value.AutoValue;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -42,8 +43,8 @@ public abstract class Execution implements Id {
 
     public static Builder builder() {
         return new AutoValue_Execution.Builder()
-                .createdAt(ZonedDateTime.now())
-                .updatedAt(ZonedDateTime.now())
+                .createdAt(ZonedDateTime.now(ZoneOffset.UTC))
+                .updatedAt(ZonedDateTime.now(ZoneOffset.UTC))
                 .id(UUID.randomUUID().toString());
     }
 
@@ -68,7 +69,7 @@ public abstract class Execution implements Id {
 
     public Execution withInfo(ExecutionInfo info) {
         return toBuilder()
-                .updatedAt(ZonedDateTime.now())
+                .updatedAt(ZonedDateTime.now(ZoneOffset.UTC))
                 .info(info).build();
     }
 

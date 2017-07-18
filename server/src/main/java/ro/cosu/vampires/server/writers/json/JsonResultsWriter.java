@@ -42,6 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
@@ -70,7 +71,7 @@ public class JsonResultsWriter implements ResultsWriter {
     }
 
     private Path getPath(String prefix) {
-        ZonedDateTime date = ZonedDateTime.now();
+        ZonedDateTime date = ZonedDateTime.now(ZoneOffset.UTC);
         return Paths.get(uploadDirName, prefix + "-" + date.format
                 (DateTimeFormatter.ISO_LOCAL_DATE_TIME) + ".json");
 

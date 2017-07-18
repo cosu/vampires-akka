@@ -29,6 +29,7 @@ package ro.cosu.vampires.server.values;
 import com.google.auto.value.AutoValue;
 
 import java.io.Serializable;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Map;
 
@@ -41,7 +42,7 @@ import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
 public abstract class ClientInfo implements Serializable {
 
     public static Builder builder() {
-        return new AutoValue_ClientInfo.Builder().start(ZonedDateTime.now());
+        return new AutoValue_ClientInfo.Builder().start(ZonedDateTime.now(ZoneOffset.UTC));
     }
 
     public abstract String id();

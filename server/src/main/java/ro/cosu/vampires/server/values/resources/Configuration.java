@@ -29,6 +29,7 @@ package ro.cosu.vampires.server.values.resources;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -49,8 +50,8 @@ public abstract class Configuration implements Id {
                 .id(UUID.randomUUID().toString())
                 .description("")
                 .cost(0.)
-                .createdAt(ZonedDateTime.now())
-                .updatedAt(ZonedDateTime.now());
+                .createdAt(ZonedDateTime.now(ZoneOffset.UTC))
+                .updatedAt(ZonedDateTime.now(ZoneOffset.UTC));
     }
 
     public static Configuration fromPayload(ConfigurationPayload payload) {

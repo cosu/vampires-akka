@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.LinkedList;
 import java.util.List;
@@ -85,11 +86,11 @@ public class ForkExecutor implements ro.cosu.vampires.client.executors.Executor 
 
         DefaultExecuteResultHandler resultHandler = new DefaultExecuteResultHandler();
 
-        ZonedDateTime start = ZonedDateTime.now();
+        ZonedDateTime start = ZonedDateTime.now(ZoneOffset.UTC);
 
         int exitCode = runAndGetExitCode(commandLine, resultHandler);
 
-        ZonedDateTime stop = ZonedDateTime.now();
+        ZonedDateTime stop = ZonedDateTime.now(ZoneOffset.UTC);
 
         releaseResources();
 

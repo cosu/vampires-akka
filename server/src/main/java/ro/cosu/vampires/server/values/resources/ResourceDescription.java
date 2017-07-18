@@ -29,6 +29,7 @@ package ro.cosu.vampires.server.values.resources;
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Charsets;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -43,8 +44,8 @@ public abstract class ResourceDescription implements Id {
 
     public static Builder builder() {
         return new AutoValue_ResourceDescription.Builder()
-                .createdAt(ZonedDateTime.now())
-                .updatedAt(ZonedDateTime.now());
+                .createdAt(ZonedDateTime.now(ZoneOffset.UTC))
+                .updatedAt(ZonedDateTime.now(ZoneOffset.UTC));
     }
 
     public abstract String type();

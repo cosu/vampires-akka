@@ -91,8 +91,8 @@ public class BootstrapActor extends AbstractActor {
 
     private void startWebserver() {
         Spark.port(settings.vampires.getInt("rest.port"));
-        Spark.init();
         Guice.createInjector(restModule);
+        Spark.init();
         Spark.awaitInitialization();
         log.debug("Started webserver");
     }

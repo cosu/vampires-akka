@@ -30,6 +30,7 @@ package ro.cosu.vampires.server.values.jobs;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.Sets;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 
@@ -40,12 +41,9 @@ import ro.cosu.vampires.server.values.jobs.metrics.Stats;
 @AutoGson
 public abstract class ExecutionInfo {
 
-    private static HashSet<Status> ACTIVE_STATUSES =
-            Sets.newHashSet(ExecutionInfo.Status.RUNNING, ExecutionInfo.Status.STARTING);
-
     public static Builder builder() {
         return new AutoValue_ExecutionInfo.Builder()
-                .updatedAt(ZonedDateTime.now());
+                .updatedAt(ZonedDateTime.now(ZoneOffset.UTC));
     }
 
     public static ExecutionInfo empty() {
@@ -80,7 +78,7 @@ public abstract class ExecutionInfo {
     public abstract Builder toBuilder();
 
     private Builder update() {
-        return toBuilder().updatedAt(ZonedDateTime.now());
+        return toBuilder().updatedAt(ZonedDateTime.now(ZoneOffset.UTC));
     }
 
     public ExecutionInfo updateCompleted(int completed) {

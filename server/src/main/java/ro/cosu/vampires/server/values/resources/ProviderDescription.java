@@ -31,6 +31,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -45,8 +46,8 @@ public abstract class ProviderDescription implements Id {
 
     public static ProviderDescription.Builder builder() {
         return new AutoValue_ProviderDescription.Builder()
-                .createdAt(ZonedDateTime.now())
-                .updatedAt(ZonedDateTime.now());
+                .createdAt(ZonedDateTime.now(ZoneOffset.UTC))
+                .updatedAt(ZonedDateTime.now(ZoneOffset.UTC));
     }
 
     public abstract Resource.ProviderType provider();

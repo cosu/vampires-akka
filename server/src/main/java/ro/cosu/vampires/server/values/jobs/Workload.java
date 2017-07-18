@@ -30,6 +30,7 @@ package ro.cosu.vampires.server.values.jobs;
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Splitter;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -47,8 +48,8 @@ public abstract class Workload implements Id {
 
     public static Workload.Builder builder() {
         return new AutoValue_Workload.Builder().id(UUID.randomUUID().toString())
-                .createdAt(ZonedDateTime.now())
-                .updatedAt(ZonedDateTime.now())
+                .createdAt(ZonedDateTime.now(ZoneOffset.UTC))
+                .updatedAt(ZonedDateTime.now(ZoneOffset.UTC))
                 .format("")
                 .task("")
                 .description("")
@@ -100,7 +101,7 @@ public abstract class Workload implements Id {
 
     public Builder update() {
         return toBuilder()
-                .updatedAt(ZonedDateTime.now());
+                .updatedAt(ZonedDateTime.now(ZoneOffset.UTC));
     }
 
     public int size() {

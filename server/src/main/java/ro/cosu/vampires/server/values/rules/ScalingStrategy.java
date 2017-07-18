@@ -15,13 +15,13 @@ public abstract class ScalingStrategy {
     public abstract String name();
 
     /**
-     * The number of instances to scale up
+     * Max number of instance
      * @return
      */
     public abstract int limit();
 
     /**
-     * Lis
+     * List of thresholds to be met to scale
      * @return
      */
     public abstract Threshold threshold();

@@ -29,6 +29,7 @@ package ro.cosu.vampires.server.values;
 import org.junit.Test;
 import org.mockito.internal.util.collections.Sets;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
@@ -42,8 +43,8 @@ public class TraceTest {
     @Test
     public void testWithNoMetrics() {
         Trace trace = Trace.withNoMetrics()
-                .start(ZonedDateTime.now())
-                .stop(ZonedDateTime.now())
+                .start(ZonedDateTime.now(ZoneOffset.UTC))
+                .stop(ZonedDateTime.now(ZoneOffset.UTC))
                 .cpuSet(Sets.newSet(1))
                 .totalCpuCount(1)
                 .executor("foo")

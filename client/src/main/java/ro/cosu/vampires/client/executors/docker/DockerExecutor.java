@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.time.Duration;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -104,13 +105,13 @@ public class DockerExecutor implements Executor {
         acquireResources();
         createContainer(computation.command().split(" "));
         LOG.info("running docker job {}", computation);
-        ZonedDateTime start = ZonedDateTime.now();
+        ZonedDateTime start = ZonedDateTime.now(ZoneOffset.UTC);
         dockerClient.startContainerCmd(containerId).exec();
         executorMetricsCollector.startMonitoring(containerId);
         int exitCode = dockerClient.waitContainerCmd(containerId).exec(new WaitContainerResultCallback())
                 .awaitStatusCode();
 
-        ZonedDateTime stop = ZonedDateTime.now();
+        ZonedDateTime stop = ZonedDateTime.now(ZoneOffset.UTC);
         List<String> output = Collections.emptyList();
         try {
             output = getOutput();
