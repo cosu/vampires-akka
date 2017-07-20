@@ -24,14 +24,18 @@
  *
  */
 
-package ro.cosu.vampires.server.actors;
+package ro.cosu.vampires.server.actors.execution;
+
+import com.google.common.collect.Lists;
 
 import java.time.Duration;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
@@ -39,9 +43,13 @@ import akka.actor.Cancellable;
 import akka.actor.Props;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import ro.cosu.vampires.server.actors.ClientConfigActor;
+import ro.cosu.vampires.server.actors.messages.execution.SubscribeExecution;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
+import ro.cosu.vampires.server.estimators.Estimator;
+import ro.cosu.vampires.server.estimators.SimpleEstimator;
 import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.schedulers.SamplingWithReplicationScheduler;
 import ro.cosu.vampires.server.schedulers.Scheduler;
@@ -52,6 +60,7 @@ import ro.cosu.vampires.server.values.jobs.Execution;
 import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
 import ro.cosu.vampires.server.values.jobs.ExecutionMode;
 import ro.cosu.vampires.server.values.jobs.Job;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
 import ro.cosu.vampires.server.writers.ResultsWriter;
 
 
@@ -64,6 +73,7 @@ public class ResultActor extends AbstractActor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private List<Job> results = new LinkedList<>();
     private List<ResultsWriter> writers;
+    private List<ActorRef> subscribers = Lists.newLinkedList();
 
     private ActorRef workActor;
     private Cancellable logSchedule;
@@ -71,11 +81,14 @@ public class ResultActor extends AbstractActor {
     private int totalSize = 0;
 
     private StatsProcessor statsProcessor = new StatsProcessor();
+    private final Estimator estimator;
 
     ResultActor(Execution execution) {
         writers = settings.getWriters();
         this.execution = execution;
         totalSize = execution.workload().size();
+
+        estimator = new SimpleEstimator(statsProcessor);
     }
 
     public static Props props(Execution execution) {
@@ -108,6 +121,9 @@ public class ResultActor extends AbstractActor {
                 scala.concurrent.duration.Duration.create(500, TimeUnit.MILLISECONDS),
                 () -> statsProcessor.flush(), getContext().system().dispatcher());
 
+        // always inform the parent of changes
+        subscribers.add(getContext().getParent());
+
     }
 
     @Override
@@ -122,10 +138,14 @@ public class ResultActor extends AbstractActor {
                 .match(Job.class, this::handleJob)
                 .match(ClientInfo.class, this::handleClientInfo)
                 .match(ResourceInfo.class, this::handleResourceInfo)
+                .match(SubscribeExecution.class, this::handleSubscribe)
                 .match(ResourceControl.Shutdown.class, message -> this.handleShutdown())
                 .build();
     }
 
+    private void handleSubscribe(SubscribeExecution subscribeExecution) {
+
+    }
 
     private void handleShutdown() {
         // if all jobs done then set status to finished
@@ -140,17 +160,21 @@ public class ResultActor extends AbstractActor {
         statsProcessor.process(resourceInfo);
     }
 
-    private void sendCurrentExecutionInfo(ExecutionInfo.Status status) {
-        ExecutionInfo executionInfo = ExecutionInfo.empty()
+    private void sendCurrentExecutionInfoToSubscribers(ExecutionInfo.Status status) {
+        for (ActorRef subscriber : subscribers) {
+            ExecutionInfo currentExecutionInfo = getCurrentExecutionInfo(status);
+            subscriber.tell(execution.withInfo(currentExecutionInfo), getSelf());
+        }
+    }
+
+    private ExecutionInfo getCurrentExecutionInfo(ExecutionInfo.Status status) {
+        return ExecutionInfo.empty()
                 .updateTotal(totalSize)
                 .updateCompleted(results.size())
                 .updateStatus(status)
                 .updateStats(statsProcessor.getStats())
                 .updateElapsed(Duration.between(startTime, ZonedDateTime.now(ZoneOffset.UTC)).toMillis())
                 .updateRemaining(totalSize - results.size());
-
-        Execution execution = this.execution.withInfo(executionInfo);
-        getContext().parent().tell(execution, getSelf());
     }
 
     private void handleJob(Job job) {
@@ -160,7 +184,7 @@ public class ResultActor extends AbstractActor {
             results.add(job);
             writers.forEach(r -> r.addResult(job));
             statsProcessor.process(job);
-            sendCurrentExecutionInfo(ExecutionInfo.Status.RUNNING);
+            sendCurrentExecutionInfoToSubscribers(ExecutionInfo.Status.RUNNING);
         }
         if (results.size() == totalSize) {
             // signal parent we're done
@@ -183,7 +207,7 @@ public class ResultActor extends AbstractActor {
         writers.forEach(ResultsWriter::close);
         // init shutdown
         statsProcessor.flush();
-        sendCurrentExecutionInfo(status);
+        sendCurrentExecutionInfoToSubscribers(status);
         getContext().stop(getSelf());
     }
 

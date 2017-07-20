@@ -35,6 +35,7 @@ import java.util.Map;
 
 import akka.actor.ActorRef;
 import akka.testkit.TestKit;
+import ro.cosu.vampires.server.actors.execution.ExecutionActor;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.resources.ResourceInfo;
@@ -66,7 +67,7 @@ public class ExecutionActorTest extends AbstractActorTest {
 
         ImmutableList<ResourceDemand> resourceDemands = of(
                 ResourceDemand.builder().count(2).resourceDescription(ResourceDescription.builder()
-                        .provider(Resource.ProviderType.MOCK).type("foo")
+                        .provider(Resource.ProviderType.MOCK).resourceType("foo")
                         .cost(0.1)
                         .build()).build()
         );

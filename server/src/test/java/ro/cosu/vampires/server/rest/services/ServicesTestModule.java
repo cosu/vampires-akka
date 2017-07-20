@@ -133,7 +133,7 @@ public class ServicesTestModule extends AbstractModule {
     private ConfigurationPayload getConfigurationPayload() {
         ImmutableList<ResourceDemand> resourceDemands = ImmutableList.of(ResourceDemand.builder().count(1)
                 .resourceDescription(
-                        ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("bar").cost(0).build()
+                        ResourceDescription.builder().provider(Resource.ProviderType.MOCK).resourceType("bar").cost(0).build()
                 )
                 .build());
         return ConfigurationPayload.builder().description("foo").resources(resourceDemands).build();

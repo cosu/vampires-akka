@@ -73,6 +73,7 @@ public class SshClientResourceTest {
             private Config provideConfig() {
                 return ConfigFactory.parseString("resources.ssh.local { " +
                         "user= foo\n" +
+                        "type= local\n" +
                         "address=bar\n" +
                         "cost=100\n" +
                         "privateKey=baz\n" +

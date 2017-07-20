@@ -37,7 +37,7 @@ import org.junit.Test;
 import java.util.Optional;
 
 import akka.actor.ActorRef;
-import ro.cosu.vampires.server.actors.ConfigurationsActor;
+import ro.cosu.vampires.server.actors.workload.ConfigurationsActor;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.values.AutoValueUtil;
 import ro.cosu.vampires.server.values.resources.Configuration;
@@ -84,7 +84,7 @@ public class ConfigurationsServiceTest extends AbstractServiceTest<Configuration
     protected ConfigurationPayload getPayload() {
         ImmutableList<ResourceDemand> resourceDemands = ImmutableList.of(ResourceDemand.builder().count(1)
                 .resourceDescription(
-                        ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("foo").cost(10).build()
+                        ResourceDescription.builder().provider(Resource.ProviderType.MOCK).resourceType("foo").cost(10).build()
                 )
                 .build());
         return ConfigurationPayload.builder().description("foo").resources(resourceDemands).build();

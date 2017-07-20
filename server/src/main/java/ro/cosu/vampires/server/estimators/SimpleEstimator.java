@@ -26,25 +26,28 @@
 
 package ro.cosu.vampires.server.estimators;
 
-import java.util.Map;
+import com.google.common.collect.HashBasedTable;
 
+import ro.cosu.vampires.server.actors.execution.StatsProcessor;
+import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.values.resources.Configuration;
-import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 public class SimpleEstimator implements Estimator {
 
-    private final Map<ResourceDescription, Double> durationsPerInstanceType;
 
-    private final double numberOfJobs;
+    private StatsProcessor statsProcessor;
 
-    public SimpleEstimator(Map<ResourceDescription, Double> durationsPerInstanceType,
-                           double numberOfJobs) {
-        this.durationsPerInstanceType = durationsPerInstanceType;
-        this.numberOfJobs = numberOfJobs;
+    public SimpleEstimator(StatsProcessor statsProcessor) {
+        this.statsProcessor = statsProcessor;
+
+        HashBasedTable<String, Resource.ProviderType, Long> counts = HashBasedTable.create();
     }
 
-    public double estimate(Configuration configuration) {
 
+    public double estimate(Configuration configuration, double numberOfJobs) {
+
+        return 0;
+        /*
         double ratesSum = configuration.resources().stream()
                 .filter(rd -> rd.count() > 0)
                 .mapToDouble(rd -> {
@@ -54,5 +57,6 @@ public class SimpleEstimator implements Estimator {
                 }).sum();
 
         return numberOfJobs / ratesSum;
+        */
     }
 }

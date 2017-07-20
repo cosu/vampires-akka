@@ -49,13 +49,13 @@ public class ConfigurationIterableTest {
 
         resourceDescriptionLongMap.put(
 
-                ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("small").cost(10).build(), 3);
+                ResourceDescription.builder().provider(Resource.ProviderType.MOCK).resourceType("small").cost(10).build(), 3);
 
         resourceDescriptionLongMap.put(
-                ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("medium").cost(10).build(), 3);
+                ResourceDescription.builder().provider(Resource.ProviderType.MOCK).resourceType("medium").cost(10).build(), 3);
 
         resourceDescriptionLongMap.put(
-                ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("large").cost(10).build(), 3);
+                ResourceDescription.builder().provider(Resource.ProviderType.MOCK).resourceType("large").cost(10).build(), 3);
 
         ConfigurationIterable configurations = new ConfigurationIterable(resourceDescriptionLongMap);
 

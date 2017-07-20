@@ -24,7 +24,7 @@
  *
  */
 
-package ro.cosu.vampires.server.actors;
+package ro.cosu.vampires.server.actors.workload;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;

@@ -31,6 +31,9 @@ import com.typesafe.config.ConfigFactory;
 
 import org.junit.Test;
 
+import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
@@ -46,7 +49,7 @@ public class BuilderTest {
         Config localSshConfig = config.getConfig("vampires.resources.ssh.local").withFallback(sshConfig).withFallback(resourcesConfig);
 
         SshResourceParameters params = SshResourceParameters.builder().fromConfig(localSshConfig)
-                .instanceType("local")
+                .resourceDescription(ResourceDescription.builder().provider(Resource.ProviderType.SSH).resourceType("local").build())
                 .build();
 
         assertThat(params.address(), equalTo("localhost"));

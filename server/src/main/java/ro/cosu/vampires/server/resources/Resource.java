@@ -31,6 +31,8 @@ import com.typesafe.config.Config;
 import java.io.Serializable;
 import java.util.concurrent.CompletableFuture;
 
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
+
 public interface Resource {
 
     void connected();
@@ -73,13 +75,9 @@ public interface Resource {
 
     interface Parameters extends Serializable {
 
-        ProviderType providerType();
-
-        String instanceType();
+        ResourceDescription resourceDescription();
 
         String id();
-
-        double cost();
 
         String serverId();
 
@@ -90,8 +88,6 @@ public interface Resource {
         Parameters withId(String id);
 
         interface Builder {
-
-            Builder instanceType(String instanceType);
 
             Builder fromConfig(Config config);
 

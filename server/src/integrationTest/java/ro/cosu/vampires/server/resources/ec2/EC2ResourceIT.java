@@ -38,6 +38,9 @@ import java.io.FileInputStream;
 import java.nio.file.Paths;
 import java.util.List;
 
+import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
+
 public class EC2ResourceIT {
 
     @Test
@@ -53,7 +56,7 @@ public class EC2ResourceIT {
 
         EC2ResourceParameters params = EC2ResourceParameters.builder()
                 .imageId("ami-47a23a30")
-                .instanceType("t2.micro")
+                .resourceDescription(ResourceDescription.builder().resourceType("t2.micro").provider(Resource.ProviderType.EC2).build())
                 .keyName("cdumitru-amazon-europe")
                 .securityGroup("vampires")
                 .region("eu-west-1")

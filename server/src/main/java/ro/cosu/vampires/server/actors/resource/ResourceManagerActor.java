@@ -40,6 +40,7 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.actors.messages.resource.BootstrapResource;
+import ro.cosu.vampires.server.actors.messages.resource.StopResource;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
 import ro.cosu.vampires.server.resources.Resource;
@@ -73,6 +74,7 @@ public class ResourceManagerActor extends AbstractActor{
                 .match(QueryResource.class, message -> this.queryResource(message, getSender()))
                 .match(ResourceControl.Shutdown.class, message -> shutdownResources())
                 .match(ResourceInfo.class, message -> registerResource(message, getSender()))
+                .match(StopResource.class, this::stopResource)
                 .match(ClientInfo.class, this::registerClient)
                 .match(Terminated.class , message -> terminatedResource(getSender()))
                 .build();
@@ -136,14 +138,15 @@ public class ResourceManagerActor extends AbstractActor{
         }
     }
 
-    private void shutdownResources() {
+    private void stopResource(StopResource stopResource) {
+        resourceRegistry.clientIdsToResourceActors.get(stopResource.id())
+                .tell(ResourceControl.Shutdown.create(), getSelf());
+    }
 
+    private void shutdownResources() {
         resourceRegistry.getResourceActors().forEach(r -> r.forward(ResourceControl.Shutdown.create(), getContext()));
         if (resourceRegistry.getResourceActors().isEmpty()) {
             getContext().stop(getSelf());
         }
     }
-
-
-
 }

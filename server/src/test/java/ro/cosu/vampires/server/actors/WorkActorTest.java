@@ -38,6 +38,7 @@ import akka.actor.Props;
 import akka.actor.Terminated;
 import akka.testkit.TestKit;
 import ch.qos.logback.classic.Level;
+import ro.cosu.vampires.server.actors.execution.WorkActor;
 import ro.cosu.vampires.server.schedulers.Scheduler;
 import ro.cosu.vampires.server.schedulers.SimpleScheduler;
 import ro.cosu.vampires.server.util.TestAppender;

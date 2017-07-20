@@ -33,6 +33,7 @@ import com.typesafe.config.Config;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 @AutoValue
 
@@ -40,8 +41,7 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
 
     public static Builder builder() {
         return new AutoValue_Das5ResourceParameters.Builder()
-                .port(22).providerType(Resource.ProviderType.DAS5)
-                .cost(0.)
+                .port(22)
                 .id(UUID.randomUUID().toString())
                 .serverId("");
     }
@@ -58,22 +58,12 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
     public abstract int port();
 
     @Override
-    public abstract double cost();
-
-    @Override
-    public abstract Resource.ProviderType providerType();
-
-    @Override
     public abstract String serverId();
 
     public abstract Builder toBuilder();
 
     @Override
     public abstract String id();
-
-    @Override
-    public abstract String instanceType();
-
 
     @Override
     public Das5ResourceParameters withServerId(String serverId) {
@@ -98,21 +88,21 @@ public abstract class Das5ResourceParameters implements Resource.Parameters {
 
         public abstract Builder port(int i);
 
-        public abstract Builder cost(double cost);
-
-        public abstract Builder providerType(Resource.ProviderType providerType);
+        public abstract Builder resourceDescription(ResourceDescription resourceDescription);
 
         public abstract Builder serverId(String s);
 
         @Override
-        public abstract Builder instanceType(String instanceType);
-
-        @Override
         public Builder fromConfig(Config config) {
 
+            String type = config.getString("type");
+
+            this.resourceDescription(ResourceDescription.builder()
+                    .provider(Resource.ProviderType.DAS5)
+                    .resourceType(type)
+                    .build());
             this.command(config.getString("command"));
             this.user(config.getString("user"));
-            this.cost(config.getDouble("cost"));
             this.address(config.getString("address"));
             this.privateKey(config.getString("privateKey"));
             if (config.hasPath("port")) {

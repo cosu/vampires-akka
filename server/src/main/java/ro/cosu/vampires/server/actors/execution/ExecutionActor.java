@@ -24,7 +24,7 @@
  *
  */
 
-package ro.cosu.vampires.server.actors;
+package ro.cosu.vampires.server.actors.execution;
 
 
 import com.google.common.collect.Sets;
@@ -49,7 +49,7 @@ import ro.cosu.vampires.server.values.jobs.Execution;
 import ro.cosu.vampires.server.values.jobs.Job;
 import ro.cosu.vampires.server.values.resources.ResourceDemand;
 
-class ExecutionActor extends AbstractActor {
+public class ExecutionActor extends AbstractActor {
 
     private Set<ActorRef> watchees = Sets.newLinkedHashSet();
     private ActorRef resourceManagerActor;
@@ -68,6 +68,7 @@ class ExecutionActor extends AbstractActor {
 
         resourceManagerActor = getContext().actorOf(ResourceManagerActor.props(), "resourceManagerActor");
         resultActor = getContext().actorOf(ResultActor.props(execution), "resultActor");
+
         getContext().watch(resourceManagerActor);
         getContext().watch(resultActor);
 
@@ -83,7 +84,7 @@ class ExecutionActor extends AbstractActor {
         return IntStream.range(0, resourceDemand.count()).boxed()
                 .map(i -> BootstrapResource.create(
                         resourceDemand.resourceDescription().provider(),
-                        resourceDemand.resourceDescription().type(),
+                        resourceDemand.resourceDescription().resourceType(),
                         executionid))
                 .collect(Collectors.toList());
     }

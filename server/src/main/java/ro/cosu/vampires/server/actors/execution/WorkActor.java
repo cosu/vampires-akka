@@ -24,7 +24,7 @@
  *
  */
 
-package ro.cosu.vampires.server.actors;
+package ro.cosu.vampires.server.actors.execution;
 
 import akka.actor.AbstractActor;
 import akka.actor.Props;
@@ -64,7 +64,8 @@ public class WorkActor extends AbstractActor {
 
     @Override
     public Receive createReceive() {
-        return receiveBuilder().match(Job.class , this::receiveJob)
+        return receiveBuilder()
+                .match(Job.class , this::receiveJob)
                 .matchAny(message -> {
                     log.warning("unhandled message from {}", getSender());
                     unhandled(message);

@@ -24,7 +24,7 @@
  *
  */
 
-package ro.cosu.vampires.server.actors;
+package ro.cosu.vampires.server.actors.workload;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
@@ -67,7 +67,7 @@ public class ConfigurationsActor extends AbstractActor {
 
         return configuration.resources().stream().map(resource -> Optional
                 .ofNullable(providers.get(resource.resourceDescription().provider()))
-                .map(provider -> provider.resourceDescriptions().get(resource.resourceDescription().type()))
+                .map(provider -> provider.resourceDescriptions().get(resource.resourceDescription().resourceType()))
                 .map(ResourceDescription::cost)
                 .orElse(0.))
                 .collect(Collectors.summingDouble(Double::doubleValue));
@@ -83,12 +83,12 @@ public class ConfigurationsActor extends AbstractActor {
         }
 
         ProviderDescription provider = providers.get(resourceDescription.provider());
-        if (!provider.resourceDescriptions().containsKey(resourceDescription.type())) {
-            log.error("Unable to resolve resource {}", resourceDescription.type());
+        if (!provider.resourceDescriptions().containsKey(resourceDescription.resourceType())) {
+            log.error("Unable to resolve resource {}", resourceDescription.resourceType());
             return Optional.empty();
         }
 
-        ResourceDescription rd = provider.resourceDescriptions().get(resourceDescription.type());
+        ResourceDescription rd = provider.resourceDescriptions().get(resourceDescription.resourceType());
         return Optional.of(resourceDemand.withResourceDescription(rd));
     }
 

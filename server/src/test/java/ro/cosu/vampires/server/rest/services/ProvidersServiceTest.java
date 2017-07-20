@@ -32,7 +32,7 @@ public class ProvidersServiceTest {
                 HashMap<Resource.ProviderType, ProviderDescription> providers = Maps.newHashMap();
 
                 ResourceDescription resourceDescription = ResourceDescription.builder()
-                        .provider(Resource.ProviderType.MOCK).cost(0.).type("mock").build();
+                        .provider(Resource.ProviderType.MOCK).cost(0.).resourceType("mock").build();
 
                 Map<String, ResourceDescription> resourceDescriptionMap = Maps.newHashMap();
                 resourceDescriptionMap.put("mock", resourceDescription);

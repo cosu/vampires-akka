@@ -52,6 +52,7 @@ import ro.cosu.vampires.server.resources.mock.MockResourceModule;
 import ro.cosu.vampires.server.resources.mock.MockResourceParameters;
 import ro.cosu.vampires.server.values.ClientInfo;
 import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
 import scala.concurrent.duration.Duration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -79,7 +80,7 @@ public class ResourceActorTest extends AbstractActorTest {
 
     private CreateResource getCreateResource(String command) {
         MockResourceParameters parameters = MockResourceParameters.builder().command(command)
-                .instanceType("foo")
+                .resourceDescription(ResourceDescription.builder().provider(Resource.ProviderType.MOCK).resourceType("foo").build())
                 .build();
         return CreateResource.create(Resource.ProviderType.MOCK, parameters);
     }

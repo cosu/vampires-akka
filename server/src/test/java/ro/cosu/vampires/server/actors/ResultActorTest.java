@@ -37,6 +37,7 @@ import akka.actor.Props;
 import akka.actor.Terminated;
 import akka.testkit.TestActorRef;
 import akka.testkit.TestProbe;
+import ro.cosu.vampires.server.actors.execution.ResultActor;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.values.jobs.Computation;
 import ro.cosu.vampires.server.values.resources.Configuration;

@@ -47,7 +47,7 @@ public class ConfigurationTest {
                 .resources(ImmutableList.of(
                         ResourceDemand.builder().count(1)
                                 .resourceDescription(
-                                        ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("bar").cost(0).build()
+                                        ResourceDescription.builder().provider(Resource.ProviderType.MOCK).resourceType("bar").cost(0).build()
                                 )
                                 .build()
                 )).build();

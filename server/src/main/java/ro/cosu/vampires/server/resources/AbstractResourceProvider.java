@@ -53,7 +53,6 @@ public abstract class AbstractResourceProvider implements ResourceProvider {
                 getProviderType().toString().toLowerCase(), instanceName.toLowerCase());
 
         return getBuilder().fromConfig(resolvedConfig)
-                .instanceType(instanceName)
                 .build();
     }
 

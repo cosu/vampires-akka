@@ -74,7 +74,7 @@ public class BootstrapIT {
                 .resourceDescription(
                         ResourceDescription.builder()
                                 .provider(Resource.ProviderType.LOCAL)
-                                .type("local")
+                                .resourceType("local")
                                 .cost(0)
                                 .build()
                 ).build());

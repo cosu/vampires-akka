@@ -24,7 +24,7 @@
  *
  */
 
-package ro.cosu.vampires.server.actors;
+package ro.cosu.vampires.server.actors.execution;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
@@ -82,6 +82,7 @@ public class StatsProcessor {
                 .meters(ImmutableMap.copyOf(meters))
                 .resources(ImmutableList.copyOf(resourcesInfo.values()))
                 .histograms(ImmutableMap.copyOf(histograms)).build();
+
     }
 
     private Map<String, ValueSnapshot> getStringValueSnapshotMap() {
@@ -195,7 +196,7 @@ public class StatsProcessor {
     private double getCostForClient(String id) {
 
         long billedHours = getDurationForClient(id).toHours() + 1;
-        double cost = resourcesInfo.get(id).parameters().cost();
+        double cost = resourcesInfo.get(id).parameters().resourceDescription().cost();
         return billedHours * cost;
     }
 
@@ -207,11 +208,11 @@ public class StatsProcessor {
     }
 
     private String getInstanceType(String from) {
-        return resourcesInfo.get(from).parameters().instanceType();
+        return resourcesInfo.get(from).parameters().resourceDescription().resourceType();
     }
 
     private Resource.ProviderType getProviderType(String from) {
-        return resourcesInfo.get(from).parameters().providerType();
+        return resourcesInfo.get(from).parameters().resourceDescription().provider();
     }
 
     private List<String> getKeysForMetric(String clientId, String metric) {
@@ -221,8 +222,21 @@ public class StatsProcessor {
 
         // return the keys in reverse order: most specific (longest) first
         return Lists.reverse(Lists.newArrayList(metric,
-                Joiner.on(":").join(metric, providerType),
-                Joiner.on(":").join(metric, providerType, instanceType),
-                Joiner.on(":").join(metric, providerType, instanceType, clientId)));
+                getMetricKeyForProviderType(providerType, metric),
+                getMetricKeyForInstanceType(instanceType, providerType, metric),
+                getMetricKeyForClientId(clientId, instanceType, providerType, metric)));
+    }
+
+    public static String getMetricKeyForClientId(String clientId, String instanceType, Resource.ProviderType providerType, String metric) {
+        String metricKeyForInstanceType = getMetricKeyForInstanceType(instanceType, providerType, metric);
+        return Joiner.on(":").join(metricKeyForInstanceType, clientId);
+    }
+
+    public static String getMetricKeyForInstanceType(String instanceType, Resource.ProviderType providerType, String metric) {
+        return Joiner.on(":").join(metric, providerType, instanceType);
+    }
+
+    public static String getMetricKeyForProviderType(Resource.ProviderType providerType, String metric) {
+        return Joiner.on(":").join(metric, providerType);
     }
 }

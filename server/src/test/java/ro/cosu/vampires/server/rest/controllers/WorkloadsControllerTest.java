@@ -32,7 +32,7 @@ import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 
 import akka.actor.ActorRef;
-import ro.cosu.vampires.server.actors.WorkloadsActor;
+import ro.cosu.vampires.server.actors.workload.WorkloadsActor;
 import ro.cosu.vampires.server.rest.services.Service;
 import ro.cosu.vampires.server.rest.services.WorkloadsService;
 import ro.cosu.vampires.server.values.jobs.Workload;

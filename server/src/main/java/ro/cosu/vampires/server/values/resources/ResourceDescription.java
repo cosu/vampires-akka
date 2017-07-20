@@ -29,39 +29,26 @@ package ro.cosu.vampires.server.values.resources;
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Charsets;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.util.gson.AutoGson;
-import ro.cosu.vampires.server.values.Id;
 
 @AutoValue
 @AutoGson
-
-public abstract class ResourceDescription implements Id {
+public abstract class ResourceDescription {
 
     public static Builder builder() {
-        return new AutoValue_ResourceDescription.Builder()
-                .createdAt(ZonedDateTime.now(ZoneOffset.UTC))
-                .updatedAt(ZonedDateTime.now(ZoneOffset.UTC));
+        return new AutoValue_ResourceDescription.Builder().cost(0.);
     }
 
-    public abstract String type();
+    public abstract String resourceType();
 
     public abstract Resource.ProviderType provider();
 
     public abstract double cost();
 
-    @Override
     public abstract String id();
-
-    @Override
-    public abstract ZonedDateTime createdAt();
-
-    @Override
-    public abstract ZonedDateTime updatedAt();
 
     @AutoValue.Builder
     public static abstract class Builder {
@@ -70,23 +57,19 @@ public abstract class ResourceDescription implements Id {
 
         abstract Resource.ProviderType provider();
 
-        public abstract Builder type(String type);
+        public abstract Builder resourceType(String type);
 
-        abstract String type();
+        abstract String resourceType();
 
         public abstract Builder cost(double cost);
 
         public abstract Builder id(String id);
 
-        public abstract Builder createdAt(ZonedDateTime createdAt);
-
-        public abstract Builder updatedAt(ZonedDateTime createdAt);
-
         abstract ResourceDescription autoBuild();
 
         public ResourceDescription build() {
-            String result = UUID.nameUUIDFromBytes((provider().toString() + type()).getBytes(Charsets.UTF_8)).toString();
-            id(result);
+            String uuid = UUID.nameUUIDFromBytes((provider().toString() + resourceType()).getBytes(Charsets.UTF_8)).toString();
+            id(uuid);
             return autoBuild();
         }
     }

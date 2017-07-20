@@ -6,7 +6,7 @@ GRADLE="./gradlew ${GRADLE_OPTS}"
 ${GRADLE} clean
 ${GRADLE} check
 #install the client locally
-${GRADLE} installDist 
+${GRADLE} installDist
 
 ${GRADLE} integrationTest
 

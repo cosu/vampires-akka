@@ -44,21 +44,29 @@ public class ResourceActor extends AbstractActor {
                 {
                     sendResourceInfo(sender);
                     getSelf().tell(PoisonPill.getInstance(), ActorRef.noSender());
-                });
+                })
+                .exceptionally(this::logException);
     }
 
     private void start() {
         ActorRef sender = getSender();
         this.resource
                 .start()
-                .thenAccept(resource -> sendResourceInfo(sender));
+                .thenAccept(resource -> sendResourceInfo(sender))
+                .exceptionally(this::logException)
+        ;
+    }
+
+    private Void logException(Throwable exception) {
+        log.error("Failed to stop", exception);
+        return null;
     }
 
 
     private void connectClient(ClientInfo clientInfo) {
         if (clientInfo.id().equals(resource.parameters().id())) {
             resource.connected();
-            log.info("Connected: {} {}", resource.info().parameters().providerType(), resource.info().parameters().instanceType());
+            log.info("Connected: {}", resource.info().parameters().resourceDescription());
         } else {
             log.error("client info and resource info don't match {}, {}", clientInfo, resource.info());
         }

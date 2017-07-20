@@ -121,7 +121,7 @@ public abstract class AbstractResource implements Resource {
 
     @Override
     public String toString() {
-        return String.format("%s %s %s = %s", parameters.providerType(), parameters.instanceType(), parameters.id(), status);
+        return String.format("%s %s = %s", parameters.resourceDescription(), parameters.id(), status);
     }
 
 }

@@ -33,15 +33,15 @@ import com.typesafe.config.Config;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 @AutoValue
 public abstract class LocalResourceParameters implements Resource.Parameters {
 
 
     public static Builder builder() {
-        return new AutoValue_LocalResourceParameters.Builder().providerType(Resource.ProviderType.LOCAL)
+        return new AutoValue_LocalResourceParameters.Builder()
                 .id(UUID.randomUUID().toString())
-                .cost(0.)
                 .serverId("");
     }
 
@@ -49,19 +49,10 @@ public abstract class LocalResourceParameters implements Resource.Parameters {
     public abstract String command();
 
     @Override
-    public abstract Resource.ProviderType providerType();
-
-    @Override
     public abstract String serverId();
 
     @Override
     public abstract String id();
-
-    @Override
-    public abstract double cost();
-
-    @Override
-    public abstract String instanceType();
 
     public abstract Builder toBuilder();
 
@@ -79,23 +70,19 @@ public abstract class LocalResourceParameters implements Resource.Parameters {
     public abstract static class Builder implements Resource.Parameters.Builder {
         @Override
         public Builder fromConfig(Config config) {
-            this.cost(config.getDouble("cost"));
             this.command(config.getString("command"));
+            this.resourceDescription(ResourceDescription.builder()
+                    .provider(Resource.ProviderType.LOCAL).resourceType(config.getString("type")).build());
             return this;
         }
 
-        public abstract Builder providerType(Resource.ProviderType providerType);
-
-        public abstract Builder cost(double cost);
+        public abstract Builder resourceDescription(ResourceDescription resourceDescription);
 
         public abstract Builder id(String command);
 
         public abstract Builder command(String command);
 
         public abstract Builder serverId(String serverId);
-
-        @Override
-        public abstract Builder instanceType(String instanceType);
 
         @Override
         public abstract LocalResourceParameters build();

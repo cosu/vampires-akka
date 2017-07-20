@@ -26,6 +26,6 @@
 
 package ro.cosu.vampires.server.estimators;
 
-public class Pareto {
+public class Pareto implements Estimator {
 
 }

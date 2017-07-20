@@ -32,7 +32,7 @@ import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 
 import akka.actor.ActorRef;
-import ro.cosu.vampires.server.actors.ConfigurationsActor;
+import ro.cosu.vampires.server.actors.workload.ConfigurationsActor;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.rest.services.ConfigurationsService;
 import ro.cosu.vampires.server.rest.services.Service;
@@ -76,7 +76,7 @@ public class ConfigurationsControllerTest extends AbstractControllerTest<Configu
                 ResourceDemand.builder()
                         .count(1)
                         .resourceDescription(
-                                ResourceDescription.builder().provider(Resource.ProviderType.MOCK).type("foo").cost(0).build()
+                                ResourceDescription.builder().provider(Resource.ProviderType.MOCK).resourceType("foo").cost(0).build()
                                 )
                         .build());
         return ConfigurationPayload.builder().description("foo").resources(resourceDemands).build();

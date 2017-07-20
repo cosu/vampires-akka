@@ -38,6 +38,7 @@ import ro.cosu.vampires.server.resources.ResourceInfo;
 import ro.cosu.vampires.server.resources.mock.MockResourceParameters;
 import ro.cosu.vampires.server.values.ClientInfo;
 import ro.cosu.vampires.server.values.jobs.metrics.Metrics;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -53,7 +54,7 @@ public class ResourceRegistryTest extends AbstractActorTest {
 
     private Resource.Parameters getParameters() {
         return MockResourceParameters.builder()
-                .instanceType("foo")
+                .resourceDescription(ResourceDescription.builder().resourceType("foo").provider(Resource.ProviderType.MOCK).cost(10).build())
                 .id("foo")
                 .command("foo")
                 .build();

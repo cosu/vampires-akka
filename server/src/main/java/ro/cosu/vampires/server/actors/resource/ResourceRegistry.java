@@ -45,6 +45,7 @@ public class ResourceRegistry {
 
     protected BiMap<String, ActorRef> clientIdsToResourceActors = HashBiMap.create();
     protected BiMap<String, ActorRef> clientIdsToClientActors = HashBiMap.create();
+    protected BiMap<String, ResourceInfo> resourceMetadata = HashBiMap.create();
 
     public void addResourceActor(ActorRef resource, Resource.Parameters parameters) {
         clientIdsToResourceActors.put(parameters.id(), resource);
@@ -65,6 +66,7 @@ public class ResourceRegistry {
     public void registerResource(ActorRef localResourceActor, ResourceInfo resourceInfo) {
         String clientId = resourceInfo.parameters().id();
         clientIdsToResourceActors.put(clientId, localResourceActor);
+        resourceMetadata.put(clientId, resourceInfo);
     }
 
     public void registerClient(ActorRef clientActor, ClientInfo clientInfo) {
@@ -75,5 +77,6 @@ public class ResourceRegistry {
         String clientId = clientIdsToResourceActors.inverse().get(resourceActor);
         clientIdsToClientActors.remove(clientId);
         clientIdsToResourceActors.remove(clientId);
+        resourceMetadata.remove(clientId);
     }
 }

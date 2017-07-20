@@ -39,6 +39,7 @@ import ro.cosu.vampires.server.actors.messages.configuration.CreateConfiguration
 import ro.cosu.vampires.server.actors.messages.configuration.DeleteConfiguration;
 import ro.cosu.vampires.server.actors.messages.configuration.QueryConfiguration;
 import ro.cosu.vampires.server.actors.messages.configuration.ResponseConfiguration;
+import ro.cosu.vampires.server.actors.workload.ConfigurationsActor;
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.values.User;
 import ro.cosu.vampires.server.values.resources.Configuration;
@@ -59,7 +60,7 @@ public class ConfigurationsActorTest extends AbstractActorTest {
                         ResourceDemand.builder().count(1)
                                 .resourceDescription(
                                         ResourceDescription.builder()
-                                                .provider(Resource.ProviderType.LOCAL).type("local").cost(0).build()
+                                                .provider(Resource.ProviderType.LOCAL).resourceType("local").cost(0).build()
                                 )
                                 .build()
                 )).build();

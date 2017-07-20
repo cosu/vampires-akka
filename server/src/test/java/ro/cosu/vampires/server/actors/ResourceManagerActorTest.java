@@ -47,6 +47,7 @@ import akka.testkit.TestProbe;
 import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.actors.messages.resource.BootstrapResource;
 import ro.cosu.vampires.server.actors.messages.resource.CreateResource;
+import ro.cosu.vampires.server.actors.messages.resource.StopResource;
 import ro.cosu.vampires.server.actors.resource.ResourceControl;
 import ro.cosu.vampires.server.actors.resource.ResourceManagerActor;
 import ro.cosu.vampires.server.resources.Resource;
@@ -169,7 +170,7 @@ public class ResourceManagerActorTest extends AbstractActorTest {
         resourceManagerActor.tell(bs, testProbe.ref());
         ResourceInfo ri = (ResourceInfo) testProbe.receiveOne(Duration.create("50 milliseconds"));
         assertThat(ri.status(), equalTo(Resource.Status.RUNNING));
-        assertThat(ri.parameters().providerType(), equalTo(Resource.ProviderType.MOCK));
+        assertThat(ri.parameters().resourceDescription().provider(), equalTo(Resource.ProviderType.MOCK));
 
     }
 
@@ -181,5 +182,23 @@ public class ResourceManagerActorTest extends AbstractActorTest {
                 ("command=" + command)).build();
 
         return CreateResource.create(RESOURCE_PROVIDER_TYPE, parameters);
+    }
+
+    @Test
+    public void testStopResource() throws Exception {
+        final TestProbe testProbe = new TestProbe(system);
+
+        TestActorRef<ResourceManagerActor> resourceManagerActor = TestActorRef.create(system,
+                ResourceManagerActor.props());
+        testProbe.watch(resourceManagerActor);
+        BootstrapResource bs = BootstrapResource.create(RESOURCE_PROVIDER_TYPE, "foo", "foo");
+        resourceManagerActor.tell(bs, testProbe.ref());
+        ResourceInfo ri = (ResourceInfo) testProbe.receiveOne(Duration.create("50 milliseconds"));
+
+        resourceManagerActor.tell(StopResource.create(ri.parameters().id()), testProbe.testActor());
+
+        testProbe.receiveN(1);
+
+
     }
 }

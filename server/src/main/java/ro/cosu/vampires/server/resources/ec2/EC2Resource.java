@@ -79,7 +79,7 @@ public class EC2Resource extends AbstractResource {
         LOG.debug("EC2command:  {}", command);
 
         RunInstancesRequest request = runInstancesRequest.withImageId(parameters.imageId())
-                .withInstanceType(parameters.instanceType())
+                .withInstanceType(parameters.resourceDescription().resourceType())
                 .withMinCount(1)
                 .withMaxCount(1)
                 .withKeyName(parameters.keyName())

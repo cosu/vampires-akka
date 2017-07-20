@@ -33,15 +33,15 @@ import com.typesafe.config.Config;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 @AutoValue
 
 public abstract class SshResourceParameters implements Resource.Parameters {
 
     public static Builder builder() {
-        return new AutoValue_SshResourceParameters.Builder().port(22).providerType(Resource.ProviderType.SSH)
+        return new AutoValue_SshResourceParameters.Builder().port(22)
                 .id(UUID.randomUUID().toString())
-                .cost(0)
                 .serverId("");
     }
 
@@ -57,19 +57,11 @@ public abstract class SshResourceParameters implements Resource.Parameters {
     public abstract int port();
 
     @Override
-    public abstract Resource.ProviderType providerType();
-
-    @Override
     public abstract String serverId();
 
     @Override
     public abstract String id();
 
-    @Override
-    public abstract double cost();
-
-    @Override
-    public abstract String instanceType();
 
     public abstract Builder toBuilder();
 
@@ -91,17 +83,17 @@ public abstract class SshResourceParameters implements Resource.Parameters {
             this.command(config.getString("command"));
             this.user(config.getString("user"));
             this.address(config.getString("address"));
-            this.cost(config.getDouble("cost"));
             this.privateKey(config.getString("privateKey"));
             if (config.hasPath("port")) {
                 this.port(config.getInt("port"));
             }
+            this.resourceDescription(
+                    ResourceDescription.builder().resourceType(config.getString("type")).provider(Resource.ProviderType.SSH).build());
             return this;
         }
 
-        public abstract Builder cost(double cost);
 
-        public abstract Builder providerType(Resource.ProviderType providerType);
+        public abstract Builder resourceDescription(ResourceDescription resourceDescription);
 
         public abstract Builder command(String s);
 
@@ -114,9 +106,6 @@ public abstract class SshResourceParameters implements Resource.Parameters {
         public abstract Builder port(int i);
 
         public abstract Builder serverId(String s);
-
-        @Override
-        public abstract Builder instanceType(String instanceType);
 
         public abstract Builder id(String id);
 

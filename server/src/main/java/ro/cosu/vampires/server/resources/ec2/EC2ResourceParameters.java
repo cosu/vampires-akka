@@ -34,12 +34,13 @@ import com.typesafe.config.Config;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 @AutoValue
 public abstract class EC2ResourceParameters implements Resource.Parameters {
 
     public static Builder builder() {
-        return new AutoValue_EC2ResourceParameters.Builder().providerType(Resource.ProviderType.EC2)
+        return new AutoValue_EC2ResourceParameters.Builder()
                 .id(UUID.randomUUID().toString())
                 .serverId("");
     }
@@ -49,9 +50,6 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
 
     public abstract String imageId();
 
-    @Override
-    public abstract String instanceType();
-
     public abstract String keyName();
 
     public abstract String region();
@@ -59,16 +57,10 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
     public abstract String securityGroup();
 
     @Override
-    public abstract Resource.ProviderType providerType();
-
-    @Override
     public abstract String serverId();
 
     @Override
     public abstract String id();
-
-    @Override
-    public abstract double cost();
 
     public abstract Builder toBuilder();
 
@@ -85,16 +77,13 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
     @AutoValue.Builder
     public abstract static class Builder implements Resource.Parameters.Builder {
 
+        public abstract Builder resourceDescription(ResourceDescription resourceDescription);
+
         public abstract Builder command(String s);
 
         public abstract Builder imageId(String s);
 
-        public abstract Builder cost(double cost);
-
         public abstract Builder id(String id);
-
-        @Override
-        public abstract Builder instanceType(String s);
 
         public abstract Builder keyName(String s);
 
@@ -104,19 +93,19 @@ public abstract class EC2ResourceParameters implements Resource.Parameters {
 
         public abstract Builder serverId(String s);
 
-        public abstract Builder providerType(Resource.ProviderType providerType);
-
         @Override
         public Builder fromConfig(Config config) {
             String region = config.getString("region");
             Preconditions.checkArgument(region.split("-").length == 3, "Invalid region: " + region);
-            this.cost(config.getDouble("cost"));
             this.command(config.getString("command"));
-            this.instanceType(config.getString("instanceType"));
             this.imageId(config.getString("imageId"));
             this.keyName(config.getString("keyName"));
             this.region(region);
             this.securityGroup(config.getString("securityGroup"));
+            this.resourceDescription(ResourceDescription.builder()
+                    .provider(Resource.ProviderType.EC2)
+                    .resourceType(config.getString("type"))
+                    .build());
             return this;
         }
 

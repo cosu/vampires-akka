@@ -16,7 +16,7 @@ ${curl} --request POST \
         \"resource_description\":
         {
             \"provider\": \"local\",
-            \"type\": \"local\"
+            \"resource_type\": \"local\"
         },
         \"count\": \"1\"
     }

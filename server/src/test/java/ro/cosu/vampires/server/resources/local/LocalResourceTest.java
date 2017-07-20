@@ -117,6 +117,7 @@ public class LocalResourceTest {
         @Named("Config")
         private Config provideConfig() {
             return ConfigFactory.parseString("resources.local.local { " +
+                    "type=local," +
                     "command = foo," +
                     "cost=100\n" +
                     "}");

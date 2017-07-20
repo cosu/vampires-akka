@@ -161,9 +161,9 @@ public class SettingsImpl implements Extension {
                                 double cost = resourceConfig.hasPath("cost") ? resourceConfig.getDouble("cost") : 0.;
                                 Resource.ProviderType pt = Resource.ProviderType.valueOf(enabledProvider.toUpperCase());
                                 return
-                                        ResourceDescription.builder().provider(pt).type(key).cost(cost).build();
+                                        ResourceDescription.builder().provider(pt).resourceType(key).cost(cost).build();
                             })
-                            .collect(Collectors.toMap(ResourceDescription::type, Function.identity()));
+                            .collect(Collectors.toMap(ResourceDescription::resourceType, Function.identity()));
                     return ProviderDescription.builder()
                             .description(name)
                             .provider(Resource.ProviderType.valueOf(enabledProvider.toUpperCase()))
