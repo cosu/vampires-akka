@@ -26,34 +26,38 @@
 
 package ro.cosu.vampires.server.estimators;
 
-import java.util.Map;
+import com.google.common.collect.HashBasedTable;
 
+import ro.cosu.vampires.server.actors.execution.StatsProcessor;
+import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.values.resources.Configuration;
-import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 public class SimpleEstimator implements Estimator {
 
-    private final Map&lt;ResourceDescription, Double&gt; durationsPerInstanceType;
 
-    private final double numberOfJobs;
+    private StatsProcessor statsProcessor;
 
-    public SimpleEstimator(Map&lt;ResourceDescription, Double&gt; durationsPerInstanceType,
-<span class="fc" id="L41">                           double numberOfJobs) {</span>
-<span class="fc" id="L42">        this.durationsPerInstanceType = durationsPerInstanceType;</span>
-<span class="fc" id="L43">        this.numberOfJobs = numberOfJobs;</span>
+<span class="fc" id="L40">    public SimpleEstimator(StatsProcessor statsProcessor) {</span>
+<span class="fc" id="L41">        this.statsProcessor = statsProcessor;</span>
+
+<span class="fc" id="L43">        HashBasedTable&lt;String, Resource.ProviderType, Long&gt; counts = HashBasedTable.create();</span>
 <span class="fc" id="L44">    }</span>
 
-    public double estimate(Configuration configuration) {
 
-<span class="fc" id="L48">        double ratesSum = configuration.resources().stream()</span>
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">                .filter(rd -&gt; rd.count() &gt; 0)</span>
-<span class="fc" id="L50">                .mapToDouble(rd -&gt; {</span>
-<span class="fc" id="L51">                    int count = rd.count();</span>
-<span class="fc" id="L52">                    Double duration = durationsPerInstanceType.get(rd.resourceDescription());</span>
-<span class="fc" id="L53">                    return count / duration;</span>
-<span class="fc" id="L54">                }).sum();</span>
+    public double estimate(Configuration configuration, double numberOfJobs) {
 
-<span class="fc" id="L56">        return numberOfJobs / ratesSum;</span>
+<span class="nc" id="L49">        return 0;</span>
+        /*
+        double ratesSum = configuration.resources().stream()
+                .filter(rd -&gt; rd.count() &gt; 0)
+                .mapToDouble(rd -&gt; {
+                    int count = rd.count();
+                    Double duration = durationsPerInstanceType.get(rd.resourceDescription());
+                    return count / duration;
+                }).sum();
+
+        return numberOfJobs / ratesSum;
+        */
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

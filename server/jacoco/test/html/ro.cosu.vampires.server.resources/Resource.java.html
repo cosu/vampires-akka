@@ -31,6 +31,8 @@ import com.typesafe.config.Config;
 import java.io.Serializable;
 import java.util.concurrent.CompletableFuture;
 
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
+
 public interface Resource {
 
     void connected();
@@ -50,36 +52,32 @@ public interface Resource {
     Status status();
 
     default ResourceInfo info() {
-<span class="fc" id="L53">        return ResourceInfo.create(parameters(), status());</span>
+<span class="fc" id="L55">        return ResourceInfo.create(parameters(), status());</span>
     }
 
-<span class="pc" id="L56">    enum Status {</span>
-<span class="fc" id="L57">        SLEEPING,</span>
-<span class="fc" id="L58">        STARTING,</span>
-<span class="fc" id="L59">        RUNNING,</span>
-<span class="fc" id="L60">        FAILED,</span>
-<span class="fc" id="L61">        STOPPING,</span>
-<span class="fc" id="L62">        STOPPED,</span>
-<span class="fc" id="L63">        UNKNOWN, CONNECTED,</span>
+<span class="pc" id="L58">    enum Status {</span>
+<span class="fc" id="L59">        SLEEPING,</span>
+<span class="fc" id="L60">        STARTING,</span>
+<span class="fc" id="L61">        RUNNING,</span>
+<span class="fc" id="L62">        FAILED,</span>
+<span class="fc" id="L63">        STOPPING,</span>
+<span class="fc" id="L64">        STOPPED,</span>
+<span class="fc" id="L65">        UNKNOWN, CONNECTED,</span>
     }
 
-<span class="fc" id="L66">    enum ProviderType {</span>
-<span class="fc" id="L67">        SSH,</span>
-<span class="fc" id="L68">        LOCAL,</span>
-<span class="fc" id="L69">        DAS5,</span>
-<span class="fc" id="L70">        EC2,</span>
-<span class="fc" id="L71">        MOCK</span>
+<span class="fc" id="L68">    enum ProviderType {</span>
+<span class="fc" id="L69">        SSH,</span>
+<span class="fc" id="L70">        LOCAL,</span>
+<span class="fc" id="L71">        DAS5,</span>
+<span class="fc" id="L72">        EC2,</span>
+<span class="fc" id="L73">        MOCK</span>
     }
 
     interface Parameters extends Serializable {
 
-        ProviderType providerType();
-
-        String instanceType();
+        ResourceDescription resourceDescription();
 
         String id();
-
-        double cost();
 
         String serverId();
 
@@ -90,8 +88,6 @@ public interface Resource {
         Parameters withId(String id);
 
         interface Builder {
-
-            Builder instanceType(String instanceType);
 
             Builder fromConfig(Config config);
 

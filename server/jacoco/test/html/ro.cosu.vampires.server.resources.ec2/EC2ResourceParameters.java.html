@@ -34,23 +34,21 @@ import com.typesafe.config.Config;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 @AutoValue
-<span class="fc" id="L39">public abstract class EC2ResourceParameters implements Resource.Parameters {</span>
+<span class="fc" id="L40">public abstract class EC2ResourceParameters implements Resource.Parameters {</span>
 
     public static Builder builder() {
-<span class="fc" id="L42">        return new AutoValue_EC2ResourceParameters.Builder().providerType(Resource.ProviderType.EC2)</span>
-<span class="fc" id="L43">                .id(UUID.randomUUID().toString())</span>
-<span class="fc" id="L44">                .serverId(&quot;&quot;);</span>
+<span class="fc" id="L43">        return new AutoValue_EC2ResourceParameters.Builder()</span>
+<span class="fc" id="L44">                .id(UUID.randomUUID().toString())</span>
+<span class="fc" id="L45">                .serverId(&quot;&quot;);</span>
     }
 
     @Override
     public abstract String command();
 
     public abstract String imageId();
-
-    @Override
-    public abstract String instanceType();
 
     public abstract String keyName();
 
@@ -59,42 +57,33 @@ import ro.cosu.vampires.server.resources.Resource;
     public abstract String securityGroup();
 
     @Override
-    public abstract Resource.ProviderType providerType();
-
-    @Override
     public abstract String serverId();
 
     @Override
     public abstract String id();
 
-    @Override
-    public abstract double cost();
-
     public abstract Builder toBuilder();
 
     @Override
     public EC2ResourceParameters withServerId(String serverId) {
-<span class="nc" id="L77">        return toBuilder().serverId(serverId).build();</span>
+<span class="nc" id="L69">        return toBuilder().serverId(serverId).build();</span>
     }
 
     @Override
     public Resource.Parameters withId(String id) {
-<span class="nc" id="L82">        return toBuilder().id(id).build();</span>
+<span class="nc" id="L74">        return toBuilder().id(id).build();</span>
     }
 
     @AutoValue.Builder
-<span class="fc" id="L86">    public abstract static class Builder implements Resource.Parameters.Builder {</span>
+<span class="fc" id="L78">    public abstract static class Builder implements Resource.Parameters.Builder {</span>
+
+        public abstract Builder resourceDescription(ResourceDescription resourceDescription);
 
         public abstract Builder command(String s);
 
         public abstract Builder imageId(String s);
 
-        public abstract Builder cost(double cost);
-
         public abstract Builder id(String id);
-
-        @Override
-        public abstract Builder instanceType(String s);
 
         public abstract Builder keyName(String s);
 
@@ -104,20 +93,20 @@ import ro.cosu.vampires.server.resources.Resource;
 
         public abstract Builder serverId(String s);
 
-        public abstract Builder providerType(Resource.ProviderType providerType);
-
         @Override
         public Builder fromConfig(Config config) {
-<span class="fc" id="L111">            String region = config.getString(&quot;region&quot;);</span>
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">            Preconditions.checkArgument(region.split(&quot;-&quot;).length == 3, &quot;Invalid region: &quot; + region);</span>
-<span class="fc" id="L113">            this.cost(config.getDouble(&quot;cost&quot;));</span>
-<span class="fc" id="L114">            this.command(config.getString(&quot;command&quot;));</span>
-<span class="fc" id="L115">            this.instanceType(config.getString(&quot;instanceType&quot;));</span>
-<span class="fc" id="L116">            this.imageId(config.getString(&quot;imageId&quot;));</span>
-<span class="fc" id="L117">            this.keyName(config.getString(&quot;keyName&quot;));</span>
-<span class="fc" id="L118">            this.region(region);</span>
-<span class="fc" id="L119">            this.securityGroup(config.getString(&quot;securityGroup&quot;));</span>
-<span class="fc" id="L120">            return this;</span>
+<span class="fc" id="L98">            String region = config.getString(&quot;region&quot;);</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">            Preconditions.checkArgument(region.split(&quot;-&quot;).length == 3, &quot;Invalid region: &quot; + region);</span>
+<span class="fc" id="L100">            this.command(config.getString(&quot;command&quot;));</span>
+<span class="fc" id="L101">            this.imageId(config.getString(&quot;imageId&quot;));</span>
+<span class="fc" id="L102">            this.keyName(config.getString(&quot;keyName&quot;));</span>
+<span class="fc" id="L103">            this.region(region);</span>
+<span class="fc" id="L104">            this.securityGroup(config.getString(&quot;securityGroup&quot;));</span>
+<span class="fc" id="L105">            this.resourceDescription(ResourceDescription.builder()</span>
+<span class="fc" id="L106">                    .provider(Resource.ProviderType.EC2)</span>
+<span class="fc" id="L107">                    .resourceType(config.getString(&quot;type&quot;))</span>
+<span class="fc" id="L108">                    .build());</span>
+<span class="fc" id="L109">            return this;</span>
         }
 
 

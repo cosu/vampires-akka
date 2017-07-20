@@ -29,65 +29,48 @@ package ro.cosu.vampires.server.values.resources;
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Charsets;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.resources.Resource;
 import ro.cosu.vampires.server.util.gson.AutoGson;
-import ro.cosu.vampires.server.values.Id;
 
 @AutoValue
 @AutoGson
-
-<span class="fc" id="L43">public abstract class ResourceDescription implements Id {</span>
+<span class="fc" id="L39">public abstract class ResourceDescription {</span>
 
     public static Builder builder() {
-<span class="fc" id="L46">        return new AutoValue_ResourceDescription.Builder()</span>
-<span class="fc" id="L47">                .createdAt(ZonedDateTime.now(ZoneOffset.UTC))</span>
-<span class="fc" id="L48">                .updatedAt(ZonedDateTime.now(ZoneOffset.UTC));</span>
+<span class="fc" id="L42">        return new AutoValue_ResourceDescription.Builder().cost(0.);</span>
     }
 
-    public abstract String type();
+    public abstract String resourceType();
 
     public abstract Resource.ProviderType provider();
 
     public abstract double cost();
 
-    @Override
     public abstract String id();
 
-    @Override
-    public abstract ZonedDateTime createdAt();
-
-    @Override
-    public abstract ZonedDateTime updatedAt();
-
     @AutoValue.Builder
-<span class="fc" id="L67">    public static abstract class Builder {</span>
+<span class="fc" id="L54">    public static abstract class Builder {</span>
 
         public abstract Builder provider(Resource.ProviderType provider);
 
         abstract Resource.ProviderType provider();
 
-        public abstract Builder type(String type);
+        public abstract Builder resourceType(String type);
 
-        abstract String type();
+        abstract String resourceType();
 
         public abstract Builder cost(double cost);
 
         public abstract Builder id(String id);
 
-        public abstract Builder createdAt(ZonedDateTime createdAt);
-
-        public abstract Builder updatedAt(ZonedDateTime createdAt);
-
         abstract ResourceDescription autoBuild();
 
         public ResourceDescription build() {
-<span class="fc" id="L88">            String result = UUID.nameUUIDFromBytes((provider().toString() + type()).getBytes(Charsets.UTF_8)).toString();</span>
-<span class="fc" id="L89">            id(result);</span>
-<span class="fc" id="L90">            return autoBuild();</span>
+<span class="fc" id="L71">            String uuid = UUID.nameUUIDFromBytes((provider().toString() + resourceType()).getBytes(Charsets.UTF_8)).toString();</span>
+<span class="fc" id="L72">            id(uuid);</span>
+<span class="fc" id="L73">            return autoBuild();</span>
         }
     }
 

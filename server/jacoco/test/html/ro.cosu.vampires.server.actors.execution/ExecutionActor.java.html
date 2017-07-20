@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExecutionActor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.server.actors.execution</a> &gt; <span class="el_source">ExecutionActor.java</span></div><h1>ExecutionActor.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.server.actors.execution;
+
+
+import com.google.common.collect.Sets;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import akka.actor.AbstractActor;
+import akka.actor.ActorRef;
+import akka.actor.Props;
+import akka.actor.Terminated;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
+import ro.cosu.vampires.server.actors.messages.resource.BootstrapResource;
+import ro.cosu.vampires.server.actors.resource.ResourceControl;
+import ro.cosu.vampires.server.actors.resource.ResourceManagerActor;
+import ro.cosu.vampires.server.resources.ResourceInfo;
+import ro.cosu.vampires.server.values.ClientInfo;
+import ro.cosu.vampires.server.values.jobs.Execution;
+import ro.cosu.vampires.server.values.jobs.Job;
+import ro.cosu.vampires.server.values.resources.ResourceDemand;
+
+public class ExecutionActor extends AbstractActor {
+
+<span class="fc" id="L54">    private Set&lt;ActorRef&gt; watchees = Sets.newLinkedHashSet();</span>
+    private ActorRef resourceManagerActor;
+    private ActorRef resultActor;
+<span class="fc" id="L57">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
+
+<span class="fc" id="L59">    public ExecutionActor(Execution execution) {</span>
+<span class="fc" id="L60">        startExecution(execution);</span>
+<span class="fc" id="L61">    }</span>
+
+    public static Props props(Execution execution) {
+<span class="fc" id="L64">        return Props.create(ExecutionActor.class, execution);</span>
+    }
+
+    private void startExecution(Execution execution) {
+
+<span class="fc" id="L69">        resourceManagerActor = getContext().actorOf(ResourceManagerActor.props(), &quot;resourceManagerActor&quot;);</span>
+<span class="fc" id="L70">        resultActor = getContext().actorOf(ResultActor.props(execution), &quot;resultActor&quot;);</span>
+
+<span class="fc" id="L72">        getContext().watch(resourceManagerActor);</span>
+<span class="fc" id="L73">        getContext().watch(resultActor);</span>
+
+<span class="fc" id="L75">        watchees.add(resourceManagerActor);</span>
+<span class="fc" id="L76">        watchees.add(resultActor);</span>
+
+<span class="fc" id="L78">        execution.configuration().withMode(execution.type()).resources().stream()</span>
+<span class="fc" id="L79">                .flatMap(resourceDemand -&gt; bootstrapResourceList(execution.id(), resourceDemand).stream())</span>
+<span class="fc" id="L80">                .forEach(bootstrapResource -&gt; resourceManagerActor.tell(bootstrapResource, getSelf()));</span>
+<span class="fc" id="L81">    }</span>
+
+    private List&lt;BootstrapResource&gt; bootstrapResourceList(String executionid, ResourceDemand resourceDemand) {
+<span class="fc" id="L84">        return IntStream.range(0, resourceDemand.count()).boxed()</span>
+<span class="fc" id="L85">                .map(i -&gt; BootstrapResource.create(</span>
+<span class="fc" id="L86">                        resourceDemand.resourceDescription().provider(),</span>
+<span class="fc" id="L87">                        resourceDemand.resourceDescription().resourceType(),</span>
+                        executionid))
+<span class="fc" id="L89">                .collect(Collectors.toList());</span>
+    }
+
+    private void handleTerminated() {
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        if (getSender().equals(resultActor)) {</span>
+<span class="fc" id="L94">            getContext().stop(getSelf());</span>
+        }
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        if (getSender().equals(resourceManagerActor)) {</span>
+<span class="fc" id="L97">            resultActor.tell(ResourceControl.Shutdown.create(), getContext().parent());</span>
+        }
+<span class="fc" id="L99">        watchees.remove(getSender());</span>
+<span class="fc" id="L100">    }</span>
+
+    @Override
+    public Receive createReceive() {
+<span class="fc" id="L104">        return receiveBuilder()</span>
+<span class="fc" id="L105">                .match(ClientInfo.class, message-&gt; watchees.forEach(actorRef -&gt; actorRef.forward(message, getContext())))</span>
+<span class="fc" id="L106">                .match(Job.class, message-&gt; resultActor.tell(message, getSender()))</span>
+<span class="fc" id="L107">                .match(ResourceControl.Shutdown.class , message -&gt; resourceManagerActor.forward(message, getContext()))</span>
+<span class="fc" id="L108">                .match(ResourceInfo.class, message -&gt; resultActor.forward(message, getContext()))</span>
+<span class="fc" id="L109">                .match(Execution.class, message -&gt; getContext().parent().forward(message, getContext()))</span>
+<span class="fc" id="L110">                .match(Terminated.class, message-&gt; handleTerminated())</span>
+<span class="fc" id="L111">                .build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ResultActor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.server.actors.execution</a> &gt; <span class="el_source">ResultActor.java</span></div><h1>ResultActor.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.server.actors.execution;
+
+import com.google.common.collect.Lists;
+
+import java.time.Duration;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import akka.actor.AbstractActor;
+import akka.actor.ActorRef;
+import akka.actor.Cancellable;
+import akka.actor.Props;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
+import ro.cosu.vampires.server.actors.ClientConfigActor;
+import ro.cosu.vampires.server.actors.messages.execution.SubscribeExecution;
+import ro.cosu.vampires.server.actors.resource.ResourceControl;
+import ro.cosu.vampires.server.actors.settings.Settings;
+import ro.cosu.vampires.server.actors.settings.SettingsImpl;
+import ro.cosu.vampires.server.estimators.Estimator;
+import ro.cosu.vampires.server.estimators.SimpleEstimator;
+import ro.cosu.vampires.server.resources.ResourceInfo;
+import ro.cosu.vampires.server.schedulers.SamplingWithReplicationScheduler;
+import ro.cosu.vampires.server.schedulers.Scheduler;
+import ro.cosu.vampires.server.schedulers.SimpleScheduler;
+import ro.cosu.vampires.server.values.ClientInfo;
+import ro.cosu.vampires.server.values.jobs.Computation;
+import ro.cosu.vampires.server.values.jobs.Execution;
+import ro.cosu.vampires.server.values.jobs.ExecutionInfo;
+import ro.cosu.vampires.server.values.jobs.ExecutionMode;
+import ro.cosu.vampires.server.values.jobs.Job;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
+import ro.cosu.vampires.server.writers.ResultsWriter;
+
+
+public class ResultActor extends AbstractActor {
+<span class="fc" id="L68">    private final SettingsImpl settings =</span>
+<span class="fc" id="L69">            Settings.SettingsProvider.get(getContext().system());</span>
+<span class="fc" id="L70">    private final ZonedDateTime startTime = ZonedDateTime.now(ZoneOffset.UTC);</span>
+    private final Execution execution;
+
+<span class="fc" id="L73">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
+<span class="fc" id="L74">    private List&lt;Job&gt; results = new LinkedList&lt;&gt;();</span>
+    private List&lt;ResultsWriter&gt; writers;
+<span class="fc" id="L76">    private List&lt;ActorRef&gt; subscribers = Lists.newLinkedList();</span>
+
+    private ActorRef workActor;
+    private Cancellable logSchedule;
+    private Cancellable statsSchedule;
+<span class="fc" id="L81">    private int totalSize = 0;</span>
+
+<span class="fc" id="L83">    private StatsProcessor statsProcessor = new StatsProcessor();</span>
+    private final Estimator estimator;
+
+<span class="fc" id="L86">    ResultActor(Execution execution) {</span>
+<span class="fc" id="L87">        writers = settings.getWriters();</span>
+<span class="fc" id="L88">        this.execution = execution;</span>
+<span class="fc" id="L89">        totalSize = execution.workload().size();</span>
+
+<span class="fc" id="L91">        estimator = new SimpleEstimator(statsProcessor);</span>
+<span class="fc" id="L92">    }</span>
+
+    public static Props props(Execution execution) {
+<span class="fc" id="L95">        return Props.create(ResultActor.class, execution);</span>
+    }
+
+    private static String formatDuration(Duration duration) {
+<span class="fc" id="L99">        long seconds = duration.getSeconds();</span>
+<span class="fc" id="L100">        long absSeconds = Math.abs(seconds);</span>
+<span class="fc" id="L101">        String positive = String.format(</span>
+                &quot;%d:%02d:%02d&quot;,
+<span class="fc" id="L103">                absSeconds / 3600,</span>
+<span class="fc" id="L104">                (absSeconds % 3600) / 60,</span>
+<span class="fc" id="L105">                absSeconds % 60);</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        return seconds &lt; 0 ? &quot;-&quot; + positive : positive;</span>
+    }
+
+    @Override
+    public void preStart() {
+
+<span class="fc" id="L112">        Scheduler scheduler = getScheduler(execution);</span>
+
+<span class="fc" id="L114">        workActor = getContext().actorOf(WorkActor.props(scheduler), &quot;workActor&quot;);</span>
+
+<span class="fc" id="L116">        logSchedule = getContext().system().scheduler().schedule(scala.concurrent.duration.Duration.Zero(),</span>
+<span class="fc" id="L117">                scala.concurrent.duration.Duration.create(30, TimeUnit.SECONDS),</span>
+<span class="fc" id="L118">                () -&gt; log.info(&quot;results so far: {}/{}&quot;, results.size(), totalSize), getContext().system().dispatcher());</span>
+
+<span class="fc" id="L120">        statsSchedule = getContext().system().scheduler().schedule(scala.concurrent.duration.Duration.Zero(),</span>
+<span class="fc" id="L121">                scala.concurrent.duration.Duration.create(500, TimeUnit.MILLISECONDS),</span>
+<span class="fc" id="L122">                () -&gt; statsProcessor.flush(), getContext().system().dispatcher());</span>
+
+        // always inform the parent of changes
+<span class="fc" id="L125">        subscribers.add(getContext().getParent());</span>
+
+<span class="fc" id="L127">    }</span>
+
+    @Override
+    public void postStop() {
+<span class="fc" id="L131">        logSchedule.cancel();</span>
+<span class="fc" id="L132">        statsSchedule.cancel();</span>
+<span class="fc" id="L133">    }</span>
+
+    @Override
+    public Receive createReceive() {
+<span class="fc" id="L137">        return receiveBuilder()</span>
+<span class="fc" id="L138">                .match(Job.class, this::handleJob)</span>
+<span class="fc" id="L139">                .match(ClientInfo.class, this::handleClientInfo)</span>
+<span class="fc" id="L140">                .match(ResourceInfo.class, this::handleResourceInfo)</span>
+<span class="fc" id="L141">                .match(SubscribeExecution.class, this::handleSubscribe)</span>
+<span class="fc" id="L142">                .match(ResourceControl.Shutdown.class, message -&gt; this.handleShutdown())</span>
+<span class="fc" id="L143">                .build();</span>
+    }
+
+    private void handleSubscribe(SubscribeExecution subscribeExecution) {
+
+<span class="nc" id="L148">    }</span>
+
+    private void handleShutdown() {
+        // if all jobs done then set status to finished
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">        if (results.size() == totalSize) {</span>
+<span class="nc" id="L153">            shutdown(ExecutionInfo.Status.FINISHED);</span>
+        } else {
+<span class="fc" id="L155">            shutdown(ExecutionInfo.Status.CANCELED);</span>
+        }
+<span class="fc" id="L157">    }</span>
+
+    private void handleResourceInfo(ResourceInfo resourceInfo) {
+<span class="fc" id="L160">        statsProcessor.process(resourceInfo);</span>
+<span class="fc" id="L161">    }</span>
+
+    private void sendCurrentExecutionInfoToSubscribers(ExecutionInfo.Status status) {
+<span class="fc bfc" id="L164" title="All 2 branches covered.">        for (ActorRef subscriber : subscribers) {</span>
+<span class="fc" id="L165">            ExecutionInfo currentExecutionInfo = getCurrentExecutionInfo(status);</span>
+<span class="fc" id="L166">            subscriber.tell(execution.withInfo(currentExecutionInfo), getSelf());</span>
+<span class="fc" id="L167">        }</span>
+<span class="fc" id="L168">    }</span>
+
+    private ExecutionInfo getCurrentExecutionInfo(ExecutionInfo.Status status) {
+<span class="fc" id="L171">        return ExecutionInfo.empty()</span>
+<span class="fc" id="L172">                .updateTotal(totalSize)</span>
+<span class="fc" id="L173">                .updateCompleted(results.size())</span>
+<span class="fc" id="L174">                .updateStatus(status)</span>
+<span class="fc" id="L175">                .updateStats(statsProcessor.getStats())</span>
+<span class="fc" id="L176">                .updateElapsed(Duration.between(startTime, ZonedDateTime.now(ZoneOffset.UTC)).toMillis())</span>
+<span class="fc" id="L177">                .updateRemaining(totalSize - results.size());</span>
+    }
+
+    private void handleJob(Job job) {
+<span class="fc" id="L181">        workActor.forward(job, getContext());</span>
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">        if (!job.computation().id().equals(Computation.BACKOFF)</span>
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">                &amp;&amp; !job.computation().id().equals(Computation.EMPTY)) {</span>
+<span class="fc" id="L184">            results.add(job);</span>
+<span class="pc" id="L185">            writers.forEach(r -&gt; r.addResult(job));</span>
+<span class="fc" id="L186">            statsProcessor.process(job);</span>
+<span class="fc" id="L187">            sendCurrentExecutionInfoToSubscribers(ExecutionInfo.Status.RUNNING);</span>
+        }
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">        if (results.size() == totalSize) {</span>
+            // signal parent we're done
+<span class="nc" id="L191">            log.debug(&quot;result actor exiting! result count: {}&quot;, results.size());</span>
+<span class="nc" id="L192">            getContext().parent().tell(ResourceControl.Shutdown.create(), getSelf());</span>
+        }
+<span class="fc" id="L194">    }</span>
+
+    private void handleClientInfo(ClientInfo clientInfo) {
+<span class="fc" id="L197">        ActorRef configActor = getContext().actorOf(ClientConfigActor.props(), &quot;clientConfig-&quot; + clientInfo.id());</span>
+<span class="fc" id="L198">        log.debug(&quot;got client info {}&quot;, clientInfo);</span>
+<span class="fc" id="L199">        configActor.forward(clientInfo, getContext());</span>
+<span class="pc" id="L200">        writers.forEach(r -&gt; r.addClient(clientInfo));</span>
+<span class="fc" id="L201">        statsProcessor.process(clientInfo);</span>
+<span class="fc" id="L202">    }</span>
+
+    private void shutdown(ExecutionInfo.Status status) {
+<span class="fc" id="L205">        log.info(&quot;Total Duration: {}&quot;, formatDuration(Duration.between(startTime, ZonedDateTime.now(ZoneOffset.UTC))));</span>
+<span class="fc" id="L206">        log.info(&quot;shutting down&quot;);</span>
+<span class="fc" id="L207">        writers.forEach(ResultsWriter::close);</span>
+        // init shutdown
+<span class="fc" id="L209">        statsProcessor.flush();</span>
+<span class="fc" id="L210">        sendCurrentExecutionInfoToSubscribers(status);</span>
+<span class="fc" id="L211">        getContext().stop(getSelf());</span>
+<span class="fc" id="L212">    }</span>
+
+    private Scheduler getScheduler(Execution execution) {
+<span class="fc" id="L215">        List&lt;Job&gt; jobs = execution.workload().jobs();</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">        if (execution.type().equals(ExecutionMode.SAMPLE)) {</span>
+<span class="fc" id="L217">            log.info(&quot;running in sampling mode : sampling from {} jobs&quot;, jobs.size());</span>
+<span class="fc" id="L218">            return new SamplingWithReplicationScheduler(jobs, settings.getJobDeadline(),</span>
+<span class="fc" id="L219">                    settings.getBackoffInterval(), settings.getNumberOfJobsToSample());</span>
+        } else
+<span class="fc" id="L221">            return new SimpleScheduler(jobs, settings.getJobDeadline(), TimeUnit.SECONDS,</span>
+<span class="fc" id="L222">                    settings.getBackoffInterval());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

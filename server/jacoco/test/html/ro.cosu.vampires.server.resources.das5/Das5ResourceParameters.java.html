@@ -33,15 +33,15 @@ import com.typesafe.config.Config;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 @AutoValue
 
-<span class="fc" id="L39">public abstract class Das5ResourceParameters implements Resource.Parameters {</span>
+<span class="fc" id="L40">public abstract class Das5ResourceParameters implements Resource.Parameters {</span>
 
     public static Builder builder() {
-<span class="fc" id="L42">        return new AutoValue_Das5ResourceParameters.Builder()</span>
-<span class="fc" id="L43">                .port(22).providerType(Resource.ProviderType.DAS5)</span>
-<span class="fc" id="L44">                .cost(0.)</span>
+<span class="fc" id="L43">        return new AutoValue_Das5ResourceParameters.Builder()</span>
+<span class="fc" id="L44">                .port(22)</span>
 <span class="fc" id="L45">                .id(UUID.randomUUID().toString())</span>
 <span class="fc" id="L46">                .serverId(&quot;&quot;);</span>
     }
@@ -58,12 +58,6 @@ import ro.cosu.vampires.server.resources.Resource;
     public abstract int port();
 
     @Override
-    public abstract double cost();
-
-    @Override
-    public abstract Resource.ProviderType providerType();
-
-    @Override
     public abstract String serverId();
 
     public abstract Builder toBuilder();
@@ -72,21 +66,17 @@ import ro.cosu.vampires.server.resources.Resource;
     public abstract String id();
 
     @Override
-    public abstract String instanceType();
-
-
-    @Override
     public Das5ResourceParameters withServerId(String serverId) {
-<span class="nc" id="L80">        return toBuilder().serverId(serverId).build();</span>
+<span class="nc" id="L70">        return toBuilder().serverId(serverId).build();</span>
     }
 
     @Override
     public Resource.Parameters withId(String id) {
-<span class="nc" id="L85">        return toBuilder().id(id).build();</span>
+<span class="nc" id="L75">        return toBuilder().id(id).build();</span>
     }
 
     @AutoValue.Builder
-<span class="fc" id="L89">    public abstract static class Builder implements Resource.Parameters.Builder {</span>
+<span class="fc" id="L79">    public abstract static class Builder implements Resource.Parameters.Builder {</span>
 
         public abstract Builder command(String s);
 
@@ -98,27 +88,27 @@ import ro.cosu.vampires.server.resources.Resource;
 
         public abstract Builder port(int i);
 
-        public abstract Builder cost(double cost);
-
-        public abstract Builder providerType(Resource.ProviderType providerType);
+        public abstract Builder resourceDescription(ResourceDescription resourceDescription);
 
         public abstract Builder serverId(String s);
 
         @Override
-        public abstract Builder instanceType(String instanceType);
-
-        @Override
         public Builder fromConfig(Config config) {
 
-<span class="fc" id="L113">            this.command(config.getString(&quot;command&quot;));</span>
-<span class="fc" id="L114">            this.user(config.getString(&quot;user&quot;));</span>
-<span class="fc" id="L115">            this.cost(config.getDouble(&quot;cost&quot;));</span>
-<span class="fc" id="L116">            this.address(config.getString(&quot;address&quot;));</span>
-<span class="fc" id="L117">            this.privateKey(config.getString(&quot;privateKey&quot;));</span>
-<span class="pc bpc" id="L118" title="1 of 2 branches missed.">            if (config.hasPath(&quot;port&quot;)) {</span>
-<span class="nc" id="L119">                this.port(config.getInt(&quot;port&quot;));</span>
+<span class="fc" id="L98">            String type = config.getString(&quot;type&quot;);</span>
+
+<span class="fc" id="L100">            this.resourceDescription(ResourceDescription.builder()</span>
+<span class="fc" id="L101">                    .provider(Resource.ProviderType.DAS5)</span>
+<span class="fc" id="L102">                    .resourceType(type)</span>
+<span class="fc" id="L103">                    .build());</span>
+<span class="fc" id="L104">            this.command(config.getString(&quot;command&quot;));</span>
+<span class="fc" id="L105">            this.user(config.getString(&quot;user&quot;));</span>
+<span class="fc" id="L106">            this.address(config.getString(&quot;address&quot;));</span>
+<span class="fc" id="L107">            this.privateKey(config.getString(&quot;privateKey&quot;));</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">            if (config.hasPath(&quot;port&quot;)) {</span>
+<span class="nc" id="L109">                this.port(config.getInt(&quot;port&quot;));</span>
             }
-<span class="fc" id="L121">            return this;</span>
+<span class="fc" id="L111">            return this;</span>
         }
 
         public abstract Builder id(String id);

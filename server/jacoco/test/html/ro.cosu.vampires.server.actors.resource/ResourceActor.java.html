@@ -44,33 +44,41 @@ public class ResourceActor extends AbstractActor {
                 {
 <span class="fc" id="L45">                    sendResourceInfo(sender);</span>
 <span class="fc" id="L46">                    getSelf().tell(PoisonPill.getInstance(), ActorRef.noSender());</span>
-<span class="fc" id="L47">                });</span>
-<span class="fc" id="L48">    }</span>
+<span class="fc" id="L47">                })</span>
+<span class="fc" id="L48">                .exceptionally(this::logException);</span>
+<span class="fc" id="L49">    }</span>
 
     private void start() {
-<span class="fc" id="L51">        ActorRef sender = getSender();</span>
-<span class="fc" id="L52">        this.resource</span>
-<span class="fc" id="L53">                .start()</span>
-<span class="fc" id="L54">                .thenAccept(resource -&gt; sendResourceInfo(sender));</span>
-<span class="fc" id="L55">    }</span>
+<span class="fc" id="L52">        ActorRef sender = getSender();</span>
+<span class="fc" id="L53">        this.resource</span>
+<span class="fc" id="L54">                .start()</span>
+<span class="fc" id="L55">                .thenAccept(resource -&gt; sendResourceInfo(sender))</span>
+<span class="fc" id="L56">                .exceptionally(this::logException)</span>
+        ;
+<span class="fc" id="L58">    }</span>
+
+    private Void logException(Throwable exception) {
+<span class="nc" id="L61">        log.error(&quot;Failed to stop&quot;, exception);</span>
+<span class="nc" id="L62">        return null;</span>
+    }
 
 
     private void connectClient(ClientInfo clientInfo) {
-<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        if (clientInfo.id().equals(resource.parameters().id())) {</span>
-<span class="fc" id="L60">            resource.connected();</span>
-<span class="fc" id="L61">            log.info(&quot;Connected: {} {}&quot;, resource.info().parameters().providerType(), resource.info().parameters().instanceType());</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">        if (clientInfo.id().equals(resource.parameters().id())) {</span>
+<span class="fc" id="L68">            resource.connected();</span>
+<span class="fc" id="L69">            log.info(&quot;Connected: {}&quot;, resource.info().parameters().resourceDescription());</span>
         } else {
-<span class="nc" id="L63">            log.error(&quot;client info and resource info don't match {}, {}&quot;, clientInfo, resource.info());</span>
+<span class="nc" id="L71">            log.error(&quot;client info and resource info don't match {}, {}&quot;, clientInfo, resource.info());</span>
         }
-<span class="fc" id="L65">        sendResourceInfo(getContext().parent());</span>
-<span class="fc" id="L66">    }</span>
+<span class="fc" id="L73">        sendResourceInfo(getContext().parent());</span>
+<span class="fc" id="L74">    }</span>
 
     private void sendResourceInfo(ActorRef toActor) {
-<span class="fc" id="L69">        log.debug(&quot;sending {} to {}&quot;, resource.info(), toActor);</span>
-<span class="fc" id="L70">        toActor.tell(resource.info(), getSelf());</span>
+<span class="fc" id="L77">        log.debug(&quot;sending {} to {}&quot;, resource.info(), toActor);</span>
+<span class="fc" id="L78">        toActor.tell(resource.info(), getSelf());</span>
         // also update the parent
-<span class="fc" id="L72">        getContext().parent().tell(resource.info(), getSelf());</span>
-<span class="fc" id="L73">    }</span>
+<span class="fc" id="L80">        getContext().parent().tell(resource.info(), getSelf());</span>
+<span class="fc" id="L81">    }</span>
 
 
 }

@@ -33,16 +33,16 @@ import com.typesafe.config.Config;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 
 @AutoValue
-<span class="fc" id="L39">public abstract class MockResourceParameters implements Resource.Parameters {</span>
+<span class="fc" id="L40">public abstract class MockResourceParameters implements Resource.Parameters {</span>
 
 
     public static Builder builder() {
-<span class="fc" id="L43">        return new AutoValue_MockResourceParameters.Builder().providerType(Resource.ProviderType.MOCK)</span>
-<span class="fc" id="L44">                .id(UUID.randomUUID().toString())</span>
-<span class="fc" id="L45">                .cost(0)</span>
+<span class="fc" id="L44">        return new AutoValue_MockResourceParameters.Builder()</span>
+<span class="fc" id="L45">                .id(UUID.randomUUID().toString())</span>
 <span class="fc" id="L46">                .serverId(&quot;&quot;);</span>
     }
 
@@ -50,52 +50,40 @@ import ro.cosu.vampires.server.resources.Resource;
     public abstract String command();
 
     @Override
-    public abstract Resource.ProviderType providerType();
-
-    @Override
     public abstract String serverId();
 
     public abstract Builder toBuilder();
 
     @Override
-    public abstract String instanceType();
-
-    @Override
     public abstract String id();
 
     @Override
-    public abstract double cost();
-
-    @Override
     public MockResourceParameters withServerId(String serverId) {
-<span class="fc" id="L71">        return toBuilder().serverId(&quot;&quot;).build();</span>
+<span class="fc" id="L62">        return toBuilder().serverId(&quot;&quot;).build();</span>
     }
 
     @Override
     public Resource.Parameters withId(String id) {
-<span class="fc" id="L76">        return toBuilder().id(id).build();</span>
+<span class="fc" id="L67">        return toBuilder().id(id).build();</span>
     }
 
     @AutoValue.Builder
-<span class="fc" id="L80">    public abstract static class Builder implements Resource.Parameters.Builder {</span>
+<span class="fc" id="L71">    public abstract static class Builder implements Resource.Parameters.Builder {</span>
         @Override
         public Builder fromConfig(Config config) {
-<span class="fc" id="L83">            this.command(config.getString(&quot;command&quot;));</span>
-<span class="fc" id="L84">            return this;</span>
+<span class="fc" id="L74">            this.command(config.getString(&quot;command&quot;));</span>
+<span class="fc" id="L75">            this.resourceDescription(</span>
+<span class="fc" id="L76">                    ResourceDescription.builder().resourceType(config.getString(&quot;type&quot;)).provider(Resource.ProviderType.MOCK).build() );</span>
+<span class="fc" id="L77">            return this;</span>
         }
 
-        public abstract Builder providerType(Resource.ProviderType providerType);
+        public abstract Builder resourceDescription(ResourceDescription resourceDescription);
 
         public abstract Builder command(String command);
 
         public abstract Builder serverId(String serverId);
 
-        @Override
-        public abstract Builder instanceType(String instanceType);
-
         public abstract Builder id(String id);
-
-        public abstract Builder cost(double cost);
 
         @Override
         public abstract MockResourceParameters build();

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WorkActor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">server</a> &gt; <a href="index.source.html" class="el_package">ro.cosu.vampires.server.actors.execution</a> &gt; <span class="el_source">WorkActor.java</span></div><h1>WorkActor.java</h1><pre class="source lang-java linenums">/*
+ *
+ *  * The MIT License (MIT)
+ *  * Copyright © 2016 Cosmin Dumitru, http://cosu.ro &lt;cosu@cosu.ro&gt;
+ *  *
+ *  * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  * of this software and associated documentation files (the “Software”), to deal
+ *  * in the Software without restriction, including without limitation the rights
+ *  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  * copies of the Software, and to permit persons to whom the Software is
+ *  * furnished to do so, subject to the following conditions:
+ *  *
+ *  * The above copyright notice and this permission notice shall be included in
+ *  * all copies or substantial portions of the Software.
+ *  *
+ *  * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  * THE SOFTWARE.
+ *  *
+ *
+ */
+
+package ro.cosu.vampires.server.actors.execution;
+
+import akka.actor.AbstractActor;
+import akka.actor.Props;
+import akka.event.Logging;
+import akka.event.LoggingAdapter;
+import ro.cosu.vampires.server.schedulers.Scheduler;
+import ro.cosu.vampires.server.values.jobs.Computation;
+import ro.cosu.vampires.server.values.jobs.Job;
+
+public class WorkActor extends AbstractActor {
+
+<span class="fc" id="L39">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
+    private Scheduler scheduler;
+
+<span class="fc" id="L42">    WorkActor(Scheduler scheduler) {</span>
+<span class="fc" id="L43">        this.scheduler = scheduler;</span>
+<span class="fc" id="L44">    }</span>
+
+    public static Props props(Scheduler scheduler) {
+<span class="fc" id="L47">        return Props.create(WorkActor.class, scheduler);</span>
+    }
+
+    private void receiveJob(Job receivedJob) {
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">        if (!receivedJob.computation().id().equals(Computation.BACKOFF)</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">                &amp;&amp; !receivedJob.computation().id().equals(Computation.EMPTY)) {</span>
+<span class="fc" id="L53">            scheduler.markDone(receivedJob);</span>
+        }
+
+<span class="fc" id="L56">        Job work = scheduler.getJob(receivedJob.from());</span>
+<span class="fc" id="L57">        getSender().tell(work, getSelf());</span>
+
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (scheduler.isDone()) {</span>
+<span class="fc" id="L60">            log.debug(&quot;work actor exiting&quot;);</span>
+<span class="fc" id="L61">            getContext().stop(getSelf());</span>
+        }
+<span class="fc" id="L63">    }</span>
+
+    @Override
+    public Receive createReceive() {
+<span class="fc" id="L67">        return receiveBuilder()</span>
+<span class="fc" id="L68">                .match(Job.class , this::receiveJob)</span>
+<span class="fc" id="L69">                .matchAny(message -&gt; {</span>
+<span class="fc" id="L70">                    log.warning(&quot;unhandled message from {}&quot;, getSender());</span>
+<span class="fc" id="L71">                    unhandled(message);</span>
+<span class="fc" id="L72">                })</span>
+<span class="fc" id="L73">                .build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

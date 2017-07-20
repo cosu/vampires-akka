@@ -40,6 +40,7 @@ import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import ro.cosu.vampires.server.actors.messages.QueryResource;
 import ro.cosu.vampires.server.actors.messages.resource.BootstrapResource;
+import ro.cosu.vampires.server.actors.messages.resource.StopResource;
 import ro.cosu.vampires.server.actors.settings.Settings;
 import ro.cosu.vampires.server.actors.settings.SettingsImpl;
 import ro.cosu.vampires.server.resources.Resource;
@@ -50,101 +51,103 @@ import ro.cosu.vampires.server.resources.ResourceProvider;
 import ro.cosu.vampires.server.values.ClientInfo;
 
 public class ResourceManagerActor extends AbstractActor{
-<span class="fc" id="L53">    private final SettingsImpl settings =</span>
-<span class="fc" id="L54">            Settings.SettingsProvider.get(getContext().system());</span>
-<span class="fc" id="L55">    private ResourceRegistry resourceRegistry = new ResourceRegistry();</span>
-<span class="fc" id="L56">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
+<span class="fc" id="L54">    private final SettingsImpl settings =</span>
+<span class="fc" id="L55">            Settings.SettingsProvider.get(getContext().system());</span>
+<span class="fc" id="L56">    private ResourceRegistry resourceRegistry = new ResourceRegistry();</span>
+<span class="fc" id="L57">    private LoggingAdapter log = Logging.getLogger(getContext().system(), this);</span>
     private ResourceManager resourceManager;
 
-<span class="fc" id="L59">    public ResourceManagerActor() {</span>
-<span class="fc" id="L60">        Injector injector = Guice.createInjector(new ResourceModule(settings.vampires));</span>
-<span class="fc" id="L61">        resourceManager = injector.getInstance(ResourceManager.class);</span>
-<span class="fc" id="L62">    }</span>
+<span class="fc" id="L60">    public ResourceManagerActor() {</span>
+<span class="fc" id="L61">        Injector injector = Guice.createInjector(new ResourceModule(settings.vampires));</span>
+<span class="fc" id="L62">        resourceManager = injector.getInstance(ResourceManager.class);</span>
+<span class="fc" id="L63">    }</span>
 
     public static Props props() {
-<span class="fc" id="L65">        return Props.create(ResourceManagerActor.class);</span>
+<span class="fc" id="L66">        return Props.create(ResourceManagerActor.class);</span>
     }
 
 
     @Override
     public Receive createReceive() {
-<span class="fc" id="L71">        return receiveBuilder()</span>
-<span class="fc" id="L72">                .match(BootstrapResource.class, this::bootstrapResource)</span>
-<span class="fc" id="L73">                .match(QueryResource.class, message -&gt; this.queryResource(message, getSender()))</span>
-<span class="fc" id="L74">                .match(ResourceControl.Shutdown.class, message -&gt; shutdownResources())</span>
-<span class="fc" id="L75">                .match(ResourceInfo.class, message -&gt; registerResource(message, getSender()))</span>
-<span class="fc" id="L76">                .match(ClientInfo.class, this::registerClient)</span>
-<span class="fc" id="L77">                .match(Terminated.class , message -&gt; terminatedResource(getSender()))</span>
-<span class="fc" id="L78">                .build();</span>
+<span class="fc" id="L72">        return receiveBuilder()</span>
+<span class="fc" id="L73">                .match(BootstrapResource.class, this::bootstrapResource)</span>
+<span class="fc" id="L74">                .match(QueryResource.class, message -&gt; this.queryResource(message, getSender()))</span>
+<span class="fc" id="L75">                .match(ResourceControl.Shutdown.class, message -&gt; shutdownResources())</span>
+<span class="fc" id="L76">                .match(ResourceInfo.class, message -&gt; registerResource(message, getSender()))</span>
+<span class="fc" id="L77">                .match(StopResource.class, this::stopResource)</span>
+<span class="fc" id="L78">                .match(ClientInfo.class, this::registerClient)</span>
+<span class="fc" id="L79">                .match(Terminated.class , message -&gt; terminatedResource(getSender()))</span>
+<span class="fc" id="L80">                .build();</span>
     }
 
     private void bootstrapResource(BootstrapResource bootstrap) {
-<span class="fc" id="L82">        ResourceProvider resourceProvider = resourceManager.getProvider(bootstrap.type()).orElseThrow(()</span>
-<span class="nc" id="L83">                -&gt; new IllegalArgumentException(&quot;Error getting &quot; + bootstrap.type()</span>
+<span class="fc" id="L84">        ResourceProvider resourceProvider = resourceManager.getProvider(bootstrap.type()).orElseThrow(()</span>
+<span class="nc" id="L85">                -&gt; new IllegalArgumentException(&quot;Error getting &quot; + bootstrap.type()</span>
                 + &quot; resource provider.&quot;)
         );
 
-<span class="fc" id="L87">        Resource.Parameters parameters = resourceProvider.getParameters(bootstrap.name())</span>
-<span class="fc" id="L88">                .withId(UUID.randomUUID().toString())</span>
-<span class="fc" id="L89">                .withServerId(bootstrap.serverId());</span>
+<span class="fc" id="L89">        Resource.Parameters parameters = resourceProvider.getParameters(bootstrap.name())</span>
+<span class="fc" id="L90">                .withId(UUID.randomUUID().toString())</span>
+<span class="fc" id="L91">                .withServerId(bootstrap.serverId());</span>
 
-<span class="fc" id="L91">        Resource resource = resourceProvider.create(parameters).orElseThrow(() -&gt;</span>
-<span class="nc" id="L92">                new IllegalArgumentException(&quot;Error getting resource with parameters:&quot; + parameters));</span>
+<span class="fc" id="L93">        Resource resource = resourceProvider.create(parameters).orElseThrow(() -&gt;</span>
+<span class="nc" id="L94">                new IllegalArgumentException(&quot;Error getting resource with parameters:&quot; + parameters));</span>
 
-<span class="fc" id="L94">        ActorRef resourceActor = getContext().actorOf(ResourceActor.props(resource));</span>
-<span class="fc" id="L95">        getContext().watch(resourceActor);</span>
-<span class="fc" id="L96">        resourceRegistry.addResourceActor(resourceActor, parameters);</span>
-<span class="fc" id="L97">        resourceActor.forward(ResourceControl.Start.create(), getContext());</span>
-<span class="fc" id="L98">    }</span>
+<span class="fc" id="L96">        ActorRef resourceActor = getContext().actorOf(ResourceActor.props(resource));</span>
+<span class="fc" id="L97">        getContext().watch(resourceActor);</span>
+<span class="fc" id="L98">        resourceRegistry.addResourceActor(resourceActor, parameters);</span>
+<span class="fc" id="L99">        resourceActor.forward(ResourceControl.Start.create(), getContext());</span>
+<span class="fc" id="L100">    }</span>
 
     private void terminatedResource(ActorRef sender) {
-<span class="fc" id="L101">        log.debug(&quot;terminated {}&quot;, sender);</span>
-<span class="fc" id="L102">        getContext().unwatch(sender);</span>
-<span class="fc" id="L103">        resourceRegistry.removeResource(sender);</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">        if (resourceRegistry.getResourceActors().isEmpty()) {</span>
-<span class="fc" id="L105">            getContext().stop(getSelf());</span>
-<span class="fc" id="L106">            log.debug(&quot;shutting down resource manager&quot;);</span>
+<span class="fc" id="L103">        log.debug(&quot;terminated {}&quot;, sender);</span>
+<span class="fc" id="L104">        getContext().unwatch(sender);</span>
+<span class="fc" id="L105">        resourceRegistry.removeResource(sender);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        if (resourceRegistry.getResourceActors().isEmpty()) {</span>
+<span class="fc" id="L107">            getContext().stop(getSelf());</span>
+<span class="fc" id="L108">            log.debug(&quot;shutting down resource manager&quot;);</span>
         }
-<span class="fc" id="L108">    }</span>
+<span class="fc" id="L110">    }</span>
 
     private void registerClient(ClientInfo clientInfo) {
-<span class="fc" id="L111">        getContext().watch(getSender());</span>
-<span class="fc" id="L112">        resourceRegistry.registerClient(getSender(), clientInfo);</span>
-<span class="fc" id="L113">        resourceRegistry.lookupResourceOfClient(clientInfo.id())</span>
-<span class="fc" id="L114">                .ifPresent(resourceActor -&gt; resourceActor.forward(clientInfo, getContext()));</span>
-<span class="fc" id="L115">        logCurrentClients();</span>
-<span class="fc" id="L116">    }</span>
+<span class="fc" id="L113">        getContext().watch(getSender());</span>
+<span class="fc" id="L114">        resourceRegistry.registerClient(getSender(), clientInfo);</span>
+<span class="fc" id="L115">        resourceRegistry.lookupResourceOfClient(clientInfo.id())</span>
+<span class="fc" id="L116">                .ifPresent(resourceActor -&gt; resourceActor.forward(clientInfo, getContext()));</span>
+<span class="fc" id="L117">        logCurrentClients();</span>
+<span class="fc" id="L118">    }</span>
 
     private void logCurrentClients() {
-<span class="fc" id="L119">        log.info(&quot;clients {} / resourceActors {} &quot;, resourceRegistry.getRegisteredClients().size(),</span>
-<span class="fc" id="L120">                resourceRegistry.getResourceActors().size());</span>
-<span class="fc" id="L121">    }</span>
+<span class="fc" id="L121">        log.info(&quot;clients {} / resourceActors {} &quot;, resourceRegistry.getRegisteredClients().size(),</span>
+<span class="fc" id="L122">                resourceRegistry.getResourceActors().size());</span>
+<span class="fc" id="L123">    }</span>
 
     private void registerResource(ResourceInfo resourceInfo, ActorRef sender) {
-<span class="fc" id="L124">        log.debug(&quot;resource register {}&quot;, resourceInfo);</span>
-<span class="fc" id="L125">        resourceRegistry.registerResource(sender, resourceInfo);</span>
-<span class="fc" id="L126">    }</span>
+<span class="fc" id="L126">        log.debug(&quot;resource register {}&quot;, resourceInfo);</span>
+<span class="fc" id="L127">        resourceRegistry.registerResource(sender, resourceInfo);</span>
+<span class="fc" id="L128">    }</span>
 
     private void queryResource(QueryResource query, ActorRef sender) {
-<span class="fc" id="L129">        Optional&lt;ActorRef&gt; resourceOfClient = resourceRegistry.lookupResourceOfClient(query.resourceId());</span>
+<span class="fc" id="L131">        Optional&lt;ActorRef&gt; resourceOfClient = resourceRegistry.lookupResourceOfClient(query.resourceId());</span>
 
-<span class="pc bpc" id="L131" title="1 of 2 branches missed.">        if (resourceOfClient.isPresent()) {</span>
-<span class="fc" id="L132">            ActorRef resourceActor = resourceOfClient.get();</span>
-<span class="fc" id="L133">            resourceActor.tell(query, sender);</span>
-<span class="fc" id="L134">        } else {</span>
-<span class="nc" id="L135">            log.warning(&quot;Query: {} does not match any existing resource&quot;, query);</span>
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">        if (resourceOfClient.isPresent()) {</span>
+<span class="fc" id="L134">            ActorRef resourceActor = resourceOfClient.get();</span>
+<span class="fc" id="L135">            resourceActor.tell(query, sender);</span>
+<span class="fc" id="L136">        } else {</span>
+<span class="nc" id="L137">            log.warning(&quot;Query: {} does not match any existing resource&quot;, query);</span>
         }
-<span class="fc" id="L137">    }</span>
+<span class="fc" id="L139">    }</span>
+
+    private void stopResource(StopResource stopResource) {
+<span class="fc" id="L142">        resourceRegistry.clientIdsToResourceActors.get(stopResource.id())</span>
+<span class="fc" id="L143">                .tell(ResourceControl.Shutdown.create(), getSelf());</span>
+<span class="fc" id="L144">    }</span>
 
     private void shutdownResources() {
-
-<span class="fc" id="L141">        resourceRegistry.getResourceActors().forEach(r -&gt; r.forward(ResourceControl.Shutdown.create(), getContext()));</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">        if (resourceRegistry.getResourceActors().isEmpty()) {</span>
-<span class="fc" id="L143">            getContext().stop(getSelf());</span>
+<span class="fc" id="L147">        resourceRegistry.getResourceActors().forEach(r -&gt; r.forward(ResourceControl.Shutdown.create(), getContext()));</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">        if (resourceRegistry.getResourceActors().isEmpty()) {</span>
+<span class="fc" id="L149">            getContext().stop(getSelf());</span>
         }
-<span class="fc" id="L145">    }</span>
-
-
-
+<span class="fc" id="L151">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

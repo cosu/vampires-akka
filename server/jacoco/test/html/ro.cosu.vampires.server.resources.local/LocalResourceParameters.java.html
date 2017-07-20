@@ -33,15 +33,15 @@ import com.typesafe.config.Config;
 import java.util.UUID;
 
 import ro.cosu.vampires.server.resources.Resource;
+import ro.cosu.vampires.server.values.resources.ResourceDescription;
 
 @AutoValue
-<span class="fc" id="L38">public abstract class LocalResourceParameters implements Resource.Parameters {</span>
+<span class="fc" id="L39">public abstract class LocalResourceParameters implements Resource.Parameters {</span>
 
 
     public static Builder builder() {
-<span class="fc" id="L42">        return new AutoValue_LocalResourceParameters.Builder().providerType(Resource.ProviderType.LOCAL)</span>
-<span class="fc" id="L43">                .id(UUID.randomUUID().toString())</span>
-<span class="fc" id="L44">                .cost(0.)</span>
+<span class="fc" id="L43">        return new AutoValue_LocalResourceParameters.Builder()</span>
+<span class="fc" id="L44">                .id(UUID.randomUUID().toString())</span>
 <span class="fc" id="L45">                .serverId(&quot;&quot;);</span>
     }
 
@@ -49,53 +49,40 @@ import ro.cosu.vampires.server.resources.Resource;
     public abstract String command();
 
     @Override
-    public abstract Resource.ProviderType providerType();
-
-    @Override
     public abstract String serverId();
 
     @Override
     public abstract String id();
 
-    @Override
-    public abstract double cost();
-
-    @Override
-    public abstract String instanceType();
-
     public abstract Builder toBuilder();
 
     @Override
     public LocalResourceParameters withServerId(String serverId) {
-<span class="nc" id="L70">        return toBuilder().serverId(serverId).build();</span>
+<span class="nc" id="L61">        return toBuilder().serverId(serverId).build();</span>
     }
 
     @Override
     public Resource.Parameters withId(String id) {
-<span class="nc" id="L75">        return toBuilder().id(id).build();</span>
+<span class="nc" id="L66">        return toBuilder().id(id).build();</span>
     }
 
     @AutoValue.Builder
-<span class="fc" id="L79">    public abstract static class Builder implements Resource.Parameters.Builder {</span>
+<span class="fc" id="L70">    public abstract static class Builder implements Resource.Parameters.Builder {</span>
         @Override
         public Builder fromConfig(Config config) {
-<span class="fc" id="L82">            this.cost(config.getDouble(&quot;cost&quot;));</span>
-<span class="fc" id="L83">            this.command(config.getString(&quot;command&quot;));</span>
-<span class="fc" id="L84">            return this;</span>
+<span class="fc" id="L73">            this.command(config.getString(&quot;command&quot;));</span>
+<span class="fc" id="L74">            this.resourceDescription(ResourceDescription.builder()</span>
+<span class="fc" id="L75">                    .provider(Resource.ProviderType.LOCAL).resourceType(config.getString(&quot;type&quot;)).build());</span>
+<span class="fc" id="L76">            return this;</span>
         }
 
-        public abstract Builder providerType(Resource.ProviderType providerType);
-
-        public abstract Builder cost(double cost);
+        public abstract Builder resourceDescription(ResourceDescription resourceDescription);
 
         public abstract Builder id(String command);
 
         public abstract Builder command(String command);
 
         public abstract Builder serverId(String serverId);
-
-        @Override
-        public abstract Builder instanceType(String instanceType);
 
         @Override
         public abstract LocalResourceParameters build();

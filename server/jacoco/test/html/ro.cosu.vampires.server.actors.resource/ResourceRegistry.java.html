@@ -45,36 +45,39 @@ import ro.cosu.vampires.server.values.ClientInfo;
 
 <span class="fc" id="L46">    protected BiMap&lt;String, ActorRef&gt; clientIdsToResourceActors = HashBiMap.create();</span>
 <span class="fc" id="L47">    protected BiMap&lt;String, ActorRef&gt; clientIdsToClientActors = HashBiMap.create();</span>
+<span class="fc" id="L48">    protected BiMap&lt;String, ResourceInfo&gt; resourceMetadata = HashBiMap.create();</span>
 
     public void addResourceActor(ActorRef resource, Resource.Parameters parameters) {
-<span class="fc" id="L50">        clientIdsToResourceActors.put(parameters.id(), resource);</span>
-<span class="fc" id="L51">    }</span>
+<span class="fc" id="L51">        clientIdsToResourceActors.put(parameters.id(), resource);</span>
+<span class="fc" id="L52">    }</span>
 
     public BiMap&lt;String, ActorRef&gt; getRegisteredClients() {
-<span class="fc" id="L54">        return clientIdsToClientActors;</span>
+<span class="fc" id="L55">        return clientIdsToClientActors;</span>
     }
 
     public Optional&lt;ActorRef&gt; lookupResourceOfClient(String clientId) {
-<span class="fc" id="L58">        return Optional.ofNullable(clientIdsToResourceActors.get(clientId));</span>
+<span class="fc" id="L59">        return Optional.ofNullable(clientIdsToResourceActors.get(clientId));</span>
     }
 
     public Set&lt;ActorRef&gt; getResourceActors() {
-<span class="fc" id="L62">        return clientIdsToResourceActors.values();</span>
+<span class="fc" id="L63">        return clientIdsToResourceActors.values();</span>
     }
 
     public void registerResource(ActorRef localResourceActor, ResourceInfo resourceInfo) {
-<span class="fc" id="L66">        String clientId = resourceInfo.parameters().id();</span>
-<span class="fc" id="L67">        clientIdsToResourceActors.put(clientId, localResourceActor);</span>
-<span class="fc" id="L68">    }</span>
+<span class="fc" id="L67">        String clientId = resourceInfo.parameters().id();</span>
+<span class="fc" id="L68">        clientIdsToResourceActors.put(clientId, localResourceActor);</span>
+<span class="fc" id="L69">        resourceMetadata.put(clientId, resourceInfo);</span>
+<span class="fc" id="L70">    }</span>
 
     public void registerClient(ActorRef clientActor, ClientInfo clientInfo) {
-<span class="fc" id="L71">        clientIdsToClientActors.put(clientInfo.id(), clientActor);</span>
-<span class="fc" id="L72">    }</span>
+<span class="fc" id="L73">        clientIdsToClientActors.put(clientInfo.id(), clientActor);</span>
+<span class="fc" id="L74">    }</span>
 
     public void removeResource(ActorRef resourceActor) {
-<span class="fc" id="L75">        String clientId = clientIdsToResourceActors.inverse().get(resourceActor);</span>
-<span class="fc" id="L76">        clientIdsToClientActors.remove(clientId);</span>
-<span class="fc" id="L77">        clientIdsToResourceActors.remove(clientId);</span>
-<span class="fc" id="L78">    }</span>
+<span class="fc" id="L77">        String clientId = clientIdsToResourceActors.inverse().get(resourceActor);</span>
+<span class="fc" id="L78">        clientIdsToClientActors.remove(clientId);</span>
+<span class="fc" id="L79">        clientIdsToResourceActors.remove(clientId);</span>
+<span class="fc" id="L80">        resourceMetadata.remove(clientId);</span>
+<span class="fc" id="L81">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.033s</div>
+<div class="counter">0.055s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,12 +79,12 @@
 </thead>
 <tr>
 <td class="success">testShutdown</td>
-<td>0.017s</td>
+<td>0.026s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">testShutdownWhenAllResults</td>
-<td>0.016s</td>
+<td>0.029s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -92,23 +92,24 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2017-07-18 07:53:01,423 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
-2017-07-18 07:53:01,425 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- logger log1-Slf4jLogger started
-2017-07-18 07:53:01,429 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- Default Loggers started
-2017-07-18 07:53:01,443 DEBUG r.c.v.s.actors.settings.Settings [] []- Providers: [LOCAL, SSH, MOCK, DAS5]
-2017-07-18 07:53:01,443 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
-2017-07-18 07:53:01,444 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
-2017-07-18 07:53:01,444 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
-2017-07-18 07:53:01,445 WARN  r.c.v.server.actors.StatsProcessor [] []- client  not registered. skipping processing
-2017-07-18 07:53:01,445 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 0 remaining 3
-2017-07-18 07:53:01,446 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-4] [akka://test/user/$$i]- results so far: 0/3
-2017-07-18 07:53:01,460 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
-2017-07-18 07:53:01,461 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
-2017-07-18 07:53:01,461 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
-2017-07-18 07:53:01,462 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$a/child]- results so far: 0/3
-2017-07-18 07:53:01,462 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-5] [akka://test/user/$a/child]- Total Duration: 0:00:00
-2017-07-18 07:53:01,462 INFO  r.c.v.server.actors.ResultActor [test-akka.actor.default-dispatcher-5] [akka://test/user/$a/child]- shutting down
-2017-07-18 07:53:01,465 DEBUG akka.event.EventStream [test-akka.actor.default-dispatcher-5] [EventStream]- shutting down: StandardOutLogger started
+<pre>2017-07-20 13:02:41,166 INFO  akka.event.slf4j.Slf4jLogger [] []- Slf4jLogger started
+2017-07-20 13:02:41,183 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- logger log1-Slf4jLogger started
+2017-07-20 13:02:41,184 DEBUG akka.event.EventStream [Test worker] [EventStream(akka://test)]- Default Loggers started
+2017-07-20 13:02:41,204 DEBUG r.c.v.s.actors.settings.Settings [] []- Providers: [MOCK, LOCAL, DAS5, SSH]
+2017-07-20 13:02:41,204 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
+2017-07-20 13:02:41,205 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
+2017-07-20 13:02:41,205 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
+2017-07-20 13:02:41,207 INFO  r.c.v.s.actors.execution.ResultActor [test-akka.actor.default-dispatcher-3] [akka://test/user/$$j]- results so far: 0/3
+2017-07-20 13:02:41,214 DEBUG r.c.v.s.schedulers.SimpleScheduler [] []- Work result from . pending 0 remaining 3
+2017-07-20 13:02:41,215 WARN  r.c.v.s.a.execution.StatsProcessor [] []- client  not registered. skipping processing
+2017-07-20 13:02:41,217 DEBUG akka.actor.LocalActorRef [test-akka.actor.default-dispatcher-10] [akka://test/user]- unhandled message from TestActor[akka://test/user/$$j]: Execution{id=de6c3807-3f66-4a22-b9f6-57ce8ac84fa5, configuration=Configuration{id=a8dd2410-5f0b-4d7c-8485-ef7c325d4a2f, createdAt=2017-07-20T13:02:41.201Z, updatedAt=2017-07-20T13:02:41.201Z, description=foo, cost=0.0, resources=[]}, workload=Workload{id=d596b2ae-00a1-48d7-a5c0-2c814f560eef, createdAt=2017-07-20T13:02:41.201Z, updatedAt=2017-07-20T13:02:41.201Z, sequenceStart=0, sequenceStop=2, task=bar, format=foo, url=, file=, description=}, type=FULL, info=ExecutionInfo{status=RUNNING, updatedAt=2017-07-20T13:02:41.216Z, failed=0, remaining=2, total=3, completed=1, elapsed=12, stats=Stats{resources=[], values={}, counters={}, meters={}, histograms={}}}, createdAt=2017-07-20T13:02:41.201Z, updatedAt=2017-07-20T13:02:41.216Z}
+2017-07-20 13:02:41,236 WARN  r.c.v.s.actors.settings.Settings [] []- no writers configured!
+2017-07-20 13:02:41,237 WARN  r.c.v.s.actors.settings.Settings [] []- maxJobSeconds not provided. Using default value of 60
+2017-07-20 13:02:41,238 WARN  r.c.v.s.actors.settings.Settings [] []- missing backoff-interval-seconds . Using default value: 20
+2017-07-20 13:02:41,239 INFO  r.c.v.s.actors.execution.ResultActor [test-akka.actor.default-dispatcher-3] [akka://test/user/$a/child]- results so far: 0/3
+2017-07-20 13:02:41,242 INFO  r.c.v.s.actors.execution.ResultActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$a/child]- Total Duration: 0:00:00
+2017-07-20 13:02:41,243 INFO  r.c.v.s.actors.execution.ResultActor [test-akka.actor.default-dispatcher-2] [akka://test/user/$a/child]- shutting down
+2017-07-20 13:02:41,249 DEBUG akka.event.EventStream [test-akka.actor.default-dispatcher-7] [EventStream]- shutting down: StandardOutLogger started
 </pre>
 </span>
 </div>
@@ -120,7 +121,7 @@
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 3.0</a> at Jul 18, 2017 7:53:13 AM</p>
+<a href="http://www.gradle.org">Gradle 3.0</a> at Jul 20, 2017 1:02:58 PM</p>
 </div>
 </div>
 </body>
